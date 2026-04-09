@@ -195,9 +195,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <!-- WELCOME SCREEN -->
 <div id="screen-welcome" class="screen active">
   <div style="min-height:100vh;background:linear-gradient(155deg,#1B5E20,#2E7D32,#43A047,#66BB6A);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;color:#fff">
-    <div style="font-size:96px;margin-bottom:16px;animation:bnc 2s ease infinite alternate">🐢</div>
-    <h1 style="font-family:var(--ft);font-size:34px;font-weight:bold;margin-bottom:8px;line-height:1.2">TurboTartaruga</h1>
-    <p style="font-size:16px;opacity:.88;margin-bottom:6px;font-style:italic">Lento ma costante vince la gara!</p>
+    <img src="logo-app.png" alt="TurboTartaruga" style="width:min(85vw,340px);animation:bnc 2s ease infinite alternate;margin-bottom:8px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.25))">
     <p style="font-size:13px;opacity:.72;margin-bottom:48px;line-height:1.6;max-width:280px">Il tuo coach di fitness amichevole.<br>Breve, divertente, accessibile a tutti.</p>
     <button onclick="go('onboarding')"
       style="background:#fff;color:#1B5E20;border:none;border-radius:100px;padding:18px 38px;font-family:var(--ft);font-size:18px;font-weight:bold;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.2);transition:transform .15s"
@@ -210,7 +208,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 <!-- ONBOARDING -->
 <div id="screen-onboarding" class="screen">
-  <div class="ob-hero"><div style="font-size:68px;margin-bottom:10px">🐢</div><h1>TurboTartaruga</h1><p style="opacity:.88;font-size:13px">Lento ma costante vince la gara! 💪</p></div>
+  <div class="ob-hero"><img src="logo-turtle.png" alt="TurboTartaruga" style="width:min(65vw,200px);margin-bottom:8px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.2))"><h1>TurboTartaruga</h1><p style="opacity:.88;font-size:13px">Lento ma costante vince la gara! 💪</p></div>
   <div style="padding:18px 13px" class="scrollable">
     <div class="fg"><label>👤 Nome</label><input type="text" id="ob-name" placeholder="Es. Mario" maxlength="30" autocomplete="off"></div>
     <div class="fg"><label>🎂 Età</label><input type="number" id="ob-age" placeholder="Es. 45" min="10" max="99"></div>
@@ -265,7 +263,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <!-- HOME -->
 <div id="screen-home" class="screen">
   <div class="home-hero">
-    <div style="font-size:52px;margin-bottom:6px">🐢</div>
+    <img src="logo-turtle.png" alt="" style="height:min(18vw,72px);margin-bottom:6px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.15))">
     <h2 id="home-greeting">Ciao!</h2><p id="home-phrase">Pronto per il tuo allenamento?</p>
     <div class="streak-chip">🔥 <span id="home-streak">0</span> giorni di fila!</div>
   </div>
@@ -532,7 +530,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   <div class="hdr"><button class="hdr-back" onclick="go('home')">←</button><h1>🏅 Badge & XP</h1></div>
   <div class="scrollable">
     <div style="background:linear-gradient(135deg,var(--g4),var(--bg2));padding:18px;text-align:center;margin-bottom:12px">
-      <div style="font-size:52px;margin-bottom:6px">🐢</div>
+      <img src="logo-turtle.png" alt="" style="height:min(18vw,72px);margin-bottom:6px">
       <div style="font-family:var(--ft);font-size:19px;font-weight:bold" id="prf-name">-</div>
       <div style="font-size:var(--fs-xs);color:var(--tmid);margin-top:3px" id="prf-sub">-</div>
       <div class="level-badge mt10" id="prf-level">🥚 Tartarughina</div>
