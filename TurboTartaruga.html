@@ -25,6 +25,10 @@
 }
 [data-theme="dark"]{--bg:#0D1A0D;--bg2:#0F200F;--card:#162316;--text:#E8F5E9;--tmid:#A5C8A5;--tlt:#4a6a4a;--bdr:#2A4A2A;--shadow:0 4px 20px rgba(0,0,0,.35)}
 body.v2x{--fs:17px;--fs-sm:14px;--fs-xs:13px;--fs-lg:19px;--timer:108px;--icon:36px;--pad:22px}
+body.v2x .tcontrols{padding:0 13px 16px;gap:10px}
+body.v2x .tcontrols .btn{font-size:16px!important;padding:15px 20px!important;min-height:54px}
+body.v2x .tr-hdr button{font-size:14px!important;padding:9px 14px!important}
+body.v2x .timer-num{font-size:100px}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--text);max-width:500px;margin:0 auto;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}
@@ -786,7 +790,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
     <span class="sec-title">ℹ️ Info</span>
     <div class="sblk">
-      <div class="srow"><div class="si">🐢</div><div class="sinfo"><div class="stitle">TurboTartaruga</div><div class="sval">Versione 0.5 · Build offline · Dati locali</div></div></div>
+      <div class="srow"><div class="si">🐢</div><div class="sinfo"><div class="stitle">TurboTartaruga</div><div class="sval">Versione v0.5 · 09/04/2026 10:21</div></div></div>
       <div class="srow"><div class="si">🔄</div><div class="sinfo"><div class="stitle">Aggiornamento</div><div class="sval" id="update-status">Tocca per verificare</div></div>
         <button onclick="checkForUpdate()" id="btn-update" style="background:var(--b1);color:#fff;border:none;border-radius:100px;padding:7px 12px;font-size:var(--fs-xs);font-weight:bold;cursor:pointer;white-space:nowrap">🔄 Verifica</button>
       </div>
@@ -1171,7 +1175,7 @@ function startTraining(){
   const tp=getTodayPlan();
   let focus=T.feeling&&T.feeling!=='piano'?T.feeling:tp.focus;
   if(T.feeling==='stanco_mini')focus='stretching';
-  T.sesType=focus;T.exs=genSession(focus);T.idx=0;T.paused=false;T.t0=Date.now();riservaDone=false;
+  T.sesType=focus;T.exs=genSession(focus);T.idx=0;T.paused=false;T.t0=Date.now();riservaDone=false;requestWakeLock();
   // Show first exercise preview in rest screen before starting
   showRestPreview(0, ()=>doShowEx(0));
 }
@@ -1467,7 +1471,7 @@ const DONE_PHRASES=[
   'La tartaruga ha corso oggi — e ha vinto! 🐢💨',
   'Grande! Il tuo futuro-te ti sta già ringraziando! ⭐',
 ];
-function completeSession(){
+function completeSession(){releaseWakeLock();
   clearInterval(T.iv);clearInterval(restIv);clearInterval(transIv);
   const today=new Date().toISOString().slice(0,10);
   const xpGain=10+(S.str>0?Math.min(S.str,5):0)+(riservaDone?5:0);
@@ -2051,89 +2055,82 @@ window.addEventListener('beforeunload',(e)=>{
   }
 });
 
+
+// ═══ WAKE LOCK (keep screen on during workout) ═══
+let wakeLock=null;
+async function requestWakeLock(){
+  if('wakeLock' in navigator){
+    try{wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
+  }
+}
+function releaseWakeLock(){
+  if(wakeLock){try{wakeLock.release();}catch(e){}wakeLock=null;}
+}
+document.addEventListener('visibilitychange',async()=>{
+  if(document.visibilityState==='visible'&&wakeLock===null){
+    const cur=document.querySelector('.screen.active');
+    const active=cur?cur.id:'';
+    if(active.includes('training')||active.includes('rest')||active.includes('transition'))
+      await requestWakeLock();
+  }
+});
+
 // ═══ SERVICE WORKER + UPDATE ═══
-let swReg=null;
+const APP_BUILD='202604091029'; // auto-set on each release
+
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
   const status=document.getElementById('update-status');
   if(btn)btn.textContent='⏳ Controllo...';
   if(status)status.textContent='Controllo in corso...';
-  if(!swReg){
-    if(btn)btn.textContent='🔄 Verifica';
-    if(status)status.textContent='Service Worker non disponibile (sei offline o su file://)';
-    return;
-  }
-  swReg.update().then(()=>{
-    const waiting=swReg.waiting;
-    const installing=swReg.installing;
-    if(waiting){
-      if(status)status.textContent='🆕 Aggiornamento pronto! Ricarica la pagina.';
-      if(btn){btn.textContent='↺ Ricarica';btn.onclick=()=>location.reload(true);}
-      // Tell SW to skip waiting
-      waiting.postMessage('skipWaiting');
-      setTimeout(()=>location.reload(true),800);
-    } else if(installing){
-      if(status)status.textContent='⬇️ Download aggiornamento in corso...';
-      if(btn)btn.textContent='⏳';
-      installing.addEventListener('statechange',()=>{
-        if(installing.state==='installed'){
-          if(status)status.textContent='✅ Aggiornamento scaricato! Ricarica.';
-          if(btn){btn.textContent='↺ Ricarica';btn.onclick=()=>location.reload(true);}
-          setTimeout(()=>location.reload(true),800);
-        }
-      });
-    } else {
-      if(status)status.textContent='✅ Sei già all\'ultima versione!';
-      if(btn)btn.textContent='✅ Ok';
-      setTimeout(()=>{if(btn)btn.textContent='🔄 Verifica';if(status)status.textContent='Tocca per verificare';},3000);
-    }
-  }).catch((err)=>{
-    // On GitHub Pages this can fail for non-connection reasons
-    // Try a direct fetch to check if sw.js is reachable
-    fetch('./sw.js?t='+Date.now(),{cache:'no-store'})
-      .then(r=>{
-        if(r.ok){
-          if(status)status.textContent='✅ Connessione OK. Nessun aggiornamento trovato.';
-        } else {
-          if(status)status.textContent='⚠️ File non raggiungibile ('+r.status+')';
-        }
-        if(btn)btn.textContent='🔄 Verifica';
-      })
-      .catch(()=>{
-        if(status)status.textContent='📶 Nessuna connessione internet.';
-        if(btn)btn.textContent='🔄 Verifica';
-      });
-  });
+  fetch('./version.json?t='+Date.now(),{cache:'no-store'})
+    .then(r=>r.json())
+    .then(data=>{
+      const remoteBuild=String(data.build||'');
+      if(remoteBuild&&remoteBuild!==APP_BUILD){
+        if(status)status.textContent='🆕 Nuova versione! ('+data.version+') Aggiorno...';
+        if(btn){btn.textContent='↺ Aggiorna';btn.style.background='#E65100';}
+        // Unregister SW so next reload gets fresh files
+        if('serviceWorker' in navigator){
+          navigator.serviceWorker.getRegistrations().then(regs=>{
+            regs.forEach(r=>r.unregister());
+            setTimeout(()=>location.reload(true),600);
+          });
+        }else{setTimeout(()=>location.reload(true),600);}
+      }else{
+        if(status)status.textContent='✅ Hai già l\'ultima versione!';
+        if(btn){btn.textContent='✅ Ok';setTimeout(()=>{btn.textContent='🔄 Verifica';if(status)status.textContent='Tocca per verificare';},3000);}
+      }
+    })
+    .catch(()=>{
+      if(status)status.textContent='📶 Offline — impossibile verificare.';
+      if(btn)btn.textContent='🔄 Verifica';
+    });
 }
 
+// Auto-check on startup after 4s
+setTimeout(()=>{
+  fetch('./version.json?t='+Date.now(),{cache:'no-store'})
+    .then(r=>r.json())
+    .then(data=>{
+      if(String(data.build||'')!==APP_BUILD){
+        toast('🆕 Nuova versione disponibile! Vai in Impostazioni → Verifica.',7000);
+        const s=document.getElementById('update-status');
+        if(s)s.textContent='🆕 Aggiornamento disponibile!';
+      }
+    }).catch(()=>{});
+},4000);
+
 if('serviceWorker' in navigator){
-  // Force update check on every page load
   navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'})
     .then(reg=>{
-      swReg=reg;
-      // Check for updates immediately
-      reg.update();
-      // Listen for new SW found
-      reg.addEventListener('updatefound',()=>{
-        const nw=reg.installing;
-        if(!nw)return;
-        nw.addEventListener('statechange',()=>{
-          if(nw.state==='installed'&&navigator.serviceWorker.controller){
-            // New version is ready
-            toast('🆕 Nuova versione disponibile! Vai in Impostazioni → Verifica aggiornamento.',8000);
-            const status=document.getElementById('update-status');
-            if(status)status.textContent='🆕 Aggiornamento disponibile!';
-          }
-        });
-      });
-      // Detect controller change (SW activated) → reload
       let refreshing=false;
       navigator.serviceWorker.addEventListener('controllerchange',()=>{
         if(!refreshing){refreshing=true;location.reload(true);}
       });
-    })
-    .catch(()=>{/* Silently fail on file:// */});
+    }).catch(()=>{});
 }
+
 </script>
 </body>
 </html>
