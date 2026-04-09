@@ -84,6 +84,12 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 .fbtn .fi{display:block;font-size:20px;margin-bottom:3px}
 .fbtn.sel{border-color:var(--g1);background:var(--g4)}.fbtn.tired.sel{border-color:var(--coral);background:#FFF3E0}
 [data-theme="dark"] .fbtn.sel{background:#1A3A1A}[data-theme="dark"] .fbtn.tired.sel{background:#3A1A0A}
+[data-theme="dark"] .today-card{background:var(--card);border:1.5px solid var(--bdr)}
+[data-theme="dark"] .fbtn{background:#1A2E1A;border-color:#2E4A2E}
+[data-theme="dark"] .fbtn.sel{background:#1A3A1A;border-color:var(--g1)}
+[data-theme="dark"] .abtn{background:var(--card)}
+[data-theme="dark"] .abtn.party{background:linear-gradient(135deg,#3A5200,#4A4400)}
+
 /* Option C: Exercise visualization */
 .ex-card{background:var(--card);border-radius:var(--radius);margin:0 13px 10px;box-shadow:var(--shadow);overflow:hidden}
 .ex-img-wrap{text-align:center;background:var(--bg2);min-height:160px;display:flex;align-items:center;justify-content:center;padding:10px}
@@ -206,7 +212,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       onmousedown="this.style.transform='scale(.96)'" onmouseup="this.style.transform=''" ontouchstart="this.style.transform='scale(.96)'" ontouchend="this.style.transform=''">
       🚀 Dai, cominciamo!
     </button>
-    <p style="font-size:11px;opacity:.55;margin-top:20px">Ci vogliono 2 minuti · Dati salvati solo sul tuo dispositivo 🔒</p>
+    <div style="margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:280px">
+      <div style="font-size:12px;opacity:.6;font-weight:bold;letter-spacing:.5px">— oppure —</div>
+      <label style="width:100%;background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.4);border-radius:100px;padding:13px 20px;font-family:var(--ft);font-size:15px;font-weight:bold;cursor:pointer;text-align:center;transition:transform .15s;display:block"
+        onmousedown="this.style.transform='scale(.96)'" onmouseup="this.style.transform=''" ontouchstart="this.style.transform='scale(.96)'" ontouchend="this.style.transform=''">
+        📥 Ho già un profilo — importa JSON
+        <input type="file" accept=".json" style="display:none" onchange="importJSONWelcome(event)">
+      </label>
+    </div>
+    <p style="font-size:11px;opacity:.55;margin-top:16px">Ci vogliono 2 minuti · Dati salvati solo sul tuo dispositivo 🔒</p>
   </div>
 </div>
 
@@ -268,7 +282,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <div id="screen-home" class="screen">
   <div class="home-hero" style="position:relative">
     <button onclick="go('settings')" style="position:absolute;top:10px;right:12px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.22);border:none;cursor:pointer;font-size:19px;display:flex;align-items:center;justify-content:center;color:#fff;z-index:10" title="Impostazioni">⚙️</button>
-    <img src="logo-turtle.png" alt="" style="height:clamp(70px,22vw,110px);margin-bottom:4px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.25));display:block;margin-left:auto;margin-right:auto">
+    <img src="logo-turtle.png" alt="" style="width:min(72vw,280px);max-height:160px;object-fit:contain;object-position:center bottom;margin-bottom:4px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.25));display:block;margin-left:auto;margin-right:auto">
     <h2 id="home-greeting">Ciao!</h2><p id="home-phrase">Pronto per il tuo allenamento?</p>
     <div class="streak-chip">🔥 <span id="home-streak">0</span> giorni di fila!</div>
   </div>
@@ -790,8 +804,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
     <span class="sec-title">ℹ️ Info</span>
     <div class="sblk">
-      <div class="srow"><div class="si">🐢</div><div class="sinfo"><div class="stitle">TurboTartaruga</div><div class="sval">Versione v0.5 · 09/04/2026 10:21</div></div></div>
-      <div class="srow"><div class="si">🔄</div><div class="sinfo"><div class="stitle">Aggiornamento</div><div class="sval" id="update-status">Tocca per verificare</div></div>
+      <div class="srow"><div class="si">🐢</div><div class="sinfo"><div class="stitle">TurboTartaruga</div><div class="sval">Versione v0.5 · 09/04/2026 12:22"srow"><div class="si">🔄</div><div class="sinfo"><div class="stitle">Aggiornamento</div><div class="sval" id="update-status">Tocca per verificare</div></div>
         <button onclick="checkForUpdate()" id="btn-update" style="background:var(--b1);color:#fff;border:none;border-radius:100px;padding:7px 12px;font-size:var(--fs-xs);font-weight:bold;cursor:pointer;white-space:nowrap">🔄 Verifica</button>
       </div>
       <div class="srow"><div class="si">❤️</div><div class="sinfo"><div class="stitle">Crediti</div><div class="sval">Ideato e fatto da Alby con l'aiuto del grande Claude 🤖✨</div></div></div>
@@ -1150,8 +1163,12 @@ function doVolRest(type){
     document.getElementById('vr-streak').textContent=S.str;
     go_scr('volrest');
   }else{
-    // Mini 5-min stretching session
-    T.dur=5;T.feeling='stanco_mini';go('presession');
+    // Mini 5-min stretching session — skip presession, go directly
+    T.dur=5;T.feeling='stanco_mini';
+    const tp=getTodayPlan();
+    const focus='stretching';
+    T.sesType=focus;T.exs=genSession(focus);T.idx=0;T.paused=false;T.t0=Date.now();riservaDone=false;requestWakeLock();
+    showRestPreview(0,()=>doShowEx(0));
   }
 }
 function addHistory(entry){
@@ -1399,11 +1416,24 @@ function showRestPreview(targetIdx, onDone){
     if(nd)nd.textContent='Quasi al traguardo — ancora un ultimo sforzo! 🏆';
   }
   go_scr('rest');beep(330,.18);
+  // Voice warmup (fixes first-exercise silence on mobile)
+  if(SET.voice&&window.speechSynthesis){try{const u=new SpeechSynthesisUtterance('');u.volume=0;window.speechSynthesis.speak(u);}catch(e){}}
   clearInterval(restIv);
   T._restDone=onDone;
+  let _preparatiSpoken=false;
   restIv=setInterval(()=>{
     if(T.paused)return;
-    left--;document.getElementById('rst-timer').textContent=Math.max(0,left);
+    left--;
+    const el=document.getElementById('rst-timer');
+    if(el)el.textContent=Math.max(0,left);
+    // "Preparati" at 10 seconds
+    if(left===10&&!_preparatiSpoken){
+      _preparatiSpoken=true;
+      beep(550,.12);
+      speak('Preparati!');
+    }
+    // Countdown 3-2-1
+    if(left<=3&&left>0){beep(440,.08);speak(String(left));}
     if(left<=0){clearInterval(restIv);const fn=T._restDone;T._restDone=null;if(fn)fn();}
   },1000);
 }
@@ -1414,9 +1444,12 @@ function addRestTime(){
   el.textContent=left;
   toast('➕ +10 secondi di pausa!');
   const fn=T._restDone;
+  let _preparatiSpoken=left>10?false:true; // if already past 10s, don't repeat
   restIv=setInterval(()=>{
     if(T.paused)return;
     left--;el.textContent=Math.max(0,left);
+    if(left===10&&!_preparatiSpoken){_preparatiSpoken=true;beep(550,.12);speak('Preparati!');}
+    if(left<=3&&left>0){beep(440,.08);speak(String(left));}
     if(left<=0){clearInterval(restIv);T._restDone=null;if(fn)fn();}
   },1000);
 }
@@ -1850,6 +1883,20 @@ function toggleAvoidList(id,btn){
 }
 function exportJSON(){const d=bkData();const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`turbotartaruga-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);toast('✅ File JSON esportato!')}
 function importJSON(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!d.v||!d.profile){toast('⚠️ File non valido!');return}restore(d)}catch{toast('⚠️ Errore lettura file!')}};r.readAsText(f)}
+function importJSONWelcome(ev){
+  const f=ev.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      if(!d.v||!d.profile){toast('⚠️ File non valido! Assicurati di usare il backup di TurboTartaruga.');return}
+      restore(d);
+      // restore() calls go('home') automatically
+      toast('🐢 Bentornato/a '+d.profile.name+'! Profilo caricato con successo!',4000);
+    }catch{toast('⚠️ Errore lettura file! Il file potrebbe essere corrotto.');}
+  };
+  r.readAsText(f);
+}
 function genCode(){const d=bkData();const code='TT-'+btoa(unescape(encodeURIComponent(JSON.stringify(d))));const el=document.getElementById('bk-code');el.style.display='block';el.textContent=code;if(navigator.clipboard){navigator.clipboard.writeText(code).then(()=>toast('📋 Codice copiato!')).catch(()=>toast('📋 Codice generato!'))}else toast('📋 Codice generato!')}
 function showPaste(){const a=document.getElementById('paste-area');a.style.display=a.style.display==='none'?'block':'none'}
 function restoreCode(){const code=document.getElementById('paste-input').value.trim();if(!code.startsWith('TT-')){toast('⚠️ Codice non valido!');return}try{const d=JSON.parse(decodeURIComponent(escape(atob(code.slice(3)))));restore(d);document.getElementById('paste-area').style.display='none'}catch{toast('⚠️ Codice corrotto!')}}
@@ -2076,7 +2123,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604091029'; // auto-set on each release
+const APP_BUILD='202604091222'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
