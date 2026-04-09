@@ -1326,7 +1326,8 @@ function doShowEx(idx){
   updatePbar();buildNextList();
   const remReal=T.exs.slice(idx+1).filter(e=>!e._transition&&!e._bonus).length;
   const rb=document.getElementById('riserva-banner');
-  if(rb)rb.style.display=(remReal===2&&!riservaDone)?'block':'none';
+  // Don't show riserva on mini sessions (5min) — too few exercises
+  if(rb)rb.style.display=(remReal===2&&!riservaDone&&T.dur!==5)?'block':'none';
   go_scr('training');startTimer();
 }
 function updatePbar(){
@@ -1469,11 +1470,23 @@ function togglePause(){T.paused=!T.paused;document.getElementById('btn-pause').t
 function confirmQuit(){if(confirm("Vuoi uscire dall'allenamento?")){clearInterval(T.iv);clearInterval(restIv);clearInterval(transIv);clearInterval(grIv);go("home")}}
 function activateRiserva(){
   riservaDone=true;document.getElementById('riserva-banner').style.display='none';
-  const bonus=genBonusExs();T.exs.splice(T.idx+1,0,...bonus);
-  toast('💥 Riserva Turbo! +2 esercizi bonus!',3500);buildNextList();updatePbar();
+  const bonus=genBonusExs();
+  if(!bonus.length){toast('⚠️ Nessun esercizio bonus disponibile!');return;}
+  T.exs.splice(T.idx+1,0,...bonus);
+  toast('💥 Riserva Turbo! +'+bonus.length+' esercizi bonus!',3500);buildNextList();updatePbar();
   const real=T.exs.filter(e=>!e._transition);const done=T.exs.slice(0,T.idx).filter(e=>!e._transition).length;
   document.getElementById('tr-count').textContent=`${done+1}/${real.length}`;
   S.xp=(S.xp||0)+5;save();
+}
+function genBonusExs(){
+  const used=new Set(T.exs.filter(e=>!e._bonus).map(e=>e.id));
+  let pool=shuffleArr(DB.filter(e=>!used.has(e.id)&&e.cat!=='riscaldamento'&&e.cat!=='party'));
+  if(P.noFloor)pool=pool.filter(e=>!e.floor);
+  const avoided=new Set(P.avoided||[]);
+  pool=pool.filter(e=>!avoided.has(e.id));
+  if(!pool.length)pool=shuffleArr(DB.filter(e=>e.cat==='stretching'));
+  const cfg=DUR_CFG[T.dur||12]||DUR_CFG[12];
+  return pool.slice(0,2).map(e=>({...e,a:cfg.a,r:cfg.r,_bonus:true}));
 }
 function dismissRiserva(){riservaDone=true;document.getElementById('riserva-banner').style.display='none'}
 
@@ -1760,7 +1773,7 @@ function buildSettings(){
   syncToggles();
   // Update version display
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.5 · 09/04/2026 17:24';
+  if(vdisp)vdisp.textContent='Versione v0.5 · 09/04/2026 17:45';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 8 categorie`;
@@ -2111,7 +2124,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604091724'; // auto-set on each release
+const APP_BUILD='202604091745'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
