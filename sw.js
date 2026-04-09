@@ -1,6 +1,6 @@
 // TurboTartaruga Service Worker v0.5
 // Aggiorna questo numero ogni volta che pubblichi una nuova versione
-const CACHE_NAME = 'turbotartaruga-202604091029';
+const CACHE_NAME = 'turbotartaruga-202604091050';
 
 // File da mettere in cache subito all'installazione
 const PRECACHE = [
