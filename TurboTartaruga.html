@@ -196,7 +196,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <!-- WELCOME SCREEN -->
 <div id="screen-welcome" class="screen active">
   <div style="min-height:100vh;background:linear-gradient(155deg,#1B5E20,#2E7D32,#43A047,#66BB6A);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;color:#fff">
-    <img src="logo-app.png" alt="TurboTartaruga" style="width:min(85vw,340px);animation:bnc 2s ease infinite alternate;margin-bottom:8px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.25))">
+    <img src="logo-app.png" alt="TurboTartaruga" style="width:min(82vw,300px);max-height:42vh;object-fit:contain;animation:bnc 2s ease infinite alternate;margin-bottom:8px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.25))">
     <p style="font-size:13px;opacity:.72;margin-bottom:48px;line-height:1.6;max-width:280px">Il tuo coach di fitness amichevole.<br>Breve, divertente, accessibile a tutti.</p>
     <button onclick="go('onboarding')"
       style="background:#fff;color:#1B5E20;border:none;border-radius:100px;padding:18px 38px;font-family:var(--ft);font-size:18px;font-weight:bold;cursor:pointer;box-shadow:0 6px 24px rgba(0,0,0,.2);transition:transform .15s"
@@ -264,7 +264,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <!-- HOME -->
 <div id="screen-home" class="screen">
   <div class="home-hero">
-    <img src="logo-turtle.png" alt="" style="height:min(18vw,72px);margin-bottom:6px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.15))">
+    <img src="logo-turtle.png" alt="" style="height:clamp(70px,22vw,110px);margin-bottom:4px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.25));display:block;margin-left:auto;margin-right:auto">
     <h2 id="home-greeting">Ciao!</h2><p id="home-phrase">Pronto per il tuo allenamento?</p>
     <div class="streak-chip">🔥 <span id="home-streak">0</span> giorni di fila!</div>
   </div>
@@ -531,7 +531,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   <div class="hdr"><button class="hdr-back" onclick="go('home')">←</button><h1>🏅 Badge & XP</h1></div>
   <div class="scrollable">
     <div style="background:linear-gradient(135deg,var(--g4),var(--bg2));padding:18px;text-align:center;margin-bottom:12px">
-      <img src="logo-turtle.png" alt="" style="height:min(18vw,72px);margin-bottom:6px">
+      <img src="logo-turtle.png" alt="" style="height:clamp(60px,18vw,90px);margin-bottom:6px;display:block;margin-left:auto;margin-right:auto">
       <div style="font-family:var(--ft);font-size:19px;font-weight:bold" id="prf-name">-</div>
       <div style="font-size:var(--fs-xs);color:var(--tmid);margin-top:3px" id="prf-sub">-</div>
       <div class="level-badge mt10" id="prf-level">🥚 Tartarughina</div>
@@ -1958,7 +1958,16 @@ load();applyTheme();applyView();syncToggles();T.dur=12;
 if(P.name){
   if(!S.plan||S.plan.length===0)generatePlan();
   updateStreak();
-  const fabEl=document.getElementById('fab');if(fabEl){fabEl.classList.remove('fab-hidden');fabEl.style.display='flex';}
+  const fabEl=document.getElementById('fab');
+  if(fabEl){
+    fabEl.classList.remove('fab-hidden');
+    fabEl.style.cssText='display:flex!important;visibility:visible!important;opacity:1!important';
+  }
+  // Extra: force repaint after 100ms for Android Chrome
+  setTimeout(()=>{
+    const f=document.getElementById('fab');
+    if(f){f.style.display='none';void f.offsetHeight;f.style.display='flex';}
+  },150);
   go('home');
 }else go('welcome');
 
@@ -1998,9 +2007,22 @@ function checkForUpdate(){
       if(btn)btn.textContent='✅ Ok';
       setTimeout(()=>{if(btn)btn.textContent='🔄 Verifica';if(status)status.textContent='Tocca per verificare';},3000);
     }
-  }).catch(()=>{
-    if(status)status.textContent='⚠️ Errore — controlla la connessione.';
-    if(btn)btn.textContent='🔄 Verifica';
+  }).catch((err)=>{
+    // On GitHub Pages this can fail for non-connection reasons
+    // Try a direct fetch to check if sw.js is reachable
+    fetch('./sw.js?t='+Date.now(),{cache:'no-store'})
+      .then(r=>{
+        if(r.ok){
+          if(status)status.textContent='✅ Connessione OK. Nessun aggiornamento trovato.';
+        } else {
+          if(status)status.textContent='⚠️ File non raggiungibile ('+r.status+')';
+        }
+        if(btn)btn.textContent='🔄 Verifica';
+      })
+      .catch(()=>{
+        if(status)status.textContent='📶 Nessuna connessione internet.';
+        if(btn)btn.textContent='🔄 Verifica';
+      });
   });
 }
 
