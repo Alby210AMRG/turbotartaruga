@@ -804,7 +804,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
     <span class="sec-title">ℹ️ Info</span>
     <div class="sblk">
-      <div class="srow"><div class="si">🐢</div><div class="sinfo"><div class="stitle">TurboTartaruga</div><div class="sval">Versione v0.5 · 09/04/2026 12:22"srow"><div class="si">🔄</div><div class="sinfo"><div class="stitle">Aggiornamento</div><div class="sval" id="update-status">Tocca per verificare</div></div>
+      <div class="srow"><div class="si">🐢</div><div class="sinfo"><div class="stitle">TurboTartaruga</div><div class="sval" id="app-version-display">Versione v0.5</div></div></div>
+      <div class="srow"><div class="si">🔄</div><div class="sinfo"><div class="stitle">Aggiornamento</div><div class="sval" id="update-status">Tocca per verificare</div></div>
         <button onclick="checkForUpdate()" id="btn-update" style="background:var(--b1);color:#fff;border:none;border-radius:100px;padding:7px 12px;font-size:var(--fs-xs);font-weight:bold;cursor:pointer;white-space:nowrap">🔄 Verifica</button>
       </div>
       <div class="srow"><div class="si">❤️</div><div class="sinfo"><div class="stitle">Crediti</div><div class="sval">Ideato e fatto da Alby con l'aiuto del grande Claude 🤖✨</div></div></div>
@@ -1757,52 +1758,9 @@ function buildSettings(){
   document.querySelectorAll('.vw-opt').forEach(e=>e.classList.toggle('sel',e.dataset.vs===SET.viewScale));
   document.querySelectorAll('.th-opt').forEach(e=>e.classList.toggle('sel',e.dataset.th===SET.theme));
   syncToggles();
-  // Update exercise count label only — list stays collapsed until user clicks
-  const lbl=document.getElementById('ex-count-lbl');
-  if(lbl)lbl.textContent=`${DB.length} esercizi in 7 categorie`;
-  // Reset list to collapsed state each time settings opens
-  exListVisible=false;
-  const wrap=document.getElementById('ex-list-wrap');
-  if(wrap)wrap.style.display='none';
-  const btn=document.getElementById('ex-toggle-btn');
-  if(btn)btn.textContent='▼ Mostra';
-}
-function toggleStCat(el){el.classList.toggle('sel');const ck=el.querySelector('.mchk-check');if(ck)ck.textContent=el.classList.contains('sel')?'✓':'';const cats=[...document.querySelectorAll('#st-cats .mchk.sel')].map(e=>e.dataset.cat);P.categories=cats;save()}
-function saveRestDays(){const rd=[...document.querySelectorAll('#st-restdays .day-btn.sel')].map(e=>parseInt(e.dataset.dow));P.restDays=rd;save();toast('✅ Giorni di riposo salvati!')}
-function updFavSt(v){
-  document.getElementById('st-fav-disp').textContent=v;
-  document.getElementById('st-fav-range').style.setProperty('--pct',(v/5*100).toFixed(1)+'%');
-}
-function saveFavCount(){
-  P.favCount=parseInt(document.getElementById('st-fav-range').value);
-  save();
-  const msg=P.favCount===0?'Preferiti disattivati nelle sessioni':'Fino a '+P.favCount+' preferiti per sessione';
-  toast('✅ '+msg);
-}
-function saveSelectF(f,v){P[f]=v;save();toast('✅ Salvato!')}
-function toggleNoFloor(){const el=document.getElementById('st-nofloor');if(el)el.classList.toggle('on');P.noFloor=document.getElementById('st-nofloor').classList.contains('on');save()}
-function updPauseSt(v){
-  document.getElementById('st-pause-disp').textContent=v+'s';
-  document.getElementById('st-pause-range').style.setProperty('--pct',((v-5)/55*100).toFixed(1)+'%');
-}
-function updGoalSt(v){
-  document.getElementById('st-goal-disp').textContent=v;
-  document.getElementById('st-goal-range').style.setProperty('--pct',((v-10)/355*100).toFixed(1)+'%');
-}
-function savePause(){
-  SET.pauseSec=parseInt(document.getElementById('st-pause-range').value)||20;
-  save();toast('✅ Pausa salvata: '+SET.pauseSec+' secondi');
-}
-function saveGoal(){P.goal=parseInt(document.getElementById('st-goal-range').value)||90;save();toast('✅ Obiettivo salvato!')}
-function selTheme(el){document.querySelectorAll('.th-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');SET.theme=el.dataset.th;save();applyTheme()}
-function selView(el){document.querySelectorAll('.vw-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');SET.viewScale=el.dataset.vs;save();applyView()}
-function changeUser(){if(!confirm('Vuoi davvero azzerare tutto?'))return;P={};S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[]};save();go('onboarding')}
-// Inline edit
-function startEdit(f){['val-','inp-','ebt-'].forEach((pfx,i)=>{const el=document.getElementById(pfx+f);if(el)el.style.display=i===1?'block':i===2?'none':'none'});const fld=document.getElementById('fld-'+f);if(fld){fld.value=P[f]||'';fld.focus()}}
-function cancelEdit(f){['val-','inp-','ebt-'].forEach((pfx,i)=>{const el=document.getElementById(pfx+f);if(el)el.style.display=i===1?'none':'block'})}
-function saveField(f){
-  const fld=document.getElementById('fld-'+f);if(!fld)return;const raw=fld.value.trim();
-  const cfg={name:{v:v=>v.length>0,fmt:v=>v,lbl:'Nome'},age:{v:v=>v>=10&&v<=99,fmt:v=>v+' anni',lbl:'Età'},weight:{v:v=>v>=30&&v<=300,fmt:v=>v+' kg',lbl:'Peso'},height:{v:v=>v>=100&&v<=220,fmt:v=>v+' cm',lbl:'Altezza'}}[f];
+  // Update version display
+  const vdisp=document.getElementById('app-version-display');
+  if(vdisp)vdisp.textContent='Versione v0.5 · 09/04/2026 12:51<=99,fmt:v=>v+' anni',lbl:'Età'},weight:{v:v=>v>=30&&v<=300,fmt:v=>v+' kg',lbl:'Peso'},height:{v:v=>v>=100&&v<=220,fmt:v=>v+' cm',lbl:'Altezza'}}[f];
   if(!cfg)return;
   let val;if(f==='name')val=raw;else{val=parseInt(raw);if(isNaN(val)||!cfg.v(val)){toast('⚠️ Valore non valido!');return}}
   if(f!=='name'&&!cfg.v(val)){toast('⚠️ Valore non valido!');return}
@@ -2123,35 +2081,48 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604091222'; // auto-set on each release
+const APP_BUILD='202604091251'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
   const status=document.getElementById('update-status');
   if(btn)btn.textContent='⏳ Controllo...';
   if(status)status.textContent='Controllo in corso...';
-  fetch('./version.json?t='+Date.now(),{cache:'no-store'})
-    .then(r=>r.json())
+  // Double cache-bust: unique param + no-store header
+  const url='./version.json?nocache='+Date.now()+'&r='+Math.random();
+  fetch(url,{cache:'no-store',headers:{'Cache-Control':'no-cache','Pragma':'no-cache'}})
+    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
     .then(data=>{
-      const remoteBuild=String(data.build||'');
-      if(remoteBuild&&remoteBuild!==APP_BUILD){
-        if(status)status.textContent='🆕 Nuova versione! ('+data.version+') Aggiorno...';
-        if(btn){btn.textContent='↺ Aggiorna';btn.style.background='#E65100';}
-        // Unregister SW so next reload gets fresh files
-        if('serviceWorker' in navigator){
-          navigator.serviceWorker.getRegistrations().then(regs=>{
-            regs.forEach(r=>r.unregister());
-            setTimeout(()=>location.reload(true),600);
-          });
-        }else{setTimeout(()=>location.reload(true),600);}
+      const remoteBuild=String(data.build||'').trim();
+      const localBuild=String(APP_BUILD||'').trim();
+      const vdisp=document.getElementById('app-version-display');
+      // Show both builds in status for debug
+      if(status)status.textContent='Server: '+remoteBuild+' · App: '+localBuild;
+      if(remoteBuild&&remoteBuild!==localBuild){
+        setTimeout(()=>{
+          if(status)status.textContent='🆕 Nuova versione disponibile! ('+data.version+' del '+data.date+')';
+          if(btn){btn.textContent='↺ Aggiorna ora';btn.style.background='#E65100';
+            btn.onclick=()=>{
+              // Clear all SW caches then hard reload
+              if('serviceWorker' in navigator){
+                Promise.all([
+                  navigator.serviceWorker.getRegistrations().then(regs=>Promise.all(regs.map(r=>r.unregister()))),
+                  caches.keys().then(keys=>Promise.all(keys.map(k=>caches.delete(k))))
+                ]).then(()=>location.reload(true));
+              }else{location.reload(true);}
+            };
+          }
+        },800);
       }else{
-        if(status)status.textContent='✅ Hai già l\'ultima versione!';
-        if(btn){btn.textContent='✅ Ok';setTimeout(()=>{btn.textContent='🔄 Verifica';if(status)status.textContent='Tocca per verificare';},3000);}
+        setTimeout(()=>{
+          if(status)status.textContent='✅ Hai già l\'ultima versione! ('+localBuild+')';
+          if(btn){btn.textContent='✅ Ok';setTimeout(()=>{btn.textContent='🔄 Verifica';if(status)status.textContent='Tocca per verificare';},4000);}
+        },800);
       }
     })
-    .catch(()=>{
-      if(status)status.textContent='📶 Offline — impossibile verificare.';
-      if(btn)btn.textContent='🔄 Verifica';
+    .catch(err=>{
+      if(status)status.textContent='⚠️ Errore: '+(err.message||'connessione?');
+      if(btn)btn.textContent='🔄 Riprova';
     });
 }
 

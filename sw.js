@@ -1,14 +1,14 @@
 // TurboTartaruga Service Worker v0.5
-// Aggiorna questo numero ogni volta che pubblichi una nuova versione
-const CACHE_NAME = 'turbotartaruga-202604091222';
+const CACHE_NAME = 'turbotartaruga-202604091251';
 
-// File da mettere in cache subito all'installazione
 const PRECACHE = [
   './',
   './TurboTartaruga.html',
 ];
 
-// ── Installazione: mette in cache i file base ─────────────────────────────
+// NEVER cache these — they must always be fresh
+const NO_CACHE = ['version.json', 'sw.js'];
+
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -17,7 +17,6 @@ self.addEventListener('install', event => {
   );
 });
 
-// ── Attivazione: elimina vecchie cache ────────────────────────────────────
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -28,38 +27,36 @@ self.addEventListener('activate', event => {
   );
 });
 
-// ── Fetch: serve dalla cache, aggiorna in background ─────────────────────
-// Strategia: "Stale While Revalidate"
-// → Risponde subito dalla cache (veloce)
-// → Scarica in background la versione aggiornata
-// → La prossima volta l'utente ha già la versione nuova
 self.addEventListener('fetch', event => {
-  // Ignora richieste non-GET e richieste esterne
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
   if (url.origin !== location.origin) return;
 
+  // Never cache version.json or sw.js — always fetch fresh
+  const pathname = url.pathname.split('/').pop();
+  if (NO_CACHE.some(f => pathname.startsWith(f))) {
+    event.respondWith(fetch(event.request, {cache: 'no-store'}));
+    return;
+  }
+
+  // Stale-while-revalidate for everything else
   event.respondWith(
     caches.open(CACHE_NAME).then(cache =>
       cache.match(event.request).then(cached => {
         const fetchPromise = fetch(event.request)
           .then(response => {
-            // Metti in cache solo risposte valide
             if (response && response.status === 200) {
               cache.put(event.request, response.clone());
             }
             return response;
           })
           .catch(() => null);
-
-        // Restituisce la cache subito, o aspetta il fetch se non c'è cache
         return cached || fetchPromise;
       })
     )
   );
 });
 
-// ── Messaggio di aggiornamento disponibile ────────────────────────────────
 self.addEventListener('message', event => {
   if (event.data === 'skipWaiting') self.skipWaiting();
 });
