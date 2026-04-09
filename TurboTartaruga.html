@@ -183,8 +183,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .scrollable{overflow-y:auto;padding-bottom:28px}.tc{text-align:center}.mt10{margin-top:10px}.mt12{margin-top:12px}.mt14{margin-top:14px}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(100px);background:#1C2B1C;color:#fff;padding:11px 20px;border-radius:100px;font-size:13px;z-index:9999;transition:transform .3s;white-space:nowrap;pointer-events:none;max-width:90vw}
 [data-theme="dark"] .toast{background:#E8F5E9;color:#1C2B1C}.toast.show{transform:translateX(-50%) translateY(0)}
-.fab{position:fixed;bottom:20px;right:20px;width:48px;height:48px;background:var(--g1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:21px;box-shadow:0 4px 16px rgba(67,160,71,.4);cursor:pointer;z-index:200;border:none}
-.fab-hidden{display:none!important}
+/* FAB removed — settings button is now in home hero */
 .ob-hero{background:linear-gradient(155deg,#2E7D32,#43A047,#66BB6A);padding:32px 20px 26px;text-align:center;color:#fff}
 .ob-hero h1{font-family:var(--ft);font-size:26px;margin-bottom:4px}
 @keyframes bnc{from{transform:translateY(0)}to{transform:translateY(-14px)}}
@@ -192,7 +191,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<button id="fab" class="fab fab-hidden" onclick="go('settings')">⚙️</button>
+
 <!-- WELCOME SCREEN -->
 <div id="screen-welcome" class="screen active">
   <div style="min-height:100vh;background:linear-gradient(155deg,#1B5E20,#2E7D32,#43A047,#66BB6A);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;color:#fff">
@@ -263,7 +262,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 <!-- HOME -->
 <div id="screen-home" class="screen">
-  <div class="home-hero">
+  <div class="home-hero" style="position:relative">
+    <button onclick="go('settings')" style="position:absolute;top:10px;right:12px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.22);border:none;cursor:pointer;font-size:19px;display:flex;align-items:center;justify-content:center;color:#fff;z-index:10" title="Impostazioni">⚙️</button>
     <img src="logo-turtle.png" alt="" style="height:clamp(70px,22vw,110px);margin-bottom:4px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.25));display:block;margin-left:auto;margin-right:auto">
     <h2 id="home-greeting">Ciao!</h2><p id="home-phrase">Pronto per il tuo allenamento?</p>
     <div class="streak-chip">🔥 <span id="home-streak">0</span> giorni di fila!</div>
@@ -333,7 +333,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   <div class="tr-hdr">
     <button class="btn btn-o" style="padding:7px 12px;font-size:var(--fs-xs)" onclick="confirmQuit()">✕ Esci</button>
     <div style="font-size:var(--fs-xs);color:var(--tmid);font-weight:bold">🐢 TurboTartaruga</div>
-    <div id="tr-count" style="font-size:var(--fs-sm);font-weight:bold;color:var(--g1)">1/10</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div id="tr-count" style="font-size:var(--fs-sm);font-weight:bold;color:var(--g1)">1/10</div>
+      <button onclick="goSettingsFromTraining()" style="width:32px;height:32px;border-radius:50%;background:var(--bg2);border:none;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center" title="Impostazioni">⚙️</button>
+    </div>
   </div>
   <div style="padding:9px 13px 5px">
     <div style="display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--tlt);margin-bottom:4px"><span id="tr-prog-lbl">Esercizio 1 di 10</span><span id="tr-prog-pct">0%</span></div>
@@ -656,7 +659,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 <!-- SETTINGS -->
 <div id="screen-settings" class="screen">
-  <div class="hdr"><button class="hdr-back" onclick="go('home')">←</button><h1>⚙️ Impostazioni</h1></div>
+  <div class="hdr"><button class="hdr-back" onclick="goBackFromSettings()">←</button><h1>⚙️ Impostazioni</h1></div>
   <div class="scrollable">
     <span class="sec-title">👤 Profilo utente</span>
     <div class="sblk">
@@ -956,7 +959,11 @@ function restore(d){if(d.profile)P=d.profile;if(d.stats)S=d.stats;if(d.settings)
 </script>
 <script>
 // ═══ NAVIGATION & THEME ═══
+// Screen navigation with back-stack tracking
+let _prevScreen='home';
 function go(scr){
+  const curActive=document.querySelector('.screen.active');
+  _prevScreen=curActive?curActive.id.replace('screen-',''):'home';
   clearInterval(T.iv);clearInterval(restIv);clearInterval(transIv);
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const el=document.getElementById('screen-'+scr);if(el)el.classList.add('active');window.scrollTo(0,0);
@@ -964,6 +971,32 @@ function go(scr){
   else if(scr==='calendar'){const n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();buildCal();}
   else if(scr==='progress')buildProgress();else if(scr==='profile')buildProfile();
   else if(scr==='party')initParty();else if(scr==='settings')buildSettings();
+  // Keep back-button history in sync
+  history.pushState({screen:scr},'',location.pathname+'#'+scr);
+}
+function goSettingsFromTraining(){
+  // Pause timer silently, remember we came from training
+  T.paused=true;
+  const btn=document.getElementById('btn-pause');
+  if(btn)btn.textContent='▶️ Riprendi';
+  T._returnToTraining=true;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById('screen-settings');if(el)el.classList.add('active');window.scrollTo(0,0);
+  buildSettings();
+}
+function goBackFromSettings(){
+  if(T._returnToTraining){
+    T._returnToTraining=false;
+    // Return to training screen without clearing intervals
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    const el=document.getElementById('screen-training');if(el)el.classList.add('active');window.scrollTo(0,0);
+    // Show paused state clearly
+    const btn=document.getElementById('btn-pause');
+    if(btn)btn.textContent='▶️ Riprendi';
+    toast('⏸️ Sessione in pausa — premi Riprendi per continuare!');
+  } else {
+    go('home');
+  }
 }
 function go_scr(scr){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));const el=document.getElementById('screen-'+scr);if(el){el.classList.add('active');window.scrollTo(0,0);}}
 function applyTheme(){const th=SET.theme==='auto'?(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'):SET.theme;document.documentElement.setAttribute('data-theme',th)}
@@ -1958,18 +1991,65 @@ load();applyTheme();applyView();syncToggles();T.dur=12;
 if(P.name){
   if(!S.plan||S.plan.length===0)generatePlan();
   updateStreak();
-  const fabEl=document.getElementById('fab');
-  if(fabEl){
-    fabEl.classList.remove('fab-hidden');
-    fabEl.style.cssText='display:flex!important;visibility:visible!important;opacity:1!important';
-  }
-  // Extra: force repaint after 100ms for Android Chrome
-  setTimeout(()=>{
-    const f=document.getElementById('fab');
-    if(f){f.style.display='none';void f.offsetHeight;f.style.display='flex';}
-  },150);
+  // Settings button is now in home hero — no FAB needed
   go('home');
 }else go('welcome');
+
+// ═══ BACK BUTTON (Android + Browser) ═══
+const BACK_MSGS=[
+  'Vuoi davvero lasciare la tartaruga da sola? 🐢',
+  'Sicuro? La tartaruga stava proprio per partire! 🏃',
+  'Ehi, stai scappando? La tartaruga è più veloce! 😄',
+  'Aspetta — il divano può aspettare ancora un po\'! 🛋️',
+  'Sei sicuro/a? Mancava poco al traguardo! 🏆',
+];
+function getBackMsg(){return BACK_MSGS[Math.floor(Math.random()*BACK_MSGS.length)];}
+
+// Push initial state so back button has something to pop
+history.pushState({screen:'home'},'',location.pathname+'#home');
+
+window.addEventListener('popstate',(e)=>{
+  const active=document.querySelector('.screen.active');
+  const cur=active?active.id.replace('screen-',''):'home';
+  // If we're in training, pause and ask
+  if(cur==='training'||cur==='rest'||cur==='transition'){
+    history.pushState({screen:cur},'',location.pathname+'#'+cur);
+    if(!T.paused){T.paused=true;const b=document.getElementById('btn-pause');if(b)b.textContent='▶️ Riprendi';}
+    if(confirm(getBackMsg())){
+      clearInterval(T.iv);clearInterval(restIv);clearInterval(transIv);clearInterval(grIv);
+      T._returnToTraining=false;
+      go('home');
+    }
+    return;
+  }
+  // If we're on any screen other than home/welcome, go back to home
+  if(cur!=='home'&&cur!=='welcome'){
+    history.pushState({screen:cur},'',location.pathname+'#'+cur);
+    if(T._returnToTraining){
+      goBackFromSettings();
+    } else {
+      go('home');
+    }
+    return;
+  }
+  // On home screen — ask before closing app
+  history.pushState({screen:'home'},'',location.pathname+'#home');
+  if(confirm(getBackMsg()+'\\n\\n(Premi OK per uscire)')){
+    history.back();
+    // On PWA this closes the app, on browser goes to previous page
+  }
+});
+
+// Desktop/iOS: intercept page unload during training
+window.addEventListener('beforeunload',(e)=>{
+  const active=document.querySelector('.screen.active');
+  const cur=active?active.id.replace('screen-',''):'';
+  if(cur==='training'||cur==='rest'||cur==='transition'){
+    e.preventDefault();
+    e.returnValue=getBackMsg();
+    return e.returnValue;
+  }
+});
 
 // ═══ SERVICE WORKER + UPDATE ═══
 let swReg=null;
