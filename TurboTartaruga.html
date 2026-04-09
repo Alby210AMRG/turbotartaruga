@@ -76,7 +76,7 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 [data-theme="dark"] .rest-banner{background:linear-gradient(135deg,#0D2744,#163557)}
 .today-card{background:linear-gradient(135deg,var(--g4),var(--bg2));border-radius:var(--radius);padding:var(--pad);margin:0 13px 13px;box-shadow:var(--shadow)}
 .feeling-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px}
-.fbtn{padding:10px 6px;border-radius:13px;border:2.5px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;text-align:center;font-size:var(--fs-xs);font-weight:bold;transition:all .2s;font-family:var(--fb)}
+.fbtn{padding:10px 6px;border-radius:13px;border:3px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;text-align:center;font-size:var(--fs-xs);font-weight:bold;transition:all .2s;font-family:var(--fb)}
 .fbtn .fi{display:block;font-size:20px;margin-bottom:3px}
 .fbtn.sel{border-color:var(--g1);background:var(--g4)}.fbtn.tired.sel{border-color:var(--coral);background:#FFF3E0}
 [data-theme="dark"] .fbtn.sel{background:#1A3A1A}[data-theme="dark"] .fbtn.tired.sel{background:#3A1A0A}
@@ -184,6 +184,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(100px);background:#1C2B1C;color:#fff;padding:11px 20px;border-radius:100px;font-size:13px;z-index:9999;transition:transform .3s;white-space:nowrap;pointer-events:none;max-width:90vw}
 [data-theme="dark"] .toast{background:#E8F5E9;color:#1C2B1C}.toast.show{transform:translateX(-50%) translateY(0)}
 .fab{position:fixed;bottom:20px;right:20px;width:48px;height:48px;background:var(--g1);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:21px;box-shadow:0 4px 16px rgba(67,160,71,.4);cursor:pointer;z-index:200;border:none}
+.fab-hidden{display:none!important}
 .ob-hero{background:linear-gradient(155deg,#2E7D32,#43A047,#66BB6A);padding:32px 20px 26px;text-align:center;color:#fff}
 .ob-hero h1{font-family:var(--ft);font-size:26px;margin-bottom:4px}
 @keyframes bnc{from{transform:translateY(0)}to{transform:translateY(-14px)}}
@@ -191,7 +192,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 </head>
 <body>
 <div id="toast" class="toast"></div>
-<button id="fab" class="fab" onclick="go('settings')" style="display:none">⚙️</button>
+<button id="fab" class="fab fab-hidden" onclick="go('settings')">⚙️</button>
 <!-- WELCOME SCREEN -->
 <div id="screen-welcome" class="screen active">
   <div style="min-height:100vh;background:linear-gradient(155deg,#1B5E20,#2E7D32,#43A047,#66BB6A);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 24px;color:#fff">
@@ -294,7 +295,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <div style="font-size:var(--fs-xs);color:var(--tmid);margin-bottom:8px">💬 Va benissimo! Come preferisci?</div>
         <div style="display:flex;gap:8px">
           <button onclick="doVolRest('mini')" class="btn btn-s" style="flex:1;font-size:var(--fs-xs);padding:10px">🤸 Mini 5min</button>
-          <button onclick="doVolRest('riposo')" class="btn" style="flex:1;font-size:var(--fs-xs);padding:10px;background:var(--bg2);color:var(--tmid);border:none">😴 Riposo completo</button>
+          <button onclick="doVolRest('riposo')" class="btn" style="flex:1;font-size:var(--fs-xs);padding:10px;background:var(--bg2);color:var(--tmid);border:3px solid var(--bdr)">😴 Riposo completo</button>
         </div>
         <p style="font-size:10px;color:var(--tlt);margin-top:6px;text-align:center">Riposo volontario → streak preservato 🐢</p>
       </div>
@@ -783,6 +784,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <span class="sec-title">ℹ️ Info</span>
     <div class="sblk">
       <div class="srow"><div class="si">🐢</div><div class="sinfo"><div class="stitle">TurboTartaruga</div><div class="sval">Versione 0.5 · Build offline · Dati locali</div></div></div>
+      <div class="srow"><div class="si">🔄</div><div class="sinfo"><div class="stitle">Aggiornamento</div><div class="sval" id="update-status">Tocca per verificare</div></div>
+        <button onclick="checkForUpdate()" id="btn-update" style="background:var(--b1);color:#fff;border:none;border-radius:100px;padding:7px 12px;font-size:var(--fs-xs);font-weight:bold;cursor:pointer;white-space:nowrap">🔄 Verifica</button>
+      </div>
       <div class="srow"><div class="si">❤️</div><div class="sinfo"><div class="stitle">Crediti</div><div class="sval">Ideato e fatto da Alby con l'aiuto del grande Claude 🤖✨</div></div></div>
       <div class="srow"><div class="si">⚠️</div><div class="sinfo"><div class="stitle">Cambia utente</div><div class="sval">Azzera profilo e progressi</div></div><button onclick="changeUser()" style="background:#FFEBEE;color:#C62828;border:none;border-radius:100px;padding:7px 12px;font-size:var(--fs-xs);font-weight:bold;cursor:pointer">Reset</button></div>
     </div>
@@ -1080,8 +1084,25 @@ function setFeeling(el){
   document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');
   T.feeling=el.dataset.f;
   const stancoOpts=document.getElementById('stanco-opts');
-  if(T.feeling==='stanco'){stancoOpts.style.display='block';document.getElementById('btn-start').style.display='none';}
-  else{stancoOpts.style.display='none';document.getElementById('btn-start').style.display='flex';}
+  const btnStart=document.getElementById('btn-start');
+  const tp=getTodayPlan();
+  const isRest=tp.type==='rest';
+  if(T.feeling==='stanco'){
+    stancoOpts.style.display='block';
+    if(btnStart)btnStart.style.display='none';
+  } else if(T.feeling==='piano'&&isRest){
+    // Rest day + "segui piano" → keep button hidden
+    stancoOpts.style.display='none';
+    if(btnStart)btnStart.style.display='none';
+  } else {
+    // Any specific category chosen (even on rest day) → allow session
+    stancoOpts.style.display='none';
+    if(btnStart){
+      btnStart.style.display='flex';
+      // Show bonus note on rest days
+      btnStart.textContent=isRest?'▶️ Sessione bonus (giorno di riposo)':'▶️ Inizia sessione';
+    }
+  }
 }
 function doVolRest(type){
   const today=new Date().toISOString().slice(0,10);
@@ -1937,26 +1958,79 @@ load();applyTheme();applyView();syncToggles();T.dur=12;
 if(P.name){
   if(!S.plan||S.plan.length===0)generatePlan();
   updateStreak();
-  document.getElementById('fab').style.display='flex';
+  const fabEl=document.getElementById('fab');if(fabEl){fabEl.classList.remove('fab-hidden');fabEl.style.display='flex';}
   go('home');
 }else go('welcome');
 
 // ═══ SERVICE WORKER + UPDATE ═══
+let swReg=null;
+function checkForUpdate(){
+  const btn=document.getElementById('btn-update');
+  const status=document.getElementById('update-status');
+  if(btn)btn.textContent='⏳ Controllo...';
+  if(status)status.textContent='Controllo in corso...';
+  if(!swReg){
+    if(btn)btn.textContent='🔄 Verifica';
+    if(status)status.textContent='Service Worker non disponibile (sei offline o su file://)';
+    return;
+  }
+  swReg.update().then(()=>{
+    const waiting=swReg.waiting;
+    const installing=swReg.installing;
+    if(waiting){
+      if(status)status.textContent='🆕 Aggiornamento pronto! Ricarica la pagina.';
+      if(btn){btn.textContent='↺ Ricarica';btn.onclick=()=>location.reload(true);}
+      // Tell SW to skip waiting
+      waiting.postMessage('skipWaiting');
+      setTimeout(()=>location.reload(true),800);
+    } else if(installing){
+      if(status)status.textContent='⬇️ Download aggiornamento in corso...';
+      if(btn)btn.textContent='⏳';
+      installing.addEventListener('statechange',()=>{
+        if(installing.state==='installed'){
+          if(status)status.textContent='✅ Aggiornamento scaricato! Ricarica.';
+          if(btn){btn.textContent='↺ Ricarica';btn.onclick=()=>location.reload(true);}
+          setTimeout(()=>location.reload(true),800);
+        }
+      });
+    } else {
+      if(status)status.textContent='✅ Sei già all\'ultima versione!';
+      if(btn)btn.textContent='✅ Ok';
+      setTimeout(()=>{if(btn)btn.textContent='🔄 Verifica';if(status)status.textContent='Tocca per verificare';},3000);
+    }
+  }).catch(()=>{
+    if(status)status.textContent='⚠️ Errore — controlla la connessione.';
+    if(btn)btn.textContent='🔄 Verifica';
+  });
+}
+
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js')
+  // Force update check on every page load
+  navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'})
     .then(reg=>{
-      // Ascolta aggiornamenti disponibili
+      swReg=reg;
+      // Check for updates immediately
+      reg.update();
+      // Listen for new SW found
       reg.addEventListener('updatefound',()=>{
         const nw=reg.installing;
+        if(!nw)return;
         nw.addEventListener('statechange',()=>{
           if(nw.state==='installed'&&navigator.serviceWorker.controller){
-            // Nuova versione disponibile — mostra notifica
-            toast('🆕 Nuova versione disponibile! Ricarica per aggiornare.',6000);
+            // New version is ready
+            toast('🆕 Nuova versione disponibile! Vai in Impostazioni → Verifica aggiornamento.',8000);
+            const status=document.getElementById('update-status');
+            if(status)status.textContent='🆕 Aggiornamento disponibile!';
           }
         });
       });
+      // Detect controller change (SW activated) → reload
+      let refreshing=false;
+      navigator.serviceWorker.addEventListener('controllerchange',()=>{
+        if(!refreshing){refreshing=true;location.reload(true);}
+      });
     })
-    .catch(()=>{/* Silently fail se offline o file:// */});
+    .catch(()=>{/* Silently fail on file:// */});
 }
 </script>
 </body>
