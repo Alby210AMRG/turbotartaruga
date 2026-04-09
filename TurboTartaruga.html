@@ -1760,7 +1760,21 @@ function buildSettings(){
   syncToggles();
   // Update version display
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.5 · 09/04/2026 12:51<=99,fmt:v=>v+' anni',lbl:'Età'},weight:{v:v=>v>=30&&v<=300,fmt:v=>v+' kg',lbl:'Peso'},height:{v:v=>v>=100&&v<=220,fmt:v=>v+' cm',lbl:'Altezza'}}[f];
+  if(vdisp)vdisp.textContent='Versione v0.5 · 09/04/2026 17:24';
+  // Update exercise count label only — list stays collapsed until user clicks
+  const lbl=document.getElementById('ex-count-lbl');
+  if(lbl)lbl.textContent=`${DB.length} esercizi in 8 categorie`;
+  // Reset list to collapsed state each time settings opens
+  exListVisible=false;
+  const wrap=document.getElementById('ex-list-wrap');
+  if(wrap)wrap.style.display='none';
+  const btn=document.getElementById('ex-toggle-btn');
+  if(btn)btn.textContent='▼ Mostra';
+}
+function saveField(f){
+  const raw=(document.getElementById('fld-'+f).value||'').trim();
+  if(!raw){toast('⚠️ Campo vuoto!');return}
+  const cfg={name:{v:v=>v.length>0&&v.length<=30,fmt:v=>v,lbl:'Nome'},age:{v:v=>v>=10&&v<=99,fmt:v=>v+' anni',lbl:'Età'},weight:{v:v=>v>=30&&v<=300,fmt:v=>v+' kg',lbl:'Peso'},height:{v:v=>v>=100&&v<=220,fmt:v=>v+' cm',lbl:'Altezza'}}[f];
   if(!cfg)return;
   let val;if(f==='name')val=raw;else{val=parseInt(raw);if(isNaN(val)||!cfg.v(val)){toast('⚠️ Valore non valido!');return}}
   if(f!=='name'&&!cfg.v(val)){toast('⚠️ Valore non valido!');return}
@@ -1839,6 +1853,22 @@ function toggleAvoidList(id,btn){
   else{P.favorites=(P.favorites||[]).filter(x=>x!==id);P.avoided.push(id);btn.style.opacity='1';toast('🚫 Esercizio escluso!');}
   save();
 }
+function toggleStCat(el){el.classList.toggle('sel');const ck=el.querySelector('.mchk-check');if(ck)ck.textContent=el.classList.contains('sel')?'✓':'';const cats=[...document.querySelectorAll('#st-cats .mchk.sel')].map(e=>e.dataset.cat);P.categories=cats;save()}
+function saveRestDays(){const rd=[...document.querySelectorAll('#st-restdays .day-btn.sel')].map(e=>parseInt(e.dataset.dow));P.restDays=rd;save();toast('✅ Giorni di riposo salvati!')}
+function toggleNoFloor(){const el=document.getElementById('st-nofloor');if(el)el.classList.toggle('on');P.noFloor=document.getElementById('st-nofloor').classList.contains('on');save()}
+function updPauseSt(v){document.getElementById('st-pause-disp').textContent=v+'s';document.getElementById('st-pause-range').style.setProperty('--pct',((v-5)/55*100).toFixed(1)+'%')}
+function updGoalSt(v){document.getElementById('st-goal-disp').textContent=v;document.getElementById('st-goal-range').style.setProperty('--pct',((v-10)/355*100).toFixed(1)+'%')}
+function savePause(){SET.pauseSec=parseInt(document.getElementById('st-pause-range').value)||20;save();toast('✅ Pausa salvata: '+SET.pauseSec+' secondi')}
+function saveGoal(){P.goal=parseInt(document.getElementById('st-goal-range').value)||90;save();toast('✅ Obiettivo salvato!')}
+function selTheme(el){document.querySelectorAll('.th-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');SET.theme=el.dataset.th;save();applyTheme()}
+function selView(el){document.querySelectorAll('.vw-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');SET.viewScale=el.dataset.vs;save();applyView()}
+function changeUser(){if(!confirm('Vuoi davvero azzerare tutto?'))return;P={};S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[]};save();go('onboarding')}
+function startEdit(f){['val-','inp-','ebt-'].forEach((pfx,i)=>{const el=document.getElementById(pfx+f);if(el)el.style.display=i===1?'block':i===2?'none':'none'});const fld=document.getElementById('fld-'+f);if(fld){fld.value=P[f]||'';fld.focus()}}
+function cancelEdit(f){['val-','inp-','ebt-'].forEach((pfx,i)=>{const el=document.getElementById(pfx+f);if(el)el.style.display=i===1?'none':'block'})}
+function toggleFavList(id,btn){if(!P.favorites)P.favorites=[];const i=P.favorites.indexOf(id);if(i>=0){P.favorites.splice(i,1);btn.style.opacity='0.3';toast('⭐ Rimosso dai preferiti');}else{P.avoided=(P.avoided||[]).filter(x=>x!==id);P.favorites.push(id);btn.style.opacity='1';toast('⭐ Aggiunto ai preferiti!');}save()}
+function toggleAvoidList(id,btn){if(!P.avoided)P.avoided=[];const i=P.avoided.indexOf(id);if(i>=0){P.avoided.splice(i,1);btn.style.opacity='0.3';toast('🚫 Rimosso da "non mi piace"');}else{P.favorites=(P.favorites||[]).filter(x=>x!==id);P.avoided.push(id);btn.style.opacity='1';toast('🚫 Esercizio escluso!');}save()}
+function updFavSt(v){document.getElementById('st-fav-disp').textContent=v}
+function saveFavCount(){P.favCount=parseInt(document.getElementById('st-fav-range').value);save();const msg=P.favCount===0?'Preferiti disattivati nelle sessioni':'Fino a '+P.favCount+' preferiti per sessione';toast('✅ '+msg)}
 function exportJSON(){const d=bkData();const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`turbotartaruga-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);toast('✅ File JSON esportato!')}
 function importJSON(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!d.v||!d.profile){toast('⚠️ File non valido!');return}restore(d)}catch{toast('⚠️ Errore lettura file!')}};r.readAsText(f)}
 function importJSONWelcome(ev){
@@ -2081,7 +2111,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604091251'; // auto-set on each release
+const APP_BUILD='202604091724'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
