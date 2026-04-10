@@ -25,6 +25,7 @@
 }
 [data-theme="dark"]{--bg:#0D1A0D;--bg2:#0F200F;--card:#162316;--text:#E8F5E9;--tmid:#A5C8A5;--tlt:#4a6a4a;--bdr:#2A4A2A;--shadow:0 4px 20px rgba(0,0,0,.35)}
 body.v2x{--fs:17px;--fs-sm:14px;--fs-xs:13px;--fs-lg:19px;--timer:108px;--icon:36px;--pad:22px}
+body.v2x #home-phrase{font-size:18px!important}
 body.v2x .tcontrols{padding:0 13px 16px;gap:10px}
 body.v2x .tcontrols .btn{font-size:16px!important;padding:15px 20px!important;min-height:54px}
 body.v2x .tr-hdr button{font-size:14px!important;padding:9px 14px!important}
@@ -80,7 +81,8 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 [data-theme="dark"] .rest-banner{background:linear-gradient(135deg,#0D2744,#163557)}
 .today-card{background:linear-gradient(135deg,var(--g4),var(--bg2));border-radius:var(--radius);padding:var(--pad);margin:0 13px 13px;box-shadow:var(--shadow)}
 .feeling-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px}
-.fbtn{padding:10px 6px;border-radius:13px;border:3px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;text-align:center;font-size:var(--fs-xs);font-weight:bold;transition:all .2s;font-family:var(--fb)}
+.fbtn{padding:8px 4px;border-radius:13px;border:3px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;text-align:center;font-size:var(--fs-xs);font-weight:bold;transition:all .2s;font-family:var(--fb)}
+.fbtn-sub{padding:7px 4px;font-size:11px;border-width:2px}
 .fbtn .fi{display:block;font-size:20px;margin-bottom:3px}
 .fbtn.sel{border-color:var(--g1);background:var(--g4)}.fbtn.tired.sel{border-color:var(--coral);background:#FFF3E0}
 [data-theme="dark"] .fbtn.sel{background:#1A3A1A}[data-theme="dark"] .fbtn.tired.sel{background:#3A1A0A}
@@ -121,15 +123,15 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 .cal-ghdr{display:grid;grid-template-columns:repeat(7,1fr);padding:0 10px}
 .cal-dh{text-align:center;font-size:10px;font-weight:bold;color:var(--tlt);padding:2px 0}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;padding:0 10px 10px}
-.cd{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
-.cd-num{font-size:10px;font-weight:bold;line-height:1}.cd-ico{font-size:13px;line-height:1}
+.cd{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;min-height:42px}
+.cd-num{font-size:9px;font-weight:bold;line-height:1;color:var(--tlt)}.cd-ico{font-size:20px;line-height:1}
 .cd.rest{background:var(--bg2);color:var(--tlt)}.cd.workout{background:var(--g4);color:var(--g1)}
 .cd.oriental{background:var(--b3);color:#0D47A1}.cd.stretching{background:#E8F4FD;color:#0277BD}
 [data-theme="dark"] .cd.stretching{background:#0D2744;color:#90CAF9}
 .cd.core{background:#FFF3E0;color:#E65100}[data-theme="dark"] .cd.core{background:#2A1A00;color:#FFB74D}
 .cd.party{background:#F9FBE7;color:#827717}[data-theme="dark"] .cd.party{background:#2A2A00;color:#E6D700}
 .cd.vol_rest{background:#FCE4EC;color:#880E4F}[data-theme="dark"] .cd.vol_rest{background:#2A0A14;color:#F48FB1}
-.cd.done{outline:2.5px solid #FFD700;outline-offset:1px}.cd.today{outline:2.5px solid var(--g1);outline-offset:1px}
+.cd.done{outline:2.5px solid #FFD700;outline-offset:1px}.cd.done .cd-num{font-size:8px}.cd.today{outline:2.5px solid var(--g1);outline-offset:1px}
 .cd.future{opacity:.35}.cd.empty{background:transparent}
 .cal-legend{display:flex;flex-wrap:wrap;gap:6px;padding:6px 13px 10px}
 .leg-it{display:flex;align-items:center;gap:4px;font-size:var(--fs-xs);color:var(--tmid)}
@@ -221,6 +223,50 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       </label>
     </div>
     <p style="font-size:11px;opacity:.55;margin-top:16px">Ci vogliono 2 minuti · Dati salvati solo sul tuo dispositivo 🔒</p>
+    <button onclick="showInstallGuide()" style="margin-top:12px;background:none;border:1px solid rgba(255,255,255,.35);color:rgba(255,255,255,.7);border-radius:100px;padding:8px 18px;font-size:12px;cursor:pointer">
+      📲 Come installare l'app
+    </button>
+
+    <!-- Install guide modal -->
+    <div id="install-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;overflow-y:auto;padding:20px">
+      <div style="background:#fff;border-radius:20px;padding:24px;max-width:360px;margin:auto;position:relative">
+        <button onclick="document.getElementById('install-modal').style.display='none'"
+          style="position:absolute;top:14px;right:14px;background:#f0f0f0;border:none;border-radius:50%;width:32px;height:32px;font-size:16px;cursor:pointer">✕</button>
+        <h2 style="font-family:var(--ft);color:#1B5E20;margin-bottom:16px;font-size:18px">📲 Installa TurboTartaruga</h2>
+
+        <div style="background:#E8F5E9;border-radius:12px;padding:14px;margin-bottom:12px">
+          <div style="font-weight:bold;color:#1B5E20;margin-bottom:8px;font-size:14px">🤖 Android</div>
+          <div style="font-size:13px;color:#333;line-height:1.6">
+            1. Apri l'app in <strong>Chrome</strong><br>
+            2. Tocca menu <strong>⋮</strong> in alto a destra<br>
+            3. Tocca <strong>"Aggiungi alla schermata Home"</strong><br>
+            4. Conferma — l'icona appare sul desktop!
+          </div>
+        </div>
+
+        <div style="background:#E3F2FD;border-radius:12px;padding:14px;margin-bottom:12px">
+          <div style="font-weight:bold;color:#0D47A1;margin-bottom:8px;font-size:14px">🍎 iPhone / iPad</div>
+          <div style="font-size:13px;color:#333;line-height:1.6">
+            1. Apri l'app in <strong>Safari</strong> (non Chrome!)<br>
+            2. Tocca il tasto <strong>Condividi</strong> (quadrato con freccia ↑)<br>
+            3. Scorri e tocca <strong>"Aggiungi alla schermata Home"</strong><br>
+            4. Conferma — l'icona appare sul desktop!
+          </div>
+        </div>
+
+        <div style="background:#F3E5F5;border-radius:12px;padding:14px;margin-bottom:16px">
+          <div style="font-weight:bold;color:#4A148C;margin-bottom:8px;font-size:14px">💻 PC / Mac</div>
+          <div style="font-size:13px;color:#333;line-height:1.6">
+            Apri l'URL in Chrome o Edge. Nella barra indirizzi vedrai l'icona <strong>⊕ Installa</strong> — cliccala per aggiungere l'app al desktop come programma separato.
+          </div>
+        </div>
+
+        <div style="background:#FFF9C4;border-radius:10px;padding:10px;font-size:12px;color:#555;line-height:1.5">
+          🔗 <strong>URL app:</strong><br>
+          <span id="install-url" style="font-family:monospace;font-size:11px;word-break:break-all;color:#1B5E20"></span>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -230,6 +276,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   <div style="padding:18px 13px" class="scrollable">
     <div class="fg"><label>👤 Nome</label><input type="text" id="ob-name" placeholder="Es. Mario" maxlength="30" autocomplete="off"></div>
     <div class="fg"><label>🎂 Età</label><input type="number" id="ob-age" placeholder="Es. 45" min="10" max="99"></div>
+    <div class="fg"><label>🧬 Sesso biologico</label>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button type="button" class="sex-btn sel" data-sex="M" onclick="selSex(this)" style="flex:1;padding:10px;border-radius:12px;border:2px solid var(--g1);background:var(--g4);color:var(--g1);font-weight:bold;cursor:pointer">👨 Uomo</button>
+        <button type="button" class="sex-btn" data-sex="F" onclick="selSex(this)" style="flex:1;padding:10px;border-radius:12px;border:2px solid var(--bdr);background:var(--card);color:var(--text);font-weight:bold;cursor:pointer">👩 Donna</button>
+      </div>
+    </div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
       <div class="fg"><label>⚖️ Peso (kg)</label><input type="number" id="ob-weight" placeholder="Es. 70"></div>
       <div class="fg"><label>📏 Altezza (cm)</label><input type="number" id="ob-height" placeholder="Es. 170"></div>
@@ -283,7 +335,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   <div class="home-hero" style="position:relative">
     <button onclick="go('settings')" style="position:absolute;top:10px;right:12px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.22);border:none;cursor:pointer;font-size:19px;display:flex;align-items:center;justify-content:center;color:#fff;z-index:10" title="Impostazioni">⚙️</button>
     <img src="logo-turtle.png" alt="" style="width:min(72vw,280px);max-height:160px;object-fit:contain;object-position:center bottom;margin-bottom:4px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.25));display:block;margin-left:auto;margin-right:auto">
-    <h2 id="home-greeting">Ciao!</h2><p id="home-phrase">Pronto per il tuo allenamento?</p>
+    <h2 id="home-greeting">Ciao!</h2><p id="home-phrase" style="font-size:15px;font-weight:600;opacity:1;line-height:1.5;margin-top:4px;text-shadow:0 1px 3px rgba(0,0,0,.15);font-style:italic">Pronto per il tuo allenamento?</p>
     <div class="streak-chip">🔥 <span id="home-streak">0</span> giorni di fila!</div>
   </div>
   <div id="rest-banner" class="rest-banner" style="display:none">
@@ -301,13 +353,28 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div style="font-size:var(--fs-xs);color:var(--tmid);margin-top:2px" id="today-sub">Rafforza le gambe e i glutei!</div>
     <div style="clear:both;margin-top:11px">
       <div style="font-size:var(--fs-xs);font-weight:bold;color:var(--tmid);margin-bottom:7px">🌟 Come ti senti oggi?</div>
-      <div class="feeling-grid" id="feeling-grid">
-        <button class="fbtn sel" data-f="piano" onclick="setFeeling(this)"><span class="fi">🌈</span>Segui piano</button>
-        <button class="fbtn" data-f="gambe" onclick="setFeeling(this)"><span class="fi">🦵</span>Gambe</button>
-        <button class="fbtn" data-f="braccia" onclick="setFeeling(this)"><span class="fi">💪</span>Braccia</button>
-        <button class="fbtn" data-f="core" onclick="setFeeling(this)"><span class="fi">🎯</span>Core</button>
-        <button class="fbtn" data-f="stretching" onclick="setFeeling(this)"><span class="fi">🤸</span>Stretch</button>
-        <button class="fbtn tired" data-f="stanco" onclick="setFeeling(this)"><span class="fi">😴</span>Stanco</button>
+      <!-- 3 big feeling buttons -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px" id="feeling-grid">
+        <button class="fbtn sel" data-f="piano" onclick="setFeeling(this)" style="padding:12px 6px">
+          <span class="fi">🌈</span>Segui piano
+        </button>
+        <button class="fbtn" data-f="__scelgo__" onclick="toggleScelgo(this)" style="padding:12px 6px">
+          <span class="fi">🕹️</span>Scelgo io!
+        </button>
+        <button class="fbtn tired" data-f="stanco" onclick="setFeeling(this)" style="padding:12px 6px">
+          <span class="fi">😴</span>Stanco
+        </button>
+      </div>
+      <!-- Sub-menu "Scelgo io!" (hidden by default) -->
+      <div id="scelgo-grid" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;animation:fadeIn .2s">
+        <button class="fbtn fbtn-sub" data-f="gambe" onclick="setScelgoFeeling(this)"><span class="fi">🦵</span>Gambe</button>
+        <button class="fbtn fbtn-sub" data-f="braccia" onclick="setScelgoFeeling(this)"><span class="fi">💪</span>Braccia</button>
+        <button class="fbtn fbtn-sub" data-f="core" onclick="setScelgoFeeling(this)"><span class="fi">🎯</span>Core</button>
+        <button class="fbtn fbtn-sub" data-f="stretching" onclick="setScelgoFeeling(this)"><span class="fi">🤸</span>Stretch</button>
+        <button class="fbtn fbtn-sub" data-f="orientale" onclick="setScelgoFeeling(this)"><span class="fi">🧘</span>Orientale</button>
+        <button class="fbtn fbtn-sub" data-f="seduto" onclick="setScelgoFeeling(this)"><span class="fi">🪑</span>Seduto</button>
+        <button class="fbtn fbtn-sub" data-f="misto" onclick="setScelgoFeeling(this)"><span class="fi">🌈</span>Misto</button>
+        <button class="fbtn fbtn-sub" data-f="misto_plus" onclick="setScelgoFeeling(this)"><span class="fi">🪑💪</span>Misto+</button>
       </div>
       <div id="stanco-opts" style="display:none;margin-top:9px">
         <div style="font-size:var(--fs-xs);color:var(--tmid);margin-bottom:8px">💬 Va benissimo! Come preferisci?</div>
@@ -559,9 +626,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div style="font-size:var(--fs-xs);color:var(--tmid);margin-bottom:5px" id="prf-xp-lbl">0 XP</div>
       <div class="xp-bar"><div id="prf-xp-fill" class="xp-fill" style="width:0%"></div></div>
     </div>
-    <div class="card"><div class="card-title">🥚 Tartarughina <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv1-prog">(0/6)</span></div><div class="badges-grid" id="badges-lv1"></div></div>
-    <div class="card"><div class="card-title">🐢 Tartaruga <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv2-prog">(0/7)</span></div><div class="badges-grid" id="badges-lv2"></div></div>
-    <div class="card"><div class="card-title">🚀 TurboTartaruga <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv3-prog">(0/6)</span></div><div class="badges-grid" id="badges-lv3"></div></div>
+    <div class="card"><div class="card-title">🥚 Tartarughina <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv1-prog">(0/9)</span></div><div class="badges-grid" id="badges-lv1"></div></div>
+    <div class="card"><div class="card-title">🐢 Tartaruga <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv2-prog">(0/11)</span></div><div class="badges-grid" id="badges-lv2"></div></div>
+    <div class="card"><div class="card-title">🚀 TurboTartaruga <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv3-prog">(0/9)</span></div><div class="badges-grid" id="badges-lv3"></div></div>
   </div>
 </div>
 
@@ -685,6 +752,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div class="srow"><div class="si">🎂</div><div class="sinfo"><div class="stitle">Età</div><div class="sval" id="val-age">-</div><div id="inp-age" style="display:none"><input type="number" class="sinp" id="fld-age" min="10" max="99"><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-p" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="saveField('age')">✅</button><button class="btn btn-o" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="cancelEdit('age')">✕</button></div></div></div><button class="sedit" id="ebt-age" onclick="startEdit('age')">✏️</button></div>
       <div class="srow"><div class="si">⚖️</div><div class="sinfo"><div class="stitle">Peso</div><div class="sval" id="val-weight">-</div><div id="inp-weight" style="display:none"><input type="number" class="sinp" id="fld-weight" min="30" max="300"><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-p" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="saveField('weight')">✅</button><button class="btn btn-o" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="cancelEdit('weight')">✕</button></div></div></div><button class="sedit" id="ebt-weight" onclick="startEdit('weight')">✏️</button></div>
       <div class="srow"><div class="si">📏</div><div class="sinfo"><div class="stitle">Altezza</div><div class="sval" id="val-height">-</div><div id="inp-height" style="display:none"><input type="number" class="sinp" id="fld-height" min="100" max="220"><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-p" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="saveField('height')">✅</button><button class="btn btn-o" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="cancelEdit('height')">✕</button></div></div></div><button class="sedit" id="ebt-height" onclick="startEdit('height')">✏️</button></div>
+      <div class="srow" id="st-bmi-row" style="display:none"><div class="si">📊</div><div class="sinfo"><div class="stitle">Il tuo profilo</div><div class="sval" id="st-bmi-val">-</div></div></div>
+      <div class="srow"><div class="si">🧬</div><div class="sinfo"><div class="stitle">Sesso biologico</div><div class="sval" id="val-sex">-</div></div>
+        <div style="display:flex;gap:6px">
+          <button onclick="setSexSetting('M')" id="sex-btn-m" style="padding:6px 10px;border-radius:100px;border:2px solid var(--bdr);background:var(--card);font-size:12px;cursor:pointer;font-weight:bold">👨</button>
+          <button onclick="setSexSetting('F')" id="sex-btn-f" style="padding:6px 10px;border-radius:100px;border:2px solid var(--bdr);background:var(--card);font-size:12px;cursor:pointer;font-weight:bold">👩</button>
+        </div>
+      </div>
       <div class="srow"><div class="si">⚡</div><div class="sinfo"><div class="stitle">Livello</div></div>
         <select id="st-level" onchange="saveSelectF('level',this.value)" style="border:2px solid var(--bdr);border-radius:100px;padding:6px 10px;font-size:var(--fs-xs);font-weight:bold;background:var(--card);color:var(--text);cursor:pointer;outline:none"><option value="principiante">🌱 Principiante</option><option value="intermedio">🔥 Intermedio</option></select></div>
       <div class="srow"><div class="si">🚫</div><div class="sinfo"><div class="stitle">Evita esercizi a terra</div><div class="sval">Esclude esercizi che richiedono di sdraiarsi</div></div><button class="toggle" id="st-nofloor" onclick="toggleNoFloor()"></button></div>
@@ -912,7 +986,30 @@ const CAT_INFO={
   stanco_mini:{label:'Mini sessione',icon:'🤸',cls:'stretching'},
 };
 const DUR_CFG={10:{cnt:8,a:45,r:30},12:{cnt:10,a:45,r:27},15:{cnt:12,a:50,r:25}};
-const PHRASES=['Ogni passo conta! 🐢','Lento ma costante vince la gara! 💪','Oggi è il giorno giusto! ✨','La tua salute ti ringrazia! 🌿','Sei più forte di ieri! 🌟','Il movimento è vita! 🎉','Un piccolo passo, grande cambiamento! 🚀'];
+const PHRASES=[
+  "Lento ma costante vince la gara! 🐢",
+  "Ogni passo conta! 💪",
+  "Sei più forte di ieri! 🌟",
+  "Il movimento è vita! 🎉",
+  "La tua salute ti ringrazia! 🌿",
+  "Un piccolo passo, grande cambiamento! 🚀",
+  "Non fermarti — la tartaruga non si arrende! 🐢",
+  "Oggi è il giorno giusto! ✨",
+  "Il corpo raggiunge ciò che la mente crede. 🧠",
+  "Ogni allenamento ti avvicina alla versione migliore di te. ⚡",
+  "Il dolore di oggi è la forza di domani. 💥",
+  "Non è necessario essere veloci — basta non fermarsi. 🏃",
+  "Prenditi cura del tuo corpo: è l'unico posto dove devi vivere. 🏠",
+  "La disciplina è il ponte tra obiettivi e risultati. 🌉",
+  "Chi si allena oggi dorme meglio stanotte. 😴",
+  "Il segreto? Iniziare. 🔑",
+  "Muoviti un po' ogni giorno — il tuo futuro sé ti ringrazierà. 🙏",
+  "L'esercizio fisico è la medicina più economica al mondo. 💊",
+  "Non contare i giorni — fai contare i giorni. 📅",
+  "La costanza batte il talento quando il talento non si allena. 🔁",
+  "Ogni sessione completata è una vittoria. 🏆",
+  "Inizia dove sei, usa quello che hai. 🌱",
+];
 const PARTY_EX=[
   {id:'p1',n:'Plank di gruppo',desc:'Tutti in posizione plank sulle ginocchia. Chi tiene più a lungo vince! Schiena dritta.',img:'p1.png',dur:60},
   {id:'p2',n:'Squat sincronizzati',desc:'Tutti scendono e salgono insieme. Chi perde il ritmo è eliminato! Contiamo insieme.',img:'p2.png',dur:45},
@@ -934,25 +1031,38 @@ const PARTY_EX=[
 PARTY_EX.forEach(p=>{if(!DB.find(e=>e.id===p.id))DB.push({...p,cat:'party',t:'🎉 Party',zona:'🎉 Sfida di gruppo',floor:false})});
 const CHALLENGES=PARTY_EX;
 const BADGES=[
-  {id:'first', icon:'🐣',name:'Primo passo',  lv:1,hint:'1ª sessione',   fn:s=>s.tot>=1},
-  {id:'in_moto',icon:'🚶',name:'In moto!',    lv:1,hint:'3 sessioni',    fn:s=>s.tot>=3},
-  {id:'abitud',icon:'🌱',name:'Abitudine',    lv:1,hint:'5 sessioni',    fn:s=>s.tot>=5},
-  {id:'tris',  icon:'3️⃣', name:'Tris!',        lv:1,hint:'3 gg di fila', fn:s=>s.str>=3},
-  {id:'zen0',  icon:'🌬️',name:'Zen beginner', lv:1,hint:'1 orientale',  fn:s=>s.ori>=1},
-  {id:'party0',icon:'🎊',name:'Party starter', lv:1,hint:'1 party',      fn:s=>s.party>=1},
-  {id:'sett',  icon:'🔥',name:'Una settimana!',lv:2,hint:'7 gg di fila', fn:s=>s.str>=7},
-  {id:'vet',   icon:'💪',name:'Veterano',      lv:2,hint:'10 sessioni',  fn:s=>s.tot>=10},
-  {id:'venti', icon:'2️⃣0️⃣',name:'Venti!',      lv:2,hint:'20 sessioni',  fn:s=>s.tot>=20},
-  {id:'zen1',  icon:'🧘',name:'Zen intermedio',lv:2,hint:'5 orientali',  fn:s=>s.ori>=5},
-  {id:'party1',icon:'🎉',name:'Party animal',  lv:2,hint:'3 party',      fn:s=>s.party>=3},
-  {id:'goal25',icon:'🎯',name:'Primo quarto',  lv:2,hint:'25% goal',     fn:(s,p)=>p.goal>0&&s.tot>=(p.goal*.25)},
-  {id:'mix1',  icon:'🔀',name:'Multi-sport',   lv:2,hint:'5 cat. diverse',fn:s=>(s.catSet||[]).length>=5},
-  {id:'fuoco', icon:'🌋',name:'Mese di fuoco', lv:3,hint:'30 gg di fila', fn:s=>s.str>=30},
-  {id:'cinq',  icon:'5️⃣0️⃣',name:'Cinquanta!',  lv:3,hint:'50 sessioni',  fn:s=>s.tot>=50},
-  {id:'zen2',  icon:'🎋',name:'Maestro Zen',   lv:3,hint:'10 orientali',  fn:s=>s.ori>=10},
-  {id:'goal50',icon:'🏹',name:'A metà strada', lv:3,hint:'50% goal',     fn:(s,p)=>p.goal>0&&s.tot>=(p.goal*.5)},
-  {id:'goal100',icon:'👑',name:'Obiettivo!',   lv:3,hint:'Goal completato',fn:(s,p)=>p.goal>0&&s.tot>=p.goal},
-  {id:'legend',icon:'🌟',name:'Leggenda',      lv:3,hint:'Tutti i badge', fn:(s,_,b)=>b.length>=18},
+  // ── Livello 1: Tartarughina ──────────────────────────────────────
+  {id:'first',   icon:'🐣',name:'Primo passo',      lv:1,hint:'1ª sessione',       fn:s=>s.tot>=1},
+  {id:'in_moto', icon:'🚶',name:'In moto!',          lv:1,hint:'3 sessioni',        fn:s=>s.tot>=3},
+  {id:'abitud',  icon:'🌱',name:'Abitudine',         lv:1,hint:'5 sessioni',        fn:s=>s.tot>=5},
+  {id:'tris',    icon:'3️⃣',name:'Tris!',             lv:1,hint:'3 gg di fila',     fn:s=>s.str>=3},
+  {id:'zen0',    icon:'🌬️',name:'Zen beginner',      lv:1,hint:'1 orientale',      fn:s=>s.ori>=1},
+  {id:'party0',  icon:'🎊',name:'Party starter',     lv:1,hint:'1 party',          fn:s=>s.party>=1},
+  {id:'sedia0',  icon:'🪑',name:'Comodamente!',      lv:1,hint:'1 sessione seduto', fn:s=>(s.sed||0)>=1},
+  {id:'flex0',   icon:'🤸',name:'Primo stretch',     lv:1,hint:'1 sessione stretch',fn:s=>(s.stretch_ct||0)>=1},
+  {id:'xp100',   icon:'⭐',name:'Cento XP!',         lv:1,hint:'100 XP totali',     fn:s=>(s.xp||0)>=100},
+  // ── Livello 2: Tartaruga ─────────────────────────────────────────
+  {id:'sett',    icon:'🔥',name:'Una settimana!',    lv:2,hint:'7 gg di fila',     fn:s=>s.str>=7},
+  {id:'vet',     icon:'💪',name:'Veterano',           lv:2,hint:'10 sessioni',      fn:s=>s.tot>=10},
+  {id:'venti',   icon:'2️⃣0️⃣',name:'Venti!',          lv:2,hint:'20 sessioni',      fn:s=>s.tot>=20},
+  {id:'zen1',    icon:'🧘',name:'Zen intermedio',     lv:2,hint:'5 orientali',      fn:s=>s.ori>=5},
+  {id:'party1',  icon:'🎉',name:'Party animal',       lv:2,hint:'3 party',          fn:s=>s.party>=3},
+  {id:'goal25',  icon:'🎯',name:'Primo quarto',       lv:2,hint:'25% goal',         fn:(s,p)=>p.goal>0&&s.tot>=(p.goal*.25)},
+  {id:'mix1',    icon:'🔀',name:'Multi-sport',        lv:2,hint:'5 cat. diverse',   fn:s=>(s.catSet||[]).length>=5},
+  {id:'sedia1',  icon:'🪑✨',name:'Campione seduto', lv:2,hint:'5 sessioni seduto', fn:s=>(s.sed||0)>=5},
+  {id:'flex1',   icon:'🤸🌟',name:'Elastico',         lv:2,hint:'5 sessioni stretch',fn:s=>(s.stretch_ct||0)>=5},
+  {id:'xp500',   icon:'⚡',name:'Cinque centinaia',  lv:2,hint:'500 XP totali',     fn:s=>(s.xp||0)>=500},
+  {id:'habitual',icon:'📅',name:'Habitué',            lv:2,hint:'5 preferiti',       fn:s=>(s.favorites||[]).length>=5||(P.favorites||[]).length>=5},
+  // ── Livello 3: TurboTartaruga ────────────────────────────────────
+  {id:'fuoco',   icon:'🌋',name:'Mese di fuoco',     lv:3,hint:'30 gg di fila',    fn:s=>s.str>=30},
+  {id:'cinq',    icon:'5️⃣0️⃣',name:'Cinquanta!',      lv:3,hint:'50 sessioni',      fn:s=>s.tot>=50},
+  {id:'zen2',    icon:'🎋',name:'Maestro Zen',        lv:3,hint:'10 orientali',     fn:s=>s.ori>=10},
+  {id:'goal50',  icon:'🏹',name:'A metà strada',      lv:3,hint:'50% goal',         fn:(s,p)=>p.goal>0&&s.tot>=(p.goal*.5)},
+  {id:'goal100', icon:'👑',name:'Obiettivo!',         lv:3,hint:'Goal completato',  fn:(s,p)=>p.goal>0&&s.tot>=p.goal},
+  {id:'sedia2',  icon:'🪑🏆',name:'Maestro seduto',  lv:3,hint:'15 sessioni seduto',fn:s=>(s.sed||0)>=15},
+  {id:'flex2',   icon:'🤸🏆',name:'Contorsionista',  lv:3,hint:'15 sessioni stretch',fn:s=>(s.stretch_ct||0)>=15},
+  {id:'xp2000',  icon:'💎',name:'Diamante XP',        lv:3,hint:'2000 XP totali',   fn:s=>(s.xp||0)>=2000},
+  {id:'legend',  icon:'🌟',name:'Leggenda',           lv:3,hint:'30 badge sbloccati',fn:(s,_,b)=>b.length>=29},
 ];
 
 // ═══ APP STATE ═══
@@ -970,7 +1080,7 @@ function load(){
   try{const x=localStorage.getItem('tt4_p');if(x)P=JSON.parse(x)}catch(e){}
   try{const x=localStorage.getItem('tt4_s');if(x)S=JSON.parse(x)}catch(e){}
   try{const x=localStorage.getItem('tt4_set');if(x)SET=JSON.parse(x)}catch(e){}
-  if(!S.history)S.history=[];if(!S.plan)S.plan=[];if(!S.catSet)S.catSet=[];
+  if(!S.history)S.history=[];if(!S.plan)S.plan=[];if(!S.catSet)S.catSet=[];if(!S.sed)S.sed=0;if(!S.stretch_ct)S.stretch_ct=0;
 }
 function bkData(){return{v:'0.4',dt:new Date().toISOString(),profile:P,stats:S,settings:SET}}
 function restore(d){if(d.profile)P=d.profile;if(d.stats)S=d.stats;if(d.settings)SET=d.settings;if(!S.history)S.history=[];if(!S.plan)S.plan=[];save();applyTheme();applyView();toast('✅ Dati ripristinati!');go('home')}
@@ -1060,8 +1170,10 @@ function saveProfile(){
   const cats=[...document.querySelectorAll('#cat-picks .mchk.sel')].map(e=>e.dataset.cat);
   if(!cats.length){toast('⚠️ Seleziona almeno una categoria!');return}
   const restDays=[...document.querySelectorAll('#ob-restdays .day-btn.sel')].map(e=>parseInt(e.dataset.dow));
-  P={name:nm,age:ag,weight:wt||null,height:ht||null,level:getOpt('level')||'principiante',
+  const sx=document.querySelector('.sex-btn.sel')?.dataset.sex||'M';
+  P={name:nm,age:ag,weight:wt||null,height:ht||null,sex:sx,level:getOpt('level')||'principiante',
     goal:gl,noFloor:nf,categories:cats,restDays,startDate:new Date().toISOString().slice(0,10)};
+  calcProfileBias();
   S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[]};
   generatePlan();updateStreak();save();go('home');
 }
@@ -1113,7 +1225,7 @@ function buildHome(){
   document.getElementById('today-icon').textContent=tp.icon||'🌈';
   const ci=CAT_INFO[tp.focus]||{label:'Allenamento',icon:'🌈'};
   document.getElementById('today-focus').textContent=(tp.type==='rest'?'Giorno di riposo':ci.label+' — '+tp.icon);
-  const subs={gambe:'Rafforza gambe e glutei! 🦵',braccia:'Potenzia braccia e spalle! 💪',core:'Rinforza il core! 🎯',stretching:'Allungati e rilassati! 🤸',orientale:'Respira e trova l\'equilibrio! 🧘',seduto:'Allenati comodamente seduto! 🪑',misto:'Allenamento completo misto! 🌈',riposo:'Oggi riposi — ci vediamo domani! 😴'};
+  const subs={gambe:'Rafforza gambe e glutei! 🦵',braccia:'Potenzia braccia e spalle! 💪',core:'Rinforza il core! 🎯',stretching:'Allungati e rilassati! 🤸',orientale:'Respira e trova l\'equilibrio! 🧘',seduto:'Allenati comodamente seduto! 🪑',misto:'Allenamento completo misto! 🌈',misto_plus:'Corpo libero + esercizi da seduto! 🪑💪',riposo:'Oggi riposi — ci vediamo domani! 😴'};
   document.getElementById('today-sub').textContent=subs[tp.focus]||'Allenamento di oggi!';
   const btn=document.getElementById('btn-start');if(btn)btn.style.display=isRest?'none':'flex';
   // Favorites chip: check if today's session has any favorite exercises
@@ -1129,11 +1241,66 @@ function buildHome(){
   // Reset feeling
   document.querySelectorAll('.fbtn').forEach(b=>{b.classList.remove('sel');if(b.dataset.f==='piano')b.classList.add('sel')});
   document.getElementById('stanco-opts').style.display='none';
+  const sg=document.getElementById('scelgo-grid');if(sg)sg.style.display='none';
+  const mainScelgo=document.querySelector('.fbtn[data-f="__scelgo__"]');if(mainScelgo)mainScelgo.innerHTML='<span class="fi">🕹️</span>Scelgo io!';
   T.feeling='piano';
+}
+function selSex(btn){
+  document.querySelectorAll('.sex-btn').forEach(b=>{
+    b.classList.remove('sel');
+    b.style.borderColor='var(--bdr)';b.style.background='var(--card)';b.style.color='var(--text)';
+  });
+  btn.classList.add('sel');
+  btn.style.borderColor='var(--g1)';btn.style.background='var(--g4)';btn.style.color='var(--g1)';
+}
+function setSexSetting(s){
+  P.sex=s;calcProfileBias();save();
+  const vm=document.getElementById('val-sex');if(vm)vm.textContent=s==='M'?'👨 Uomo':'👩 Donna';
+  const bm=document.getElementById('sex-btn-m');const bf=document.getElementById('sex-btn-f');
+  if(bm){bm.style.borderColor=s==='M'?'var(--g1)':'var(--bdr)';bm.style.background=s==='M'?'var(--g4)':'var(--card)';}
+  if(bf){bf.style.borderColor=s==='F'?'var(--g1)':'var(--bdr)';bf.style.background=s==='F'?'var(--g4)':'var(--card)';}
+  toast('✅ Sesso aggiornato — piano ricalcolato!');
+}
+function toggleScelgo(btn){
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('sel'));
+  const grid=document.getElementById('scelgo-grid');
+  const isOpen=grid.style.display==='grid';
+  if(isOpen){
+    grid.style.display='none';
+    // Revert to piano
+    const piano=document.querySelector('.fbtn[data-f="piano"]');
+    if(piano){piano.classList.add('sel');T.feeling='piano';}
+  } else {
+    btn.classList.add('sel');
+    grid.style.display='grid';
+    T.feeling='gambe'; // default first sub-option
+    // Highlight first sub-button
+    const first=document.querySelector('.fbtn-sub');
+    if(first)first.classList.add('sel');
+    // Show start button
+    const btnStart=document.getElementById('btn-start');
+    const tp=getTodayPlan();
+    if(btnStart&&tp.type!=='rest')btnStart.style.display='flex';
+  }
+}
+function setScelgoFeeling(el){
+  document.querySelectorAll('.fbtn-sub').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  T.feeling=el.dataset.f;
+  // Update the "Scelgo io!" main button to show selection
+  const mainBtn=document.querySelector('.fbtn[data-f="__scelgo__"]');
+  if(mainBtn){mainBtn.innerHTML='<span class="fi">🕹️</span>'+el.textContent.trim();}
+  const btnStart=document.getElementById('btn-start');
+  if(btnStart)btnStart.style.display='flex';
 }
 function setFeeling(el){
   document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');
   T.feeling=el.dataset.f;
+  // Always close scelgo submenu when a main button is pressed
+  const sg=document.getElementById('scelgo-grid');
+  if(sg)sg.style.display='none';
+  const mainScelgo=document.querySelector('.fbtn[data-f="__scelgo__"]');
+  if(mainScelgo)mainScelgo.innerHTML='<span class="fi">🕹️</span>Scelgo io!';
   const stancoOpts=document.getElementById('stanco-opts');
   const btnStart=document.getElementById('btn-start');
   const tp=getTodayPlan();
@@ -1193,6 +1360,7 @@ function startTraining(){
   const tp=getTodayPlan();
   let focus=T.feeling&&T.feeling!=='piano'?T.feeling:tp.focus;
   if(T.feeling==='stanco_mini')focus='stretching';
+  if(T.feeling==='misto_plus')focus='misto_plus';
   T.sesType=focus;T.exs=genSession(focus);T.idx=0;T.paused=false;T.t0=Date.now();riservaDone=false;requestWakeLock();
   // Show first exercise preview in rest screen before starting
   showRestPreview(0, ()=>doShowEx(0));
@@ -1217,6 +1385,50 @@ function submitFeedback(level){
   }
   go('home');
 }
+// ═══ BMI / PROFILE INTELLIGENCE ═══
+function calcProfileBias(){
+  if(!P.weight||!P.height||!P.age)return;
+  const hm=P.height/100;
+  const bmi=P.weight/(hm*hm);
+  P.bmi=Math.round(bmi*10)/10;
+  const bmr=P.sex==='F'?(10*P.weight)+(6.25*P.height)-(5*P.age)-161:(10*P.weight)+(6.25*P.height)-(5*P.age)+5;
+  P.bmr=Math.round(bmr);
+  let pb=0;
+  if(P.bmi>30)pb-=1;
+  if(P.bmi>35)pb-=1;
+  if(P.bmi<18.5)pb+=1;
+  if(P.age>65)pb-=1;
+  if(P.age<30&&P.bmi>=18.5&&P.bmi<=25)pb+=1;
+  P.profileBias=Math.max(-3,Math.min(3,pb));
+  if(P.bmi>32&&!P.noFloorAsked){
+    P.noFloorAsked=true;
+    setTimeout(()=>toast('💡 Con BMI elevato ti consigliamo di attivare "Evita esercizi a terra" nelle impostazioni.',6000),2000);
+  }
+  if(!P.safetyAlertShown&&(P.bmi>35||P.age>70)){
+    P.safetyAlertShown=true;
+    setTimeout(()=>toast('⚠️ Consiglio: prima di iniziare, consulta il tuo medico. L\'app non sostituisce un professionista della salute.',8000),3000);
+  }
+  save();
+}
+function checkOver65Challenge(){
+  if(!P.age||P.age<65||P.over65ChallengeAsked||S.tot<3)return;
+  P.over65ChallengeAsked=true;save();
+  if(confirm('Sei una tartaruga da corsa, '+P.name+'! 🐢\n\nHai completato '+S.tot+' sessioni. Vuoi provare allenamenti un po\' più impegnativi?')){
+    P.profileBias=Math.min(3,(P.profileBias||0)+1);save();
+    toast('💪 Ottimo! Le prossime sessioni saranno un po\' più sfidanti!',4000);
+  }
+}
+function checkProfileUpdateNeeded(){
+  if(!P.name||!S.tot||S.tot%10!==0||P['lastWeightUpdate_'+S.tot])return;
+  P['lastWeightUpdate_'+S.tot]=true;save();
+  setTimeout(()=>{
+    if(confirm('Ciao '+P.name+'! 🐢\n\nHai completato '+S.tot+' sessioni — ottimo lavoro!\n\nVuoi aggiornare il tuo peso per ricalcolare il piano?')){
+      go('settings');toast('📝 Aggiorna il peso nella sezione Profilo utente');
+    }
+  },1500);
+}
+
+// ═══ SESSION GENERATION ═══
 function genSession(focus){
   const beg=P.level==='principiante';
   const dur=T.dur||12;
@@ -1224,10 +1436,14 @@ function genSession(focus){
   if(dur===5){cfg={cnt:4,a:40,r:25}}
   let{cnt,a,r}=cfg;
   if(beg){a=Math.max(25,a-10);r=r+8}
-  // Apply difficulty bias (from session feedback): each point = ±5s active, ∓2s rest
-  const bias=SET.difficultyBias||0;
+  // Apply combined bias: feedback bias + profile bias (BMI/age)
+  const bias=(SET.difficultyBias||0)+(P.profileBias||0);
   a=Math.max(15,Math.min(90,a+(bias*5)));
   r=Math.max(8,Math.min(60,r-(bias*2)));
+  // Age > 50: add 5s recovery
+  if(P.age&&P.age>50)r=Math.min(60,r+5);
+  // BMI > 30: exclude high-impact exercises handled via noFloor-like logic
+  const highBMI=P.bmi&&P.bmi>30;
   // Warmup
   let warmPool=shuffleArr(DB.filter(e=>e.cat==='riscaldamento'));
   if(P.noFloor)warmPool=warmPool.filter(e=>!e.floor);
@@ -1237,6 +1453,12 @@ function genSession(focus){
   const avoided=new Set(P.avoided||[]);
   let pool;
   if(focus==='misto')pool=shuffleArr(DB.filter(e=>e.cat!=='riscaldamento'&&e.cat!=='party'));
+  else if(focus==='misto_plus'){
+    // Half seduto, half from other categories
+    const sedPool=shuffleArr(DB.filter(e=>e.cat==='seduto'));
+    const normPool=shuffleArr(DB.filter(e=>!['riscaldamento','seduto','party'].includes(e.cat)));
+    pool=[...sedPool.slice(0,Math.ceil(sedPool.length/2)),...normPool].sort(()=>Math.random()-.5);
+  }
   else pool=shuffleArr(DB.filter(e=>e.cat===focus&&e.cat!=='party'));
   if(P.noFloor)pool=pool.filter(e=>!e.floor);
   pool=pool.filter(e=>!avoided.has(e.id));
@@ -1518,13 +1740,15 @@ const DONE_PHRASES=[
   'La tartaruga ha corso oggi — e ha vinto! 🐢💨',
   'Grande! Il tuo futuro-te ti sta già ringraziando! ⭐',
 ];
-function completeSession(){releaseWakeLock();
+function completeSession(){releaseWakeLock();checkOver65Challenge();checkProfileUpdateNeeded();
   clearInterval(T.iv);clearInterval(restIv);clearInterval(transIv);
   const today=new Date().toISOString().slice(0,10);
   const xpGain=10+(S.str>0?Math.min(S.str,5):0)+(riservaDone?5:0);
   S.tot++;S.xp=(S.xp||0)+xpGain;
   if(!S.days.includes(today))S.days.push(today);
   if(T.sesType==='orientale')S.ori++;
+  if(T.sesType==='seduto'||T.sesType==='misto_plus')S.sed=(S.sed||0)+1;
+  if(T.sesType==='stretching')S.stretch_ct=(S.stretch_ct||0)+1;
   if(!S.catSet)S.catSet=[];
   if(!S.catSet.includes(T.sesType))S.catSet.push(T.sesType);
   updateStreak();
@@ -1602,22 +1826,37 @@ function buildCal(){
   for(let d=1;d<=dim;d++){
     const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const isToday=ds===today,isFuture=ds>today;
-    // Check history first
-    const histEntry=S.history.find(e=>e.date===ds);
+    // ALL history entries for this day (multiple sessions)
+    const histEntries=S.history.filter(e=>e.date===ds);
     const planEntry=S.plan.find(e=>e.date===ds);
-    let cls='cd',ico='',type='';
-    if(histEntry){
-      const ci=CAT_INFO[histEntry.type]||{cls:'workout',icon:'💪'};
-      type=histEntry.type==='riposo_vol'?'vol_rest':ci.cls;cls=`cd ${type} done`;ico=ci.icon;done++;
-      if(histEntry.boost)ico+='💥';
+    let cls='cd',icoHtml='',type='';
+    if(histEntries.length>0){
+      // Use first entry for background color
+      const first=histEntries[0];
+      const ci=CAT_INFO[first.type]||{cls:'workout',icon:'💪'};
+      type=first.type==='riposo_vol'?'vol_rest':ci.cls;
+      cls=`cd ${type} done`;
+      done++;
+      if(histEntries.length===1){
+        const ico=(first.type==='riposo_vol'?'🛋️':ci.icon)+(first.boost?'💥':'');
+        icoHtml=`<div class="cd-ico">${ico}</div>`;
+      } else {
+        // Multiple sessions: show stacked icons with count badge
+        const icons=histEntries.slice(0,2).map(e=>{
+          const ci2=CAT_INFO[e.type]||{icon:'💪'};
+          return e.type==='riposo_vol'?'🛋️':ci2.icon;
+        }).join('');
+        icoHtml=`<div class="cd-ico" style="font-size:11px;line-height:1.1">${icons}</div><div style="position:absolute;top:2px;right:3px;background:#E65100;color:#fff;border-radius:100px;font-size:8px;font-weight:bold;padding:0 3px;line-height:14px">${histEntries.length}</div>`;
+        cls+=' multi';
+      }
     }else if(planEntry){
       const ci=CAT_INFO[planEntry.focus]||{cls:'workout',icon:'🌈'};
-      type=ci.cls;ico=planEntry.icon||ci.icon;
+      type=ci.cls;
       cls=`cd ${type}${isFuture?' future':''}`;
-      if(planEntry.type!=='rest')planned++;
-    }else{type='rest';ico='';cls=`cd rest${isFuture?' future':''}`}
+      if(planEntry.type!=='rest'){planned++;icoHtml=`<div class="cd-ico">${planEntry.icon||ci.icon}</div>`;}
+    }else{type='rest';cls=`cd rest${isFuture?' future':''}`}
     if(isToday)cls+=' today';
-    h+=`<div class="${cls}"><div class="cd-num">${d}</div>${ico?`<div class="cd-ico">${ico}</div>`:''}</div>`;
+    h+=`<div class="${cls}" style="position:relative"><div class="cd-num">${d}</div>${icoHtml}</div>`;
   }
   document.getElementById('cal-grid').innerHTML=h;
   document.getElementById('cal-done').textContent=done;
@@ -1734,7 +1973,29 @@ function partyStart(){
   btn.textContent='⏹️ Stop';S.party++;checkBadges();save();beep(660,.15);
   partyIv=setInterval(()=>{partyLeft--;document.getElementById('party-timer-disp').textContent=partyLeft;if(partyLeft<=0){clearInterval(partyIv);partyIv=null;btn.textContent='▶️ Inizia!';partyLeft=60;toast('🎉 Tempo! Assegna i punti!');players.forEach(p=>{scores[p]=(scores[p]||0)+1});updatePartyUI();beep(880,.3,.4)}},1000);
 }
-function addPlayer(){if(players.length>=4){toast('⚠️ Massimo 4!');return}const n=prompt('Nome:');if(n&&n.trim()){players.push(n.trim());updatePartyUI()}}
+function addPlayer(){
+  if(players.length>=4){toast('⚠️ Massimo 4 partecipanti!');return}
+  // Custom modal instead of browser prompt (better UI)
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:900;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML=`<div style="background:#fff;border-radius:20px;padding:24px;width:100%;max-width:320px;text-align:center">
+    <div style="font-size:28px;margin-bottom:8px">🤝</div>
+    <h3 style="font-family:var(--ft);color:#1B5E20;margin-bottom:16px;font-size:18px">Aggiungi un tuo amico/a</h3>
+    <input id="party-name-inp" type="text" placeholder="Es. Marco, Sara..." maxlength="20" autocomplete="off"
+      style="width:100%;padding:12px 14px;border:2px solid var(--bdr);border-radius:12px;font-size:16px;font-family:var(--ft);outline:none;box-sizing:border-box;margin-bottom:14px">
+    <div style="display:flex;gap:8px">
+      <button onclick="this.closest('div').parentElement.remove()" style="flex:1;padding:11px;background:#f0f0f0;border:none;border-radius:100px;font-weight:bold;cursor:pointer;font-size:14px">Annulla</button>
+      <button id="party-name-ok" style="flex:1;padding:11px;background:#43A047;color:#fff;border:none;border-radius:100px;font-weight:bold;cursor:pointer;font-size:14px">➕ Aggiungi</button>
+    </div>
+  </div>`;
+  document.body.appendChild(overlay);
+  const inp=overlay.querySelector('#party-name-inp');
+  const ok=overlay.querySelector('#party-name-ok');
+  setTimeout(()=>inp.focus(),100);
+  const doAdd=()=>{const n=(inp.value||'').trim();if(!n){inp.style.border='2px solid #E53935';return}players.push(n);updatePartyUI();overlay.remove();};
+  ok.addEventListener('click',doAdd);
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')doAdd();if(e.key==='Escape')overlay.remove();});
+}
 
 // ═══ SETTINGS ═══
 function buildSettings(){
@@ -1762,6 +2023,18 @@ function buildSettings(){
   const psr=document.getElementById('st-pause-range');const psd=document.getElementById('st-pause-disp');
   if(psr){psr.value=ps;psr.style.setProperty('--pct',((ps-5)/55*100).toFixed(1)+'%')}
   if(psd)psd.textContent=ps+'s';
+  // BMI / Profile display
+  if(P.weight&&P.height){
+    const hm=P.height/100;const bmi=P.weight/(hm*hm);P.bmi=Math.round(bmi*10)/10;
+    const bmiCls=bmi<18.5?'Sottopeso':bmi<25?'Normale':bmi<30?'Sovrappeso':'Obesità';
+    const bmiRow=document.getElementById('st-bmi-row');if(bmiRow)bmiRow.style.display='flex';
+    const bmiVal=document.getElementById('st-bmi-val');
+    if(bmiVal)bmiVal.textContent=`BMI ${P.bmi} (${bmiCls}) · Bias profilo: ${P.profileBias>=0?'+':''}${P.profileBias||0}`;
+  }
+  const vsex=document.getElementById('val-sex');if(vsex)vsex.textContent=(P.sex==='F')?'👩 Donna':'👨 Uomo';
+  const bm=document.getElementById('sex-btn-m');const bf=document.getElementById('sex-btn-f');
+  if(bm){bm.style.borderColor=(P.sex!=='F')?'var(--g1)':'var(--bdr)';bm.style.background=(P.sex!=='F')?'var(--g4)':'var(--card)';}
+  if(bf){bf.style.borderColor=(P.sex==='F')?'var(--g1)':'var(--bdr)';bf.style.background=(P.sex==='F')?'var(--g4)':'var(--card)';}
   // Favorites per session
   const fc=P.favCount!=null?P.favCount:3;
   const fcr=document.getElementById('st-fav-range');const fcd=document.getElementById('st-fav-disp');
@@ -1773,7 +2046,7 @@ function buildSettings(){
   syncToggles();
   // Update version display
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.5 · 09/04/2026 17:45';
+  if(vdisp)vdisp.textContent='Versione v0.6 · 10/04/2026 08:09';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 8 categorie`;
@@ -1938,6 +2211,12 @@ function partyTab(tab){
 // ═══ ALLENA INSIEME ═══
 let togetherGuests=[];
 
+function showInstallGuide(){
+  const modal=document.getElementById('install-modal');
+  const urlEl=document.getElementById('install-url');
+  if(urlEl)urlEl.textContent=location.href.replace(/[?#].*/,'');
+  if(modal)modal.style.display='block';
+}
 function generateGuestCode(){
   const guest={
     type:'TTS_guest',
@@ -2044,6 +2323,20 @@ if(P.name){
   if(!S.plan||S.plan.length===0)generatePlan();
   updateStreak();
   // Settings button is now in home hero — no FAB needed
+  // For existing users without sex field, prompt once
+  if(!P.sex){
+    P.sex='M'; // default
+    setTimeout(()=>{
+      if(confirm('Ciao '+P.name+'! 🐢\n\nPer migliorare il tuo piano di allenamento ho bisogno di sapere il tuo sesso biologico.\n\nSei un Uomo? (OK=Sì, Annulla=Donna)')){
+        P.sex='M';
+      }else{
+        P.sex='F';
+      }
+      calcProfileBias();save();
+      toast('✅ Profilo aggiornato! Le sessioni saranno ottimizzate per te.',4000);
+    },2000);
+  }
+  calcProfileBias();
   go('home');
 }else go('welcome');
 
@@ -2124,7 +2417,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604091745'; // auto-set on each release
+const APP_BUILD='202604100809'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
