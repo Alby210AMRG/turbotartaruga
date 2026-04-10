@@ -1,5 +1,5 @@
 // TurboTartaruga Service Worker v0.5
-const CACHE_NAME = 'turbotartaruga-202604101608';
+const CACHE_NAME = 'turbotartaruga-202604102035';
 
 const PRECACHE = [
   './',
