@@ -1,6 +1,6 @@
 {
-  "version": "0.6",
-  "build": "202604102035",
-  "date": "10/04/2026 20:35",
-  "notes": "10 features: rest phrases, confetti, levels, weekly stats, boost badges, chart30d"
+  "version": "0.7",
+  "build": "202604102133",
+  "date": "10/04/2026 21:33",
+  "notes": "Notifica annullata se sessione gi\u00e0 svolta"
 }
