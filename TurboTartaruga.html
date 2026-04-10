@@ -66,7 +66,7 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 .day-sel{display:flex;gap:5px;flex-wrap:wrap}
 .day-btn{width:38px;height:38px;border-radius:50%;border:2px solid var(--bdr);background:var(--card);color:var(--text);font-size:12px;font-weight:bold;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center}
 .day-btn.sel{border-color:var(--coral);background:var(--coral);color:#fff}
-.home-hero{background:linear-gradient(155deg,#1B5E20,#2E7D32 40%,#43A047 75%,#66BB6A);padding:22px 18px 28px;text-align:center;color:#fff;border-radius:0 0 28px 28px;margin-bottom:14px}
+.home-hero{background:linear-gradient(155deg,#1B5E20,#2E7D32 40%,#43A047 75%,#66BB6A);padding:22px 18px 28px;text-align:center;color:#fff;border-radius:0 0 28px 28px;margin-bottom:14px;transition:background 1.5s ease}
 .home-hero h2{font-family:var(--ft);font-size:20px;margin-bottom:3px}
 .home-hero p{font-size:var(--fs-sm);opacity:.88;line-height:1.5}
 .streak-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.18);border-radius:100px;padding:5px 13px;margin-top:8px;font-size:var(--fs-sm);font-weight:bold}
@@ -132,6 +132,7 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 .cd.party{background:#F9FBE7;color:#827717}[data-theme="dark"] .cd.party{background:#2A2A00;color:#E6D700}
 .cd.vol_rest{background:#FCE4EC;color:#880E4F}[data-theme="dark"] .cd.vol_rest{background:#2A0A14;color:#F48FB1}
 .cd.done{outline:2.5px solid #FFD700;outline-offset:1px}.cd.done .cd-num{font-size:8px}.cd.today{outline:2.5px solid var(--g1);outline-offset:1px}
+.cd.auto-rest{background:var(--bg2);opacity:.7}
 .cd.future{opacity:.35}.cd.empty{background:transparent}
 .cal-legend{display:flex;flex-wrap:wrap;gap:6px;padding:6px 13px 10px}
 .leg-it{display:flex;align-items:center;gap:4px;font-size:var(--fs-xs);color:var(--tmid)}
@@ -333,7 +334,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <!-- HOME -->
 <div id="screen-home" class="screen">
   <div class="home-hero" style="position:relative">
-    <button onclick="go('settings')" style="position:absolute;top:10px;right:12px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.22);border:none;cursor:pointer;font-size:19px;display:flex;align-items:center;justify-content:center;color:#fff;z-index:10" title="Impostazioni">⚙️</button>
+    <button onclick="go('settings')" style="position:absolute;top:10px;right:12px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.95);border:2px solid #fff;cursor:pointer;font-size:19px;display:flex;align-items:center;justify-content:center;color:#1B5E20;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.25)" title="Impostazioni">⚙️</button>
     <img src="logo-turtle.png" alt="" style="width:min(72vw,280px);max-height:160px;object-fit:contain;object-position:center bottom;margin-bottom:4px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.25));display:block;margin-left:auto;margin-right:auto">
     <h2 id="home-greeting">Ciao!</h2><p id="home-phrase" style="font-size:15px;font-weight:600;opacity:1;line-height:1.5;margin-top:4px;text-shadow:0 1px 3px rgba(0,0,0,.15);font-style:italic">Pronto per il tuo allenamento?</p>
     <div class="streak-chip">🔥 <span id="home-streak">0</span> giorni di fila!</div>
@@ -525,7 +526,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
     <div id="cmp-tags" style="display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:12px;max-width:300px"></div>
     <div id="cmp-badges" style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:18px;max-width:290px"></div>
-    <button class="btn btn-a btn-lg" onclick="go('feedback')" style="font-size:17px">🐢 Per oggi è fatta!</button>
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;align-items:center">
+      <button class="btn btn-a btn-lg" onclick="go('feedback')" style="font-size:17px;width:100%">🐢 Per oggi è fatta!</button>
+      <button onclick="shareResultCard()" style="background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.5);border-radius:100px;padding:12px 24px;font-family:var(--ft);font-size:14px;font-weight:bold;cursor:pointer;width:100%">📤 Condividi risultato</button>
+    </div>
   </div>
 </div>
 
@@ -587,7 +591,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div class="cal-legend">
       <div class="leg-it"><span>🦵</span>Gambe</div><div class="leg-it"><span>💪</span>Braccia</div>
       <div class="leg-it"><span>🎯</span>Core</div><div class="leg-it"><span>🤸</span>Stretch</div>
-      <div class="leg-it"><span>🧘</span>Orientale</div><div class="leg-it"><span>😴</span>Riposo</div>
+      <div class="leg-it"><span>🧘</span>Orientale</div><div class="leg-it"><span>😴</span>Riposo</div><div class="leg-it"><span>🔄</span>Recupero auto</div>
       <div class="leg-it"><span>🛋️</span>Riposo vol.</div><div class="leg-it"><span>🏆</span>Completato</div>
     </div>
     <div class="card" style="margin-top:0"><div class="card-title">📊 Questo mese</div>
@@ -803,13 +807,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <button class="btn btn-p btn-full" style="padding:9px" onclick="savePause()">✅ Salva pausa</button>
       </div>
     </div>
-    <span class="sec-title">🔄 Piano allenamento</span>
-    <div class="sblk"><div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
-      <div class="stitle">Aggiorna piano</div>
-      <div class="sval">Scaricata una nuova versione? Rigenera il piano con i nuovi esercizi. Lo storico non viene toccato.</div>
-      <button class="btn btn-s btn-full mt10" style="padding:10px" onclick="refreshPlan()">🔄 Rigenera piano 14 giorni</button>
-    </div></div>
-
     <span class="sec-title">🏋️ Elenco esercizi</span>
     <div class="sblk">
       <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
@@ -820,6 +817,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <div id="ex-list-wrap" style="display:none;width:100%"></div>
       </div>
     </div>
+
+    <span class="sec-title">🔄 Piano allenamento</span>
+    <div class="sblk"><div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
+      <div class="stitle">Rigenera piano</div>
+      <div class="sval">Rigenera il piano 14 giorni tenendo conto del tuo profilo, categorie preferite, giorni di riposo e nuovi esercizi. Lo storico non viene toccato.</div>
+      <button class="btn btn-s btn-full mt10" style="padding:10px" onclick="refreshPlan()">🔄 Rigenera piano 14 giorni</button>
+    </div></div>
     <span class="sec-title">💾 Backup</span>
     <div class="sblk"><div class="srow" style="flex-direction:column;align-items:flex-start;gap:7px">
       <div class="stitle">Trasferisci i tuoi dati</div>
@@ -854,7 +858,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           </div>
           <div class="guide-item" onclick="toggleGuide(this)">
             <div class="guide-q">🏅 Come funzionano i badge?</div>
-            <div class="guide-a">Ci sono 19 badge su 3 livelli: Tartarughina, Tartaruga e TurboTartaruga. Si sbloccano automaticamente completando sessioni, mantenendo lo streak e raggiungendo l'obiettivo. Ogni badge dà 25 XP bonus.</div>
+            <div class="guide-a">Ci sono 29 badge su 3 livelli: Tartarughina, Tartaruga e TurboTartaruga. Si sbloccano completando sessioni, streak, sessioni seduto/stretch, accumulando XP e raggiungendo l'obiettivo. Ogni badge dà 25 XP bonus.</div>
           </div>
           <div class="guide-item" onclick="toggleGuide(this)">
             <div class="guide-q">💾 Come salvo i miei dati?</div>
@@ -865,13 +869,22 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
             <div class="guide-a">Vai in Party → "Allena insieme". Se sei ospite, genera il tuo Codice Ospite e mandalo all'host. L'host lo incolla per aggiungerti. Alla fine, l'host genera un Codice Risultato che tu importi per aggiornare i tuoi progressi.</div>
           </div>
           <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">🔄 Come aggiorno il piano esercizi?</div>
-            <div class="guide-a">Se hai scaricato una nuova versione dell'app con nuovi esercizi, vai in Impostazioni → Piano allenamento → "Rigenera piano 14 giorni". Lo storico non viene toccato — si rigenerano solo i prossimi giorni.</div>
+            <div class="guide-q">🧬 Cosa fa il sistema BMI/Profilo?</div>
+            <div class="guide-a">L'app calcola il tuo BMI e adatta automaticamente la durata degli esercizi e le pause. Over 50: +5s di recupero. BMI alto: sessioni più leggere. Under 30 in forma: sessioni più intense. Il sesso biologico serve per il calcolo del metabolismo basale (BMR).</div>
           </div>
           <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">📷 Dove metto le immagini degli esercizi?</div>
-            <div class="guide-a">Crea una cartella "images/exercises/" nella stessa posizione del file HTML. Metti le immagini PNG con i nomi esatti (es. g1.png, w3.png). L'app le carica automaticamente. Senza immagini funziona comunque con il testo.</div>
+            <div class="guide-q">🕹️ Cos'è "Scelgo io"?</div>
+            <div class="guide-a">Nella Home invece di "Segui piano" puoi premere "Scelgo io!" per espandere il menu con tutte le categorie: Gambe, Braccia, Core, Stretch, Orientale, Seduto, Misto, Misto+. Premi di nuovo "Segui piano" per tornare al piano del giorno.</div>
           </div>
+          <div class="guide-item" onclick="toggleGuide(this)">
+            <div class="guide-q">📅 Cosa succede se salto le sessioni?</div>
+            <div class="guide-a">Se salti 3 o più giorni consecutivi compare un messaggio motivazionale in Home. Le sessioni saltate danno un malus XP. Ci sono badge appositi per chi accumula sessioni saltate — ma l'obiettivo è non sbloccarli! 😄</div>
+          </div>
+          <div class="guide-item" onclick="toggleGuide(this)">
+            <div class="guide-q">🔄 Come aggiorno il piano esercizi?</div>
+            <div class="guide-a">Il piano si rigenera automaticamente quando modifichi il profilo, le categorie o i giorni di riposo. Puoi anche farlo manualmente in Impostazioni → Elenco esercizi → "Rigenera piano 14 giorni".</div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -1063,10 +1076,16 @@ const BADGES=[
   {id:'flex2',   icon:'🤸🏆',name:'Contorsionista',  lv:3,hint:'15 sessioni stretch',fn:s=>(s.stretch_ct||0)>=15},
   {id:'xp2000',  icon:'💎',name:'Diamante XP',        lv:3,hint:'2000 XP totali',   fn:s=>(s.xp||0)>=2000},
   {id:'legend',  icon:'🌟',name:'Leggenda',           lv:3,hint:'30 badge sbloccati',fn:(s,_,b)=>b.length>=29},
+  // ── Badge saltati (per invogliare a non saltare) ─────────────────
+  {id:'skip3',   icon:'🛋️',name:'Divano lover',      lv:1,hint:'3 sessioni saltate',  fn:s=>(s.skippedTotal||0)>=3},
+  {id:'skip10',  icon:'💤',name:'Campione del riposo',lv:1,hint:'10 sess. saltate',    fn:s=>(s.skippedTotal||0)>=10},
+  {id:'skip25',  icon:'😴',name:'Sfaticato doc',      lv:2,hint:'25 sess. saltate',    fn:s=>(s.skippedTotal||0)>=25},
+  {id:'skip50',  icon:'🐌',name:'Ultra pigro',        lv:2,hint:'50 sess. saltate',    fn:s=>(s.skippedTotal||0)>=50},
+  {id:'skip100', icon:'🪨',name:'Il couch potato',    lv:3,hint:'100 sess. saltate',   fn:s=>(s.skippedTotal||0)>=100},
 ];
 
 // ═══ APP STATE ═══
-let P={},S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[]};
+let P={},S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0};
 // P.favorites = [] of exercise ids starred
 // P.avoided   = [] of exercise ids avoided
 // P.favCount  = number of favorites to include per session (0-5, default 3)
@@ -1080,7 +1099,7 @@ function load(){
   try{const x=localStorage.getItem('tt4_p');if(x)P=JSON.parse(x)}catch(e){}
   try{const x=localStorage.getItem('tt4_s');if(x)S=JSON.parse(x)}catch(e){}
   try{const x=localStorage.getItem('tt4_set');if(x)SET=JSON.parse(x)}catch(e){}
-  if(!S.history)S.history=[];if(!S.plan)S.plan=[];if(!S.catSet)S.catSet=[];if(!S.sed)S.sed=0;if(!S.stretch_ct)S.stretch_ct=0;
+  if(!S.history)S.history=[];if(!S.plan)S.plan=[];if(!S.catSet)S.catSet=[];if(!S.sed)S.sed=0;if(!S.stretch_ct)S.stretch_ct=0;if(!S.skipped)S.skipped=0;if(!S.skippedTotal)S.skippedTotal=0;
 }
 function bkData(){return{v:'0.4',dt:new Date().toISOString(),profile:P,stats:S,settings:SET}}
 function restore(d){if(d.profile)P=d.profile;if(d.stats)S=d.stats;if(d.settings)SET=d.settings;if(!S.history)S.history=[];if(!S.plan)S.plan=[];save();applyTheme();applyView();toast('✅ Dati ripristinati!');go('home')}
@@ -1187,26 +1206,55 @@ function generatePlan(){
     const d=new Date();d.setDate(d.getDate()+i);
     const dow=d.getDay();const ds=d.toISOString().slice(0,10);
     const isRest=restDays.includes(dow)||(consec>=(P.level==='principiante'?2:3));
-    if(isRest){plan.push({date:ds,type:'rest',focus:'riposo',icon:'😴'});consec=0;}
+    if(isRest){
+      const isUserRest=restDays.includes(dow);
+      plan.push({date:ds,type:'rest',focus:'riposo',
+        icon:isUserRest?'😴':'🔄',
+        restKind:isUserRest?'user':'auto'});
+      consec=0;
+    }
     else{const focus=cats[focusIdx%cats.length];plan.push({date:ds,type:'workout',focus,icon:CAT_INFO[focus]?.icon||'🏋️'});focusIdx++;consec++;}
   }
   S.plan=plan;save();
 }
 function refreshPlan(){
-  // Read current rest days from settings UI if open, otherwise from P
+  // ALWAYS read rest days from UI buttons if they exist (even if not explicitly saved)
   const rdBtns=document.querySelectorAll('#st-restdays .day-btn.sel');
-  if(rdBtns.length>0)P.restDays=[...rdBtns].map(e=>parseInt(e.dataset.dow));
+  if(rdBtns.length>0){
+    P.restDays=[...rdBtns].map(e=>parseInt(e.dataset.dow));
+  }
+  // ALWAYS read categories from UI if open
+  const catBtns=document.querySelectorAll('#st-cats .mchk.sel');
+  if(catBtns.length>0){
+    P.categories=[...catBtns].map(e=>e.dataset.cat);
+  }
   const cats=(P.categories||['gambe','braccia','core','stretching','orientale']).filter(c=>c!=='riscaldamento');
   const restDays=P.restDays||[0,6];
+  const maxConsec=P.level==='principiante'?2:3;
   const plan=[];let focusIdx=0,consec=0;
   for(let i=0;i<14;i++){
     const d=new Date();d.setDate(d.getDate()+i);
     const dow=d.getDay();const ds=d.toISOString().slice(0,10);
-    const isRest=restDays.includes(dow)||(consec>=(P.level==='principiante'?2:3));
-    if(isRest){plan.push({date:ds,type:'rest',focus:'riposo',icon:'😴'});consec=0;}
+    const isRest=restDays.includes(dow)||(consec>=maxConsec);
+    if(isRest){
+      const isUserRest=restDays.includes(dow);
+      plan.push({date:ds,type:'rest',focus:'riposo',
+        icon:isUserRest?'😴':'🔄',
+        restKind:isUserRest?'user':'auto'});
+      consec=0;
+    }
     else{const focus=cats[focusIdx%cats.length];plan.push({date:ds,type:'workout',focus,icon:CAT_INFO[focus]?.icon||'🏋️'});focusIdx++;consec++;}
   }
-  S.plan=plan;save();toast('✅ Piano rigenerato con i giorni di riposo aggiornati!');
+  S.plan=plan;
+  save();
+  // Refresh calendar if currently open
+  const calEl=document.getElementById('screen-calendar');
+  if(calEl&&calEl.classList.contains('active'))buildCal();
+  // Refresh home if currently open
+  const homeEl=document.getElementById('screen-home');
+  if(homeEl&&homeEl.classList.contains('active'))buildHome();
+  const autoRests=S.plan.filter(p=>p.restKind==='auto').length;
+  toast('✅ Piano aggiornato! '+(autoRests>0?'('+autoRests+' giorni recupero automatico inseriti per evitare sovrallenamento)':''));
 }
 function getTodayPlan(){const today=new Date().toISOString().slice(0,10);return S.plan.find(p=>p.date===today)||{focus:'misto',icon:'🌈',type:'workout'}}
 
@@ -1216,6 +1264,9 @@ function buildHome(){
   const h=new Date().getHours();
   document.getElementById('home-greeting').textContent=`${h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera'}, ${P.name}! 👋`;
   document.getElementById('home-phrase').textContent=PHRASES[Math.floor(Math.random()*PHRASES.length)];
+  applyDynamicTheme();
+  calcSkippedSessions();
+  buildSkippedMsg();
   document.getElementById('home-streak').textContent=S.str;
   const done=S.tot,goal=P.goal||90,pct=Math.min(100,Math.round(done/goal*100));
   document.getElementById('hg-done').textContent=done;document.getElementById('hg-tot').textContent=goal;document.getElementById('hg-pct').textContent=pct+'%';document.getElementById('hg-fill').style.width=pct+'%';
@@ -1254,7 +1305,7 @@ function selSex(btn){
   btn.style.borderColor='var(--g1)';btn.style.background='var(--g4)';btn.style.color='var(--g1)';
 }
 function setSexSetting(s){
-  P.sex=s;calcProfileBias();save();
+  P.sex=s;calcProfileBias();save();refreshPlan();
   const vm=document.getElementById('val-sex');if(vm)vm.textContent=s==='M'?'👨 Uomo':'👩 Donna';
   const bm=document.getElementById('sex-btn-m');const bf=document.getElementById('sex-btn-f');
   if(bm){bm.style.borderColor=s==='M'?'var(--g1)':'var(--bdr)';bm.style.background=s==='M'?'var(--g4)':'var(--card)';}
@@ -1368,23 +1419,177 @@ function startTraining(){
 
 // ═══ DIFFICULTY FEEDBACK ═══
 function submitFeedback(level){
-  // level: 'hard' | 'ok' | 'great' | 'skip'
   if(level!=='skip'){
     const bias={hard:-1,ok:0,great:1}[level]||0;
-    SET.difficultyBias=(SET.difficultyBias||0)+bias;
-    // Clamp between -3 and +3
-    SET.difficultyBias=Math.max(-3,Math.min(3,SET.difficultyBias));
-    const msgs={
-      hard:'💙 Capito! Le prossime sessioni saranno un po\' più leggere.',
-      ok:'✅ Perfetto! Continui così.',
-      great:'🔥 Ottimo! Aumentiamo un po\' l\'intensità!'
-    };
+    SET.difficultyBias=Math.max(-3,Math.min(3,(SET.difficultyBias||0)+bias));
+    // Store last 3 feedbacks for adaptive plan
+    if(!SET.recentFeedbacks)SET.recentFeedbacks=[];
+    SET.recentFeedbacks.push(level);
+    if(SET.recentFeedbacks.length>3)SET.recentFeedbacks.shift();
+    // Adaptive plan: if last 3 all 'hard' → shorten; all 'great' → lengthen
+    const fb=SET.recentFeedbacks;
+    if(fb.length===3){
+      if(fb.every(f=>f==='hard')){
+        SET.preferredDur=Math.max(5,(SET.preferredDur||12)-2);
+        setTimeout(()=>toast('💙 Piano adattato: sessioni più brevi nelle prossime settimane. Vai al tuo ritmo! 🐢',5000),600);
+        SET.recentFeedbacks=[];
+      } else if(fb.every(f=>f==='great')){
+        SET.preferredDur=Math.min(20,(SET.preferredDur||12)+2);
+        setTimeout(()=>toast('🔥 Piano adattato: sessioni più lunghe! Stai migliorando! 💪',5000),600);
+        SET.recentFeedbacks=[];
+      }
+    }
+    const msgs={hard:'💙 Capito! Le prossime sessioni saranno un po\' più leggere.',ok:'✅ Perfetto! Continui così.',great:'🔥 Ottimo! Aumentiamo un po\' l\'intensità!'};
     save();
-    // Show a brief toast after going home
     setTimeout(()=>toast(msgs[level],4000),400);
   }
   go('home');
 }
+
+
+
+function buildSkippedMsg(){
+  // Remove existing
+  const old=document.getElementById('skip-msg');if(old)old.remove();
+  if(!S.skipped||S.skipped<3)return;
+  const msgs=[
+    'Ehi, sei diventato una tartaruga vera… ma non nel senso buono! 🐌',
+    'La tartaruga ti sta aspettando! Sono '+S.skipped+' giorni che non ti fai vedere… 🐢😤',
+    'Il divano non conta come allenamento! '+S.skipped+' giorni saltati! 🛋️',
+    'Dai, anche 5 minuti bastano! Sono '+S.skipped+' giorni di assenza! 💤',
+    'La tartaruga è delusa… '+S.skipped+' giorni senza di te! 🐢😢',
+  ];
+  const msg=msgs[Math.min(Math.floor(S.skipped/3),msgs.length-1)];
+  const div=document.createElement('div');div.id='skip-msg';
+  div.style.cssText='background:linear-gradient(135deg,#FFEBEE,#FFCDD2);border:2px solid #E53935;border-radius:14px;padding:11px 14px;margin:0 13px 11px;display:flex;align-items:center;gap:10px;animation:fadeIn .4s';
+  div.innerHTML=`<span style="font-size:26px">😤</span><div style="flex:1"><div style="font-weight:bold;color:#B71C1C;font-size:13px">Dai, non essere sfaticato!</div><div style="font-size:12px;color:#C62828;margin-top:2px">${msg}</div></div>`;
+  // Insert after streak chip
+  const hero=document.querySelector('.home-hero');
+  if(hero)hero.after(div);
+}
+
+// ═══ SHARE RESULT CARD ═══
+function shareResultCard(){
+  const canvas=document.createElement('canvas');
+  canvas.width=600;canvas.height=360;
+  const ctx=canvas.getContext('2d');
+  // Background gradient
+  const grad=ctx.createLinearGradient(0,0,600,360);
+  grad.addColorStop(0,'#1B5E20');grad.addColorStop(1,'#43A047');
+  ctx.fillStyle=grad;ctx.fillRect(0,0,600,360);
+
+  const renderCard=()=>{
+    // Stats
+    const exCount=document.getElementById('cmp-ex')?.textContent||'0';
+    const dur=document.getElementById('cmp-time')?.textContent||'0m';
+    const xpGain=document.getElementById('cmp-xp')?.textContent||'+0';
+    ctx.font='bold 22px sans-serif';ctx.fillStyle='rgba(255,255,255,.92)';
+    ctx.textAlign='left';
+    ctx.fillText('💪 Esercizi: '+exCount,50,210);
+    ctx.fillText('⏱️ Durata: '+dur,50,245);
+    ctx.fillText('⭐ '+xpGain+' XP guadagnati',50,280);
+    ctx.fillText('🔥 Streak: '+S.str+' giorni',320,210);
+    ctx.fillText('🏅 Badge: '+(S.badges||[]).length+'/29',320,245);
+    ctx.fillText('📊 XP totali: '+(S.xp||0),320,280);
+    // Divider
+    ctx.strokeStyle='rgba(255,255,255,.25)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(50,300);ctx.lineTo(550,300);ctx.stroke();
+    // Slogan footer
+    ctx.font='italic 17px sans-serif';ctx.fillStyle='rgba(255,255,255,.75)';
+    ctx.textAlign='center';
+    ctx.fillText('Lento ma costante vince la gara! 🐢',300,330);
+    // Share
+    canvas.toBlob(blob=>{
+      const file=new File([blob],'turbotartaruga-risultato.png',{type:'image/png'});
+      if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+        navigator.share({title:'TurboTartaruga — Sessione completata!',text:'Ho appena completato una sessione! 💪',files:[file]})
+          .catch(()=>downloadCard(canvas));
+      } else {downloadCard(canvas);}
+    },'image/png');
+  };
+
+  // Try to load the actual logo image
+  const logoImg=new Image();
+  logoImg.crossOrigin='anonymous';
+  logoImg.onload=()=>{
+    // Draw logo centered at top — max 180px wide
+    const maxW=200,maxH=100;
+    const ratio=Math.min(maxW/logoImg.width,maxH/logoImg.height);
+    const lw=logoImg.width*ratio,lh=logoImg.height*ratio;
+    ctx.drawImage(logoImg,(600-lw)/2,12,lw,lh);
+    // App name below logo
+    ctx.font='bold 26px sans-serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+    ctx.fillText('TurboTartaruga',300,135);
+    ctx.font='15px sans-serif';ctx.fillStyle='rgba(255,255,255,.7)';
+    ctx.fillText('Il tuo coach di fitness amichevole',300,160);
+    // Separator
+    ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(50,178);ctx.lineTo(550,178);ctx.stroke();
+    renderCard();
+  };
+  logoImg.onerror=()=>{
+    // Fallback: text-only header
+    ctx.font='bold 42px sans-serif';ctx.fillStyle='#fff';ctx.textAlign='center';
+    ctx.fillText('🐢 TurboTartaruga',300,80);
+    ctx.font='15px sans-serif';ctx.fillStyle='rgba(255,255,255,.7)';
+    ctx.fillText('Il tuo coach di fitness amichevole',300,115);
+    ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(50,140);ctx.lineTo(550,140);ctx.stroke();
+    renderCard();
+  };
+  // Load logo-app.png (has text) from same origin
+  logoImg.src='logo-app.png';
+}
+function downloadCard(canvas){
+  const a=document.createElement('a');
+  a.href=canvas.toDataURL('image/png');
+  a.download='turbotartaruga-risultato.png';
+  a.click();
+  toast('🖼️ Card salvata! Puoi condividerla da Galleria.',3000);
+}
+
+// ═══ DYNAMIC THEME (time/season) ═══
+function applyDynamicTheme(){
+  const now=new Date();
+  const h=now.getHours();
+  const m=now.getMonth(); // 0=Jan
+  // Season (northern hemisphere)
+  const season=m>=2&&m<=4?'spring':m>=5&&m<=7?'summer':m>=8&&m<=10?'autumn':'winter';
+  // Time of day
+  const tod=h>=5&&h<12?'morning':h>=12&&h<17?'afternoon':h>=17&&h<21?'evening':'night';
+  const themes={
+    // morning × season
+    morning_spring:'linear-gradient(155deg,#2E7D32,#43A047,#8BC34A)',
+    morning_summer:'linear-gradient(155deg,#1B5E20,#2E7D32,#43A047)',
+    morning_autumn:'linear-gradient(155deg,#4E342E,#BF360C,#E64A19)',
+    morning_winter:'linear-gradient(155deg,#1A237E,#283593,#3949AB)',
+    // afternoon × season
+    afternoon_spring:'linear-gradient(155deg,#1B5E20,#2E7D32,#66BB6A)',
+    afternoon_summer:'linear-gradient(155deg,#E65100,#F57C00,#FFB300)',
+    afternoon_autumn:'linear-gradient(155deg,#BF360C,#D84315,#FF7043)',
+    afternoon_winter:'linear-gradient(155deg,#0D47A1,#1565C0,#1976D2)',
+    // evening × season
+    evening_spring:'linear-gradient(155deg,#1A237E,#283593,#2E7D32)',
+    evening_summer:'linear-gradient(155deg,#E91E63,#880E4F,#4A148C)',
+    evening_autumn:'linear-gradient(155deg,#4A148C,#6A1B9A,#BF360C)',
+    evening_winter:'linear-gradient(155deg,#0D47A1,#1A237E,#311B92)',
+    // night × season  
+    night_spring:'linear-gradient(155deg,#1A237E,#0D1B3E,#1B2E1A)',
+    night_summer:'linear-gradient(155deg,#0D1B3E,#1A237E,#0D3320)',
+    night_autumn:'linear-gradient(155deg,#1A0A00,#2D1B00,#0D1B3E)',
+    night_winter:'linear-gradient(155deg,#0A0A2E,#0D1B3E,#1A0A30)',
+  };
+  const key=`${tod}_${season}`;
+  const grad=themes[key]||themes['morning_spring'];
+  const hero=document.querySelector('.home-hero');
+  if(hero)hero.style.background=grad;
+  // Seasonal emoji in greeting area
+  const seasonEmoji={spring:'🌸',summer:'☀️',autumn:'🍂',winter:'❄️'}[season];
+  const timeEmoji={morning:'🌅',afternoon:'🌞',evening:'🌇',night:'🌙'}[tod];
+  // Store for use in buildHome
+  window._themeEmoji=timeEmoji+seasonEmoji;
+}
+
 // ═══ BMI / PROFILE INTELLIGENCE ═══
 function calcProfileBias(){
   if(!P.weight||!P.height||!P.age)return;
@@ -1798,6 +2003,26 @@ function completeSession(){releaseWakeLock();checkOver65Challenge();checkProfile
   });
   go_scr('complete');
 }
+function calcSkippedSessions(){
+  // Count planned workout days in the past that have no history entry
+  const today=new Date().toISOString().slice(0,10);
+  let consecutive=0;
+  let totalSkipped=0;
+  const sorted=[...(S.plan||[])].filter(p=>p.type!=='rest'&&p.date<today).sort((a,b)=>b.date.localeCompare(a.date));
+  for(const p of sorted){
+    const done=(S.history||[]).some(h=>h.date===p.date&&h.type!=='riposo_vol');
+    if(!done){consecutive++;totalSkipped++;}
+    else break;
+  }
+  S.skipped=consecutive;
+  S.skippedTotal=totalSkipped;
+  // XP malus: each skipped day beyond 2 costs 10 XP (min 0)
+  if(consecutive>2){
+    const malus=(consecutive-2)*10;
+    if(S.xp>0){S.xp=Math.max(0,S.xp-malus);}
+  }
+  save();
+}
 function updateStreak(){
   const today=new Date().toISOString().slice(0,10);
   if(!S.last)S.str=S.days.includes(today)?1:0;
@@ -1813,6 +2038,39 @@ function checkBadges(){
 
 // ═══ CALENDAR ═══
 function calMove(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++}else if(calMonth<0){calMonth=11;calYear--}buildCal()}
+
+// ── Calendar day tooltip ──────────────────────────────────────────
+let _calTipTimer=null;
+function showCalTip(el, dataEnc){
+  // Remove any existing tooltip
+  const old=document.getElementById('cal-tip-popup');if(old)old.remove();
+  const data=JSON.parse(decodeURIComponent(dataEnc));
+  if(!data.lines||!data.lines.length)return;
+  // Format date nicely
+  const dt=new Date(data.d+'T12:00:00');
+  const dateStr=dt.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});
+  // Build popup
+  const pop=document.createElement('div');
+  pop.id='cal-tip-popup';
+  pop.style.cssText='position:fixed;z-index:500;background:var(--card);border:2px solid var(--g1);border-radius:14px;padding:12px 15px;box-shadow:0 6px 24px rgba(0,0,0,.2);max-width:220px;pointer-events:none';
+  pop.innerHTML=`<div style="font-size:11px;font-weight:bold;color:var(--tlt);text-transform:capitalize;margin-bottom:7px">${dateStr}</div>`+
+    data.lines.map(l=>`<div style="font-size:13px;color:var(--text);padding:2px 0;line-height:1.4">${l}</div>`).join('');
+  document.body.appendChild(pop);
+  // Position near the tapped cell, staying within viewport
+  const rect=el.getBoundingClientRect();
+  const pw=220,ph=pop.offsetHeight||100;
+  let left=rect.left+rect.width/2-pw/2;
+  let top=rect.top-ph-10;
+  if(top<10)top=rect.bottom+10;
+  if(left<10)left=10;
+  if(left+pw>window.innerWidth-10)left=window.innerWidth-pw-10;
+  pop.style.left=left+'px';pop.style.top=top+'px';
+  // Auto-dismiss after 3s or on next tap anywhere
+  clearTimeout(_calTipTimer);
+  _calTipTimer=setTimeout(()=>pop.remove(),3000);
+  const dismiss=e=>{if(!pop.contains(e.target)){pop.remove();document.removeEventListener('click',dismiss);document.removeEventListener('touchstart',dismiss);}};
+  setTimeout(()=>{document.addEventListener('click',dismiss);document.addEventListener('touchstart',dismiss);},100);
+}
 function buildCal(){
   const MN=['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
   document.getElementById('cal-title').textContent=`${MN[calMonth]} ${calYear}`;
@@ -1826,12 +2084,12 @@ function buildCal(){
   for(let d=1;d<=dim;d++){
     const ds=`${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const isToday=ds===today,isFuture=ds>today;
-    // ALL history entries for this day (multiple sessions)
     const histEntries=S.history.filter(e=>e.date===ds);
     const planEntry=S.plan.find(e=>e.date===ds);
     let cls='cd',icoHtml='',type='';
+    // Build tooltip text for this day
+    let tipLines=[];
     if(histEntries.length>0){
-      // Use first entry for background color
       const first=histEntries[0];
       const ci=CAT_INFO[first.type]||{cls:'workout',icon:'💪'};
       type=first.type==='riposo_vol'?'vol_rest':ci.cls;
@@ -1840,23 +2098,45 @@ function buildCal(){
       if(histEntries.length===1){
         const ico=(first.type==='riposo_vol'?'🛋️':ci.icon)+(first.boost?'💥':'');
         icoHtml=`<div class="cd-ico">${ico}</div>`;
+        const lbl=first.type==='riposo_vol'?'Riposo volontario':ci.label||first.type;
+        tipLines.push('✅ '+lbl);
+        if(first.dur)tipLines.push('⏱️ '+first.dur+' minuti');
+        if(first.exCount)tipLines.push('💪 '+first.exCount+' esercizi');
+        if(first.xp)tipLines.push('⭐ +'+first.xp+' XP');
+        if(first.boost)tipLines.push('💥 Riserva Turbo attivata!');
       } else {
-        // Multiple sessions: show stacked icons with count badge
-        const icons=histEntries.slice(0,2).map(e=>{
-          const ci2=CAT_INFO[e.type]||{icon:'💪'};
-          return e.type==='riposo_vol'?'🛋️':ci2.icon;
-        }).join('');
+        const icons=histEntries.slice(0,2).map(e=>{const ci2=CAT_INFO[e.type]||{icon:'💪'};return e.type==='riposo_vol'?'🛋️':ci2.icon;}).join('');
         icoHtml=`<div class="cd-ico" style="font-size:11px;line-height:1.1">${icons}</div><div style="position:absolute;top:2px;right:3px;background:#E65100;color:#fff;border-radius:100px;font-size:8px;font-weight:bold;padding:0 3px;line-height:14px">${histEntries.length}</div>`;
         cls+=' multi';
+        tipLines.push('✅ '+histEntries.length+' sessioni oggi');
+        const totDur=histEntries.reduce((a,e)=>a+(e.dur||0),0);
+        const totXp=histEntries.reduce((a,e)=>a+(e.xp||0),0);
+        if(totDur)tipLines.push('⏱️ '+totDur+' min totali');
+        if(totXp)tipLines.push('⭐ +'+totXp+' XP totali');
       }
     }else if(planEntry){
       const ci=CAT_INFO[planEntry.focus]||{cls:'workout',icon:'🌈'};
       type=ci.cls;
       cls=`cd ${type}${isFuture?' future':''}`;
-      if(planEntry.type!=='rest'){planned++;icoHtml=`<div class="cd-ico">${planEntry.icon||ci.icon}</div>`;}
-    }else{type='rest';cls=`cd rest${isFuture?' future':''}`}
-    if(isToday)cls+=' today';
-    h+=`<div class="${cls}" style="position:relative"><div class="cd-num">${d}</div>${icoHtml}</div>`;
+      if(planEntry.type!=='rest'){
+        planned++;
+        icoHtml=`<div class="cd-ico">${planEntry.icon||ci.icon}</div>`;
+        tipLines.push(isFuture?'📅 Pianificato: ':'📋 ')+(ci.label||planEntry.focus);
+      } else {
+        const restIcon=planEntry.icon||'😴';
+        const isAuto=planEntry.restKind==='auto';
+        icoHtml=`<div class="cd-ico" style="opacity:${isAuto?'.5':'.8'}">${restIcon}</div>`;
+        if(isAuto){cls+=' auto-rest';tipLines.push('🔄 Recupero automatico','Pausa per prevenire il sovrallenamento');}
+        else{tipLines.push('😴 Giorno di riposo','Ricarica le energie!');}
+      }
+    }else{
+      type='rest';cls=`cd rest${isFuture?' future':''}`;
+      tipLines.push(isFuture?'📭 Nessun piano':'📭 Nessuna sessione');
+    }
+    if(isToday){cls+=' today';tipLines.unshift('📍 Oggi');}
+    // Encode tooltip data
+    const tipData=encodeURIComponent(JSON.stringify({d:ds,lines:tipLines}));
+    h+=`<div class="${cls}" style="position:relative;cursor:pointer" onclick="showCalTip(this,'${tipData}')"><div class="cd-num">${d}</div>${icoHtml}</div>`;
   }
   document.getElementById('cal-grid').innerHTML=h;
   document.getElementById('cal-done').textContent=done;
@@ -1879,6 +2159,7 @@ function buildProgress(){
   document.getElementById('prg-tot').textContent=S.tot;
   document.getElementById('prg-str').textContent=S.str;
   document.getElementById('prg-xp').textContent=S.xp||0;
+  if(S.skipped>2){const xpMalDiv=document.getElementById('prg-skip-warn');if(xpMalDiv)xpMalDiv.style.display='block';const xpMalTxt=document.getElementById('prg-skip-txt');if(xpMalTxt)xpMalTxt.textContent='⚠️ Hai '+S.skipped+' sessioni saltate consecutive — stai perdendo XP! Torna ad allenarti!';}
   // Detailed history with tags and exercises
   const hl=document.getElementById('hist-list');
   if(!hl)return;
@@ -2046,7 +2327,7 @@ function buildSettings(){
   syncToggles();
   // Update version display
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.6 · 10/04/2026 08:09';
+  if(vdisp)vdisp.textContent='Versione v0.6 · 10/04/2026 16:08';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 8 categorie`;
@@ -2064,7 +2345,8 @@ function saveField(f){
   if(!cfg)return;
   let val;if(f==='name')val=raw;else{val=parseInt(raw);if(isNaN(val)||!cfg.v(val)){toast('⚠️ Valore non valido!');return}}
   if(f!=='name'&&!cfg.v(val)){toast('⚠️ Valore non valido!');return}
-  P[f]=val;save();document.getElementById('val-'+f).textContent=cfg.fmt(val);cancelEdit(f);toast(`✅ ${cfg.lbl} aggiornato!`);
+  P[f]=val;calcProfileBias();save();document.getElementById('val-'+f).textContent=cfg.fmt(val);cancelEdit(f);
+  if(['weight','height','age'].includes(f)){refreshPlan();toast(`✅ ${cfg.lbl} aggiornato — piano ricalcolato!`);}else toast(`✅ ${cfg.lbl} aggiornato!`);
 }
 
 // ═══ BACKUP ═══
@@ -2139,9 +2421,9 @@ function toggleAvoidList(id,btn){
   else{P.favorites=(P.favorites||[]).filter(x=>x!==id);P.avoided.push(id);btn.style.opacity='1';toast('🚫 Esercizio escluso!');}
   save();
 }
-function toggleStCat(el){el.classList.toggle('sel');const ck=el.querySelector('.mchk-check');if(ck)ck.textContent=el.classList.contains('sel')?'✓':'';const cats=[...document.querySelectorAll('#st-cats .mchk.sel')].map(e=>e.dataset.cat);P.categories=cats;save()}
-function saveRestDays(){const rd=[...document.querySelectorAll('#st-restdays .day-btn.sel')].map(e=>parseInt(e.dataset.dow));P.restDays=rd;save();toast('✅ Giorni di riposo salvati!')}
-function toggleNoFloor(){const el=document.getElementById('st-nofloor');if(el)el.classList.toggle('on');P.noFloor=document.getElementById('st-nofloor').classList.contains('on');save()}
+function toggleStCat(el){el.classList.toggle('sel');const ck=el.querySelector('.mchk-check');if(ck)ck.textContent=el.classList.contains('sel')?'✓':'';const cats=[...document.querySelectorAll('#st-cats .mchk.sel')].map(e=>e.dataset.cat);P.categories=cats;save();refreshPlan();}
+function saveRestDays(){const rd=[...document.querySelectorAll('#st-restdays .day-btn.sel')].map(e=>parseInt(e.dataset.dow));P.restDays=rd;save();refreshPlan();toast('✅ Giorni di riposo salvati — piano aggiornato!');}
+function toggleNoFloor(){const el=document.getElementById('st-nofloor');if(el)el.classList.toggle('on');P.noFloor=document.getElementById('st-nofloor').classList.contains('on');save();refreshPlan();toast('✅ Impostazione salvata — piano aggiornato!');}
 function updPauseSt(v){document.getElementById('st-pause-disp').textContent=v+'s';document.getElementById('st-pause-range').style.setProperty('--pct',((v-5)/55*100).toFixed(1)+'%')}
 function updGoalSt(v){document.getElementById('st-goal-disp').textContent=v;document.getElementById('st-goal-range').style.setProperty('--pct',((v-10)/355*100).toFixed(1)+'%')}
 function savePause(){SET.pauseSec=parseInt(document.getElementById('st-pause-range').value)||20;save();toast('✅ Pausa salvata: '+SET.pauseSec+' secondi')}
@@ -2318,7 +2600,7 @@ function importResultCode(){
 }
 
 // ═══ INIT ═══
-load();applyTheme();applyView();syncToggles();T.dur=12;
+load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 if(P.name){
   if(!S.plan||S.plan.length===0)generatePlan();
   updateStreak();
@@ -2417,7 +2699,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604100809'; // auto-set on each release
+const APP_BUILD='202604101608'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
