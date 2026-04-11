@@ -66,7 +66,7 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 .day-sel{display:flex;gap:5px;flex-wrap:wrap}
 .day-btn{width:38px;height:38px;border-radius:50%;border:2px solid var(--bdr);background:var(--card);color:var(--text);font-size:12px;font-weight:bold;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center}
 .day-btn.sel{border-color:var(--coral);background:var(--coral);color:#fff}
-.home-hero{background:linear-gradient(155deg,#1B5E20,#2E7D32 40%,#43A047 75%,#66BB6A);padding:22px 18px 28px;text-align:center;color:#fff;border-radius:0 0 28px 28px;margin-bottom:14px;transition:background 1.5s ease}
+.home-hero{background:linear-gradient(155deg,#1B5E20,#2E7D32 40%,#43A047 75%,#66BB6A);padding:14px 18px 18px;text-align:center;color:#fff;border-radius:0 0 28px 28px;margin-bottom:14px;transition:background 1.5s ease}
 .home-hero h2{font-family:var(--ft);font-size:20px;margin-bottom:3px}
 .home-hero p{font-size:var(--fs-sm);opacity:.88;line-height:1.5}
 .streak-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.18);border-radius:100px;padding:5px 13px;margin-top:8px;font-size:var(--fs-sm);font-weight:bold}
@@ -79,7 +79,7 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 .goal-fill{height:100%;background:linear-gradient(90deg,var(--g1),var(--b1));border-radius:100px;transition:width .6s}
 .rest-banner{background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:14px;padding:12px 14px;margin:0 13px 13px;border-left:4px solid var(--b1);display:flex;align-items:center;gap:10px}
 [data-theme="dark"] .rest-banner{background:linear-gradient(135deg,#0D2744,#163557)}
-.today-card{background:linear-gradient(135deg,var(--g4),var(--bg2));border-radius:var(--radius);padding:var(--pad);margin:0 13px 13px;box-shadow:var(--shadow)}
+.today-card{background:linear-gradient(135deg,var(--g4),var(--bg2));border-radius:var(--radius);padding:12px 14px;margin:0 13px 10px;box-shadow:var(--shadow)}
 .feeling-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px}
 .fbtn{padding:8px 4px;border-radius:13px;border:3px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;text-align:center;font-size:var(--fs-xs);font-weight:bold;transition:all .2s;font-family:var(--fb)}
 .fbtn-sub{padding:7px 4px;font-size:11px;border-width:2px}
@@ -283,9 +283,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <!-- Slides container -->
     <div id="wiz-slides" style="display:flex;transition:transform .35s cubic-bezier(.4,0,.2,1);flex:1;will-change:transform"></div>
     <!-- Nav bar -->
-    <div style="display:flex;gap:10px;padding:14px 18px 24px;background:var(--card);border-top:1px solid var(--bdr);position:sticky;bottom:0;z-index:5">
-      <button id="wiz-back" onclick="wizNav(-1)" style="padding:12px 18px;border-radius:100px;border:2px solid var(--bdr);background:var(--bg2);color:var(--text);font-family:var(--ft);font-size:15px;font-weight:bold;cursor:pointer;display:none">← Indietro</button>
-      <button id="wiz-next" onclick="wizNav(1)" style="flex:1;padding:14px;border-radius:100px;border:none;background:var(--g1);color:#fff;font-family:var(--ft);font-size:16px;font-weight:bold;cursor:pointer">Avanti →</button>
+    <div style="display:flex;gap:10px;padding:10px 18px env(safe-area-inset-bottom,14px);background:rgba(0,0,0,.35);backdrop-filter:blur(10px);position:sticky;bottom:0;z-index:5">
+      <button id="wiz-back" onclick="wizNav(-1)" style="padding:12px 18px;border-radius:100px;border:2px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;font-family:var(--ft);font-size:15px;font-weight:bold;cursor:pointer;display:none">← Indietro</button>
+      <button id="wiz-next" onclick="wizNav(1)" style="flex:1;padding:14px;border-radius:100px;border:2px solid rgba(255,255,255,.6);background:rgba(255,255,255,.2);color:#fff;font-family:var(--ft);font-size:16px;font-weight:bold;cursor:pointer">Avanti →</button>
     </div>
     <!-- Swipe hint (shown once) -->
     <div id="wiz-swipe-hint" style="position:absolute;bottom:82px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:12px;pointer-events:none;z-index:6">
@@ -293,9 +293,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <span style="font-size:18px">👈</span> scorri per navigare <span style="font-size:18px">👉</span>
       </div>
     </div>
-    <!-- Persistent side arrows -->
-    <button id="wiz-arrow-left" onclick="wizNav(-1)" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);color:#fff;font-size:18px;cursor:pointer;display:none;z-index:6;align-items:center;justify-content:center">‹</button>
-    <button id="wiz-arrow-right" onclick="wizNav(1)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);color:#fff;font-size:18px;cursor:pointer;display:flex;z-index:6;align-items:center;justify-content:center">›</button>
+
   </div>
   <!-- Hidden inputs (read by saveProfile) -->
   <input type="hidden" id="ob-name" value="">
@@ -309,7 +307,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <div id="screen-home" class="screen">
   <div class="home-hero" style="position:relative">
     <button onclick="go('settings')" style="position:absolute;top:10px;right:12px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.95);border:2px solid #fff;cursor:pointer;font-size:19px;display:flex;align-items:center;justify-content:center;color:#1B5E20;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.25)" title="Impostazioni">⚙️</button>
-    <img src="logo-turtle.png" alt="" style="width:min(72vw,280px);max-height:160px;object-fit:contain;object-position:center bottom;margin-bottom:4px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.25));display:block;margin-left:auto;margin-right:auto">
+    <img src="logo-turtle.png" alt="" style="width:min(65vw,240px);max-height:130px;object-fit:contain;object-position:center bottom;margin-bottom:4px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.25));display:block;margin-left:auto;margin-right:auto">
     <h2 id="home-greeting">Ciao!</h2><p id="home-phrase" style="font-size:15px;font-weight:600;opacity:1;line-height:1.5;margin-top:4px;text-shadow:0 1px 3px rgba(0,0,0,.15);font-style:italic">Pronto per il tuo allenamento?</p>
     <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:6px">
       <div class="streak-chip">🔥 <span id="home-streak">0</span> giorni di fila!</div>
@@ -321,7 +319,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <span style="font-size:28px">😴</span>
     <div><div style="font-weight:bold;font-size:var(--fs)">Oggi è il tuo giorno di riposo!</div><div style="font-size:var(--fs-xs);color:var(--tmid)">Hai lavorato bene. Riposa e torna domani 🌿</div></div>
   </div>
-  <div style="padding:0 13px;margin-bottom:11px">
+  <div style="padding:0 13px;margin-bottom:7px">
     <div style="display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--tlt)"><span>🎯 <span id="hg-done">0</span>/<span id="hg-tot">90</span></span><span id="hg-pct">0%</span></div>
     <div class="goal-bar"><div id="hg-fill" class="goal-fill" style="width:0%"></div></div>
   </div>
@@ -334,19 +332,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div style="font-size:var(--fs-xs);font-weight:bold;color:var(--tmid);margin-bottom:7px">🌟 Come ti senti oggi?</div>
       <!-- 3 big feeling buttons -->
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px" id="feeling-grid">
-        <button class="fbtn sel" data-f="piano" onclick="setFeeling(this)" style="padding:12px 6px">
+        <button class="fbtn sel" data-f="piano" onclick="setFeeling(this)" style="padding:10px 6px">
           <span class="fi">🌈</span>Segui piano
         </button>
-        <button class="fbtn" data-f="__scelgo__" onclick="toggleScelgo(this)" style="padding:12px 6px">
+        <button class="fbtn" data-f="__scelgo__" onclick="toggleScelgo(this)" style="padding:10px 6px">
           <span class="fi">🕹️</span>Scelgo io!
         </button>
-        <button class="fbtn tired" data-f="stanco" onclick="setFeeling(this)" style="padding:12px 6px">
+        <button class="fbtn tired" data-f="stanco" onclick="setFeeling(this)" style="padding:10px 6px">
           <span class="fi">😴</span>Stanco
         </button>
       </div>
       <!-- Energy level selector -->
-      <div id="energy-wrap" style="margin-bottom:10px">
-        <div style="font-size:12px;font-weight:bold;color:var(--tlt);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">⚡ Energia adesso?</div>
+      <div id="energy-wrap" style="margin-bottom:8px">
+        <div style="font-size:11px;font-weight:bold;color:var(--tlt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">⚡ Energia</div>
         <div style="display:flex;gap:6px;justify-content:center">
           <button class="nrg-btn" data-nrg="1" onclick="setEnergy(this)" title="Esausto" style="flex:1;padding:8px 4px;border-radius:11px;border:2px solid var(--bdr);background:var(--card);font-size:20px;cursor:pointer">😴</button>
           <button class="nrg-btn" data-nrg="2" onclick="setEnergy(this)" title="Stanco" style="flex:1;padding:8px 4px;border-radius:11px;border:2px solid var(--bdr);background:var(--card);font-size:20px;cursor:pointer">😐</button>
@@ -778,11 +776,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         </div>
       </div>
       <div class="srow"><div class="si">⚡</div><div class="sinfo"><div class="stitle">Livello</div></div>
-        <select id="st-level" onchange="saveSelectF('level',this.value)" style="border:2px solid var(--bdr);border-radius:100px;padding:6px 10px;font-size:var(--fs-xs);font-weight:bold;background:var(--card);color:var(--text);cursor:pointer;outline:none"><option value="principiante">🌱 Principiante</option><option value="intermedio">🔥 Intermedio</option></select></div>
-      <div class="srow"><div class="si">🚫</div><div class="sinfo"><div class="stitle">Evita esercizi a terra</div><div class="sval">Esclude esercizi che richiedono di sdraiarsi</div></div><button class="toggle" id="st-nofloor" onclick="toggleNoFloor()"></button></div>
+        <select id="st-level" onchange="saveSelectF('level',this.value)" style="border:2px solid var(--bdr);border-radius:100px;padding:6px 10px;font-size:var(--fs-xs);font-weight:bold;background:var(--card);color:var(--text);cursor:pointer;outline:none"><option value="principiante">🌱 Principiante</option><option value="intermedio">🔥 Intermedio</option><option value="esperto">🚀 Esperto</option></select></div>
     </div>
     <span class="sec-title">🏋️ Preferenze allenamento</span>
     <div class="sblk">
+      <div class="srow"><div class="si">🚫</div><div class="sinfo"><div class="stitle">Evita esercizi a terra</div><div class="sval">Esclude esercizi che richiedono di sdraiarsi</div></div><button class="toggle" id="st-nofloor" onclick="toggleNoFloor()"></button></div>
       <div class="srow" style="flex-direction:column;align-items:flex-start;gap:9px"><div class="stitle">Categorie attive</div><div id="st-cats" style="width:100%"></div></div>
       <div class="srow" style="flex-direction:column;align-items:flex-start;gap:9px"><div class="stitle">Giorni di riposo</div><div class="day-sel" id="st-restdays" style="width:100%;margin-top:4px"></div><button class="btn btn-s" style="padding:8px 16px;font-size:var(--fs-xs);margin-top:8px" onclick="saveRestDays()">✅ Salva giorni riposo</button></div>
       <div class="srow" style="flex-direction:column;align-items:flex-start;gap:10px">
@@ -1141,7 +1139,7 @@ const CAT_INFO={
   elastici:{label:'Elastici',icon:'🎽',cls:'workout'},
   cardio:{label:'Cardio/Box',icon:'🥊',cls:'workout'},
   presonno:{label:'Pre-sonno',icon:'😴',cls:'stretching'},
-  postura:{label:'Postura/Ufficio',icon:'🪑+',cls:'workout'},
+  postura:{label:'Postura',icon:'🪑+',cls:'workout'},
   misto:{label:'Misto',icon:'🌈',cls:'workout'},
   misto_plus:{label:'Misto+',icon:'🪑💪',cls:'workout'},
   riposo:{label:'Riposo',icon:'😴',cls:'rest'},
@@ -1365,7 +1363,10 @@ function saveProfile(){
   if(!SET.notifEnabled)SET.notifEnabled=false;
   calcProfileBias();
   S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[]};
-  generatePlan();updateStreak();save();go('home');
+  generatePlan();updateStreak();save();
+  // Slight delay so DOM settles, then force btn-start visible
+  go('home');
+  setTimeout(()=>{const b=document.getElementById('btn-start');if(b)b.style.display='flex';},100);
 }
 
 
@@ -1454,24 +1455,24 @@ const WIZ_STEPS = [
       </div>
       <div id="wiz-cat-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
         ${[
-          ['gambe','🦵','Gambe',true],['braccia','💪','Braccia',true],
-          ['core','🎯','Core',true],['stretching','🤸','Stretching',true],
-          ['seduto','🪑','Da Seduto',false],['orientale','🧘','Orientale',true],
-          ['elastici','🎽','Elastici',false],['cardio','🥊','Cardio/Box',false],
-          ['presonno','😴','Pre-sonno',false],['postura','🪑+','Postura/Ufficio',false],
-        ].map(([v,ico,lbl,sel])=>`<button class="wiz-cat-btn${sel?' sel':''}" data-cat="${v}" onclick="wizToggleCat(this)"
+          ['gambe','🦵','Gambe'],['braccia','💪','Braccia'],
+          ['core','🎯','Core'],['stretching','🤸','Stretching'],
+          ['seduto','🪑','Da Seduto'],['orientale','🧘','Orientale'],
+          ['elastici','🎽','Elastici'],['cardio','🥊','Cardio/Box'],
+          ['presonno','😴','Pre-sonno'],['postura','🪑+','Postura'],
+        ].map(([v,ico,lbl])=>{const sel=(_wizData.cats||[]).includes(v);return`<button class="wiz-cat-btn${sel?' sel':''}" data-cat="${v}" onclick="wizToggleCat(this)"
           style="padding:14px 10px;border-radius:14px;border:3px solid ${sel?'#fff':'rgba(255,255,255,.25)'};background:${sel?'rgba(255,255,255,.25)':'rgba(255,255,255,.1)'};color:#fff;cursor:pointer;text-align:center">
           <div style="font-size:28px;margin-bottom:4px">${ico}</div>
           <div style="font-size:12px;font-weight:bold">${lbl}</div>
           <div style="font-size:18px;margin-top:4px">${sel?'✓':''}</div>
-        </button>`).join('')}
+        </button>`;}).join('')}
       </div>
       <div style="background:rgba(255,255,255,.12);border-radius:14px;padding:12px 16px;margin-top:12px;display:flex;align-items:center;justify-content:space-between">
         <div>
           <div style="font-weight:bold;margin-bottom:2px">🚫 Evita esercizi a terra</div>
           <div style="font-size:12px;opacity:.75">Attivalo se non puoi sdraiarti</div>
         </div>
-        <button class="toggle" id="wiz-nofloor" onclick="this.classList.toggle('on')" style="flex-shrink:0"></button>
+        <button class="toggle${_wizData.noFloor?' on':''}" id="wiz-nofloor" onclick="this.classList.toggle('on');_wizData.noFloor=this.classList.contains('on')" style="flex-shrink:0"></button>
       </div>
     </div>`
   },
@@ -1601,11 +1602,7 @@ function updateWizDots(){
 function updateWizNav(){
   const back=document.getElementById('wiz-back');
   const next=document.getElementById('wiz-next');
-  const arL=document.getElementById('wiz-arrow-left');
-  const arR=document.getElementById('wiz-arrow-right');
   if(back)back.style.display=_wizStep>0?'block':'none';
-  if(arL)arL.style.display=_wizStep>0?'flex':'none';
-  if(arR)arR.style.display=_wizStep<WIZ_STEPS.length-1?'flex':'none';
   if(next)next.textContent=_wizStep===WIZ_STEPS.length-1?'— già fatto sopra —':(_wizStep===WIZ_STEPS.length-2?'Ultimo step →':'Avanti →');
   if(next)next.style.display=_wizStep===WIZ_STEPS.length-1?'none':'flex';
 }
@@ -1713,6 +1710,9 @@ function wizToggleCat(btn){
   btn.style.borderColor=s?'#fff':'rgba(255,255,255,.25)';
   btn.style.background=s?'rgba(255,255,255,.25)':'rgba(255,255,255,.1)';
   btn.querySelector('div:last-child').textContent=s?'✓':'';
+  // Save immediately to _wizData so it persists on re-render
+  const all=[...document.querySelectorAll('.wiz-cat-btn.sel')].map(b=>b.dataset.cat);
+  _wizData.cats=all;
 }
 
 function wizSelTime(btn){
@@ -3510,7 +3510,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 07:58';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 08:10';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -3557,7 +3557,7 @@ function buildExList(){
     {key:'elastici',label:'🎽 Elastici'},
     {key:'cardio',label:'🥊 Cardio/Box'},
     {key:'presonno',label:'😴 Pre-sonno'},
-    {key:'postura',label:'🪑+ Postura/Ufficio'},
+    {key:'postura',label:'🪑+ Postura'},
     {key:'party',label:'🎉 Party / Sfide'},
   ];
   const total=DB.length;
@@ -3886,7 +3886,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604110758'; // auto-set on each release
+const APP_BUILD='202604110810'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
