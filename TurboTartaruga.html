@@ -276,70 +276,26 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 <!-- ONBOARDING -->
 <div id="screen-onboarding" class="screen">
-  <div class="ob-hero"><img src="logo-turtle.png" alt="TurboTartaruga" style="width:min(65vw,200px);margin-bottom:8px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.2))"><h1>TurboTartaruga</h1><p style="opacity:.88;font-size:13px">Lento ma costante vince la gara! 💪</p></div>
-  <div style="padding:18px 13px" class="scrollable">
-    <div class="fg"><label>👤 Nome</label><input type="text" id="ob-name" placeholder="Es. Mario" maxlength="30" autocomplete="off"></div>
-    <div class="fg"><label>🎂 Età</label><input type="number" id="ob-age" placeholder="Es. 45" min="10" max="99"></div>
-    <div class="fg"><label>🧬 Sesso biologico</label>
-      <div style="display:flex;gap:8px;margin-top:4px">
-        <button type="button" class="sex-btn sel" data-sex="M" onclick="selSex(this)" style="flex:1;padding:10px;border-radius:12px;border:2px solid var(--g1);background:var(--g4);color:var(--g1);font-weight:bold;cursor:pointer">👨 Uomo</button>
-        <button type="button" class="sex-btn" data-sex="F" onclick="selSex(this)" style="flex:1;padding:10px;border-radius:12px;border:2px solid var(--bdr);background:var(--card);color:var(--text);font-weight:bold;cursor:pointer">👩 Donna</button>
-      </div>
+  <!-- Wizard container -->
+  <div id="wiz-wrap" style="min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden">
+    <!-- Progress dots -->
+    <div id="wiz-dots" style="display:flex;gap:6px;justify-content:center;padding:18px 20px 0;position:absolute;top:0;left:0;right:0;z-index:5"></div>
+    <!-- Slides container -->
+    <div id="wiz-slides" style="display:flex;transition:transform .35s cubic-bezier(.4,0,.2,1);flex:1;will-change:transform"></div>
+    <!-- Nav bar -->
+    <div style="display:flex;gap:10px;padding:14px 18px 24px;background:var(--card);border-top:1px solid var(--bdr);position:sticky;bottom:0;z-index:5">
+      <button id="wiz-back" onclick="wizNav(-1)" style="padding:12px 18px;border-radius:100px;border:2px solid var(--bdr);background:var(--bg2);color:var(--text);font-family:var(--ft);font-size:15px;font-weight:bold;cursor:pointer;display:none">← Indietro</button>
+      <button id="wiz-next" onclick="wizNav(1)" style="flex:1;padding:14px;border-radius:100px;border:none;background:var(--g1);color:#fff;font-family:var(--ft);font-size:16px;font-weight:bold;cursor:pointer">Avanti →</button>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
-      <div class="fg"><label>⚖️ Peso (kg)</label><input type="number" id="ob-weight" placeholder="Es. 70"></div>
-      <div class="fg"><label>📏 Altezza (cm)</label><input type="number" id="ob-height" placeholder="Es. 170"></div>
-    </div>
-    <div class="fg"><label>⚡ Livello fitness</label><div class="ocards2">
-      <div class="ocard sel" data-g="level" data-v="principiante" onclick="selOpt(this)"><span class="oi">🌱</span><span class="ol">Principiante</span></div>
-      <div class="ocard" data-g="level" data-v="intermedio" onclick="selOpt(this)"><span class="oi">🔥</span><span class="ol">Intermedio</span></div>
-    </div></div>
-    <div class="fg"><label>🏋️ Cosa vuoi fare? (scegli tutto ciò che ti piace)</label>
-      <div id="cat-picks">
-        <div class="mchk sel" data-cat="riscaldamento" onclick="toggleCat(this)"><span class="mchk-icon">🔥</span><div class="mchk-label">Riscaldamento (sempre incluso)</div><div class="mchk-check">✓</div></div>
-        <div class="mchk sel" data-cat="gambe" onclick="toggleCat(this)"><span class="mchk-icon">🦵</span><div class="mchk-label">Gambe</div><div class="mchk-check">✓</div></div>
-        <div class="mchk sel" data-cat="braccia" onclick="toggleCat(this)"><span class="mchk-icon">💪</span><div class="mchk-label">Braccia e Spalle</div><div class="mchk-check">✓</div></div>
-        <div class="mchk sel" data-cat="core" onclick="toggleCat(this)"><span class="mchk-icon">🎯</span><div class="mchk-label">Core e Addome</div><div class="mchk-check">✓</div></div>
-        <div class="mchk sel" data-cat="stretching" onclick="toggleCat(this)"><span class="mchk-icon">🤸</span><div class="mchk-label">Stretching</div><div class="mchk-check">✓</div></div>
-        <div class="mchk" data-cat="seduto" onclick="toggleCat(this)"><span class="mchk-icon">🪑</span><div class="mchk-label">Da Seduto</div><div class="mchk-check"></div></div>
-        <div class="mchk sel" data-cat="orientale" onclick="toggleCat(this)"><span class="mchk-icon">🧘</span><div class="mchk-label">Orientale / Respiro</div><div class="mchk-check">✓</div></div>
-      </div>
-    </div>
-    <div class="fg"><label>🚫 Preferenze</label>
-      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border:2px solid var(--bdr);border-radius:13px;padding:12px">
-        <div><div style="font-weight:bold">Evita esercizi a terra</div><div style="font-size:var(--fs-xs);color:var(--tlt);margin-top:2px">Per chi non può sdraiarsi</div></div>
-        <button class="toggle" id="ob-nofloor" onclick="this.classList.toggle('on')"></button>
-      </div>
-    </div>
-    <div class="fg"><label>😴 Giorni di riposo preferiti</label>
-      <p style="font-size:var(--fs-xs);color:var(--tlt);margin-bottom:8px">Il programma rispetterà questi giorni</p>
-      <div class="day-sel" id="ob-restdays">
-        <button class="day-btn" data-dow="1" onclick="toggleDay(this)">Lu</button>
-        <button class="day-btn" data-dow="2" onclick="toggleDay(this)">Ma</button>
-        <button class="day-btn" data-dow="3" onclick="toggleDay(this)">Me</button>
-        <button class="day-btn" data-dow="4" onclick="toggleDay(this)">Gi</button>
-        <button class="day-btn" data-dow="5" onclick="toggleDay(this)">Ve</button>
-        <button class="day-btn sel" data-dow="6" onclick="toggleDay(this)">Sa</button>
-        <button class="day-btn sel" data-dow="0" onclick="toggleDay(this)">Do</button>
-      </div>
-    </div>
-    <div class="fg"><label>🎯 Obiettivo giorni di allenamento</label>
-      <div style="display:flex;align-items:center;gap:12px;margin-top:8px">
-        <input type="range" id="ob-goal" min="10" max="365" value="90" oninput="updateGoalLbl(this.value)">
-        <span id="goal-lbl" style="font-family:var(--ft);font-size:22px;font-weight:bold;color:var(--g1);min-width:42px;text-align:right">90</span>
-      </div>
-    </div>
-    <div class="fg" style="margin-top:14px">
-      <label>📍 Posizione (per meteo notifiche)</label>
-      <div style="font-size:12px;color:var(--tlt);margin:4px 0 8px;line-height:1.5">Opzionale — serve per personalizzare le notifiche con il meteo della tua città. Puoi impostarla anche dopo nelle Impostazioni.</div>
-      <button type="button" onclick="requestGPS('ob')" id="ob-gps-btn" style="width:100%;padding:11px;border-radius:12px;border:2px dashed var(--bdr);background:var(--card);color:var(--g1);font-weight:bold;font-size:14px;cursor:pointer">
-        📍 Rileva la mia posizione
-      </button>
-      <div id="ob-gps-status" style="font-size:12px;color:var(--tlt);margin-top:5px;text-align:center"></div>
-    </div>
-    <button class="btn btn-p btn-full btn-lg mt10" onclick="saveProfile()">🐢 Inizia l'avventura!</button>
-    <p style="text-align:center;font-size:var(--fs-xs);color:var(--tlt);margin-top:10px">Dati salvati solo su questo dispositivo 🔒</p>
+    <!-- Swipe hint (shown once) -->
+    <div id="wiz-swipe-hint" style="position:absolute;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;padding:7px 16px;border-radius:100px;font-size:12px;white-space:nowrap;pointer-events:none;opacity:1;transition:opacity .5s">← swipe per navigare →</div>
   </div>
+  <!-- Hidden inputs (read by saveProfile) -->
+  <input type="hidden" id="ob-name" value="">
+  <input type="hidden" id="ob-age" value="">
+  <input type="hidden" id="ob-weight" value="">
+  <input type="hidden" id="ob-height" value="">
+  <select id="ob-nofloor" style="display:none"><option value="off">off</option><option value="on">on</option></select>
 </div>
 
 <!-- HOME -->
@@ -381,6 +337,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           <span class="fi">😴</span>Stanco
         </button>
       </div>
+      <!-- Energy level selector -->
+      <div id="energy-wrap" style="margin-bottom:10px">
+        <div style="font-size:12px;font-weight:bold;color:var(--tlt);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">⚡ Energia adesso?</div>
+        <div style="display:flex;gap:6px;justify-content:center">
+          <button class="nrg-btn" data-nrg="1" onclick="setEnergy(this)" title="Esausto" style="flex:1;padding:8px 4px;border-radius:11px;border:2px solid var(--bdr);background:var(--card);font-size:20px;cursor:pointer">😴</button>
+          <button class="nrg-btn" data-nrg="2" onclick="setEnergy(this)" title="Stanco" style="flex:1;padding:8px 4px;border-radius:11px;border:2px solid var(--bdr);background:var(--card);font-size:20px;cursor:pointer">😐</button>
+          <button class="nrg-btn sel" data-nrg="3" onclick="setEnergy(this)" title="Normale" style="flex:1;padding:8px 4px;border-radius:11px;border:2px solid var(--g1);background:var(--g4);font-size:20px;cursor:pointer">🙂</button>
+          <button class="nrg-btn" data-nrg="4" onclick="setEnergy(this)" title="Energico" style="flex:1;padding:8px 4px;border-radius:11px;border:2px solid var(--bdr);background:var(--card);font-size:20px;cursor:pointer">💪</button>
+          <button class="nrg-btn" data-nrg="5" onclick="setEnergy(this)" title="In forma!" style="flex:1;padding:8px 4px;border-radius:11px;border:2px solid var(--bdr);background:var(--card);font-size:20px;cursor:pointer">🚀</button>
+        </div>
+      </div>
       <!-- Sub-menu "Scelgo io!" (hidden by default) -->
       <div id="scelgo-grid" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;animation:fadeIn .2s">
         <button class="fbtn fbtn-sub" data-f="gambe" onclick="setScelgoFeeling(this)"><span class="fi">🦵</span>Gambe</button>
@@ -389,6 +356,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <button class="fbtn fbtn-sub" data-f="stretching" onclick="setScelgoFeeling(this)"><span class="fi">🤸</span>Stretch</button>
         <button class="fbtn fbtn-sub" data-f="orientale" onclick="setScelgoFeeling(this)"><span class="fi">🧘</span>Orientale</button>
         <button class="fbtn fbtn-sub" data-f="seduto" onclick="setScelgoFeeling(this)"><span class="fi">🪑</span>Seduto</button>
+        <button class="fbtn fbtn-sub" data-f="elastici" onclick="setScelgoFeeling(this)"><span class="fi">🎽</span>Elastici</button>
+        <button class="fbtn fbtn-sub" data-f="cardio" onclick="setScelgoFeeling(this)"><span class="fi">🥊</span>Cardio</button>
+        <button class="fbtn fbtn-sub" data-f="presonno" onclick="setScelgoFeeling(this)"><span class="fi">😴</span>Pre-sonno</button>
+        <button class="fbtn fbtn-sub" data-f="postura" onclick="setScelgoFeeling(this)"><span class="fi">🪑+</span>Postura</button>
         <button class="fbtn fbtn-sub" data-f="misto" onclick="setScelgoFeeling(this)"><span class="fi">🌈</span>Misto</button>
         <button class="fbtn fbtn-sub" data-f="misto_plus" onclick="setScelgoFeeling(this)"><span class="fi">🪑💪</span>Misto+</button>
       </div>
@@ -961,11 +932,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
     <span class="sec-title">ℹ️ Info</span>
     <div class="sblk">
-      <div class="srow"><div class="si">🐢</div><div class="sinfo"><div class="stitle">TurboTartaruga</div><div class="sval" id="app-version-display">Versione v0.7 · 10/04/2026 21:53</div></div></div>
+      <div class="srow"><div class="si">🐢</div><div class="sinfo"><div class="stitle">TurboTartaruga</div><div class="sval" id="app-version-display">Versione v0.9 · 10/04/2026 21:53</div></div></div>
       <div class="srow"><div class="si">🔄</div><div class="sinfo"><div class="stitle">Aggiornamento</div><div class="sval" id="update-status">Tocca per verificare</div></div>
         <button onclick="checkForUpdate()" id="btn-update" style="background:var(--b1);color:#fff;border:none;border-radius:100px;padding:7px 12px;font-size:var(--fs-xs);font-weight:bold;cursor:pointer;white-space:nowrap">🔄 Verifica</button>
       </div>
-      <div class="srow"><div class="si">❤️</div><div class="sinfo"><div class="stitle">Crediti</div><div class="sval">Ideato e fatto da Alby con l'aiuto del grande Claude 🤖✨</div></div></div>
+      <div class="srow"><div class="si">❤️</div><div class="sinfo"><div class="stitle">Crediti</div><div class="sval">Ideato e fatto da Alby con l'aiuto della tartarughina Claude 🐢❤️</div></div></div>
       <div class="srow"><div class="si">⚠️</div><div class="sinfo"><div class="stitle">Cambia utente</div><div class="sval">Azzera profilo e progressi</div></div><button onclick="changeUser()" style="background:#FFEBEE;color:#C62828;border:none;border-radius:100px;padding:7px 12px;font-size:var(--fs-xs);font-weight:bold;cursor:pointer">Reset</button></div>
     </div>
     <div style="height:20px"></div>
@@ -1052,6 +1023,103 @@ const DB=[
   {id:'o8',n:'Cerchio dell\'energia',cat:'orientale',t:'🧘 Orientale',zona:'💪 Spalle · 🫁 Respiro',desc:'Braccia davanti, palmi contrapposti. Disegna cerchi lenti immaginando energia tra le mani.',floor:false},
   {id:'o9',n:'Saluto al sole leggero',cat:'orientale',t:'🧘 Orientale',zona:'🎯 Corpo intero · 🫁 Respiro',desc:'Inspira portando le braccia sopra la testa, espira piegandoti dolcemente in avanti.',floor:false},
   {id:'o10',n:'Meditazione in movimento',cat:'orientale',t:'🧘 Orientale',zona:'🎯 Benessere · 🧠 Mente',desc:'Occhi semichiusi, dondola dolcemente destra e sinistra. Respira naturalmente. Lascia andare.',floor:false},
+  // ── RISCALDAMENTO extra (w9-w14) ──────────────────────────────────
+  {id:'w9', n:'Jab sinistro-destro',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'💪 Spalle · ❤️ Cardio',desc:'Pugni alternati in avanti con guardia base. Leggeri e veloci, braccia morbide. Riscalda spalle e cardio.',floor:false},
+  {id:'w10',n:'Calcio frontale leggero',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'🦵 Flessori · ❤️ Cardio',desc:'Alterna calci frontali bassi, ginocchio al petto poi distendi. Movimenti controllati, non forzare.',floor:false},
+  {id:'w11',n:'Combinazione jab-cross',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'💪 Braccia · 🎯 Coordinazione',desc:'Jab sinistro, cross destro. Ruota leggermente il busto ad ogni colpo. Respira ad ogni combinazione.',floor:false},
+  {id:'w12',n:'Skip sul posto',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'🦵 Gambe · ❤️ Cardio',desc:'Corsa leggera sul posto alzando le ginocchia alternando le braccia. Ritmo comodo, atterraggio morbido.',floor:false},
+  {id:'w13',n:'Rotazione caviglie',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'🦴 Caviglie · 🤸 Mobilità',desc:'Seduto o in piedi su un piede: ruota lentamente la caviglia in cerchi. 8 giri per lato, poi cambia.',floor:false},
+  {id:'w14',n:'Apertura braccia dinamica',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'💪 Petto · 💪 Spalle',desc:'Braccia avanti, poi apri velocemente portandole indietro come ali. Ritorno lento. Attiva il petto.',floor:false},
+  // ── GAMBE extra (g13-g18) ──────────────────────────────────────────
+  {id:'g13',n:'Squat sumo',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Interno coscia · 🍑 Glutei',desc:'Piedi larghi e punte verso fuori. Scendi tenendo il petto su e le ginocchia sui piedi. Risali lento.',floor:false},
+  {id:'g14',n:'Affondo laterale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Interno coscia · 🦵 Quadricipiti',desc:'Passo largo di lato, piega il ginocchio esterno, tieni l\'altro teso. Spingi per tornare. Alterna.',floor:false},
+  {id:'g15',n:'Stacco monogamba',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Femorali · 🍑 Glutei · 🎯 Equilibrio',desc:'Su un piede, piega in avanti portando la gamba libera dietro come una bilancia. Torna lento.',floor:false},
+  {id:'g16',n:'Ponte glutei',cat:'gambe',t:'🦵 Gambe',zona:'🍑 Glutei · 🦵 Femorali',desc:'Sdraiato con ginocchia piegate. Spingi i fianchi verso l\'alto, contrai i glutei in cima. Abbassa lento.',floor:true},
+  {id:'g17',n:'Calf raise singolo',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Polpaccio · 🦴 Caviglie',desc:'Appoggiato al muro, su un piede solo: sali sulla punta più volte. Movimenti lenti e controllati.',floor:false},
+  {id:'g18',n:'Squat isometrico al muro',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Quadricipiti · 🍑 Glutei',desc:'Schiena al muro, gambe a 90°. Tieni la posizione. Respira regolarmente. Brucia? È normale!',floor:false},
+  // ── BRACCIA extra (b11-b15) ────────────────────────────────────────
+  {id:'b11',n:'Tricep dip su sedia',cat:'braccia',t:'💪 Braccia',zona:'💪 Tricipiti · 💪 Spalle',desc:'Mani sul bordo della sedia, piedi avanti. Scendi piegando i gomiti poi spingi su. Schiena vicina alla sedia.',floor:false},
+  {id:'b12',n:'Push-up a diamante',cat:'braccia',t:'💪 Braccia',zona:'💪 Tricipiti · 💪 Petto interno',desc:'Mani vicine formando un diamante. Push-up lento. Più difficile del classico, ottimo per i tricipiti.',floor:true},
+  {id:'b13',n:'Curl isometrico',cat:'braccia',t:'💪 Braccia',zona:'💪 Bicipiti · 💪 Avambracci',desc:'Porta le mani a 90°, tieni per 20 sec contraendo i bicipiti. Poi due dita su un tavolo per resistenza.',floor:false},
+  {id:'b14',n:'Rotazione interna spalla',cat:'braccia',t:'💪 Braccia',zona:'💪 Spalle · 🦴 Cuffia rotatori',desc:'Gomito a 90°, ruota l\'avambraccio verso la pancia poi verso l\'esterno. Lento. Salute delle spalle.',floor:false},
+  {id:'b15',n:'Press frontale simulato',cat:'braccia',t:'💪 Braccia',zona:'💪 Deltoidi · 💪 Tricipiti',desc:'Porta i pugni chiusi avanti all\'altezza delle spalle, spingi in avanti con resistenza. 15 ripetizioni.',floor:false},
+  // ── CORE extra (c9-c12) ────────────────────────────────────────────
+  {id:'c9', n:'Dead bug',cat:'core',t:'🎯 Core',zona:'🎯 Core profondo · 🎯 Stabilità',desc:'Sdraiato, braccia su e ginocchia a 90°. Abbassa alternando braccio dx e gamba sx. Core sempre attivo.',floor:true},
+  {id:'c10',n:'Bird-dog',cat:'core',t:'🎯 Core',zona:'🎯 Core · 🍑 Glutei · 🔄 Equilibrio',desc:'A quattro zampe: estendi il braccio dx e la gamba sx insieme. Tieni 3 sec. Alterna. Schiena piatta.',floor:true},
+  {id:'c11',n:'Hollow hold',cat:'core',t:'🎯 Core',zona:'🎯 Addominali · 🎯 Core profondo',desc:'Sdraiato, solleva leggermente spalle e gambe. Corpo a banana. Respira. Più è basso più è difficile.',floor:true},
+  {id:'c12',n:'Plank laterale',cat:'core',t:'🎯 Core',zona:'🎯 Obliqui · 🎯 Core laterale',desc:'Su un fianco, appoggiato sull\'avambraccio e sul bordo del piede. Fianchi alti e allineati. Tieni.',floor:true},
+  // ── STRETCHING extra (s11-s15) ─────────────────────────────────────
+  {id:'s11',n:'Piccione seduto su sedia',cat:'stretching',t:'🤸 Stretching',zona:'🍑 Piriforme · 🦵 Anca',desc:'Seduto, metti la caviglia dx sul ginocchio sx. Piegati in avanti lentamente. 30 sec, poi alterna.',floor:false},
+  {id:'s12',n:'Figura 4 a terra',cat:'stretching',t:'🤸 Stretching',zona:'🍑 Glutei · 🍑 Piriforme',desc:'Sdraiato, piega la gamba dx e metti la sx sopra. Porta le gambe verso il petto. Strech profondo.',floor:true},
+  {id:'s13',n:'Cobra modificato',cat:'stretching',t:'🤸 Stretching',zona:'🔄 Lombari · 🎯 Addominali',desc:'A pancia in giù, mani sotto le spalle. Alza il petto usando i dorsali prima che le mani. Respira.',floor:true},
+  {id:'s14',n:'Stretching IT band in piedi',cat:'stretching',t:'🤸 Stretching',zona:'🦵 IT band · 🦵 Esterno coscia',desc:'In piedi, incrocia la gamba dx davanti alla sx. Piegati lateralmente verso sx. 20 sec, poi alterna.',floor:false},
+  {id:'s15',n:'Allungamento toracico su sedia',cat:'stretching',t:'🤸 Stretching',zona:'🔄 Toracica · 💪 Petto',desc:'Seduto, intreccia le mani dietro la testa. Apri i gomiti e porta il petto in avanti verso l\'alto.',floor:false},
+  // ── SEDUTO extra (sd13-sd16) ───────────────────────────────────────
+  {id:'sd13',n:'Squat da seduto a in piedi',cat:'seduto',t:'🪑 Da seduto',zona:'🦵 Quadricipiti · 🍑 Glutei',desc:'Siediti sul bordo, poi alzati senza usare le mani. Riscendi lentamente. Rinforza gambe e stabilità.',floor:false},
+  {id:'sd14',n:'Chin tuck seduto',cat:'seduto',t:'🪑 Da seduto',zona:'🦴 Cervicale · 💪 Collo',desc:'Siediti dritto. Fai un doppio mento portando la testa indietro senza abbassarla. Tieni 5 sec. 10 rip.',floor:false},
+  {id:'sd15',n:'Apertura petto con braccia',cat:'seduto',t:'🪑 Da seduto',zona:'💪 Petto · 💪 Spalle posteriori',desc:'Siediti dritto, porta le braccia davanti. Apri velocemente dietro come ali. 15 rip. Respira ad ogni apertura.',floor:false},
+  {id:'sd16',n:'Massaggio piedi seduto',cat:'seduto',t:'🪑 Da seduto',zona:'🦶 Pianta · 🦴 Caviglie',desc:'Metti un piede sull\'altro ginocchio. Massaggia la pianta con i pollici in cerchi. 30 sec per piede.',floor:false},
+  // ── ORIENTALE extra (o11-o14) ──────────────────────────────────────
+  {id:'o11',n:'Sequenza 5 elementi Qi Gong',cat:'orientale',t:'🧘 Orientale',zona:'🎯 Corpo completo · 🫁 Energia',desc:'5 movimenti fluidi: terra, acqua, legno, fuoco, metallo. Ogni elemento 3 respiri. Tutto lento.',floor:false},
+  {id:'o12',n:'Camminata Zen sul posto',cat:'orientale',t:'🧘 Orientale',zona:'🧠 Presenza · 🦶 Consapevolezza',desc:'Cammina lentissimo sul posto sentendo ogni millimetro del piede. Mente sul corpo, non sui pensieri.',floor:false},
+  {id:'o13',n:'Albero con respiro',cat:'orientale',t:'🧘 Orientale',zona:'🎯 Equilibrio · 🫁 Respiro',desc:'Posizione albero (piede sul polpaccio). Respira 4 sec dentro e 6 sec fuori. 5 cicli per lato.',floor:false},
+  {id:'o14',n:'Guardare le nuvole',cat:'orientale',t:'🧘 Orientale',zona:'🧠 Rilassamento · 💪 Spalle',desc:'Braccia lungo i fianchi, capo verso l\'alto, occhi socchiusi. Immagina nuvole che portano via lo stress.',floor:false},
+  // ── ELASTICI/ATTREZZI (el1-el20) ──────────────────────────────────
+  {id:'el1', n:'Curl bicipiti con elastico',cat:'elastici',t:'🎽 Elastici',zona:'💪 Bicipiti · 💪 Avambracci',desc:'Piedi sull\'elastico, impugna le estremità. Piega i gomiti portando le mani alle spalle. Lento.',floor:false},
+  {id:'el2', n:'Rowing con elastico',cat:'elastici',t:'🎽 Elastici',zona:'🔄 Dorsali · 💪 Bicipiti',desc:'Elastico attorno a un appoggio fisso. Tira verso di te piegando i gomiti, gomiti vicini al corpo.',floor:false},
+  {id:'el3', n:'Press orizzontale con elastico',cat:'elastici',t:'🎽 Elastici',zona:'💪 Petto · 💪 Tricipiti',desc:'Elastico dietro la schiena, spingi in avanti con entrambe le mani. Braccia all\'altezza delle spalle.',floor:false},
+  {id:'el4', n:'Squat con elastico',cat:'elastici',t:'🎽 Elastici',zona:'🦵 Gambe · 🍑 Glutei',desc:'Elastico attorno alle cosce, sopra le ginocchia. Squat normale: l\'elastico aumenta l\'attivazione dei glutei.',floor:false},
+  {id:'el5', n:'Abduzione anca con elastico',cat:'elastici',t:'🎽 Elastici',zona:'🦵 Abduttori · 🍑 Glutei laterali',desc:'Elastico attorno alle caviglie. In piedi, porta una gamba di lato contro resistenza. 15 rip per lato.',floor:false},
+  {id:'el6', n:'Pull-apart con elastico',cat:'elastici',t:'🎽 Elastici',zona:'💪 Spalle posteriori · 🔄 Dorsali',desc:'Tieni l\'elastico davanti a te con entrambe le mani. Apri le braccia fino al petto. Fondamentale per postura.',floor:false},
+  {id:'el7', n:'Tricep pushdown con elastico',cat:'elastici',t:'🎽 Elastici',zona:'💪 Tricipiti',desc:'Elastico in alto (porta chiusa o mobile). Tira verso il basso con i gomiti fissi ai fianchi. 12 rip.',floor:false},
+  {id:'el8', n:'Shoulder press con elastico',cat:'elastici',t:'🎽 Elastici',zona:'💪 Deltoidi · 💪 Tricipiti',desc:'Piedi sull\'elastico, spingi verso l\'alto con entrambe le mani. Estendi completamente le braccia.',floor:false},
+  {id:'el9', n:'Monster walk laterale',cat:'elastici',t:'🎽 Elastici',zona:'🦵 Abduttori · 🍑 Glutei · 🦵 Gambe',desc:'Elastico sulle caviglie, gambe semi-piegate. Cammina lateralmente 10 passi per lato. Glutei sempre attivi.',floor:false},
+  {id:'el10',n:'Face pull con elastico',cat:'elastici',t:'🎽 Elastici',zona:'💪 Spalle posteriori · 🔄 Trapezio',desc:'Elastico all\'altezza del viso. Tira verso il viso allargando i gomiti. Perfetto per spalle sane.',floor:false},
+  {id:'el11',n:'Lat pulldown con elastico',cat:'elastici',t:'🎽 Elastici',zona:'🔄 Dorsali · 💪 Bicipiti',desc:'Elastico in alto. Tira verso il basso tenendo i gomiti vicini al corpo. Immagina di portare i gomiti alle tasche.',floor:false},
+  {id:'el12',n:'Leg curl con elastico',cat:'elastici',t:'🎽 Elastici',zona:'🦵 Femorali · 🍑 Glutei',desc:'Elastico alla caviglia, appoggiato al muro. Piega la gamba portando il tallone verso i glutei.',floor:false},
+  {id:'el13',n:'Chest fly con elastico',cat:'elastici',t:'🎽 Elastici',zona:'💪 Petto · 💪 Spalle anteriori',desc:'Elastico dietro la schiena, braccia aperte. Chiudi davanti come abbracciare un albero. Senti il petto.',floor:false},
+  {id:'el14',n:'Hip thrust con elastico',cat:'elastici',t:'🎽 Elastici',zona:'🍑 Glutei · 🦵 Femorali',desc:'Sdraiato, elastico sui fianchi. Spingi i fianchi verso l\'alto contro la resistenza. 15 ripetizioni lente.',floor:true},
+  {id:'el15',n:'Calf raise con elastico',cat:'elastici',t:'🎽 Elastici',zona:'🦵 Polpacci · 🦴 Caviglie',desc:'Piedi sull\'elastico, impugna le estremità. Alzati sulle punte contro resistenza. Movimento lento.',floor:false},
+  {id:'el16',n:'Palloncino equilbrio (bottigliette)',cat:'elastici',t:'🎽 Elastici',zona:'💪 Spalle · 🎯 Equilibrio',desc:'Con due bottigliette d\'acqua: alzate laterali, frontali e circolari. Sostituisce i manubri leggeri.',floor:false},
+  {id:'el17',n:'Good morning con elastico',cat:'elastici',t:'🎽 Elastici',zona:'🔄 Lombari · 🦵 Femorali',desc:'Elastico sotto i piedi, dietro la testa. Piega in avanti dal fianchi mantenendo la schiena dritta.',floor:false},
+  {id:'el18',n:'Pallof press con elastico',cat:'elastici',t:'🎽 Elastici',zona:'🎯 Core · 🎯 Obliqui',desc:'Elastico di lato. Tieni davanti al petto, spingi in avanti resistendo alla rotazione. Anti-rotazione core.',floor:false},
+  {id:'el19',n:'Upright row con elastico',cat:'elastici',t:'🎽 Elastici',zona:'💪 Trapezio · 💪 Deltoidi',desc:'Piedi sull\'elastico. Tira verso il mento con i gomiti larghi. Fondamentale per spalle e trapezio.',floor:false},
+  {id:'el20',n:'Squat + press con elastico',cat:'elastici',t:'🎽 Elastici',zona:'🦵 Gambe · 💪 Spalle · 🎯 Full body',desc:'Scendi in squat, risali e spingi le braccia verso l\'alto. Esercizio completo che attiva tutto il corpo.',floor:false},
+  // ── CARDIO/BOX (cb1-cb12) ──────────────────────────────────────────
+  {id:'cb1', n:'Jab-Cross',cat:'cardio',t:'🥊 Cardio',zona:'💪 Spalle · ❤️ Cardio',desc:'Guardia base: jab sinistro (braccio guida), cross destro (braccio potente). Ruota il busto ad ogni colpo.',floor:false},
+  {id:'cb2', n:'Gancio alternato',cat:'cardio',t:'🥊 Cardio',zona:'💪 Spalle · 🎯 Core · ❤️ Cardio',desc:'Gancio sinistro poi destro a mezz\'altezza. Ruota i fianchi ad ogni colpo. Gomiti a 90°.',floor:false},
+  {id:'cb3', n:'Uppercut alternato',cat:'cardio',t:'🥊 Cardio',zona:'💪 Braccia · 🎯 Core · ❤️ Cardio',desc:'Pugno verso l\'alto alternato come a colpire sotto il mento. Piega leggermente le gambe ad ogni colpo.',floor:false},
+  {id:'cb4', n:'Calcio frontale alternato',cat:'cardio',t:'🥊 Cardio',zona:'🦵 Quadricipiti · 🦵 Flessori · ❤️ Cardio',desc:'Ginocchio al petto poi calcio frontale basso. Atterraggio morbido. Non forzare la gamba oltre il comfort.',floor:false},
+  {id:'cb5', n:'Calcio laterale alternato',cat:'cardio',t:'🥊 Cardio',zona:'🦵 Abduttori · 🍑 Glutei · ❤️ Cardio',desc:'Calcio laterale basso e controllato. Tieni il piede a martello. Alterna i lati. Mantieni l\'equilibrio.',floor:false},
+  {id:'cb6', n:'Combinazione 4 colpi',cat:'cardio',t:'🥊 Cardio',zona:'💪 Braccia · 🎯 Core · ❤️ Cardio',desc:'Jab — Cross — Gancio sx — Gancio dx. Ripeti continuamente per la durata. Aumenta il ritmo progressivamente.',floor:false},
+  {id:'cb7', n:'Bob and weave',cat:'cardio',t:'🥊 Cardio',zona:'🎯 Core · 🦵 Gambe · ❤️ Cardio',desc:'Schivata a U: piega le gambe, scendi a sinistra, passa sotto, rialzati a destra. Come schivare un colpo.',floor:false},
+  {id:'cb8', n:'Footwork base',cat:'cardio',t:'🥊 Cardio',zona:'🦵 Gambe · ❤️ Cardio · 🎯 Coordinazione',desc:'Sul posto: avanti-indietro, destra-sinistra in posizione di guardia. Leggero sulle punte, sempre in movimento.',floor:false},
+  {id:'cb9', n:'Jab veloce sul posto',cat:'cardio',t:'🥊 Cardio',zona:'💪 Spalle · ❤️ Cardio',desc:'Jab velocissimo con il braccio guida. Più rapido che puoi per la durata. Allena la velocità di reazione.',floor:false},
+  {id:'cb10',n:'Combinazione jab-calcio',cat:'cardio',t:'🥊 Cardio',zona:'💪 Braccia · 🦵 Gambe · ❤️ Cardio',desc:'Jab sinistro, calcio frontale destro. Alterna il lato ogni 5 ripetizioni. Coordinazione totale.',floor:false},
+  {id:'cb11',n:'Shadow boxing libero',cat:'cardio',t:'🥊 Cardio',zona:'💪 Corpo completo · ❤️ Cardio',desc:'Muoviti liberamente combinando jab, cross, ganci, uppercut e schivate. Immagina un avversario davanti.',floor:false},
+  {id:'cb12',n:'Burpee box (senza salto)',cat:'cardio',t:'🥊 Cardio',zona:'🎯 Full body · ❤️ Cardio',desc:'Squat, mani a terra, porta i piedi indietro in posizione plank, torna, alzati. Zero salto per le articolazioni.',floor:true},
+  // ── PRE-SONNO (ps1-ps10) ───────────────────────────────────────────
+  {id:'ps1', n:'Respirazione 4-7-8',cat:'presonno',t:'😴 Pre-sonno',zona:'🫁 Respiro · 🧠 Sistema nervoso',desc:'Inspira 4 sec, tieni 7 sec, espira 8 sec. Attiva il sistema parasimpatico. Ripeti 4 volte.',floor:false},
+  {id:'ps2', n:'Rilassamento progressivo',cat:'presonno',t:'😴 Pre-sonno',zona:'🎯 Corpo completo · 🧠 Rilassamento',desc:'Contrai e rilascia ogni gruppo muscolare partendo dai piedi fino alla fronte. 3 sec contrazione, poi lascia.',floor:true},
+  {id:'ps3', n:'Stretching schiena supino',cat:'presonno',t:'😴 Pre-sonno',zona:'🔄 Colonna · 🎯 Lombari',desc:'Sdraiato, porta entrambe le ginocchia al petto. Oscilla leggermente. Decomprime la colonna.',floor:true},
+  {id:'ps4', n:'Torsione supina',cat:'presonno',t:'😴 Pre-sonno',zona:'🔄 Colonna toracica · 🎯 Obliqui',desc:'Sdraiato, un ginocchio piega verso il lato opposto. Braccia aperte. 30 sec per lato. Nessuna forzatura.',floor:true},
+  {id:'ps5', n:'Butterfly sdraiato',cat:'presonno',t:'😴 Pre-sonno',zona:'🦵 Inguine · 🍑 Anca',desc:'Sdraiato, piante dei piedi unite. Lascia scendere le ginocchia per gravità. Respira e rilascia ogni espiro.',floor:true},
+  {id:'ps6', n:'Gambe al muro',cat:'presonno',t:'😴 Pre-sonno',zona:'🦵 Gambe · ❤️ Circolazione',desc:'Sdraiato con le gambe verticali al muro. Favorisce il ritorno venoso. Ideale dopo una lunga giornata.',floor:true},
+  {id:'ps7', n:'Stretching collo notturno',cat:'presonno',t:'😴 Pre-sonno',zona:'🦴 Collo · 💪 Trapezio',desc:'Seduto, lascia cadere l\'orecchio verso la spalla. Poi mano leggera sulla testa. 30 sec per lato.',floor:false},
+  {id:'ps8', n:'Respirazione diaframmatica',cat:'presonno',t:'😴 Pre-sonno',zona:'🫁 Diaframma · 🧠 Rilassamento',desc:'Mano sulla pancia. Inspira gonfiando solo la pancia, espira svuotando. Il petto non si muove. 10 cicli.',floor:false},
+  {id:'ps9', n:'Scansione corporea',cat:'presonno',t:'😴 Pre-sonno',zona:'🧠 Mindfulness · 🎯 Corpo completo',desc:'Occhi chiusi. Porta l\'attenzione dai piedi fino alla testa, zona per zona. Nota le sensazioni senza giudicare.',floor:true},
+  {id:'ps10',n:'Visualizzazione rilassante',cat:'presonno',t:'😴 Pre-sonno',zona:'🧠 Mente · 🫁 Respiro',desc:'Occhi chiusi, respiro lento. Immagina un posto sereno (spiaggia, bosco). Dettagli sensoriali. Lascia andare.',floor:false},
+  // ── POSTURA/UFFICIO (po1-po10) ─────────────────────────────────────
+  {id:'po1', n:'Chin tuck anti-cervicale',cat:'postura',t:'🪑+ Postura',zona:'🦴 Cervicale · 💪 Flessori collo',desc:'Seduto dritto: ritrai il mento facendo un doppio mento. Tieni 5 sec. 10 ripetizioni. Combatte il collo in avanti.',floor:false},
+  {id:'po2', n:'Correzione spalle',cat:'postura',t:'🪑+ Postura',zona:'💪 Spalle posteriori · 🔄 Trapezio',desc:'Ruota le spalle indietro e tienile giù lontano dalle orecchie. Conta 10 sec. Ripeti spesso durante il lavoro.',floor:false},
+  {id:'po3', n:'Apertura petto al muro',cat:'postura',t:'🪑+ Postura',zona:'💪 Petto · 💪 Spalle anteriori',desc:'Mano al muro all\'altezza della spalla. Ruota il corpo lontano dal muro. 30 sec per lato. Combatte la postura curva.',floor:false},
+  {id:'po4', n:'Rotazione toracica seduto',cat:'postura',t:'🪑+ Postura',zona:'🔄 Colonna toracica · 🎯 Mobilità',desc:'Seduto dritto, mani alle spalle. Ruota solo il busto a destra poi sinistra. Il bacino non si muove.',floor:false},
+  {id:'po5', n:'Regola 20-20-20 occhi',cat:'postura',t:'🪑+ Postura',zona:'👀 Occhi · 🧠 Affaticamento',desc:'Ogni 20 min guarda qualcosa a 6 metri per 20 secondi. In questo esercizio: 3 cicli completi. Salute degli occhi.',floor:false},
+  {id:'po6', n:'Stretching polsi da tastiera',cat:'postura',t:'🪑+ Postura',zona:'🦴 Polsi · 💪 Avambracci',desc:'Braccio teso, piega il polso verso di te poi verso il basso. 15 sec per direzione per braccio. Anti-tunnel carpale.',floor:false},
+  {id:'po7', n:'Rilascio tensione mandibola',cat:'postura',t:'🪑+ Postura',zona:'🦷 Mandibola · 🧠 Tensione',desc:'Labbra chiuse, denti distanti. Massaggia le guance con le mani in cerchi. Apri la bocca lentamente 5 volte.',floor:false},
+  {id:'po8', n:'Stretching flessori anca',cat:'postura',t:'🪑+ Postura',zona:'🦵 Flessori anca · 🔄 Lombare',desc:'Affondo lungo: ginocchio posteriore a terra, spingi i fianchi in avanti. 30 sec per lato. Combatte lo star seduti.',floor:true},
+  {id:'po9', n:'Esercizio respiro desk',cat:'postura',t:'🪑+ Postura',zona:'🫁 Respiro · 🎯 Concentrazione',desc:'Seduto: inspira 4 sec, espira 6 sec. 5 cicli. Reidrata il cervello, riduce lo stress da schermo.',floor:false},
+  {id:'po10',n:'Cammino consapevole pausa',cat:'postura',t:'🪑+ Postura',zona:'🦵 Gambe · ❤️ Circolazione',desc:'Alzati e cammina 2 minuti. Anche solo in casa. Necessario ogni ora per la salute metabolica. Niente scuse!',floor:false},
 ];
 
 // ═══ CONSTANTS ═══
@@ -1063,7 +1131,12 @@ const CAT_INFO={
   stretching:{label:'Stretching',icon:'🤸',cls:'stretching'},
   seduto:{label:'Da Seduto',icon:'🪑',cls:'workout'},
   orientale:{label:'Orientale',icon:'🧘',cls:'oriental'},
+  elastici:{label:'Elastici',icon:'🎽',cls:'workout'},
+  cardio:{label:'Cardio/Box',icon:'🥊',cls:'workout'},
+  presonno:{label:'Pre-sonno',icon:'😴',cls:'stretching'},
+  postura:{label:'Postura/Ufficio',icon:'🪑+',cls:'workout'},
   misto:{label:'Misto',icon:'🌈',cls:'workout'},
+  misto_plus:{label:'Misto+',icon:'🪑💪',cls:'workout'},
   riposo:{label:'Riposo',icon:'😴',cls:'rest'},
   riposo_vol:{label:'Riposo vol.',icon:'🛋️',cls:'vol_rest'},
   stanco_mini:{label:'Mini sessione',icon:'🤸',cls:'stretching'},
@@ -1146,6 +1219,15 @@ const BADGES=[
   {id:'flex2',   icon:'🤸🏆',name:'Contorsionista',  lv:3,hint:'15 sessioni stretch',fn:s=>(s.stretch_ct||0)>=15},
   {id:'xp2000',  icon:'💎',name:'Diamante XP',        lv:3,hint:'2000 XP totali',   fn:s=>(s.xp||0)>=2000},
   {id:'legend',  icon:'🌟',name:'Leggenda',           lv:3,hint:'30 badge sbloccati',fn:(s,_,b)=>b.length>=29},
+  // ── Badge nuove categorie ──────────────────────────────────────────
+  {id:'box1',    icon:'🥊',name:'Primo round!',      lv:1,hint:'1 sessione Cardio',  fn:s=>(s.catSet||[]).includes('cardio')},
+  {id:'elastic1',icon:'🎽',name:'Elastico novizio',  lv:1,hint:'1 sessione elastici',fn:s=>(s.catSet||[]).includes('elastici')},
+  {id:'sleep1',  icon:'😴',name:'Buona notte!',      lv:1,hint:'1 sessione pre-sonno',fn:s=>(s.catSet||[]).includes('presonno')},
+  {id:'office1', icon:'🪑+',name:'Pausa attiva',     lv:1,hint:'1 sessione postura', fn:s=>(s.catSet||[]).includes('postura')},
+  {id:'box5',    icon:'🥊⭐',name:'Pugile amatoriale',lv:2,hint:'5 sessioni Cardio',  fn:s=>(s.history||[]).filter(h=>h.type==='cardio').length>=5},
+  {id:'party5',  icon:'🎊🌟',name:'Re del Party',    lv:2,hint:'5 party completati', fn:s=>s.party>=5},
+  {id:'party10', icon:'🎉🏆',name:'Party leggenda',  lv:3,hint:'10 party completati',fn:s=>s.party>=10},
+  {id:'allcat',  icon:'🌈',name:'Collezionista',     lv:3,hint:'Tutte le categorie', fn:s=>['gambe','braccia','core','stretching','seduto','orientale','elastici','cardio','presonno','postura'].every(c=>(s.catSet||[]).includes(c))},
   // ── Badge Riserva Turbo (boost) ─────────────────────────────────────
   {id:'boost1',  icon:'💥',name:'Prima Riserva!',   lv:1,hint:'1° Riserva Turbo',  fn:s=>(s.boosts||0)>=1},
   {id:'boost5',  icon:'🚀',name:'Turbo x5',         lv:2,hint:'5 Riserve Turbo',   fn:s=>(s.boosts||0)>=5},
@@ -1192,6 +1274,7 @@ function go(scr){
   if(scr==='home')buildHome();else if(scr==='presession')buildPresession();
   else if(scr==='calendar'){const n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();buildCal();}
   else if(scr==='progress')buildProgress();else if(scr==='profile')buildProfile();
+  else if(scr==='onboarding'){setTimeout(initWizard,50);}
   else if(scr==='party')initParty();else if(scr==='settings')buildSettings();
   // Keep back-button history in sync
   history.pushState({screen:scr},'',location.pathname+'#'+scr);
@@ -1253,23 +1336,419 @@ function toggleCat(el){el.classList.toggle('sel');const ck=el.querySelector('.mc
 function toggleDay(el){el.classList.toggle('sel')}
 function updateGoalLbl(v){const el=document.getElementById('goal-lbl');if(el)el.textContent=v;const r=document.getElementById('ob-goal');if(r)r.style.setProperty('--pct',((v-10)/355*100).toFixed(1)+'%')}
 function saveProfile(){
-  const nm=(document.getElementById('ob-name').value||'').trim();
-  const ag=parseInt(document.getElementById('ob-age').value)||0;
-  const wt=parseInt(document.getElementById('ob-weight').value)||0;
-  const ht=parseInt(document.getElementById('ob-height').value)||0;
-  const gl=parseInt(document.getElementById('ob-goal').value)||90;
-  const nf=document.getElementById('ob-nofloor').classList.contains('on');
+  // Collect final wizard step data before saving
+  wizValidate(_wizStep);
+  const nm=(_wizData.name||'').trim();
+  const ag=_wizData.age||0;
   if(!nm){toast('⚠️ Inserisci il tuo nome!');return}
   if(ag<10||ag>99){toast('⚠️ Età non valida (10-99)');return}
-  const cats=[...document.querySelectorAll('#cat-picks .mchk.sel')].map(e=>e.dataset.cat);
+  const cats=(_wizData.cats||[]).filter(c=>c);
   if(!cats.length){toast('⚠️ Seleziona almeno una categoria!');return}
-  const restDays=[...document.querySelectorAll('#ob-restdays .day-btn.sel')].map(e=>parseInt(e.dataset.dow));
-  const sx=document.querySelector('.sex-btn.sel')?.dataset.sex||'M';
-  P={name:nm,age:ag,weight:wt||null,height:ht||null,sex:sx,level:getOpt('level')||'principiante',
-    goal:gl,noFloor:nf,categories:cats,restDays,startDate:new Date().toISOString().slice(0,10)};
+  const restDays=_wizData.restDays||[0,6];
+  P={name:nm,age:ag,
+    weight:_wizData.weight||null,height:_wizData.height||null,
+    sex:_wizData.sex||'M',
+    level:_wizData.level||'principiante',
+    goal:_wizData.goal||90,
+    noFloor:_wizData.noFloor||false,
+    categories:cats,restDays,
+    startDate:new Date().toISOString().slice(0,10)};
+  if(SET.notifTime)P.notifTime=SET.notifTime;
+  // Carry notification settings from SET (may have been set via settings)
+  if(!SET.notifEnabled)SET.notifEnabled=false;
   calcProfileBias();
   S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[]};
   generatePlan();updateStreak();save();go('home');
+}
+
+
+// ═══ WIZARD ONBOARDING ═══
+const WIZ_STEPS = [
+  // 0: Nome
+  {id:'wiz-nome', bg:'linear-gradient(155deg,#1B5E20,#2E7D32,#43A047)', render:()=>`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:40px 24px;text-align:center;color:#fff">
+      <img src="logo-turtle.png" style="width:min(55vw,180px);margin-bottom:16px;filter:drop-shadow(0 3px 12px rgba(0,0,0,.3))">
+      <div style="font-family:var(--ft);font-size:26px;font-weight:bold;margin-bottom:8px">Ciao! Come ti chiami? 👋</div>
+      <div style="opacity:.8;font-size:14px;margin-bottom:24px">Ci vogliono meno di 2 minuti · I tuoi dati restano solo qui 🔒</div>
+      <input type="text" id="w-name" placeholder="Il tuo nome..." maxlength="30" autocomplete="off"
+        style="width:100%;max-width:300px;padding:16px 18px;border-radius:16px;border:none;font-size:20px;font-family:var(--ft);font-weight:bold;text-align:center;outline:none;background:rgba(255,255,255,.95);color:#1B5E20;box-sizing:border-box">
+    </div>`
+  },
+  // 1: Età + Sesso
+  {id:'wiz-eta', bg:'linear-gradient(155deg,#2E7D32,#388E3C,#43A047)', render:()=>`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:32px 24px;text-align:center;color:#fff">
+      <div style="font-size:52px;margin-bottom:12px">🎂</div>
+      <div style="font-family:var(--ft);font-size:24px;font-weight:bold;margin-bottom:6px">Qualcosa su di te</div>
+      <div style="opacity:.8;font-size:14px;margin-bottom:24px">Così so come aiutarti al meglio</div>
+      <div style="width:100%;max-width:320px">
+        <input type="number" id="w-age" placeholder="La tua età..." min="10" max="99"
+          style="width:100%;padding:14px 18px;border-radius:14px;border:none;font-size:18px;font-family:var(--ft);text-align:center;outline:none;background:rgba(255,255,255,.95);color:#1B5E20;box-sizing:border-box;margin-bottom:14px">
+        <div style="font-size:13px;opacity:.8;margin-bottom:10px;font-weight:bold">🧬 Sesso biologico</div>
+        <div style="display:flex;gap:10px">
+          <button class="wiz-sex-btn sel" data-sex="M" onclick="wizSelSex(this)" style="flex:1;padding:14px;border-radius:14px;border:3px solid #fff;background:rgba(255,255,255,.9);color:#1B5E20;font-size:18px;font-weight:bold;cursor:pointer">👨<br><span style="font-size:12px">Uomo</span></button>
+          <button class="wiz-sex-btn" data-sex="F" onclick="wizSelSex(this)" style="flex:1;padding:14px;border-radius:14px;border:3px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:#fff;font-size:18px;font-weight:bold;cursor:pointer">👩<br><span style="font-size:12px">Donna</span></button>
+        </div>
+      </div>
+    </div>`
+  },
+  // 2: Peso + Altezza
+  {id:'wiz-fisico', bg:'linear-gradient(155deg,#1B5E20,#33691E,#558B2F)', render:()=>`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:32px 24px;text-align:center;color:#fff">
+      <div style="font-size:52px;margin-bottom:12px">⚖️</div>
+      <div style="font-family:var(--ft);font-size:24px;font-weight:bold;margin-bottom:6px">Il tuo fisico</div>
+      <div style="opacity:.8;font-size:14px;margin-bottom:6px">Per calcolare l'intensità giusta per te</div>
+      <div style="opacity:.65;font-size:12px;margin-bottom:24px">⬇️ Opzionale — puoi saltare</div>
+      <div style="width:100%;max-width:300px;display:flex;gap:12px;margin-bottom:14px">
+        <div style="flex:1">
+          <div style="font-size:12px;opacity:.8;margin-bottom:6px">Peso (kg)</div>
+          <input type="number" id="w-weight" placeholder="70" min="30" max="300"
+            style="width:100%;padding:14px;border-radius:14px;border:none;font-size:20px;font-family:var(--ft);text-align:center;outline:none;background:rgba(255,255,255,.95);color:#1B5E20;box-sizing:border-box">
+        </div>
+        <div style="flex:1">
+          <div style="font-size:12px;opacity:.8;margin-bottom:6px">Altezza (cm)</div>
+          <input type="number" id="w-height" placeholder="170" min="100" max="220"
+            style="width:100%;padding:14px;border-radius:14px;border:none;font-size:20px;font-family:var(--ft);text-align:center;outline:none;background:rgba(255,255,255,.95);color:#1B5E20;box-sizing:border-box">
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,.15);border-radius:12px;padding:10px 14px;font-size:12px;opacity:.85;max-width:300px">
+        💡 Con questi dati calcolo il tuo BMI e adatto le pause e l'intensità degli esercizi. Puoi inserirli anche dopo nelle impostazioni.
+      </div>
+    </div>`
+  },
+  // 3: Livello
+  {id:'wiz-livello', bg:'linear-gradient(155deg,#2E7D32,#1B5E20,#004D40)', render:()=>`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:32px 24px;text-align:center;color:#fff">
+      <div style="font-size:52px;margin-bottom:12px">⚡</div>
+      <div style="font-family:var(--ft);font-size:24px;font-weight:bold;margin-bottom:8px">Come ti definiresti?</div>
+      <div style="opacity:.8;font-size:14px;margin-bottom:24px">Non preoccuparti, puoi cambiarlo dopo</div>
+      <div style="width:100%;max-width:320px;display:flex;flex-direction:column;gap:10px" id="wiz-level-cards">
+        <button class="wiz-lv-btn" data-lv="principiante" onclick="wizSelLv(this)" style="padding:16px;border-radius:16px;border:3px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:#fff;text-align:left;cursor:pointer;display:flex;align-items:center;gap:14px">
+          <span style="font-size:32px">🌱</span><div><div style="font-weight:bold;font-size:16px">Principiante</div><div style="font-size:12px;opacity:.8">Poco o nessun allenamento. Partiamo piano!</div></div>
+        </button>
+        <button class="wiz-lv-btn" data-lv="intermedio" onclick="wizSelLv(this)" style="padding:16px;border-radius:16px;border:3px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:#fff;text-align:left;cursor:pointer;display:flex;align-items:center;gap:14px">
+          <span style="font-size:32px">🔥</span><div><div style="font-weight:bold;font-size:16px">Intermedio</div><div style="font-size:12px;opacity:.8">Mi alleno già qualche volta. Voglio migliorare.</div></div>
+        </button>
+        <button class="wiz-lv-btn sel" data-lv="esperto" onclick="wizSelLv(this)" style="padding:16px;border-radius:16px;border:3px solid #fff;background:rgba(255,255,255,.25);color:#fff;text-align:left;cursor:pointer;display:flex;align-items:center;gap:14px">
+          <span style="font-size:32px">🚀</span><div><div style="font-weight:bold;font-size:16px">Esperto</div><div style="font-size:12px;opacity:.8">Allenamento regolare. Voglio spingermi oltre!</div></div>
+        </button>
+        <button class="wiz-lv-btn" data-lv="principiante" onclick="wizSelLv(this)" style="padding:12px;border-radius:16px;border:2px dashed rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.6);cursor:pointer;font-size:13px">
+          🤷 Non lo so — decido dopo
+        </button>
+      </div>
+    </div>`
+  },
+  // 4: Categorie
+  {id:'wiz-cat', bg:'linear-gradient(155deg,#1B5E20,#2E7D32,#1A237E)', render:()=>`
+    <div style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);padding:52px 20px 20px;color:#fff">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:36px;margin-bottom:8px">🏋️</div>
+        <div style="font-family:var(--ft);font-size:22px;font-weight:bold;margin-bottom:4px">Cosa vuoi fare?</div>
+        <div style="opacity:.8;font-size:13px">Scegli tutto ciò che ti piace — puoi cambiare dopo</div>
+      </div>
+      <div id="wiz-cat-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+        ${[
+          ['gambe','🦵','Gambe',true],['braccia','💪','Braccia',true],
+          ['core','🎯','Core',true],['stretching','🤸','Stretching',true],
+          ['seduto','🪑','Da Seduto',false],['orientale','🧘','Orientale',true],
+          ['elastici','🎽','Elastici',false],['cardio','🥊','Cardio/Box',false],
+          ['presonno','😴','Pre-sonno',false],['postura','🪑+','Postura/Ufficio',false],
+        ].map(([v,ico,lbl,sel])=>`<button class="wiz-cat-btn${sel?' sel':''}" data-cat="${v}" onclick="wizToggleCat(this)"
+          style="padding:14px 10px;border-radius:14px;border:3px solid ${sel?'#fff':'rgba(255,255,255,.25)'};background:${sel?'rgba(255,255,255,.25)':'rgba(255,255,255,.1)'};color:#fff;cursor:pointer;text-align:center">
+          <div style="font-size:28px;margin-bottom:4px">${ico}</div>
+          <div style="font-size:12px;font-weight:bold">${lbl}</div>
+          <div style="font-size:18px;margin-top:4px">${sel?'✓':''}</div>
+        </button>`).join('')}
+      </div>
+      <div style="background:rgba(255,255,255,.12);border-radius:14px;padding:12px 16px;margin-top:12px;display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-weight:bold;margin-bottom:2px">🚫 Evita esercizi a terra</div>
+          <div style="font-size:12px;opacity:.75">Attivalo se non puoi sdraiarti</div>
+        </div>
+        <button class="toggle" id="wiz-nofloor" onclick="this.classList.toggle('on')" style="flex-shrink:0"></button>
+      </div>
+    </div>`
+  },
+  // 5: Preferenze + Riposo
+  {id:'wiz-pref', bg:'linear-gradient(155deg,#1A237E,#283593,#1B5E20)', render:()=>`
+    <div style="display:flex;flex-direction:column;min-height:calc(100vh - 120px);padding:52px 20px 20px;color:#fff">
+      <div style="text-align:center;margin-bottom:20px">
+        <div style="font-size:36px;margin-bottom:8px">😴</div>
+        <div style="font-family:var(--ft);font-size:22px;font-weight:bold;margin-bottom:4px">Quando vuoi riposare?</div>
+        <div style="opacity:.8;font-size:13px">Il programma rispetterà questi giorni</div>
+      </div>
+      <div style="display:flex;gap:7px;justify-content:center;margin-bottom:22px" id="wiz-rest-days">
+        ${['Lu','Ma','Me','Gi','Ve','Sa','Do'].map((d,i)=>{const dow=[1,2,3,4,5,6,0][i];const sel=dow===0||dow===6;
+        return`<button class="wiz-day-btn${sel?' sel':''}" data-dow="${dow}" onclick="wizToggleDay(this)"
+          style="width:38px;height:38px;border-radius:50%;border:2px solid ${sel?'#fff':'rgba(255,255,255,.4)'};background:${sel?'rgba(255,255,255,.3)':'transparent'};color:#fff;font-size:12px;font-weight:bold;cursor:pointer">${d}</button>`;}).join('')}
+      </div>
+    </div>`
+  },
+  // 6: Obiettivo
+  {id:'wiz-goal', bg:'linear-gradient(155deg,#4A148C,#6A1B9A,#1B5E20)', render:()=>`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:32px 24px;text-align:center;color:#fff">
+      <div style="font-size:52px;margin-bottom:12px">🎯</div>
+      <div style="font-family:var(--ft);font-size:24px;font-weight:bold;margin-bottom:8px">Il tuo obiettivo</div>
+      <div style="opacity:.8;font-size:14px;margin-bottom:24px">Quante sessioni vuoi completare?</div>
+      <div style="font-family:var(--fm);font-size:72px;font-weight:bold;margin-bottom:4px" id="wiz-goal-num">90</div>
+      <div style="opacity:.7;font-size:14px;margin-bottom:20px" id="wiz-goal-msg">Circa 3 mesi — ottimo punto di partenza! 🐢</div>
+      <input type="range" id="wiz-goal-range" min="10" max="365" value="90"
+        style="width:100%;max-width:300px;accent-color:#fff;margin-bottom:16px"
+        oninput="wizUpdateGoal(this.value)">
+      <div style="display:flex;gap:10px;font-size:12px;opacity:.6">
+        <span>10 — partenza</span><span style="flex:1;text-align:center">365 — tutto l'anno</span>
+      </div>
+    </div>`
+  },
+  // 7: Notifiche (coach)
+  {id:'wiz-notif', bg:'linear-gradient(155deg,#E65100,#BF360C,#1B5E20)', render:()=>`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:32px 24px;text-align:center;color:#fff">
+      <div style="font-size:52px;margin-bottom:12px">📬</div>
+      <div style="font-family:var(--ft);font-size:22px;font-weight:bold;margin-bottom:10px">Vuoi che la tartaruga ti scriva ogni giorno?</div>
+      <div style="opacity:.85;font-size:14px;line-height:1.6;margin-bottom:20px;max-width:300px">
+        Non il solito "ricordati di allenarti".<br>
+        Un messaggio che sa se hai saltato, se stai costruendo uno streak, e persino se fuori piove o fa caldo —
+        perché il <em>tempo influenza il nostro umore</em>, ma il movimento lo cambia.<br>
+        <span style="opacity:.7;font-size:12px">Puoi disattivarlo quando vuoi.</span>
+      </div>
+      <div style="width:100%;max-width:300px;margin-bottom:14px">
+        <div style="font-size:13px;opacity:.8;margin-bottom:8px;font-weight:bold">Di solito quando ti alleni?</div>
+        <div style="display:flex;gap:8px">
+          <button class="wiz-time-btn sel" data-t="morning" onclick="wizSelTime(this)" style="flex:1;padding:12px 4px;border-radius:12px;border:2px solid #fff;background:rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:bold;cursor:pointer">🌅<br>Mattina<br><span style="opacity:.7;font-size:10px">6-10</span></button>
+          <button class="wiz-time-btn" data-t="afternoon" onclick="wizSelTime(this)" style="flex:1;padding:12px 4px;border-radius:12px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:bold;cursor:pointer">🌞<br>Pomeriggio<br><span style="opacity:.7;font-size:10px">12-17</span></button>
+          <button class="wiz-time-btn" data-t="evening" onclick="wizSelTime(this)" style="flex:1;padding:12px 4px;border-radius:12px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:bold;cursor:pointer">🌇<br>Sera<br><span style="opacity:.7;font-size:10px">18-22</span></button>
+        </div>
+      </div>
+      <div style="width:100%;max-width:300px">
+        <button onclick="wizEnableNotif()" style="width:100%;padding:15px;border-radius:14px;border:3px solid #fff;background:rgba(255,255,255,.2);color:#fff;font-family:var(--ft);font-size:16px;font-weight:bold;cursor:pointer;margin-bottom:10px">
+          ✅ Sì, voglio i messaggi!
+        </button>
+        <button onclick="wizNav(1)" style="width:100%;padding:11px;border-radius:14px;border:2px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.7);font-size:13px;cursor:pointer">
+          Per ora no, grazie
+        </button>
+        <div id="wiz-gps-wrap" style="margin-top:12px">
+          <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:12px;margin-bottom:10px;font-size:13px;line-height:1.5;opacity:.9">
+          🌦️ <strong>Perché il meteo?</strong> Il tempo influenza il nostro umore — pioggia e freddo ci fanno venir voglia di stare sul divano. Il tuo coach sa quando succede e ti scrive la cosa giusta per rimetterti in moto.
+        </div>
+        <button onclick="requestGPS('ob')" id="ob-gps-btn" style="width:100%;padding:12px;border-radius:12px;border:2px solid rgba(255,255,255,.6);background:rgba(255,255,255,.15);color:#fff;font-size:14px;font-weight:bold;cursor:pointer">📍 Attiva meteo personalizzato</button>
+          <div id="ob-gps-status" style="font-size:11px;opacity:.7;margin-top:4px;text-align:center"></div>
+        </div>
+      </div>
+    </div>`
+  },
+  // 8: Fine
+  {id:'wiz-fine', bg:'linear-gradient(155deg,#1B5E20,#2E7D32,#43A047)', render:()=>`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:32px 24px;text-align:center;color:#fff">
+      <img src="logo-turtle.png" style="width:min(55vw,180px);margin-bottom:16px;filter:drop-shadow(0 3px 12px rgba(0,0,0,.3));animation:bnc 1s ease infinite alternate">
+      <div style="font-family:var(--ft);font-size:28px;font-weight:bold;margin-bottom:8px">Tutto pronto, <span id="wiz-final-name">Tartaruga</span>! 🎉</div>
+      <div style="opacity:.85;font-size:15px;margin-bottom:20px;line-height:1.6">Il tuo piano di 14 giorni è pronto.<br>Lento ma costante vince la gara! 🐢</div>
+      <div id="wiz-summary" style="background:rgba(255,255,255,.15);border-radius:16px;padding:16px 20px;width:100%;max-width:300px;text-align:left;font-size:14px;line-height:1.8;margin-bottom:20px"></div>
+      <button onclick="saveProfile()" style="width:100%;max-width:300px;padding:16px;border-radius:100px;border:none;background:#fff;color:#1B5E20;font-family:var(--ft);font-size:18px;font-weight:bold;cursor:pointer">
+        🐢 Iniziamo!
+      </button>
+    </div>`
+  },
+];
+
+let _wizStep = 0;
+let _wizData = { sex:'M', level:'principiante', cats:['gambe','braccia','core','stretching','orientale'], notifTime:'evening' };
+
+function initWizard(){
+  _wizStep=0;_wizData={sex:'M',level:'principiante',cats:['gambe','braccia','core','stretching','orientale'],notifTime:'evening'};
+  const slides=document.getElementById('wiz-slides');
+  if(!slides)return;
+  slides.innerHTML='';
+  slides.style.width=(WIZ_STEPS.length*100)+'%';
+  WIZ_STEPS.forEach((step,i)=>{
+    const div=document.createElement('div');
+    div.id=step.id;
+    div.style.cssText=`width:${100/WIZ_STEPS.length}%;flex-shrink:0;overflow-y:auto;background:${step.bg};min-height:100%`;
+    div.innerHTML=step.render();
+    slides.appendChild(div);
+  });
+  // Level default sel
+  const defLv=document.querySelector('.wiz-lv-btn[data-lv="principiante"]');if(defLv)wizSelLv(defLv);
+  updateWizDots();updateWizNav();
+  // Touch swipe
+  let tx=0,ty=0;
+  const wrap=document.getElementById('wiz-wrap');
+  if(wrap){
+    wrap.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY;},{passive:true});
+    wrap.addEventListener('touchend',e=>{
+      const dx=e.changedTouches[0].clientX-tx;
+      const dy=e.changedTouches[0].clientY-ty;
+      if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>40){wizNav(dx<0?1:-1);}
+    },{passive:true});
+  }
+  // Hide swipe hint after 3s
+  setTimeout(()=>{const h=document.getElementById('wiz-swipe-hint');if(h)h.style.opacity='0';},3000);
+}
+
+function updateWizDots(){
+  const el=document.getElementById('wiz-dots');
+  if(!el)return;
+  el.innerHTML=WIZ_STEPS.map((_,i)=>
+    `<div style="width:${i===_wizStep?20:8}px;height:8px;border-radius:100px;background:${i===_wizStep?'rgba(255,255,255,.95)':'rgba(255,255,255,.35)'};transition:all .3s"></div>`
+  ).join('');
+}
+
+function updateWizNav(){
+  const back=document.getElementById('wiz-back');
+  const next=document.getElementById('wiz-next');
+  if(back)back.style.display=_wizStep>0?'block':'none';
+  if(next)next.textContent=_wizStep===WIZ_STEPS.length-1?'— già fatto sopra —':(_wizStep===WIZ_STEPS.length-2?'Ultimo step →':'Avanti →');
+  if(next)next.style.display=_wizStep===WIZ_STEPS.length-1?'none':'flex';
+}
+
+function wizNav(dir){
+  if(dir>0&&!wizValidate(_wizStep))return;
+  _wizStep=Math.max(0,Math.min(WIZ_STEPS.length-1,_wizStep+dir));
+  const slides=document.getElementById('wiz-slides');
+  if(slides)slides.style.transform=`translateX(-${_wizStep*(100/WIZ_STEPS.length)}%)`;
+  // Re-render current step for dynamic content
+  const el=document.getElementById(WIZ_STEPS[_wizStep].id);
+  if(el)el.innerHTML=WIZ_STEPS[_wizStep].render();
+  // Re-attach state after re-render
+  wizRestoreState();
+  updateWizDots();updateWizNav();
+  if(_wizStep===WIZ_STEPS.length-1)wizBuildSummary();
+}
+
+function wizValidate(step){
+  if(step===0){
+    const n=(document.getElementById('w-name')?.value||'').trim();
+    if(!n){toast('⚠️ Inserisci il tuo nome!');return false;}
+    _wizData.name=n;
+  }
+  if(step===1){
+    const a=parseInt(document.getElementById('w-age')?.value||0);
+    if(a<10||a>99){toast('⚠️ Inserisci un\'età valida (10-99)!');return false;}
+    _wizData.age=a;
+    _wizData.sex=document.querySelector('.wiz-sex-btn.sel')?.dataset.sex||'M';
+  }
+  if(step===2){
+    _wizData.weight=parseInt(document.getElementById('w-weight')?.value)||null;
+    _wizData.height=parseInt(document.getElementById('w-height')?.value)||null;
+  }
+  if(step===3){
+    _wizData.level=document.querySelector('.wiz-lv-btn.sel')?.dataset.lv||'principiante';
+  }
+  if(step===4){
+    const sel=[...document.querySelectorAll('.wiz-cat-btn.sel')].map(b=>b.dataset.cat);
+    if(sel.length===0){toast('⚠️ Seleziona almeno una categoria!');return false;}
+    _wizData.cats=sel;
+  }
+  if(step===5){
+    _wizData.restDays=[...document.querySelectorAll('.wiz-day-btn.sel')].map(b=>parseInt(b.dataset.dow));
+    _wizData.noFloor=document.getElementById('wiz-nofloor')?.classList.contains('on')||false;
+  }
+  if(step===6){
+    _wizData.goal=parseInt(document.getElementById('wiz-goal-range')?.value)||90;
+  }
+  if(step===7){
+    _wizData.notifTime=document.querySelector('.wiz-time-btn.sel')?.dataset.t||'evening';
+  }
+  return true;
+}
+
+function wizRestoreState(){
+  // After re-render, restore selection state
+  if(_wizStep===1){
+    const sx=document.querySelector(`.wiz-sex-btn[data-sex="${_wizData.sex||'M'}"]`);if(sx)wizSelSex(sx);
+    const ag=document.getElementById('w-age');if(ag&&_wizData.age)ag.value=_wizData.age;
+  }
+  if(_wizStep===3){
+    const lv=document.querySelector(`.wiz-lv-btn[data-lv="${_wizData.level||'principiante'}"]`);if(lv)wizSelLv(lv);
+  }
+  if(_wizStep===6){
+    const r=document.getElementById('wiz-goal-range');if(r&&_wizData.goal){r.value=_wizData.goal;wizUpdateGoal(_wizData.goal);}
+  }
+  if(_wizStep===7){
+    const tb=document.querySelector(`.wiz-time-btn[data-t="${_wizData.notifTime||'evening'}"]`);if(tb)wizSelTime(tb);
+  }
+}
+
+function wizSelSex(btn){
+  document.querySelectorAll('.wiz-sex-btn').forEach(b=>{
+    b.style.borderColor='rgba(255,255,255,.3)';b.style.background='rgba(255,255,255,.15)';b.style.color='#fff';b.classList.remove('sel');
+  });
+  btn.classList.add('sel');btn.style.borderColor='#fff';btn.style.background='rgba(255,255,255,.9)';btn.style.color='#1B5E20';
+  _wizData.sex=btn.dataset.sex;
+}
+
+function wizSelLv(btn){
+  document.querySelectorAll('.wiz-lv-btn').forEach(b=>{
+    b.style.borderColor='rgba(255,255,255,.3)';b.style.background='rgba(255,255,255,.15)';b.classList.remove('sel');
+  });
+  btn.classList.add('sel');btn.style.borderColor='#fff';btn.style.background='rgba(255,255,255,.25)';
+  _wizData.level=btn.dataset.lv;
+}
+
+function wizToggleDay(btn){
+  btn.classList.toggle('sel');
+  const s=btn.classList.contains('sel');
+  btn.style.borderColor=s?'#fff':'rgba(255,255,255,.4)';
+  btn.style.background=s?'rgba(255,255,255,.3)':'transparent';
+}
+function wizToggleCat(btn){
+  btn.classList.toggle('sel');
+  const s=btn.classList.contains('sel');
+  btn.style.borderColor=s?'#fff':'rgba(255,255,255,.25)';
+  btn.style.background=s?'rgba(255,255,255,.25)':'rgba(255,255,255,.1)';
+  btn.querySelector('div:last-child').textContent=s?'✓':'';
+}
+
+function wizSelTime(btn){
+  document.querySelectorAll('.wiz-time-btn').forEach(b=>{
+    b.style.borderColor='rgba(255,255,255,.3)';b.style.background='rgba(255,255,255,.1)';b.classList.remove('sel');
+  });
+  btn.classList.add('sel');btn.style.borderColor='#fff';btn.style.background='rgba(255,255,255,.25)';
+  _wizData.notifTime=btn.dataset.t;SET.notifTime=btn.dataset.t;
+}
+
+function wizUpdateGoal(v){
+  const num=document.getElementById('wiz-goal-num');const msg=document.getElementById('wiz-goal-msg');
+  if(num)num.textContent=v;
+  const msgs=[
+    [10,'Un primo obiettivo — inizia leggero! 🐢'],
+    [30,'Un mese — ottimo punto di partenza! 🌱'],
+    [90,'Circa 3 mesi — benissimo! 🔥'],
+    [180,'Sei mesi — sei serio! 💪'],
+    [365,'Un anno intero — sei una TurboTartaruga! 🚀'],
+  ];
+  const m=msgs.reverse().find(([n])=>v>=n)?.[1]||msgs[0][1];
+  if(msg)msg.textContent=m;
+}
+
+async function wizEnableNotif(){
+  if(!('Notification' in window)){toast('⚠️ Notifiche non supportate su questo dispositivo.');wizNav(1);return;}
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+  const isStandalone=window.navigator.standalone||window.matchMedia('(display-mode: standalone)').matches;
+  if(isIOS&&!isStandalone){
+    toast('🍎 Per le notifiche su iPhone aggiungi prima l\'app alla schermata Home!',5000);
+    wizNav(1);return;
+  }
+  const perm=await Notification.requestPermission();
+  if(perm==='granted'){SET.notifEnabled=true;SET.notifTime=_wizData.notifTime||'evening';save();toast('✅ Perfetto! Riceverai i messaggi della tartaruga ogni giorno. 🔔');}
+  else toast('ℹ️ Nessun problema — potrai attivarlo dalle Impostazioni quando vuoi.');
+  wizNav(1);
+}
+
+function wizBuildSummary(){
+  const el=document.getElementById('wiz-summary');
+  const nm=document.getElementById('wiz-final-name');
+  if(nm)nm.textContent=_wizData.name||'Tartaruga';
+  if(!el)return;
+  const lvLabels={principiante:'🌱 Principiante',intermedio:'🔥 Intermedio',esperto:'🚀 Esperto'};
+  const catLabels={gambe:'🦵',braccia:'💪',core:'🎯',stretching:'🤸',seduto:'🪑',orientale:'🧘',elastici:'🎽',cardio:'🥊',presonno:'😴',postura:'🪑+'};
+  const rdLabels={0:'Do',1:'Lu',2:'Ma',3:'Me',4:'Gi',5:'Ve',6:'Sa'};
+  const rds=(_wizData.restDays||[0,6]).map(d=>rdLabels[d]).join(', ');
+  el.innerHTML=`
+    <div>⚡ Livello: ${lvLabels[_wizData.level||'principiante']}</div>
+    <div>🏋️ Categorie: ${(_wizData.cats||[]).map(c=>catLabels[c]||c).join(' ')}</div>
+    <div>😴 Riposo: ${rds||'Sabato e Domenica'}</div>
+    <div>🎯 Obiettivo: ${_wizData.goal||90} sessioni</div>
+    ${SET.notifEnabled?'<div>🔔 Messaggi del coach: attivi</div>':''}
+  `;
 }
 
 // ═══ PLAN GENERATION ═══
@@ -1280,7 +1759,7 @@ function generatePlan(){
   for(let i=0;i<14;i++){
     const d=new Date();d.setDate(d.getDate()+i);
     const dow=d.getDay();const ds=d.toISOString().slice(0,10);
-    const isRest=restDays.includes(dow)||(consec>=(P.level==='principiante'?2:3));
+    const isRest=restDays.includes(dow)||(consec>=(P.level==='principiante'?2:P.level==='esperto'?5:3));
     if(isRest){
       const isUserRest=restDays.includes(dow);
       plan.push({date:ds,type:'rest',focus:'riposo',
@@ -1305,7 +1784,7 @@ function refreshPlan(){
   }
   const cats=(P.categories||['gambe','braccia','core','stretching','orientale']).filter(c=>c!=='riscaldamento');
   const restDays=P.restDays||[0,6];
-  const maxConsec=P.level==='principiante'?2:3;
+  const maxConsec=P.level==='principiante'?2:P.level==='esperto'?5:3;
   const plan=[];let focusIdx=0,consec=0;
   for(let i=0;i<14;i++){
     const d=new Date();d.setDate(d.getDate()+i);
@@ -1336,6 +1815,8 @@ function getTodayPlan(){const today=new Date().toISOString().slice(0,10);return 
 // ═══ HOME ═══
 function buildHome(){
   if(!P.name)return;
+  T.energyLevel=3; // reset energy to normal each day
+  const defNrg=document.querySelector('.nrg-btn[data-nrg="3"]');if(defNrg)setEnergy(defNrg);
   const h=new Date().getHours();
   document.getElementById('home-greeting').textContent=`${h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera'}, ${P.name}! 👋`;
   document.getElementById('home-phrase').textContent=PHRASES[Math.floor(Math.random()*PHRASES.length)];
@@ -1357,7 +1838,7 @@ function buildHome(){
   document.getElementById('today-icon').textContent=tp.icon||'🌈';
   const ci=CAT_INFO[tp.focus]||{label:'Allenamento',icon:'🌈'};
   document.getElementById('today-focus').textContent=(tp.type==='rest'?'Giorno di riposo':ci.label+' — '+tp.icon);
-  const subs={gambe:'Rafforza gambe e glutei! 🦵',braccia:'Potenzia braccia e spalle! 💪',core:'Rinforza il core! 🎯',stretching:'Allungati e rilassati! 🤸',orientale:'Respira e trova l\'equilibrio! 🧘',seduto:'Allenati comodamente seduto! 🪑',misto:'Allenamento completo misto! 🌈',misto_plus:'Corpo libero + esercizi da seduto! 🪑💪',riposo:'Oggi riposi — ci vediamo domani! 😴'};
+  const subs={gambe:'Rafforza gambe e glutei! 🦵',braccia:'Potenzia braccia e spalle! 💪',core:'Rinforza il core! 🎯',stretching:'Allungati e rilassati! 🤸',orientale:'Respira e trova l\'equilibrio! 🧘',seduto:'Allenati comodamente seduto! 🪑',elastici:'Allenamento con elastici! 🎽',cardio:'Cardio e boxe leggera! 🥊',presonno:'Rilassati prima di dormire! 😴',postura:'Corregi la postura, stai meglio! 🪑+',misto:'Allenamento completo misto! 🌈',misto_plus:'Corpo libero + esercizi da seduto! 🪑💪',riposo:'Oggi riposi — ci vediamo domani! 😴'};
   document.getElementById('today-sub').textContent=subs[tp.focus]||'Allenamento di oggi!';
   const btn=document.getElementById('btn-start');if(btn)btn.style.display=isRest?'none':'flex';
   // Favorites chip: check if today's session has any favorite exercises
@@ -2059,6 +2540,17 @@ function toggleNotifications(){
   }
 }
 
+
+function setEnergy(btn){
+  document.querySelectorAll('.nrg-btn').forEach(b=>{
+    b.classList.remove('sel');
+    b.style.borderColor='var(--bdr)';b.style.background='var(--card)';
+  });
+  btn.classList.add('sel');
+  btn.style.borderColor='var(--g1)';btn.style.background='var(--g4)';
+  T.energyLevel=parseInt(btn.dataset.nrg)||3;
+}
+
 function acceptSuggestion(){
   const s=getSuggestedTiming();
   SET.notifTime=s.slot;save();
@@ -2171,13 +2663,15 @@ function checkProfileUpdateNeeded(){
 // ═══ SESSION GENERATION ═══
 function genSession(focus){
   const beg=P.level==='principiante';
+  const expert=P.level==='esperto';
   const dur=T.dur||12;
   let cfg=DUR_CFG[dur]||DUR_CFG[12];
   if(dur===5){cfg={cnt:4,a:40,r:25}}
   let{cnt,a,r}=cfg;
   if(beg){a=Math.max(25,a-10);r=r+8}
+  if(expert){a=Math.min(90,a+10);r=Math.max(8,r-5)}
   // Apply combined bias: feedback bias + profile bias (BMI/age)
-  const bias=(SET.difficultyBias||0)+(P.profileBias||0);
+  const bias=(SET.difficultyBias||0)+(P.profileBias||0)+(SET._sessionEnergyBias||0);
   a=Math.max(15,Math.min(90,a+(bias*5)));
   r=Math.max(8,Math.min(60,r-(bias*2)));
   // Age > 50: add 5s recovery
@@ -2193,6 +2687,10 @@ function genSession(focus){
   const avoided=new Set(P.avoided||[]);
   let pool;
   if(focus==='misto')pool=shuffleArr(DB.filter(e=>e.cat!=='riscaldamento'&&e.cat!=='party'));
+  else if(['presonno','postura'].includes(focus)){
+    // these categories only if explicitly chosen
+    pool=shuffleArr(DB.filter(e=>e.cat===focus));
+  }
   else if(focus==='misto_plus'){
     // Half seduto, half from other categories
     const sedPool=shuffleArr(DB.filter(e=>e.cat==='seduto'));
@@ -2522,6 +3020,7 @@ function launchConfetti(){
   }
 }
 function completeSession(){releaseWakeLock();checkOver65Challenge();checkProfileUpdateNeeded();
+  SET._sessionEnergyBias=0; // reset session energy bias
   launchConfetti();
   clearInterval(T.iv);clearInterval(restIv);clearInterval(transIv);
   const today=new Date().toISOString().slice(0,10);
@@ -2530,6 +3029,11 @@ function completeSession(){releaseWakeLock();checkOver65Challenge();checkProfile
   if(!S.days.includes(today))S.days.push(today);
   if(T.sesType==='orientale')S.ori++;
   if(T.sesType==='seduto'||T.sesType==='misto_plus')S.sed=(S.sed||0)+1;
+  // Track all categories in catSet for badge checking
+  if(T.sesType&&!['riposo','riposo_vol','misto','misto_plus'].includes(T.sesType)){
+    if(!S.catSet)S.catSet=[];
+    if(!S.catSet.includes(T.sesType))S.catSet.push(T.sesType);
+  }
   if(T.sesType==='stretching')S.stretch_ct=(S.stretch_ct||0)+1;
   if(!S.catSet)S.catSet=[];
   if(!S.catSet.includes(T.sesType))S.catSet.push(T.sesType);
@@ -2823,6 +3327,8 @@ function toggleExDetail(id){const el=document.getElementById(id);if(el){const v=
 // ═══ PROFILE ═══
 function buildProfile(){
   if(!P.name)return;
+  T.energyLevel=3; // reset energy to normal each day
+  const defNrg=document.querySelector('.nrg-btn[data-nrg="3"]');if(defNrg)setEnergy(defNrg);
   document.getElementById('prf-name').textContent=P.name;
   const wh=P.weight&&P.height?` · ${P.weight}kg · ${P.height}cm`:'';
   document.getElementById('prf-sub').textContent=`${P.level==='intermedio'?'🔥 Intermedio':'🌱 Principiante'} · ${P.age} anni${wh}`;
@@ -2912,6 +3418,8 @@ function addPlayer(){
 // ═══ SETTINGS ═══
 function buildSettings(){
   if(!P.name)return;
+  T.energyLevel=3; // reset energy to normal each day
+  const defNrg=document.querySelector('.nrg-btn[data-nrg="3"]');if(defNrg)setEnergy(defNrg);
   const tl={principiante:'🌱 Principiante',intermedio:'🔥 Intermedio'};
   document.getElementById('val-name').textContent=P.name;
   document.getElementById('val-age').textContent=P.age?(P.age+' anni'):'—';
@@ -2921,7 +3429,7 @@ function buildSettings(){
   const nf=document.getElementById('st-nofloor');if(nf)nf.classList.toggle('on',!!P.noFloor);
   // Categories
   const catWrap=document.getElementById('st-cats');
-  if(catWrap){const cats=['riscaldamento','gambe','braccia','core','stretching','seduto','orientale'];
+  if(catWrap){const cats=['riscaldamento','gambe','braccia','core','stretching','seduto','orientale','elastici','cardio','presonno','postura'];
     catWrap.innerHTML=cats.map(c=>{const ci=CAT_INFO[c]||{icon:'💪',label:c};const sel=(P.categories||[]).includes(c);return`<div class="mchk${sel?' sel':''}" data-cat="${c}" onclick="toggleStCat(this)" style="margin-bottom:6px"><span class="mchk-icon">${ci.icon}</span><div class="mchk-label">${ci.label}</div><div class="mchk-check">${sel?'✓':''}</div></div>`}).join('');
   }
   // Rest days
@@ -2980,10 +3488,10 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.7 · 10/04/2026 21:53';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 07:47';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
-  if(lbl)lbl.textContent=`${DB.length} esercizi in 8 categorie`;
+  if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
   // Reset list to collapsed state each time settings opens
   exListVisible=false;
   const wrap=document.getElementById('ex-list-wrap');
@@ -3024,11 +3532,15 @@ function buildExList(){
     {key:'stretching',label:'🤸 Stretching'},
     {key:'seduto',label:'🪑 Da Seduto'},
     {key:'orientale',label:'🧘 Orientale'},
+    {key:'elastici',label:'🎽 Elastici'},
+    {key:'cardio',label:'🥊 Cardio/Box'},
+    {key:'presonno',label:'😴 Pre-sonno'},
+    {key:'postura',label:'🪑+ Postura/Ufficio'},
     {key:'party',label:'🎉 Party / Sfide'},
   ];
   const total=DB.length;
   const lbl=document.getElementById('ex-count-lbl');
-  if(lbl)lbl.textContent=`${total} esercizi in ${cats.length} categorie`;
+  if(lbl)lbl.textContent=`${total} esercizi in ${cats.filter(c=>DB.some(e=>e.cat===c.key)).length} categorie`;
   wrap.innerHTML=cats.map(cat=>{
     const exs=DB.filter(e=>e.cat===cat.key);
     if(!exs.length)return'';
@@ -3352,7 +3864,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604102153'; // auto-set on each release
+const APP_BUILD='202604110747'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
