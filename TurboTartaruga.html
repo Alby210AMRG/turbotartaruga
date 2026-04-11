@@ -279,20 +279,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   <!-- Wizard container -->
   <div id="wiz-wrap" style="min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden">
     <!-- Progress dots -->
-    <div id="wiz-dots" style="display:flex;gap:6px;justify-content:center;padding:18px 20px 0;position:absolute;top:0;left:0;right:0;z-index:5"></div>
+
     <!-- Slides container -->
     <div id="wiz-slides" style="display:flex;transition:transform .35s cubic-bezier(.4,0,.2,1);flex:1;will-change:transform"></div>
     <!-- Nav bar -->
-    <div style="display:flex;gap:10px;padding:10px 18px env(safe-area-inset-bottom,14px);background:rgba(0,0,0,.35);backdrop-filter:blur(10px);position:sticky;bottom:0;z-index:5">
-      <button id="wiz-back" onclick="wizNav(-1)" style="padding:12px 18px;border-radius:100px;border:2px solid rgba(255,255,255,.4);background:rgba(255,255,255,.15);color:#fff;font-family:var(--ft);font-size:15px;font-weight:bold;cursor:pointer;display:none">← Indietro</button>
-      <button id="wiz-next" onclick="wizNav(1)" style="flex:1;padding:14px;border-radius:100px;border:2px solid rgba(255,255,255,.6);background:rgba(255,255,255,.2);color:#fff;font-family:var(--ft);font-size:16px;font-weight:bold;cursor:pointer">Avanti →</button>
+    <!-- Top nav: arrows + dots -->
+    <div style="position:absolute;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;justify-content:center;padding:14px 16px;gap:10px">
+      <button id="wiz-back" onclick="wizNav(-1)"
+        style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.18);color:#fff;font-size:18px;font-weight:bold;cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0">‹</button>
+      <div id="wiz-dots" style="display:flex;gap:7px;align-items:center;flex:1;justify-content:center"></div>
+      <button id="wiz-next" onclick="wizNav(1)"
+        style="width:36px;height:36px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.18);color:#fff;font-size:18px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">›</button>
     </div>
     <!-- Swipe hint (shown once) -->
-    <div id="wiz-swipe-hint" style="position:absolute;bottom:82px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:12px;pointer-events:none;z-index:6">
-      <div style="background:rgba(0,0,0,.45);color:#fff;padding:8px 18px;border-radius:100px;font-size:13px;font-weight:bold;display:flex;align-items:center;gap:8px">
-        <span style="font-size:18px">👈</span> scorri per navigare <span style="font-size:18px">👉</span>
-      </div>
-    </div>
+    <div id="wiz-swipe-hint" style="position:absolute;top:68px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.4);color:#fff;padding:5px 14px;border-radius:100px;font-size:11px;pointer-events:none;opacity:1;transition:opacity .5s;white-space:nowrap;z-index:4">swipe o usa le frecce</div>
 
   </div>
   <!-- Hidden inputs (read by saveProfile) -->
@@ -1602,8 +1602,9 @@ function updateWizDots(){
 function updateWizNav(){
   const back=document.getElementById('wiz-back');
   const next=document.getElementById('wiz-next');
-  if(back)back.style.display=_wizStep>0?'block':'none';
-  if(next)next.textContent=_wizStep===WIZ_STEPS.length-1?'— già fatto sopra —':(_wizStep===WIZ_STEPS.length-2?'Ultimo step →':'Avanti →');
+  // Back arrow: visible from step 1 onward
+  if(back)back.style.display=_wizStep>0?'flex':'none';
+  // Next arrow: hidden on last step (has its own "Iniziamo!" button)
   if(next)next.style.display=_wizStep===WIZ_STEPS.length-1?'none':'flex';
 }
 
@@ -3510,7 +3511,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 08:22';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 08:39';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -3886,7 +3887,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604110822'; // auto-set on each release
+const APP_BUILD='202604110839'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
