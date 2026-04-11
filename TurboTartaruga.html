@@ -114,8 +114,8 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 .tcontrols{display:flex;gap:9px;padding:0 13px 14px}
 .nxt-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bdr)}.nxt-item:last-child{border-bottom:none}
 /* Riserva Turbo */
-.riserva{margin:0 13px 13px;background:linear-gradient(135deg,#E65100,#FF8F00);border-radius:var(--radius);padding:14px 16px;color:#fff;animation:pglow 2s infinite}
-@keyframes pglow{0%,100%{box-shadow:0 0 0 0 rgba(230,81,0,.4)}50%{box-shadow:0 0 0 8px rgba(230,81,0,0)}}
+.riserva{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#BF360C,#E65100,#FF8F00);padding:16px 18px;color:#fff;animation:pglow 1.5s infinite;z-index:200;box-shadow:0 -4px 20px rgba(230,81,0,.6)}
+@keyframes pglow{0%,100%{box-shadow:0 4px 16px rgba(230,81,0,.5)}50%{box-shadow:0 4px 24px rgba(230,81,0,.8)}}
 /* Calendar */
 .cal-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px}
 .cal-nav-btn{background:var(--g3);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;font-size:16px;color:var(--g1);display:flex;align-items:center;justify-content:center}
@@ -447,12 +447,16 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <button class="btn btn-s" style="flex:1" onclick="skipExercise()">⏭️ Salta</button>
   </div>
   <div id="riserva-banner" class="riserva" style="display:none">
-    <div style="display:flex;align-items:center;gap:10px"><span style="font-size:28px">💥</span>
-      <div style="flex:1"><div style="font-family:var(--ft);font-size:15px;font-weight:bold">Riserva Turbo!</div>
-        <div style="font-size:var(--fs-xs);opacity:.9">Mancano 3 esercizi — aggiungi 2 bonus?</div></div></div>
-    <div style="display:flex;gap:7px;margin-top:10px">
-      <button onclick="activateRiserva()" style="flex:1;padding:10px;background:#fff;color:#E65100;border:none;border-radius:100px;font-weight:bold;font-size:var(--fs-xs);cursor:pointer">💥 Attiva!</button>
-      <button onclick="dismissRiserva()" style="padding:10px 13px;background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:100px;font-size:var(--fs-xs);cursor:pointer">No grazie</button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+      <span style="font-size:40px;animation:bnc .8s ease infinite alternate">💥</span>
+      <div style="flex:1">
+        <div style="font-family:var(--ft);font-size:20px;font-weight:bold;letter-spacing:.5px">RISERVA TURBO!</div>
+        <div style="font-size:14px;opacity:.9;margin-top:2px">Quasi finito — vuoi aggiungere 2 esercizi bonus e guadagnare XP extra?</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px">
+      <button onclick="activateRiserva()" style="flex:2;padding:13px;background:#fff;color:#E65100;border:none;border-radius:100px;font-weight:bold;font-size:16px;cursor:pointer;font-family:var(--ft)">💥 Sì, attiva!</button>
+      <button onclick="dismissRiserva()" style="flex:1;padding:13px;background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:100px;font-size:14px;cursor:pointer;font-weight:bold">No</button>
     </div>
   </div>
   <div class="card" style="margin-top:0"><div class="card-title">📋 Prossimi esercizi</div><div id="tr-next-list"></div></div>
@@ -1347,8 +1351,10 @@ function saveProfile(){
   const ag=_wizData.age||0;
   if(!nm){toast('⚠️ Inserisci il tuo nome!');return}
   if(ag<10||ag>99){toast('⚠️ Età non valida (10-99)');return}
-  const cats=(_wizData.cats||[]).filter(c=>c);
-  if(!cats.length){toast('⚠️ Seleziona almeno una categoria!');return}
+  // Always include riscaldamento (mandatory warm-up)
+  const rawCats=(_wizData.cats||[]).filter(c=>c);
+  if(!rawCats.length){toast('⚠️ Seleziona almeno una categoria!');return}
+  const cats=rawCats.includes('riscaldamento')?rawCats:['riscaldamento',...rawCats];
   const restDays=_wizData.restDays||[0,6];
   P={name:nm,age:ag,
     weight:_wizData.weight||null,height:_wizData.height||null,
@@ -2064,25 +2070,35 @@ function shareResultCard(){
   ctx.fillStyle=grad;ctx.fillRect(0,0,600,360);
 
   const renderCard=()=>{
-    // Stats
     const exCount=document.getElementById('cmp-ex')?.textContent||'0';
     const dur=document.getElementById('cmp-time')?.textContent||'0m';
     const xpGain=document.getElementById('cmp-xp')?.textContent||'+0';
-    ctx.font='bold 22px sans-serif';ctx.fillStyle='rgba(255,255,255,.92)';
-    ctx.textAlign='left';
-    ctx.fillText('💪 Esercizi: '+exCount,50,210);
-    ctx.fillText('⏱️ Durata: '+dur,50,245);
-    ctx.fillText('⭐ '+xpGain+' XP guadagnati',50,280);
-    ctx.fillText('🔥 Streak: '+S.str+' giorni',320,210);
-    ctx.fillText('🏅 Badge: '+(S.badges||[]).length+'/29',320,245);
-    ctx.fillText('📊 XP totali: '+(S.xp||0),320,280);
-    // Divider
-    ctx.strokeStyle='rgba(255,255,255,.25)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(50,300);ctx.lineTo(550,300);ctx.stroke();
-    // Slogan footer
-    ctx.font='italic 17px sans-serif';ctx.fillStyle='rgba(255,255,255,.75)';
+    // Category chip
+    const catLabel=CAT_INFO[T.sesType]?.label||T.sesType||'Allenamento';
+    const catIcon=CAT_INFO[T.sesType]?.icon||'💪';
+    ctx.font='bold 14px sans-serif';ctx.fillStyle='rgba(255,255,255,.6)';
     ctx.textAlign='center';
-    ctx.fillText('Lento ma costante vince la gara! 🐢',300,330);
+    ctx.fillText(catIcon+' '+catLabel.toUpperCase(),300,170);
+    // Stats grid — 3 rows × 2 cols
+    ctx.font='bold 21px sans-serif';ctx.fillStyle='rgba(255,255,255,.95)';
+    ctx.textAlign='left';
+    const rows=[
+      ['💪 Esercizi: '+exCount, '🔥 Streak: '+S.str+' gg'],
+      ['⏱️ Durata: '+dur,       '🏅 Badge: '+(S.badges||[]).length+'/'+((typeof BADGES!=='undefined')?BADGES.length:'29')],
+      ['⭐ '+xpGain+' XP',      '📊 XP totali: '+(S.xp||0)],
+    ];
+    rows.forEach(([l,r],i)=>{
+      const y=205+(i*42);
+      ctx.fillText(l,45,y);
+      ctx.fillText(r,320,y);
+    });
+    // Divider
+    ctx.strokeStyle='rgba(255,255,255,.2)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(45,300);ctx.lineTo(555,300);ctx.stroke();
+    // Slogan
+    ctx.font='italic 16px sans-serif';ctx.fillStyle='rgba(255,255,255,.7)';
+    ctx.textAlign='center';
+    ctx.fillText('Lento ma costante vince la gara! 🐢',300,328);
     // Share
     canvas.toBlob(blob=>{
       const file=new File([blob],'turbotartaruga-risultato.png',{type:'image/png'});
@@ -2097,21 +2113,18 @@ function shareResultCard(){
   const logoImg=new Image();
   logoImg.crossOrigin='anonymous';
   logoImg.onload=()=>{
-    // Draw logo centered at top — max 180px wide
-    const maxW=200,maxH=100;
+    const maxW=180,maxH=80;
     const ratio=Math.min(maxW/logoImg.width,maxH/logoImg.height);
     const lw=logoImg.width*ratio,lh=logoImg.height*ratio;
-    ctx.drawImage(logoImg,(600-lw)/2,12,lw,lh);
-    // App name below logo
-    ctx.font='bold 26px sans-serif';ctx.fillStyle='#fff';ctx.textAlign='center';
-    ctx.fillText('TurboTartaruga',300,130);
-    ctx.font='18px sans-serif';ctx.fillStyle='rgba(255,255,255,.85)';
-    ctx.fillText('Sessione di '+(P.name||'Tartaruga') ,300,158);
-    ctx.font='15px sans-serif';ctx.fillStyle='rgba(255,255,255,.7)';
-    ctx.fillText('Il tuo coach di fitness amichevole',300,160);
-    // Separator
+    ctx.drawImage(logoImg,(600-lw)/2,10,lw,lh);
+    // Name + subtitle — well spaced
+    ctx.textAlign='center';
+    ctx.font='bold 24px sans-serif';ctx.fillStyle='#fff';
+    ctx.fillText('Sessione di '+(P.name||'Tartaruga')+'! 🎉',300,110);
+    ctx.font='14px sans-serif';ctx.fillStyle='rgba(255,255,255,.7)';
+    ctx.fillText('TurboTartaruga — Il tuo coach tascabile 🐢',300,132);
     ctx.strokeStyle='rgba(255,255,255,.3)';ctx.lineWidth=1;
-    ctx.beginPath();ctx.moveTo(50,178);ctx.lineTo(550,178);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(50,148);ctx.lineTo(550,148);ctx.stroke();
     renderCard();
   };
   logoImg.onerror=()=>{
@@ -3511,7 +3524,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 08:39';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 10:05';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -3618,7 +3631,17 @@ function savePause(){SET.pauseSec=parseInt(document.getElementById('st-pause-ran
 function saveGoal(){P.goal=parseInt(document.getElementById('st-goal-range').value)||90;save();toast('✅ Obiettivo salvato!')}
 function selTheme(el){document.querySelectorAll('.th-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');SET.theme=el.dataset.th;save();applyTheme()}
 function selView(el){document.querySelectorAll('.vw-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');SET.viewScale=el.dataset.vs;save();applyView()}
-function changeUser(){if(!confirm('Vuoi davvero azzerare tutto?'))return;P={};S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[]};save();go('onboarding')}
+function changeUser(){
+  if(!confirm('Vuoi davvero azzerare tutto?\nProfilo, progressi e badge verranno eliminati.'))return;
+  P={};
+  S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,sed:0,stretch_ct:0};
+  SET={theme:SET.theme||'light',audio:SET.audio!==false,voice:SET.voice!==false,viewScale:SET.viewScale||'1x',pauseSec:20};
+  _wizData={sex:'M',level:'principiante',cats:['gambe','braccia','core','stretching','orientale'],notifTime:'evening'};
+  _wizStep=0;
+  localStorage.removeItem('tt4_p');localStorage.removeItem('tt4_s');
+  save();
+  go('onboarding');
+}
 function startEdit(f){['val-','inp-','ebt-'].forEach((pfx,i)=>{const el=document.getElementById(pfx+f);if(el)el.style.display=i===1?'block':i===2?'none':'none'});const fld=document.getElementById('fld-'+f);if(fld){fld.value=P[f]||'';fld.focus()}}
 function cancelEdit(f){['val-','inp-','ebt-'].forEach((pfx,i)=>{const el=document.getElementById(pfx+f);if(el)el.style.display=i===1?'none':'block'})}
 function toggleFavList(id,btn){if(!P.favorites)P.favorites=[];const i=P.favorites.indexOf(id);if(i>=0){P.favorites.splice(i,1);btn.style.opacity='0.3';toast('⭐ Rimosso dai preferiti');}else{P.avoided=(P.avoided||[]).filter(x=>x!==id);P.favorites.push(id);btn.style.opacity='1';toast('⭐ Aggiunto ai preferiti!');}save()}
@@ -3887,7 +3910,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604110839'; // auto-set on each release
+const APP_BUILD='202604111005'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
