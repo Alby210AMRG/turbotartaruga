@@ -379,6 +379,28 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <button class="btn btn-p btn-full btn-lg mt10" id="btn-start" onclick="go('presession')">▶️ Inizia sessione</button>
     </div>
   </div>
+  <!-- Morning routine banner (context-aware) -->
+  <div id="home-morning-banner" style="display:none;margin:0 13px 10px">
+    <div style="background:linear-gradient(135deg,#FFF9C4,#FFF3E0);border:2px solid #F9A825;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:28px">☀️</span>
+      <div style="flex:1">
+        <div style="font-weight:bold;font-size:14px;color:#E65100">Routine mattutina</div>
+        <div style="font-size:12px;color:#BF360C;margin-top:1px">4 min nel letto · Attiva il corpo prima di alzarti</div>
+      </div>
+      <button onclick="startRoutine('mattino')" style="background:#F9A825;color:#fff;border:none;border-radius:100px;padding:8px 14px;font-weight:bold;font-size:13px;cursor:pointer;white-space:nowrap">Inizia</button>
+    </div>
+  </div>
+  <!-- Sleep routine banner (context-aware) -->
+  <div id="home-sleep-banner" style="display:none;margin:0 13px 10px">
+    <div style="background:linear-gradient(135deg,#E8EAF6,#C5CAE9);border:2px solid #5C6BC0;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px">
+      <span style="font-size:28px">🌙</span>
+      <div style="flex:1">
+        <div style="font-weight:bold;font-size:14px;color:#283593">Routine pre-sonno</div>
+        <div style="font-size:12px;color:#1A237E;margin-top:1px">8-10 min · Rilassati per dormire bene</div>
+      </div>
+      <button onclick="startRoutine('presonno')" style="background:#5C6BC0;color:#fff;border:none;border-radius:100px;padding:8px 14px;font-weight:bold;font-size:13px;cursor:pointer;white-space:nowrap">Inizia</button>
+    </div>
+  </div>
   <div class="agrid">
     <button class="abtn" onclick="go('calendar')"><span class="ai">📅</span><span class="al">Calendario</span><span class="as">Piano & storico</span></button>
     <button class="abtn party" onclick="go('party')"><span class="ai">🎉</span><span class="al">Party!</span><span class="as">Insieme è meglio!</span></button>
@@ -624,6 +646,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div class="card"><div class="card-title">📊 Totali</div>
       <div class="stat-grid"><div><div class="sv" id="prg-tot">0</div><div class="sl">Sessioni</div></div><div><div class="sv" id="prg-str">0</div><div class="sl">Streak 🔥</div></div><div><div class="sv" id="prg-xp">0</div><div class="sl">XP ⭐</div></div></div>
       <div class="stat-grid" style="margin-top:10px"><div><div class="sv" id="prg-boosts">0</div><div class="sl">💥 Boost</div></div><div><div class="sv" id="prg-skipped">0</div><div class="sl">😴 Saltate</div></div><div><div class="sv" id="prg-badges">0</div><div class="sl">🏅 Badge</div></div></div>
+      <div class="stat-grid" style="margin-top:10px"><div><div class="sv" id="prg-morning">0</div><div class="sl">☀️ Mattino</div></div><div><div class="sv" id="prg-sleep">0</div><div class="sl">🌙 Pre-sonno</div></div><div><div class="sv" id="prg-level-num">1</div><div class="sl">⭐ Livello</div></div></div>
     </div>
     <!-- STAT 1b: Record personali -->
     <div class="card"><div class="card-title">🏆 Record personali</div>
@@ -902,6 +925,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       </div>
     </div>
 
+    <span class="sec-title">☀️🌙 Routine quotidiane</span>
+    <div class="sblk">
+      <div class="srow"><div class="si">☀️</div>
+        <div class="sinfo"><div class="stitle">Routine mattutina</div>
+          <div class="sval">4 min nel letto appena svegli</div></div>
+        <button class="toggle" id="st-morning" onclick="toggleMorningRoutine()"></button>
+      </div>
+      <div class="srow"><div class="si">🌙</div>
+        <div class="sinfo"><div class="stitle">Routine pre-sonno</div>
+          <div class="sval">8-10 min prima di dormire</div></div>
+        <button class="toggle" id="st-sleep" onclick="toggleSleepRoutine()"></button>
+      </div>
+    </div>
     <span class="sec-title">💾 Backup</span>
     <div class="sblk"><div class="srow" style="flex-direction:column;align-items:flex-start;gap:7px">
       <div class="stitle">Trasferisci i tuoi dati</div>
@@ -1164,6 +1200,15 @@ const DB=[
   {id:'po7', n:'Rilascio tensione mandibola',cat:'postura',t:'🪑+ Postura',zona:'🦷 Mandibola · 🧠 Tensione',desc:'Labbra chiuse, denti distanti. Massaggia le guance con le mani in cerchi. Apri la bocca lentamente 5 volte.',floor:false},
   {id:'po8', n:'Stretching flessori anca',cat:'postura',t:'🪑+ Postura',zona:'🦵 Flessori anca · 🔄 Lombare',desc:'Affondo lungo: ginocchio posteriore a terra, spingi i fianchi in avanti. 30 sec per lato. Combatte lo star seduti.',floor:true},
   {id:'po9', n:'Esercizio respiro desk',cat:'postura',t:'🪑+ Postura',zona:'🫁 Respiro · 🎯 Concentrazione',desc:'Seduto: inspira 4 sec, espira 6 sec. 5 cicli. Reidrata il cervello, riduce lo stress da schermo.',floor:false},
+  // ── MATTINO (am1-am8) ─────────────────────────────────────────────
+  {id:'am1',n:'Stiramento farfalla nel letto',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Schiena · 💪 Spalle',desc:'Sdraiato, apri le braccia come ali e porta i gomiti indietro. Senti lo stiramento nel petto. 5 respiri profondi.',floor:true},
+  {id:'am2',n:'Ginocchia al petto lente',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Lombari · 🎯 Core',desc:'Sdraiato, porta entrambe le ginocchia al petto abbracciandole. Tieni 5 respiri, poi rilascia lentamente.',floor:true},
+  {id:'am3',n:'Stiramento gatto nel letto',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Colonna · 🦴 Schiena',desc:'A quattro zampe sul letto. Incurva la schiena verso il cielo (gatto), poi abbassala (mucca). Lento e fluido.',floor:true},
+  {id:'am4',n:'Stiramento braccia sopra la testa',cat:'mattino',t:'☀️ Mattino',zona:'💪 Spalle · 🔄 Colonna',desc:'Seduto sul bordo del letto, intreccia le mani sopra la testa. Spingi verso l\'alto allungando la schiena. 5 respiri.',floor:false},
+  {id:'am5',n:'Torsione seduta sul letto',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Colonna toracica · 🎯 Obliqui',desc:'Seduto, mani sulle spalle opposte. Ruota lentamente a destra poi a sinistra. Muovi solo il busto.',floor:false},
+  {id:'am6',n:'Rotazione caviglie e polsi',cat:'mattino',t:'☀️ Mattino',zona:'🦴 Caviglie · 🦴 Polsi · ❤️ Circol.',desc:'Seduto sul bordo del letto: 5 cerchi con le caviglie, poi 5 con i polsi. Attiva la circolazione prima di alzarti.',floor:false},
+  {id:'am7',n:'Stiramento laterale in piedi',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Dorsali · 💪 Intercostali',desc:'In piedi accanto al letto. Un braccio sopra la testa, piegati lentamente di lato. 15 sec per lato. Respira.',floor:false},
+  {id:'am8',n:'Respirazione profonda attivante',cat:'mattino',t:'☀️ Mattino',zona:'🫁 Respiro · 🧠 Attivazione',desc:'In piedi. Inspira 4 sec portando le braccia in alto, espira 4 sec abbassandole. Ripeti 5 volte. Sveglia il corpo.',floor:false},
   {id:'po10',n:'Cammino consapevole pausa',cat:'postura',t:'🪑+ Postura',zona:'🦵 Gambe · ❤️ Circolazione',desc:'Alzati e cammina 2 minuti. Anche solo in casa. Necessario ogni ora per la salute metabolica. Niente scuse!',floor:false},
 ];
 
@@ -1180,6 +1225,7 @@ const CAT_INFO={
   cardio:{label:'Cardio/Box',icon:'🥊',cls:'workout'},
   presonno:{label:'Pre-sonno',icon:'😴',cls:'stretching'},
   postura:{label:'Postura',icon:'🖥️',cls:'workout'},
+  mattino:{label:'Mattino',icon:'☀️',cls:'stretching'},
   misto:{label:'Misto',icon:'🌈',cls:'workout'},
   misto_plus:{label:'Misto+',icon:'🪑💪',cls:'workout'},
   riposo:{label:'Riposo',icon:'😴',cls:'rest'},
@@ -1278,6 +1324,13 @@ const BADGES=[
   {id:'boost5',  icon:'🚀',name:'Turbo x5',         lv:2,hint:'5 Riserve Turbo',   fn:s=>(s.boosts||0)>=5},
   {id:'boost15', icon:'⚡',name:'Turbo maniac',      lv:2,hint:'15 Riserve Turbo',  fn:s=>(s.boosts||0)>=15},
   {id:'boost50', icon:'🔥',name:'TurboTartaruga pro',lv:3,hint:'50 Riserve Turbo',  fn:s=>(s.boosts||0)>=50},
+  // ── Badge routine mattino/pre-sonno ─────────────────────────────────
+  {id:'am_start', icon:'☀️',name:'Buongiorno!',   lv:1,hint:'1 routine mattutina',   fn:s=>(s.morningTotal||0)>=1},
+  {id:'am_10',    icon:'🌅',name:'Mattiniero!',    lv:2,hint:'10 routine mattutine',   fn:s=>(s.morningTotal||0)>=10},
+  {id:'am_30',    icon:'🌄',name:'Alba di fuoco',   lv:3,hint:'30 routine mattutine',  fn:s=>(s.morningTotal||0)>=30},
+  {id:'sl_start', icon:'🌙',name:'Buona notte!',   lv:1,hint:'1 routine pre-sonno',   fn:s=>(s.sleepTotal||0)>=1},
+  {id:'sl_10',    icon:'💤',name:'Dormi bene!',     lv:2,hint:'10 routine pre-sonno',  fn:s=>(s.sleepTotal||0)>=10},
+  {id:'sl_30',    icon:'🌛',name:'Notti tranquille',lv:3,hint:'30 routine pre-sonno',  fn:s=>(s.sleepTotal||0)>=30},
   // ── Badge saltati (per invogliare a non saltare) ─────────────────
   {id:'skip3',   icon:'🛋️',name:'Divano lover',      lv:1,hint:'3 sessioni saltate',  fn:s=>(s.skippedTotal||0)>=3},
   {id:'skip10',  icon:'💤',name:'Campione del riposo',lv:1,hint:'10 sess. saltate',    fn:s=>(s.skippedTotal||0)>=10},
@@ -1287,7 +1340,7 @@ const BADGES=[
 ];
 
 // ═══ APP STATE ═══
-let P={},S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0};
+let P={},S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0};
 // P.favorites = [] of exercise ids starred
 // P.avoided   = [] of exercise ids avoided
 // P.favCount  = number of favorites to include per session (0-5, default 3)
@@ -1301,7 +1354,7 @@ function load(){
   try{const x=localStorage.getItem('tt4_p');if(x)P=JSON.parse(x)}catch(e){}
   try{const x=localStorage.getItem('tt4_s');if(x)S=JSON.parse(x)}catch(e){}
   try{const x=localStorage.getItem('tt4_set');if(x)SET=JSON.parse(x)}catch(e){}
-  if(!S.history)S.history=[];if(!S.plan)S.plan=[];if(!S.catSet)S.catSet=[];if(!S.sed)S.sed=0;if(!S.stretch_ct)S.stretch_ct=0;if(!S.skipped)S.skipped=0;if(!S.skippedTotal)S.skippedTotal=0;if(!S.boosts)S.boosts=0;
+  if(!S.history)S.history=[];if(!S.plan)S.plan=[];if(!S.catSet)S.catSet=[];if(!S.sed)S.sed=0;if(!S.stretch_ct)S.stretch_ct=0;if(!S.skipped)S.skipped=0;if(!S.skippedTotal)S.skippedTotal=0;if(!S.boosts)S.boosts=0;if(!S.morningDone)S.morningDone=null;if(!S.sleepDone)S.sleepDone=null;if(!S.morningTotal)S.morningTotal=0;if(!S.sleepTotal)S.sleepTotal=0;
 }
 function bkData(){return{v:'0.4',dt:new Date().toISOString(),profile:P,stats:S,settings:SET}}
 function restore(d){if(d.profile)P=d.profile;if(d.stats)S=d.stats;if(d.settings)SET=d.settings;if(!S.history)S.history=[];if(!S.plan)S.plan=[];save();applyTheme();applyView();toast('✅ Dati ripristinati!');go('home')}
@@ -1400,6 +1453,11 @@ function saveProfile(){
     noFloor:_wizData.noFloor||false,
     categories:cats,restDays,
     startDate:new Date().toISOString().slice(0,10)};
+  // Routine settings from wizard
+  P.morningRoutine=_wizData.morningRoutine||false;
+  P.morningRoutineHour=_wizData.morningHour||7;
+  P.sleepRoutine=_wizData.sleepRoutine||false;
+  P.sleepRoutineHour=_wizData.sleepHour||21;
   if(SET.notifTime)P.notifTime=SET.notifTime;
   // Carry notification settings from SET (may have been set via settings)
   if(!SET.notifEnabled)SET.notifEnabled=false;
@@ -1585,7 +1643,71 @@ const WIZ_STEPS = [
       </div>
     </div>`
   },
-  // 8: Fine
+  // 8: Routine mattutina
+  {id:'wiz-morning', bg:'linear-gradient(155deg,#F57F17,#F9A825,#1B5E20)', render:()=>`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 80px);padding:52px 24px 24px;text-align:center;color:#fff">
+      <div style="font-size:56px;margin-bottom:12px">☀️</div>
+      <div style="font-family:var(--ft);font-size:24px;font-weight:bold;margin-bottom:8px">Routine mattutina?</div>
+      <div style="opacity:.88;font-size:14px;line-height:1.65;margin-bottom:22px;max-width:300px">
+        <b>4 minuti nel letto appena svegli.</b><br>
+        Stiramenti leggeri e respirazione per attivare il corpo prima ancora di alzarti.
+        Il tuo coach ti manda un messaggio ogni mattina all'ora giusta. 🐢
+      </div>
+      <div style="width:100%;max-width:300px;display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+        <button onclick="wizEnableMorning(true)" id="wiz-morning-yes"
+          style="padding:15px;border-radius:14px;border:3px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:#fff;font-size:16px;font-weight:bold;cursor:pointer;transition:all .2s">
+          ✅ Sì, voglio iniziare bene!
+        </button>
+        <button onclick="wizEnableMorning(false)"
+          style="padding:11px;border-radius:14px;border:2px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.7);font-size:13px;cursor:pointer">
+          No grazie
+        </button>
+      </div>
+      <div id="wiz-morning-time" style="display:none;width:100%;max-width:300px">
+        <div style="font-size:13px;opacity:.85;margin-bottom:8px;font-weight:bold">A che ora ti svegli di solito?</div>
+        <div style="display:flex;gap:8px;justify-content:center">
+          ${[['05:00-06:30','🌄','Presto',5],['06:30-08:00','☀️','Mattina',7],['08:00-10:00','🌤️','Tardi',8]].map(([r,ico,lbl,h])=>`
+          <button class="wiz-wake-btn" data-h="${h}" onclick="wizSelWake(this)"
+            style="flex:1;padding:12px 6px;border-radius:12px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:bold;cursor:pointer">
+            ${ico}<br>${lbl}<br><span style="opacity:.7;font-size:10px">${r}</span>
+          </button>`).join('')}
+        </div>
+      </div>
+    </div>`
+  },
+  // 9: Routine pre-sonno personalizzata
+  {id:'wiz-sleep', bg:'linear-gradient(155deg,#1A237E,#283593,#0D1B3E)', render:()=>`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 80px);padding:52px 24px 24px;text-align:center;color:#fff">
+      <div style="font-size:56px;margin-bottom:12px">🌙</div>
+      <div style="font-family:var(--ft);font-size:24px;font-weight:bold;margin-bottom:8px">Routine pre-sonno?</div>
+      <div style="opacity:.88;font-size:14px;line-height:1.65;margin-bottom:22px;max-width:300px">
+        <b>8-10 minuti prima di andare a letto.</b><br>
+        Stretching e respirazione profonda per dormire meglio e svegliarti più riposato.
+        La tartaruga ti ricorda ogni sera. 🌙
+      </div>
+      <div style="width:100%;max-width:300px;display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+        <button onclick="wizEnableSleep(true)" id="wiz-sleep-yes"
+          style="padding:15px;border-radius:14px;border:3px solid rgba(255,255,255,.3);background:rgba(255,255,255,.15);color:#fff;font-size:16px;font-weight:bold;cursor:pointer">
+          🌙 Sì, aiutami a dormire meglio!
+        </button>
+        <button onclick="wizEnableSleep(false)"
+          style="padding:11px;border-radius:14px;border:2px solid rgba(255,255,255,.25);background:transparent;color:rgba(255,255,255,.7);font-size:13px;cursor:pointer">
+          No grazie
+        </button>
+      </div>
+      <div id="wiz-sleep-time" style="display:none;width:100%;max-width:300px">
+        <div style="font-size:13px;opacity:.85;margin-bottom:8px;font-weight:bold">A che ora vai a dormire di solito?</div>
+        <div style="display:flex;gap:8px;justify-content:center">
+          ${[['21:00','21:00',20],['22:00','22:00',21],['23:00','23:00',22]].map(([lbl,r,h])=>`
+          <button class="wiz-sleep-btn" data-h="${h}" onclick="wizSelSleep(this)"
+            style="flex:1;padding:12px 6px;border-radius:12px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:14px;font-weight:bold;cursor:pointer">
+            🌙 ${lbl}
+          </button>`).join('')}
+        </div>
+      </div>
+    </div>`
+  },
+  // 10: Fine
   {id:'wiz-fine', bg:'linear-gradient(155deg,#1B5E20,#2E7D32,#43A047)', render:()=>`
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:32px 24px;text-align:center;color:#fff">
       <img src="logo-turtle.png" style="width:min(55vw,180px);margin-bottom:16px;filter:drop-shadow(0 3px 12px rgba(0,0,0,.3));animation:bnc 1s ease infinite alternate">
@@ -1701,6 +1823,14 @@ function wizValidate(step){
   if(step===7){
     _wizData.notifTime=document.querySelector('.wiz-time-btn.sel')?.dataset.t||'evening';
   }
+  if(step===8){
+    // morningRoutine already set via wizEnableMorning()
+    // morningHour already set via wizSelWake()
+  }
+  if(step===9){
+    // sleepRoutine already set via wizEnableSleep()
+    // sleepHour already set via wizSelSleep()
+  }
   return true;
 }
 
@@ -1809,6 +1939,8 @@ function wizBuildSummary(){
     <div>😴 Riposo: ${rds||'Sabato e Domenica'}</div>
     <div>🎯 Obiettivo: ${_wizData.goal||90} sessioni</div>
     ${SET.notifEnabled?'<div>🔔 Messaggi del coach: attivi</div>':''}
+    ${_wizData.morningRoutine?'<div>☀️ Routine mattutina: attiva (ore '+(_wizData.morningHour||7)+':00)</div>':''}
+    ${_wizData.sleepRoutine?'<div>🌙 Routine pre-sonno: attiva (ore '+(_wizData.sleepHour||21)+':00)</div>':''}
   `;
 }
 
@@ -1885,6 +2017,8 @@ function buildHome(){
   calcSkippedSessions();
   buildSkippedMsg();
   buildWeeklyStats();
+  buildRoutineBanners();
+  scheduleRoutineNotifications();
   // Weather chip — async, non-blocking
   if(SET.gpsLat&&SET.gpsLon){fetchWeather().then(wx=>{if(!wx)updateWeatherChip(null);}).catch(()=>updateWeatherChip(null));}
   else updateWeatherChip(null);
@@ -2035,6 +2169,16 @@ function selDur(el){
   el.style.borderColor='var(--g1)';el.style.background='var(--g4)';T.dur=parseInt(el.dataset.dur)||12;
 }
 function startTraining(){
+  // Pre-sonno out-of-hours gentle warning
+  if(T.feeling==='presonno'||(T.feeling==='piano'&&getTodayPlan().focus==='presonno')){
+    const h=new Date().getHours();
+    if(h<18&&!window._presonnWarnShown){
+      window._presonnWarnShown=true;
+      toast('💡 La routine pre-sonno è pensata per la sera — ma puoi comunque farla ora! 🌙',4000);
+    }
+  } else {
+    window._presonnWarnShown=false;
+  }
   const tp=getTodayPlan();
   let focus=T.feeling&&T.feeling!=='piano'?T.feeling:tp.focus;
   if(T.feeling==='stanco_mini')focus='stretching';
@@ -2602,6 +2746,18 @@ async function requestNotifPermission(){
   }
 }
 
+function toggleMorningRoutine(){
+  P.morningRoutine=!P.morningRoutine;save();
+  const t=document.getElementById('st-morning');if(t)t.classList.toggle('on',P.morningRoutine);
+  buildRoutineBanners();scheduleRoutineNotifications();
+  toast(P.morningRoutine?'☀️ Routine mattutina attivata!':'Routine mattutina disattivata.');
+}
+function toggleSleepRoutine(){
+  P.sleepRoutine=!P.sleepRoutine;save();
+  const t=document.getElementById('st-sleep');if(t)t.classList.toggle('on',P.sleepRoutine);
+  buildRoutineBanners();scheduleRoutineNotifications();
+  toast(P.sleepRoutine?'🌙 Routine pre-sonno attivata!':'Routine pre-sonno disattivata.');
+}
 function toggleNotifications(){
   if(!SET.notifEnabled){requestNotifPermission();}
   else{
@@ -2646,6 +2802,165 @@ function selNotifTime(btn){
 
 // Call fetchWeather on home build
 const _origApplyDynTheme=typeof applyDynamicTheme==='function'?applyDynamicTheme:null;
+
+
+// ═══ ROUTINE MATTUTINA E PRE-SONNO ═══
+
+// ── Wizard helpers ─────────────────────────────────────────────────
+function wizEnableMorning(enable){
+  _wizData.morningRoutine=enable;
+  const timeDiv=document.getElementById('wiz-morning-time');
+  const yesBtn=document.getElementById('wiz-morning-yes');
+  if(enable){
+    if(timeDiv)timeDiv.style.display='block';
+    if(yesBtn){yesBtn.style.background='rgba(255,255,255,.35)';yesBtn.style.borderColor='#fff';}
+    // Default wake hour
+    if(!_wizData.morningHour)_wizData.morningHour=7;
+    const def=document.querySelector('.wiz-wake-btn[data-h="7"]');if(def)wizSelWake(def);
+  } else {
+    _wizData.morningHour=null;
+    if(timeDiv)timeDiv.style.display='none';
+    wizNav(1);
+  }
+}
+function wizSelWake(btn){
+  document.querySelectorAll('.wiz-wake-btn').forEach(b=>{b.style.borderColor='rgba(255,255,255,.3)';b.style.background='rgba(255,255,255,.1)';});
+  btn.style.borderColor='#fff';btn.style.background='rgba(255,255,255,.3)';
+  _wizData.morningHour=parseInt(btn.dataset.h)||7;
+}
+function wizEnableSleep(enable){
+  _wizData.sleepRoutine=enable;
+  const timeDiv=document.getElementById('wiz-sleep-time');
+  const yesBtn=document.getElementById('wiz-sleep-yes');
+  if(enable){
+    if(timeDiv)timeDiv.style.display='block';
+    if(yesBtn){yesBtn.style.background='rgba(255,255,255,.25)';yesBtn.style.borderColor='#fff';}
+    if(!_wizData.sleepHour)_wizData.sleepHour=21;
+    const def=document.querySelector('.wiz-sleep-btn[data-h="21"]');if(def)wizSelSleep(def);
+  } else {
+    _wizData.sleepHour=null;
+    if(timeDiv)timeDiv.style.display='none';
+    wizNav(1);
+  }
+}
+function wizSelSleep(btn){
+  document.querySelectorAll('.wiz-sleep-btn').forEach(b=>{b.style.borderColor='rgba(255,255,255,.3)';b.style.background='rgba(255,255,255,.1)';});
+  btn.style.borderColor='#fff';btn.style.background='rgba(255,255,255,.3)';
+  _wizData.sleepHour=parseInt(btn.dataset.h)||21;
+}
+
+// ── Start routine ─────────────────────────────────────────────────
+function startRoutine(type){
+  const today=new Date().toISOString().slice(0,10);
+  const h=new Date().getHours();
+  // Warn if pre-sonno attempted outside evening
+  if(type==='presonno'&&(h<17||h>=24)){
+    if(!confirm('💡 La routine pre-sonno è pensata per la sera prima di dormire.\nSei sicuro di volerla fare adesso?'))return;
+  }
+  // Build session: for mattino 4 exs, for presonno 5 exs
+  const isMorning=type==='mattino';
+  const pool=DB.filter(e=>e.cat===type);
+  if(!pool.length){toast('⚠️ Nessun esercizio disponibile per questa routine.');return;}
+  const exs=shuffleArr(pool).slice(0,isMorning?4:5).map(e=>({...e,a:isMorning?40:50,r:isMorning?10:15}));
+  // Insert warm separator
+  T.exs=exs;T.idx=0;T.paused=false;T.t0=Date.now();
+  T.sesType=type;T.dur=isMorning?4:8;T.feeling='piano';
+  T._isRoutine=true; // flag to handle completion differently
+  riservaDone=false;
+  requestWakeLock();
+  showRestPreview(0,()=>doShowEx(0));
+}
+
+// ── Complete routine (called from completeSession) ─────────────────
+function completeRoutine(){
+  const today=new Date().toISOString().slice(0,10);
+  const isMorning=T.sesType==='mattino';
+  const xpBonus=isMorning?5:10;
+  S.xp=(S.xp||0)+xpBonus;
+  if(isMorning){S.morningDone=today;S.morningTotal=(S.morningTotal||0)+1;}
+  else{S.sleepDone=today;S.sleepTotal=(S.sleepTotal||0)+1;}
+  save();
+  const newBadges=checkBadges();
+  launchConfetti();
+  if(isMorning){
+    toast('☀️ Routine mattutina completata! +'+xpBonus+' XP bonus',3500);
+  } else {
+    toast('🌙 Routine pre-sonno completata! +'+xpBonus+' XP bonus — buona notte! 😴',4000);
+  }
+  // Show badges if any
+  if(newBadges.length){
+    setTimeout(()=>{newBadges.forEach((b,i)=>{setTimeout(()=>toast('🏅 Badge sbloccato: '+b.name+'! +25 XP',3500),i*3600);});},1000);
+  }
+  T._isRoutine=false;
+  go('home');
+}
+
+// ── Build banner visibility in Home ───────────────────────────────
+function buildRoutineBanners(){
+  const today=new Date().toISOString().slice(0,10);
+  const h=new Date().getHours();
+  // Morning banner: show ±2h from wake time, if not done today
+  const morningBanner=document.getElementById('home-morning-banner');
+  if(morningBanner){
+    const wakeH=P.morningRoutineHour||7;
+    const showMorning=P.morningRoutine&&S.morningDone!==today&&h>=(wakeH-1)&&h<=(wakeH+3);
+    morningBanner.style.display=showMorning?'block':'none';
+  }
+  // Sleep banner: show from sleepRoutineHour-1 onward, if not done today
+  const sleepBanner=document.getElementById('home-sleep-banner');
+  if(sleepBanner){
+    const sleepH=P.sleepRoutineHour||21;
+    const showSleep=P.sleepRoutine&&S.sleepDone!==today&&h>=(sleepH-1);
+    sleepBanner.style.display=showSleep?'block':'none';
+  }
+}
+
+// ── Routine-specific notifications ────────────────────────────────
+async function scheduleRoutineNotifications(){
+  if(!SET.notifEnabled||Notification.permission!=='granted')return;
+  const today=new Date().toISOString().slice(0,10);
+  const wx=await fetchWeather().catch(()=>null);
+  const wxG=wx?wxGroup(wx.code):null;
+  const temp=wx?wx.temp:null;
+  const name=P.name||'Tartaruga';
+
+  // Morning notification
+  if(P.morningRoutine&&S.morningDone!==today){
+    const wakeH=P.morningRoutineHour||7;
+    const morningTexts={
+      sunny:'☀️ Buongiorno '+name+'! '+(temp!=null?temp+'° e sole':'Bella mattina')+' — 4 minuti nel letto per partire alla grande!',
+      rainy:"🌧️ Buongiorno "+name+"! Fuori piove — più ragione per la routine mattutina nel letto! ☀️",
+      cold:'❄️ Buongiorno '+name+'! Fa freddo — 4 minuti di stiramento nel letto scalda il corpo prima di alzarti!',
+      cloudy:'⛅ Buongiorno '+name+'! 4 minuti di routine mattutina e la giornata parte nel verso giusto. 💪',
+      offline:'☀️ Buongiorno '+name+'! Sono le '+wakeH+':00 — 4 minuti nel letto per attivare il corpo. Inizia bene!'
+    };
+    const mTxt=morningTexts[wxG]||morningTexts.offline;
+    const mAt=new Date();mAt.setHours(wakeH,Math.floor(Math.random()*15),0,0);
+    if(mAt<=new Date())mAt.setDate(mAt.getDate()+1);
+    if(navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({type:'SCHEDULE_NOTIF',payload:{at:mAt.getTime(),title:'☀️ Routine mattutina',body:mTxt,tag:'routine-morning'}});
+    }
+  }
+
+  // Sleep notification
+  if(P.sleepRoutine&&S.sleepDone!==today){
+    const sleepH=P.sleepRoutineHour||21;
+    const tempStr=temp!=null?(temp+'° '):''
+    const sleepTexts={
+      sunny:'🌙 Quasi ora di dormire, '+name+'! '+tempStr+'— 8 minuti di stretching e dormirai come un ghiro.',
+      rainy:'🌧️ Serata di pioggia, '+name+' — perfetta per la routine pre-sonno. 8 minuti e poi sotto le coperte! 🌙',
+      cold:'❄️ Fa freddo, '+name+' — 8 minuti di stretching ti scalda prima di dormire. Il corpo ti ringrazierà! 🌙',
+      cloudy:'🌙 Buonasera '+name+'! La routine pre-sonno ti aspetta — 8 minuti per staccare davvero dalla giornata.',
+      offline:'🌙 Buonasera '+name+'! Sono quasi le '+sleepH+':00 — 8 minuti di stretching prima di dormire. Il corpo ne ha bisogno!'
+    };
+    const sTxt=sleepTexts[wxG]||sleepTexts.offline;
+    const sAt=new Date();sAt.setHours(sleepH,Math.floor(Math.random()*20),0,0);
+    if(sAt<=new Date())sAt.setDate(sAt.getDate()+1);
+    if(navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({type:'SCHEDULE_NOTIF',payload:{at:sAt.getTime(),title:'🌙 Routine pre-sonno',body:sTxt,tag:'routine-sleep'}});
+    }
+  }
+}
 
 // ═══ DYNAMIC THEME (time/season) ═══
 function applyDynamicTheme(){
@@ -2759,7 +3074,7 @@ function genSession(focus){
   const avoided=new Set(P.avoided||[]);
   let pool;
   if(focus==='misto')pool=shuffleArr(DB.filter(e=>e.cat!=='riscaldamento'&&e.cat!=='party'));
-  else if(['presonno','postura'].includes(focus)){
+  else if(['presonno','postura','mattino'].includes(focus)){
     // these categories only if explicitly chosen
     pool=shuffleArr(DB.filter(e=>e.cat===focus));
   }
@@ -3094,7 +3409,10 @@ function launchConfetti(){
     setTimeout(()=>el.remove(),3500);
   }
 }
-function completeSession(){releaseWakeLock();checkOver65Challenge();checkProfileUpdateNeeded();
+function completeSession(){
+  // If this is a routine session, handle separately
+  if(T._isRoutine){completeRoutine();return;}
+  releaseWakeLock();checkOver65Challenge();checkProfileUpdateNeeded();
   SET._sessionEnergyBias=0; // reset session energy bias
   launchConfetti();
   clearInterval(T.iv);clearInterval(restIv);clearInterval(transIv);
@@ -3346,6 +3664,9 @@ function buildProgress(){
   const boostEl=document.getElementById('prg-boosts');if(boostEl)boostEl.textContent=S.boosts||0;
   const skEl=document.getElementById('prg-skipped');if(skEl)skEl.textContent=S.skippedTotal||0;
   const bgEl=document.getElementById('prg-badges');if(bgEl)bgEl.textContent=(S.badges||[]).length;
+  const morEl=document.getElementById('prg-morning');if(morEl)morEl.textContent=S.morningTotal||0;
+  const slEl=document.getElementById('prg-sleep');if(slEl)slEl.textContent=S.sleepTotal||0;
+  const lvEl=document.getElementById('prg-level-num');if(lvEl)lvEl.textContent=getUserLevel(S.xp||0);
   setChartView(7);
   // Improvement comparison: first week vs last week
   const ic=document.getElementById('improvement-content');
@@ -3653,6 +3974,11 @@ function buildSettings(){
   // Pre-select the suggested slot if user hasn't set a preference yet
   if(!SET.notifTime&&suggested.confident){SET.notifTime=bestSlot;save();}
   const ntBtn=document.querySelector('.notif-time-btn[data-t="'+(SET.notifTime||bestSlot)+'"]');if(ntBtn)selNotifTime(ntBtn);
+  // Routine settings
+  const morningToggle=document.getElementById('st-morning');
+  if(morningToggle)morningToggle.classList.toggle('on',!!P.morningRoutine);
+  const sleepToggle=document.getElementById('st-sleep');
+  if(sleepToggle)sleepToggle.classList.toggle('on',!!P.sleepRoutine);
   const gpsStatus=document.getElementById('settings-gps-status');if(gpsStatus&&SET.gpsLat)gpsStatus.textContent='✅ Posizione attiva ('+SET.gpsLat.toFixed(2)+'°, '+SET.gpsLon.toFixed(2)+'°)';
   const smartTip=document.getElementById('notif-smart-tip');if(smartTip)smartTip.textContent=getSmartTimingTip();
   const s=getSuggestedTiming();
@@ -3689,7 +4015,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 10:24';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 11:10';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4075,7 +4401,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604111024'; // auto-set on each release
+const APP_BUILD='202604111110'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
