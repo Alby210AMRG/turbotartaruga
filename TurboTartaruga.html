@@ -367,6 +367,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <button class="fbtn fbtn-sub" data-f="postura" onclick="setScelgoFeeling(this)"><span class="fi">🖥️</span>Postura</button>
         <button class="fbtn fbtn-sub" data-f="misto" onclick="setScelgoFeeling(this)"><span class="fi">🌈</span>Misto</button>
         <button class="fbtn fbtn-sub" data-f="misto_plus" onclick="setScelgoFeeling(this)"><span class="fi">🪑💪</span>Misto+</button>
+        <button class="fbtn fbtn-sub" data-f="mattino" onclick="setScelgoFeeling(this)"><span class="fi">☀️</span>Risveglio</button>
+        <button class="fbtn fbtn-sub" data-f="presonno" onclick="setScelgoFeeling(this)"><span class="fi">🌙</span>Pre-sonno</button>
       </div>
       <div id="stanco-opts" style="display:none;margin-top:9px">
         <div style="font-size:var(--fs-xs);color:var(--tmid);margin-bottom:8px">💬 Va benissimo! Come preferisci?</div>
@@ -1006,6 +1008,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
             <div class="guide-q">🔄 Come funziona il piano automatico?</div>
             <div class="guide-a">Il piano 14 giorni si rigenera automaticamente quando modifichi profilo, categorie o giorni di riposo. Si adatta anche ai feedback: 3 sessioni "Difficile" di fila → sessioni più brevi; 3 "Ottima" di fila → sessioni più lunghe. I giorni 🔄 nel calendario sono recupero automatico contro il sovrallenamento.</div>
           </div>
+          <div class="guide-item" onclick="toggleGuide(this)">
+            <div class="guide-q">☀️ Come funziona la routine mattutina?</div>
+            <div class="guide-a">4 minuti di stiramenti e respirazione nel letto, appena svegli. Si attiva nel wizard o in Impostazioni → Routine quotidiane. All'orario di sveglia scelto appare un banner nella Home e ricevi una notifica personalizzata. La routine conta +5 XP bonus e non influenza lo streak principale.</div>
+          </div>
+          <div class="guide-item" onclick="toggleGuide(this)">
+            <div class="guide-q">🌙 Come funziona la routine pre-sonno?</div>
+            <div class="guide-a">8-10 minuti di stretching e respirazione prima di dormire. Si attiva nel wizard o in Impostazioni → Routine quotidiane. Il banner appare in Home dalla sera, con notifica contestuale che include anche il meteo. +10 XP bonus a completamento. Se provi a farla di mattina, l'app ti avvisa gentilmente che è pensata per la sera.</div>
+          </div>
+          <div class="guide-item" onclick="toggleGuide(this)">
+            <div class="guide-q">🕹️ Posso fare risveglio o pre-sonno senza attivarli?</div>
+            <div class="guide-a">Sì! In Home premi "Scelgo io!" e trovi "☀️ Risveglio" e "🌙 Pre-sonno" disponibili sempre, anche se non hai attivato le routine automatiche. Utile per provarle prima di decidere se attivarle.</div>
+          </div>
 
         </div>
       </div>
@@ -1459,8 +1473,8 @@ function saveProfile(){
   P.sleepRoutine=_wizData.sleepRoutine||false;
   P.sleepRoutineHour=_wizData.sleepHour||21;
   if(SET.notifTime)P.notifTime=SET.notifTime;
-  // Carry notification settings from SET (may have been set via settings)
-  if(!SET.notifEnabled)SET.notifEnabled=false;
+  // Carry notification settings — preserve what was set during wizard
+  // SET.notifEnabled is already set by wizEnableNotif() if user activated notifications
   calcProfileBias();
   S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[]};
   generatePlan();updateStreak();save();
@@ -1559,7 +1573,7 @@ const WIZ_STEPS = [
           ['core','🎯','Core'],['stretching','🤸','Stretching'],
           ['seduto','🪑','Da Seduto'],['orientale','🧘','Orientale'],
           ['elastici','🎽','Elastici'],['cardio','🥊','Cardio/Box'],
-          ['presonno','😴','Pre-sonno'],['postura','🖥️','Postura'],
+          ['postura','🖥️','Postura'],  // presonno managed in dedicated routine step
         ].map(([v,ico,lbl])=>{const sel=(_wizData.cats||[]).includes(v);return`<button class="wiz-cat-btn${sel?' sel':''}" data-cat="${v}" onclick="wizToggleCat(this)"
           style="padding:14px 10px;border-radius:14px;border:3px solid ${sel?'#fff':'rgba(255,255,255,.25)'};background:${sel?'rgba(255,255,255,.25)':'rgba(255,255,255,.1)'};color:#fff;cursor:pointer;text-align:center">
           <div style="font-size:28px;margin-bottom:4px">${ico}</div>
@@ -3951,7 +3965,8 @@ function buildSettings(){
   const nf=document.getElementById('st-nofloor');if(nf)nf.classList.toggle('on',!!P.noFloor);
   // Categories
   const catWrap=document.getElementById('st-cats');
-  if(catWrap){const cats=['riscaldamento','gambe','braccia','core','stretching','seduto','orientale','elastici','cardio','presonno','postura'];
+  // presonno and mattino are managed via dedicated routine settings, not here
+  if(catWrap){const cats=['riscaldamento','gambe','braccia','core','stretching','seduto','orientale','elastici','cardio','postura'];
     catWrap.innerHTML=cats.map(c=>{const ci=CAT_INFO[c]||{icon:'💪',label:c};const sel=(P.categories||[]).includes(c);return`<div class="mchk${sel?' sel':''}" data-cat="${c}" onclick="toggleStCat(this)" style="margin-bottom:6px"><span class="mchk-icon">${ci.icon}</span><div class="mchk-label">${ci.label}</div><div class="mchk-check">${sel?'✓':''}</div></div>`}).join('');
   }
   // Rest days
@@ -3967,7 +3982,10 @@ function buildSettings(){
   if(psd)psd.textContent=ps+'s';
   // Notification toggle state
   const notifTog=document.getElementById('st-notif');if(notifTog)notifTog.classList.toggle('on',!!SET.notifEnabled);
-  const notifSettings=document.getElementById('notif-settings');if(notifSettings)notifSettings.style.display=SET.notifEnabled?'block':'none';
+  const notifSettings=document.getElementById('notif-settings');
+  if(notifSettings)notifSettings.style.display=(SET.notifEnabled&&Notification.permission==='granted')?'block':'none';
+  // Re-check browser permission state (user might have revoked it)
+  if(SET.notifEnabled&&Notification.permission!=='granted'){SET.notifEnabled=false;save();}
   // Auto-suggest best timing from session history
   const suggested=getSuggestedTiming();
   const bestSlot=suggested.slot;
@@ -4015,7 +4033,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 11:10';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 12:14';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4053,6 +4071,7 @@ function buildExList(){
   if(!wrap)return;
   const cats=[
     {key:'riscaldamento',label:'🔥 Riscaldamento'},
+    {key:'mattino',label:'☀️ Risveglio mattutino'},
     {key:'gambe',label:'🦵 Gambe'},
     {key:'braccia',label:'💪 Braccia'},
     {key:'core',label:'🎯 Core'},
@@ -4080,12 +4099,11 @@ function buildExList(){
           <div class="ex-card-mini-img" title="File: ${fname}">
             <img src="${imgSrc}" alt="${ex.n}"
               onload="this.style.display='block';this.parentElement.style.background='transparent'"
-              onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\\'font-size:9px;color:var(--tlt);text-align:center;padding:2px\\'>${fname}</span>'">
+              onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\\'font-size:9px;color:var(--tlt);text-align:center;padding:2px\\' title=\\'Atteso: ${fname}\\'>${ex.id}</span>'">
           </div>
           <div class="ex-card-mini-info">
             <div class="ex-card-mini-name">${ex.n}</div>
             <div class="ex-card-mini-desc">${ex.desc||ex.n}</div>
-            <div style="font-size:9px;color:var(--tlt);margin-top:2px;font-family:var(--fm)">${fname}</div>
           </div>
           <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
             <button onclick="toggleFavList('${ex.id}',this)" title="Preferito"
@@ -4401,7 +4419,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604111110'; // auto-set on each release
+const APP_BUILD='202604111214'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
