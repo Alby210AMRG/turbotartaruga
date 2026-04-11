@@ -1,6 +1,6 @@
 {
   "version": "0.9",
-  "build": "202604110810",
-  "date": "11/04/2026 08:10",
-  "notes": "Wizard cats fix, nofloor position, home compact, nav dark bar"
+  "build": "202604110822",
+  "date": "11/04/2026 08:22",
+  "notes": "Fix SW network-first per aggiornamenti"
 }

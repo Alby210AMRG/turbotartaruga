@@ -3510,7 +3510,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 08:10';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 08:22';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -3886,7 +3886,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604110810'; // auto-set on each release
+const APP_BUILD='202604110822'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
@@ -3961,22 +3961,25 @@ setTimeout(()=>{
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'})
     .then(reg=>{
-      // When a new SW is waiting, tell it to activate immediately
+      // Force skipWaiting if a new SW is already waiting
       if(reg.waiting){reg.waiting.postMessage('skipWaiting');}
+      // Watch for new SW being installed
       reg.addEventListener('updatefound',()=>{
-        const nw=reg.installing;
-        if(!nw)return;
+        const nw=reg.installing;if(!nw)return;
         nw.addEventListener('statechange',()=>{
-          if(nw.state==='installed'&&navigator.serviceWorker.controller){
-            // New SW installed and waiting — skip waiting immediately
+          if(nw.state==='installed'){
+            // Skip waiting regardless of whether there's an old controller
             nw.postMessage('skipWaiting');
           }
         });
       });
+      // When controller changes, reload to pick up new version
       let refreshing=false;
       navigator.serviceWorker.addEventListener('controllerchange',()=>{
         if(!refreshing){refreshing=true;location.reload(true);}
       });
+      // Proactively check for SW updates every time app opens
+      reg.update().catch(()=>{});
     }).catch(()=>{});
 }
 
