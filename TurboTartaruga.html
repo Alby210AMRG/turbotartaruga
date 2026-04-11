@@ -620,11 +620,39 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div class="goal-bar"><div id="prg-goal-fill" class="goal-fill" style="width:0%"></div></div>
       <p id="prg-goal-msg" style="font-size:var(--fs-sm);color:var(--tmid);margin-top:9px;line-height:1.5"></p>
     </div>
-    <div class="card"><div class="card-title">📋 Ultime sessioni</div><div id="hist-list"></div></div>
+    <!-- STAT 1: Totali + Record personali -->
     <div class="card"><div class="card-title">📊 Totali</div>
       <div class="stat-grid"><div><div class="sv" id="prg-tot">0</div><div class="sl">Sessioni</div></div><div><div class="sv" id="prg-str">0</div><div class="sl">Streak 🔥</div></div><div><div class="sv" id="prg-xp">0</div><div class="sl">XP ⭐</div></div></div>
       <div class="stat-grid" style="margin-top:10px"><div><div class="sv" id="prg-boosts">0</div><div class="sl">💥 Boost</div></div><div><div class="sv" id="prg-skipped">0</div><div class="sl">😴 Saltate</div></div><div><div class="sv" id="prg-badges">0</div><div class="sl">🏅 Badge</div></div></div>
     </div>
+    <!-- STAT 1b: Record personali -->
+    <div class="card"><div class="card-title">🏆 Record personali</div>
+      <div id="prg-records" style="font-size:var(--fs-sm);color:var(--tmid);line-height:2"></div>
+    </div>
+    <!-- STAT 2: Distribuzione per categoria -->
+    <div class="card"><div class="card-title">🍩 Distribuzione allenamenti</div>
+      <div id="prg-catdist" style="display:flex;flex-direction:column;gap:7px"></div>
+    </div>
+    <!-- STAT 3: Trend XP -->
+    <div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <div class="card-title" style="margin-bottom:0">⭐ Andamento XP</div>
+      </div>
+      <svg id="chart-xp" style="width:100%;height:90px;overflow:visible" viewBox="0 0 300 90"></svg>
+      <div id="prg-xp-trend" style="font-size:11px;color:var(--tlt);margin-top:4px;text-align:center"></div>
+    </div>
+    <!-- STAT 4: Riepilogo allenamento (last 15 days) -->
+    <div class="card" id="prg-recap-card">
+      <div class="card-title">📋 Riepilogo allenamento</div>
+      <div id="prg-recap-content" style="font-size:var(--fs-sm);color:var(--tmid);line-height:1.8"></div>
+    </div>
+    <!-- STAT 5: Statistiche peso (if available) -->
+    <div class="card" id="prg-weight-card" style="display:none">
+      <div class="card-title">⚖️ Il tuo percorso fisico</div>
+      <div id="prg-weight-content" style="font-size:var(--fs-sm);color:var(--tmid);line-height:1.8"></div>
+    </div>
+    <!-- Ultime sessioni -->
+    <div class="card"><div class="card-title">📋 Ultime sessioni</div><div id="hist-list"></div></div>
   </div>
 </div>
 
@@ -3339,6 +3367,132 @@ function buildProgress(){
       `<div style="margin-top:6px;font-style:italic;color:var(--g1)">${durDiff>=0?'Stai migliorando! Continua così! 💪':'Nessun problema — ogni sessione conta! 🐢'}</div>`);
   } else if(ic){ic.innerHTML='<div style="color:var(--tlt);font-style:italic">Completa qualche sessione per vedere i tuoi progressi! 🐢</div>';}
   if(S.skipped>2){const xpMalDiv=document.getElementById('prg-skip-warn');if(xpMalDiv)xpMalDiv.style.display='block';const xpMalTxt=document.getElementById('prg-skip-txt');if(xpMalTxt)xpMalTxt.textContent='⚠️ Hai '+S.skipped+' sessioni saltate consecutive — stai perdendo XP! Torna ad allenarti!';}
+
+  // ── STAT 1b: Record personali ────────────────────────────────────────
+  const recEl=document.getElementById('prg-records');
+  if(recEl){
+    const workouts=(S.history||[]).filter(h=>h.type!=='riposo_vol'&&h.dur>0);
+    const maxDur=workouts.length?Math.max(...workouts.map(h=>h.dur||0)):0;
+    const maxEx=workouts.length?Math.max(...workouts.map(h=>h.exCount||0)):0;
+    const maxXp=workouts.length?Math.max(...workouts.map(h=>h.xp||0)):0;
+    const bestStreak=S.str; // current streak is the best we track
+    if(!workouts.length){
+      recEl.innerHTML='<span style="font-style:italic">Completa qualche sessione per vedere i tuoi record! 🐢</span>';
+    } else {
+      recEl.innerHTML=
+        `<div>⏱️ Sessione più lunga: <b>${maxDur} min</b></div>`+
+        `<div>💪 Più esercizi in una sessione: <b>${maxEx}</b></div>`+
+        `<div>⭐ Più XP in una sessione: <b>+${maxXp} XP</b></div>`+
+        `<div>🔥 Streak attuale: <b>${S.str} giorni</b></div>`+
+        `<div>🏅 Badge totali: <b>${(S.badges||[]).length}/${BADGES.length}</b></div>`;
+    }
+  }
+
+  // ── STAT 2: Distribuzione per categoria ──────────────────────────────
+  const catDistEl=document.getElementById('prg-catdist');
+  if(catDistEl){
+    const workouts2=(S.history||[]).filter(h=>h.type&&h.type!=='riposo_vol'&&h.type!=='misto'&&h.type!=='misto_plus');
+    const catCount={};
+    workouts2.forEach(h=>{catCount[h.type]=(catCount[h.type]||0)+1;});
+    const total2=workouts2.length||1;
+    const sorted=Object.entries(catCount).sort((a,b)=>b[1]-a[1]).slice(0,8);
+    if(!sorted.length){
+      catDistEl.innerHTML='<span style="font-size:var(--fs-sm);color:var(--tlt);font-style:italic">Nessuna sessione ancora! 🐢</span>';
+    } else {
+      catDistEl.innerHTML=sorted.map(([cat,cnt])=>{
+        const ci=CAT_INFO[cat]||{icon:'💪',label:cat};
+        const pct=Math.round(cnt/total2*100);
+        return`<div style="display:flex;align-items:center;gap:9px">
+          <span style="font-size:16px;width:22px;text-align:center">${ci.icon}</span>
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px">
+              <span style="font-weight:bold">${ci.label}</span>
+              <span style="color:var(--tlt)">${cnt} sess. · ${pct}%</span>
+            </div>
+            <div style="height:6px;background:var(--bg2);border-radius:100px;overflow:hidden">
+              <div style="height:100%;width:${pct}%;background:var(--g1);border-radius:100px;transition:width .6s"></div>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // ── STAT 3: Trend XP (last 14 sessions) ─────────────────────────────
+  const xpSvg=document.getElementById('chart-xp');
+  const xpTrendEl=document.getElementById('prg-xp-trend');
+  if(xpSvg){
+    const xpSessions=(S.history||[]).filter(h=>h.type!=='riposo_vol'&&(h.xp||0)>0).slice(-14);
+    if(xpSessions.length>=2){
+      // Compute cumulative XP over sessions
+      let cum=0;const points=xpSessions.map(h=>{cum+=(h.xp||0);return cum;});
+      const minV=Math.min(...points),maxV=Math.max(...points);
+      const W=300,H=70,pad=10;
+      const scaleX=i=>(i/(points.length-1))*(W-pad*2)+pad;
+      const scaleY=v=>H-pad-((v-minV)/(maxV-minV||1))*(H-pad*2);
+      // Line path
+      const pathD=points.map((v,i)=>(i===0?'M':'L')+scaleX(i).toFixed(1)+','+scaleY(v).toFixed(1)).join(' ');
+      // Filled area
+      const areaD=pathD+` L${scaleX(points.length-1).toFixed(1)},${H-pad} L${scaleX(0).toFixed(1)},${H-pad} Z`;
+      xpSvg.innerHTML=
+        `<defs><linearGradient id="xpGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#43A047" stop-opacity=".4"/><stop offset="100%" stop-color="#43A047" stop-opacity="0"/></linearGradient></defs>`+
+        `<path d="${areaD}" fill="url(#xpGrad)"/>`+
+        `<path d="${pathD}" fill="none" stroke="#43A047" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>`+
+        // Last point dot
+        `<circle cx="${scaleX(points.length-1).toFixed(1)}" cy="${scaleY(points[points.length-1]).toFixed(1)}" r="4" fill="#43A047"/>`;
+      const gain=points[points.length-1]-points[0];
+      if(xpTrendEl)xpTrendEl.textContent='Ultime '+points.length+' sessioni: +'+gain+' XP guadagnati';
+    } else {
+      xpSvg.innerHTML='<text x="150" y="45" text-anchor="middle" font-size="12" fill="var(--tlt)" font-family="sans-serif">Completa più sessioni per vedere il trend</text>';
+      if(xpTrendEl)xpTrendEl.textContent='';
+    }
+  }
+
+  // ── STAT 4: Riepilogo allenamento (ultimi 15 giorni) ─────────────────
+  const recapEl=document.getElementById('prg-recap-content');
+  if(recapEl){
+    const last15=(S.history||[]).filter(h=>h.type!=='riposo_vol').slice(-15);
+    if(!last15.length){
+      recapEl.innerHTML='<span style="font-style:italic">Nessun dato ancora — inizia ad allenarti! 🐢</span>';
+    } else {
+      const totMin=last15.reduce((s,h)=>s+(h.dur||0),0);
+      const totEx=last15.reduce((s,h)=>s+(h.exCount||0),0);
+      const totXpR=last15.reduce((s,h)=>s+(h.xp||0),0);
+      const avgMin=(totMin/last15.length).toFixed(0);
+      const catsUsed=[...new Set(last15.map(h=>h.type).filter(t=>t&&CAT_INFO[t]))];
+      const emoji=catsUsed.map(t=>CAT_INFO[t]?.icon||'💪').slice(0,5).join(' ');
+      const days15=Math.round((new Date()-new Date(last15[0].date+'T12:00:00'))/(86400000))||last15.length;
+      recapEl.innerHTML=
+        `<div>📅 Ultime <b>${last15.length}</b> sessioni in circa <b>${days15}</b> giorni</div>`+
+        `<div>⏱️ Tempo totale: <b>${totMin} min</b> · media <b>${avgMin} min/sess.</b></div>`+
+        `<div>💪 Esercizi totali: <b>${totEx}</b></div>`+
+        `<div>⭐ XP guadagnati: <b>+${totXpR}</b></div>`+
+        (catsUsed.length?`<div>🏋️ Categorie: <b>${emoji}</b></div>`:'');
+    }
+  }
+
+  // ── STAT 5: Statistiche peso (se disponibili) ─────────────────────────
+  const wCard=document.getElementById('prg-weight-card');
+  const wContent=document.getElementById('prg-weight-content');
+  if(wCard&&P.weight&&P.height){
+    wCard.style.display='block';
+    const hm=P.height/100;
+    const bmi=P.bmi||(P.weight/(hm*hm));
+    const bmiStr=bmi.toFixed(1);
+    const bmiCls=bmi<18.5?'Sottopeso 🔽':bmi<25?'Normale ✅':bmi<30?'Sovrappeso ⚠️':'Obesità ⚠️';
+    const bmr=P.bmr||(P.sex==='F'?(10*P.weight)+(6.25*P.height)-(5*P.age)-161:(10*P.weight)+(6.25*P.height)-(5*P.age)+5);
+    // Estimate calories burned (MET ~4 for moderate exercise)
+    const avgDur=(S.history||[]).filter(h=>h.dur>0).reduce((s,h)=>s+(h.dur||0),0)/Math.max((S.history||[]).filter(h=>h.dur>0).length,1);
+    const calPerSess=Math.round((bmr/1440)*4*avgDur);
+    const totCal=Math.round(calPerSess*(S.tot||0));
+    if(wContent)wContent.innerHTML=
+      `<div>⚖️ Peso attuale: <b>${P.weight} kg</b> · Altezza: <b>${P.height} cm</b></div>`+
+      `<div>📊 BMI: <b>${bmiStr}</b> — ${bmiCls}</div>`+
+      `<div>🔥 BMR (metabolismo base): <b>${Math.round(bmr)} kcal/giorno</b></div>`+
+      (S.tot>0?`<div>⚡ Calorie stimate bruciate in totale: <b>~${totCal} kcal</b></div>`+
+               `<div style="font-size:11px;color:var(--tlt);margin-top:4px">Stima basata su MET 4 (esercizio moderato) · Non è un dato medico</div>`:'');
+  } else if(wCard){wCard.style.display='none';}
+
   // Detailed history with tags and exercises
   const hl=document.getElementById('hist-list');
   if(!hl)return;
@@ -3535,7 +3689,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 10:20';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 10:24';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -3921,7 +4075,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604111020'; // auto-set on each release
+const APP_BUILD='202604111024'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
