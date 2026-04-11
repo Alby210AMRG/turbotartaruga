@@ -1623,37 +1623,38 @@ const WIZ_STEPS = [
   },
   // 7: Notifiche (coach)
   {id:'wiz-notif', bg:'linear-gradient(155deg,#E65100,#BF360C,#1B5E20)', render:()=>`
-    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:32px 24px;text-align:center;color:#fff">
-      <div style="font-size:52px;margin-bottom:12px">📬</div>
-      <div style="font-family:var(--ft);font-size:22px;font-weight:bold;margin-bottom:10px">Vuoi che la tartaruga ti scriva ogni giorno?</div>
-      <div style="opacity:.85;font-size:14px;line-height:1.6;margin-bottom:20px;max-width:300px">
-        Non il solito "ricordati di allenarti".<br>
-        Un messaggio che sa se hai saltato, se stai costruendo uno streak, e persino se fuori piove o fa caldo —
-        perché il <em>tempo influenza il nostro umore</em>, ma il movimento lo cambia.<br>
-        <span style="opacity:.7;font-size:12px">Puoi disattivarlo quando vuoi.</span>
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 80px);padding:52px 24px 24px;text-align:center;color:#fff">
+      <div style="font-size:52px;margin-bottom:10px">📬</div>
+      <div style="font-family:var(--ft);font-size:22px;font-weight:bold;margin-bottom:8px">Messaggi del coach</div>
+      <div style="opacity:.85;font-size:13px;line-height:1.6;margin-bottom:16px;max-width:300px">
+        Non il solito "allenati!". Un messaggio ogni giorno che sa se hai saltato, se sei in streak, e anche il meteo —
+        perché <em>pioggia e freddo abbassano il morale, ma muoversi lo cambia</em>.<br>
+        <span style="opacity:.65;font-size:11px">Puoi disattivarlo sempre nelle Impostazioni.</span>
+      </div>
+      <!-- Toggle default ON -->
+      <div style="width:100%;max-width:300px;background:rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
+        <div style="text-align:left">
+          <div style="font-weight:bold;font-size:15px">🔔 Attiva i messaggi</div>
+          <div style="font-size:11px;opacity:.7;margin-top:2px">Consigliato — puoi disattivare quando vuoi</div>
+        </div>
+        <button id="wiz-notif-toggle" onclick="wizToggleNotif(this)"
+          class="toggle on" style="flex-shrink:0"></button>
       </div>
       <div style="width:100%;max-width:300px;margin-bottom:14px">
-        <div style="font-size:13px;opacity:.8;margin-bottom:8px;font-weight:bold">Di solito quando ti alleni?</div>
+        <div style="font-size:13px;opacity:.8;margin-bottom:8px;font-weight:bold">Quando ti alleni di solito?</div>
         <div style="display:flex;gap:8px">
-          <button class="wiz-time-btn sel" data-t="morning" onclick="wizSelTime(this)" style="flex:1;padding:12px 4px;border-radius:12px;border:2px solid #fff;background:rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:bold;cursor:pointer">🌅<br>Mattina<br><span style="opacity:.7;font-size:10px">6-10</span></button>
-          <button class="wiz-time-btn" data-t="afternoon" onclick="wizSelTime(this)" style="flex:1;padding:12px 4px;border-radius:12px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:bold;cursor:pointer">🌞<br>Pomeriggio<br><span style="opacity:.7;font-size:10px">12-17</span></button>
-          <button class="wiz-time-btn" data-t="evening" onclick="wizSelTime(this)" style="flex:1;padding:12px 4px;border-radius:12px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:bold;cursor:pointer">🌇<br>Sera<br><span style="opacity:.7;font-size:10px">18-22</span></button>
+          <button class="wiz-time-btn sel" data-t="morning" onclick="wizSelTime(this)" style="flex:1;padding:10px 4px;border-radius:12px;border:2px solid #fff;background:rgba(255,255,255,.25);color:#fff;font-size:11px;font-weight:bold;cursor:pointer">🌅<br>Mattina<br><span style="opacity:.7;font-size:9px">6-10</span></button>
+          <button class="wiz-time-btn" data-t="afternoon" onclick="wizSelTime(this)" style="flex:1;padding:10px 4px;border-radius:12px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:11px;font-weight:bold;cursor:pointer">🌞<br>Pomeriggio<br><span style="opacity:.7;font-size:9px">12-17</span></button>
+          <button class="wiz-time-btn" data-t="evening" onclick="wizSelTime(this)" style="flex:1;padding:10px 4px;border-radius:12px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:11px;font-weight:bold;cursor:pointer">🌇<br>Sera<br><span style="opacity:.7;font-size:9px">18-22</span></button>
         </div>
       </div>
       <div style="width:100%;max-width:300px">
-        <button onclick="wizEnableNotif()" style="width:100%;padding:15px;border-radius:14px;border:3px solid #fff;background:rgba(255,255,255,.2);color:#fff;font-family:var(--ft);font-size:16px;font-weight:bold;cursor:pointer;margin-bottom:10px">
-          ✅ Sì, voglio i messaggi!
-        </button>
-        <button onclick="wizNav(1)" style="width:100%;padding:11px;border-radius:14px;border:2px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.7);font-size:13px;cursor:pointer">
-          Per ora no, grazie
-        </button>
-        <div id="wiz-gps-wrap" style="margin-top:12px">
-          <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:12px;margin-bottom:10px;font-size:13px;line-height:1.5;opacity:.9">
-          🌦️ <strong>Perché il meteo?</strong> Il tempo influenza il nostro umore — pioggia e freddo ci fanno venir voglia di stare sul divano. Il tuo coach sa quando succede e ti scrive la cosa giusta per rimetterti in moto.
+        <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:12px;line-height:1.5;opacity:.9;text-align:left">
+          🌦️ <strong>Il meteo conta:</strong> pioggia e freddo abbassano il morale. Il tuo coach lo sa e ti scrive la cosa giusta al momento giusto.
         </div>
-        <button onclick="requestGPS('ob')" id="ob-gps-btn" style="width:100%;padding:12px;border-radius:12px;border:2px solid rgba(255,255,255,.6);background:rgba(255,255,255,.15);color:#fff;font-size:14px;font-weight:bold;cursor:pointer">📍 Attiva meteo personalizzato</button>
-          <div id="ob-gps-status" style="font-size:11px;opacity:.7;margin-top:4px;text-align:center"></div>
-        </div>
+        <button onclick="requestGPS('ob')" id="ob-gps-btn" style="width:100%;padding:11px;border-radius:12px;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;font-size:13px;font-weight:bold;cursor:pointer">📍 Attiva meteo personalizzato (opzionale)</button>
+        <div id="ob-gps-status" style="font-size:11px;opacity:.7;margin-top:4px;text-align:center"></div>
+        <div style="margin-top:12px;font-size:11px;opacity:.55">Premi "Avanti →" per continuare</div>
       </div>
     </div>`
   },
@@ -1736,10 +1737,10 @@ const WIZ_STEPS = [
 ];
 
 let _wizStep = 0;
-let _wizData = { sex:'M', level:'principiante', cats:['gambe','braccia','core','stretching','orientale'], notifTime:'evening' };
+let _wizData = { sex:'M', level:'principiante', cats:['gambe','braccia','core','stretching','orientale'], notifTime:'evening', wantNotif:true };
 
 function initWizard(){
-  _wizStep=0;_wizData={sex:'M',level:'principiante',cats:['gambe','braccia','core','stretching','orientale'],notifTime:'evening'};
+  _wizStep=0;_wizData={sex:'M',level:'principiante',cats:['gambe','braccia','core','stretching','orientale'],notifTime:'evening',wantNotif:true};
   const slides=document.getElementById('wiz-slides');
   if(!slides)return;
   slides.innerHTML='';
@@ -1836,6 +1837,24 @@ function wizValidate(step){
   }
   if(step===7){
     _wizData.notifTime=document.querySelector('.wiz-time-btn.sel')?.dataset.t||'evening';
+    const wantNotif=document.getElementById('wiz-notif-toggle')?.classList.contains('on')!==false;
+    _wizData.wantNotif=wantNotif;
+    // Apply notification preference immediately when leaving this step
+    if(wantNotif&&'Notification' in window){
+      // Request permission async — don't block navigation
+      Notification.requestPermission().then(perm=>{
+        SET.notifEnabled=(perm==='granted');
+        SET.notifTime=_wizData.notifTime||'evening';
+        save();
+        if(perm!=='granted'){
+          toast('⚠️ Permesso notifiche non concesso. Puoi attivarlo dalle Impostazioni.',4000);
+        }
+      });
+    } else {
+      SET.notifEnabled=false;
+      SET.notifTime=_wizData.notifTime||'evening';
+      save();
+    }
   }
   if(step===8){
     // morningRoutine already set via wizEnableMorning()
@@ -2821,6 +2840,12 @@ const _origApplyDynTheme=typeof applyDynamicTheme==='function'?applyDynamicTheme
 // ═══ ROUTINE MATTUTINA E PRE-SONNO ═══
 
 // ── Wizard helpers ─────────────────────────────────────────────────
+
+function wizToggleNotif(btn){
+  btn.classList.toggle('on');
+  _wizData.wantNotif=btn.classList.contains('on');
+}
+
 function wizEnableMorning(enable){
   _wizData.morningRoutine=enable;
   const timeDiv=document.getElementById('wiz-morning-time');
@@ -4033,7 +4058,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 12:14';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 16:55';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4145,7 +4170,7 @@ function changeUser(){
   P={};
   S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,sed:0,stretch_ct:0};
   SET={theme:SET.theme||'light',audio:SET.audio!==false,voice:SET.voice!==false,viewScale:SET.viewScale||'1x',pauseSec:20};
-  _wizData={sex:'M',level:'principiante',cats:['gambe','braccia','core','stretching','orientale'],notifTime:'evening'};
+  _wizData={sex:'M',level:'principiante',cats:['gambe','braccia','core','stretching','orientale'],notifTime:'evening',wantNotif:true};
   _wizStep=0;
   localStorage.removeItem('tt4_p');localStorage.removeItem('tt4_s');
   save();
@@ -4419,7 +4444,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604111214'; // auto-set on each release
+const APP_BUILD='202604111655'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
