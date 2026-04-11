@@ -1,6 +1,6 @@
 {
   "version": "0.9",
-  "build": "202604110747",
-  "date": "11/04/2026 07:47",
-  "notes": "Fix wizard days, nofloor pos, GPS text, nuovi badge, ex list party"
+  "build": "202604110758",
+  "date": "11/04/2026 07:58",
+  "notes": "Fix frecce wizard, back navigation, btn-start"
 }

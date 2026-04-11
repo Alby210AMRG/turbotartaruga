@@ -288,7 +288,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <button id="wiz-next" onclick="wizNav(1)" style="flex:1;padding:14px;border-radius:100px;border:none;background:var(--g1);color:#fff;font-family:var(--ft);font-size:16px;font-weight:bold;cursor:pointer">Avanti →</button>
     </div>
     <!-- Swipe hint (shown once) -->
-    <div id="wiz-swipe-hint" style="position:absolute;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);color:#fff;padding:7px 16px;border-radius:100px;font-size:12px;white-space:nowrap;pointer-events:none;opacity:1;transition:opacity .5s">← swipe per navigare →</div>
+    <div id="wiz-swipe-hint" style="position:absolute;bottom:82px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:12px;pointer-events:none;z-index:6">
+      <div style="background:rgba(0,0,0,.45);color:#fff;padding:8px 18px;border-radius:100px;font-size:13px;font-weight:bold;display:flex;align-items:center;gap:8px">
+        <span style="font-size:18px">👈</span> scorri per navigare <span style="font-size:18px">👉</span>
+      </div>
+    </div>
+    <!-- Persistent side arrows -->
+    <button id="wiz-arrow-left" onclick="wizNav(-1)" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);color:#fff;font-size:18px;cursor:pointer;display:none;z-index:6;align-items:center;justify-content:center">‹</button>
+    <button id="wiz-arrow-right" onclick="wizNav(1)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.5);color:#fff;font-size:18px;cursor:pointer;display:flex;z-index:6;align-items:center;justify-content:center">›</button>
   </div>
   <!-- Hidden inputs (read by saveProfile) -->
   <input type="hidden" id="ob-name" value="">
@@ -1594,14 +1601,21 @@ function updateWizDots(){
 function updateWizNav(){
   const back=document.getElementById('wiz-back');
   const next=document.getElementById('wiz-next');
+  const arL=document.getElementById('wiz-arrow-left');
+  const arR=document.getElementById('wiz-arrow-right');
   if(back)back.style.display=_wizStep>0?'block':'none';
+  if(arL)arL.style.display=_wizStep>0?'flex':'none';
+  if(arR)arR.style.display=_wizStep<WIZ_STEPS.length-1?'flex':'none';
   if(next)next.textContent=_wizStep===WIZ_STEPS.length-1?'— già fatto sopra —':(_wizStep===WIZ_STEPS.length-2?'Ultimo step →':'Avanti →');
   if(next)next.style.display=_wizStep===WIZ_STEPS.length-1?'none':'flex';
 }
 
 function wizNav(dir){
+  // Only validate when going FORWARD, never when going back
   if(dir>0&&!wizValidate(_wizStep))return;
+  const prev=_wizStep;
   _wizStep=Math.max(0,Math.min(WIZ_STEPS.length-1,_wizStep+dir));
+  if(_wizStep===prev)return; // no change
   const slides=document.getElementById('wiz-slides');
   if(slides)slides.style.transform=`translateX(-${_wizStep*(100/WIZ_STEPS.length)}%)`;
   // Re-render current step for dynamic content
@@ -1651,7 +1665,11 @@ function wizValidate(step){
 }
 
 function wizRestoreState(){
-  // After re-render, restore selection state
+  // After re-render, restore all user inputs
+  if(_wizStep===0){
+    const nm=document.getElementById('w-name');
+    if(nm&&_wizData.name)nm.value=_wizData.name;
+  }
   if(_wizStep===1){
     const sx=document.querySelector(`.wiz-sex-btn[data-sex="${_wizData.sex||'M'}"]`);if(sx)wizSelSex(sx);
     const ag=document.getElementById('w-age');if(ag&&_wizData.age)ag.value=_wizData.age;
@@ -1816,7 +1834,7 @@ function getTodayPlan(){const today=new Date().toISOString().slice(0,10);return 
 function buildHome(){
   if(!P.name)return;
   T.energyLevel=3; // reset energy to normal each day
-  const defNrg=document.querySelector('.nrg-btn[data-nrg="3"]');if(defNrg)setEnergy(defNrg);
+  try{const defNrg=document.querySelector('.nrg-btn[data-nrg="3"]');if(defNrg)setEnergy(defNrg);}catch(e){}
   const h=new Date().getHours();
   document.getElementById('home-greeting').textContent=`${h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera'}, ${P.name}! 👋`;
   document.getElementById('home-phrase').textContent=PHRASES[Math.floor(Math.random()*PHRASES.length)];
@@ -1840,7 +1858,11 @@ function buildHome(){
   document.getElementById('today-focus').textContent=(tp.type==='rest'?'Giorno di riposo':ci.label+' — '+tp.icon);
   const subs={gambe:'Rafforza gambe e glutei! 🦵',braccia:'Potenzia braccia e spalle! 💪',core:'Rinforza il core! 🎯',stretching:'Allungati e rilassati! 🤸',orientale:'Respira e trova l\'equilibrio! 🧘',seduto:'Allenati comodamente seduto! 🪑',elastici:'Allenamento con elastici! 🎽',cardio:'Cardio e boxe leggera! 🥊',presonno:'Rilassati prima di dormire! 😴',postura:'Corregi la postura, stai meglio! 🪑+',misto:'Allenamento completo misto! 🌈',misto_plus:'Corpo libero + esercizi da seduto! 🪑💪',riposo:'Oggi riposi — ci vediamo domani! 😴'};
   document.getElementById('today-sub').textContent=subs[tp.focus]||'Allenamento di oggi!';
-  const btn=document.getElementById('btn-start');if(btn)btn.style.display=isRest?'none':'flex';
+  // Show start button — if plan is empty but profile exists, show it (plan will generate)
+  const hasValidPlan=S.plan&&S.plan.length>0;
+  const showStart=!isRest||!hasValidPlan;
+  const btn=document.getElementById('btn-start');
+  if(btn)btn.style.display=showStart?'flex':'none';
   // Favorites chip: check if today's session has any favorite exercises
   const favs=P.favorites||[];
   if(favs.length>0&&!isRest&&tp.focus){
@@ -3328,7 +3350,7 @@ function toggleExDetail(id){const el=document.getElementById(id);if(el){const v=
 function buildProfile(){
   if(!P.name)return;
   T.energyLevel=3; // reset energy to normal each day
-  const defNrg=document.querySelector('.nrg-btn[data-nrg="3"]');if(defNrg)setEnergy(defNrg);
+  try{const defNrg=document.querySelector('.nrg-btn[data-nrg="3"]');if(defNrg)setEnergy(defNrg);}catch(e){}
   document.getElementById('prf-name').textContent=P.name;
   const wh=P.weight&&P.height?` · ${P.weight}kg · ${P.height}cm`:'';
   document.getElementById('prf-sub').textContent=`${P.level==='intermedio'?'🔥 Intermedio':'🌱 Principiante'} · ${P.age} anni${wh}`;
@@ -3419,7 +3441,7 @@ function addPlayer(){
 function buildSettings(){
   if(!P.name)return;
   T.energyLevel=3; // reset energy to normal each day
-  const defNrg=document.querySelector('.nrg-btn[data-nrg="3"]');if(defNrg)setEnergy(defNrg);
+  try{const defNrg=document.querySelector('.nrg-btn[data-nrg="3"]');if(defNrg)setEnergy(defNrg);}catch(e){}
   const tl={principiante:'🌱 Principiante',intermedio:'🔥 Intermedio'};
   document.getElementById('val-name').textContent=P.name;
   document.getElementById('val-age').textContent=P.age?(P.age+' anni'):'—';
@@ -3488,7 +3510,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 07:47';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 07:58';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -3864,7 +3886,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604110747'; // auto-set on each release
+const APP_BUILD='202604110758'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');

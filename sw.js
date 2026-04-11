@@ -1,5 +1,5 @@
 // TurboTartaruga Service Worker — with notification scheduling
-const CACHE_NAME = 'turbotartaruga-202604110747';
+const CACHE_NAME = 'turbotartaruga-202604110758';
 
 const PRECACHE = ['./', './TurboTartaruga.html'];
 
@@ -47,7 +47,7 @@ self.addEventListener('message', event => {
       }
     }
     // Also close any already-shown notification with the daily tag
-    self.registration.getNotifications({tag:'turbotartaruga-202604110747'})
+    self.registration.getNotifications({tag:'turbotartaruga-202604110758'})
       .then(notifs => notifs.forEach(n => n.close()));
     return;
   }
@@ -66,7 +66,7 @@ self.addEventListener('message', event => {
         body,
         icon: './icon-192.png',
         badge: './icon-192.png',
-        tag: 'turbotartaruga-202604110747',
+        tag: 'turbotartaruga-202604110758',
         renotify: true,
         data: { url: './' }
       });
