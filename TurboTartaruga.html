@@ -204,6 +204,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 @keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
 .confetti-piece{position:fixed;width:10px;height:10px;top:-10px;z-index:999;border-radius:2px;animation:confettiFall 2.5s ease-in forwards;pointer-events:none}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 <div id="toast" class="toast"></div>
@@ -759,43 +760,95 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div class="p-card">
         <div class="p-tag">🎫 Sei l'ospite?</div>
         <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:12px">
-          Genera il tuo <strong>Codice Ospite</strong> e mandalo all'amico che ha l'app aperta sul suo telefono.<br>
-          <span style="opacity:.65;font-size:11px">Contiene solo il tuo nome e le tue preferenze — nient'altro.</span>
+          Premi il bottone — l'host inquadra il <strong>QR Code</strong> con il suo telefono e sei aggiunto! 📱
         </p>
         <button onclick="generateGuestCode()" class="btn btn-full"
           style="background:var(--lime);color:#1B5E20;font-size:14px;padding:13px">
-          🎫 Genera il mio codice ospite
+          🎫 Genera il mio QR Code ospite
         </button>
-        <div id="guest-code-out" style="display:none;margin-top:10px">
-          <div style="background:rgba(0,0,0,.25);border-radius:10px;padding:10px;font-family:var(--fm);font-size:10px;word-break:break-all;color:#fff;max-height:72px;overflow-y:auto" id="guest-code-txt"></div>
-          <button onclick="copyGuestCode()" style="width:100%;margin-top:8px;padding:10px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
-            📋 Copia codice
-          </button>
+        <div id="guest-code-out" style="display:none;margin-top:14px;text-align:center">
+          <!-- QR Code display -->
+          <div style="background:#fff;border-radius:14px;padding:14px;display:inline-block;margin-bottom:10px">
+            <div id="guest-qr-canvas"></div>
+          </div>
+          <div style="font-size:11px;opacity:.7;margin-bottom:10px">
+            Fai inquadrare questo QR all'host 📷<br>
+            <span style="opacity:.6">oppure condividi il codice testuale</span>
+          </div>
+          <!-- Share + Copy buttons -->
+          <div style="display:flex;gap:8px">
+            <button onclick="shareGuestCode()" id="btn-share-guest"
+              style="flex:1;padding:11px;background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.4);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
+              📤 Condividi
+            </button>
+            <button onclick="copyGuestCode()"
+              style="flex:1;padding:11px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
+              📋 Copia
+            </button>
+          </div>
+          <div id="guest-code-txt" style="display:none"></div>
         </div>
       </div>
 
       <!-- Card: Sei l'HOST → aggiungi ospiti -->
       <div class="p-card">
-        <div class="p-tag">📱 Sei l'host? Aggiungi un ospite</div>
-        <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:12px">
-          Incolla il <strong>Codice Ospite</strong> che ti ha mandato il tuo amico per aggiungerlo alla sessione.
+        <div class="p-tag">📱 Sei l'host? Aggiungi ospiti</div>
+        <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:10px">
+          Inquadra il QR dell'ospite con la fotocamera del tuo telefono.
         </p>
-        <textarea id="guest-code-input" placeholder="Incolla qui il codice TTS-... del tuo ospite"
-          style="width:100%;padding:10px;border-radius:11px;border:none;background:rgba(255,255,255,.12);color:#fff;font-family:var(--fm);font-size:10px;height:68px;resize:none;outline:none;placeholder-color:rgba(255,255,255,.4)"></textarea>
-        <button onclick="addGuestFromCode()" style="width:100%;margin-top:8px;padding:11px;background:var(--lime);color:#1B5E20;border:none;border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
-          ➕ Aggiungi ospite
+        <!-- QR Scanner button -->
+        <button onclick="startQRScan()" id="btn-qr-scan"
+          style="width:100%;padding:13px;background:var(--lime);color:#1B5E20;border:none;border-radius:100px;font-weight:bold;font-size:14px;cursor:pointer;margin-bottom:10px">
+          📷 Scansiona QR ospite
         </button>
-        <!-- Lista ospiti aggiunti -->
-        <div id="together-guests" style="margin-top:12px"></div>
+        <!-- QR video preview -->
+        <div id="qr-scan-wrap" style="display:none;margin-bottom:10px">
+          <video id="qr-video" style="width:100%;border-radius:12px;background:#000;max-height:220px;object-fit:cover"></video>
+          <button onclick="stopQRScan()" style="width:100%;margin-top:6px;padding:9px;background:rgba(255,0,0,.2);color:#fff;border:1px solid rgba(255,0,0,.4);border-radius:100px;font-size:12px;cursor:pointer">
+            ✕ Annulla scansione
+          </button>
+        </div>
+        <!-- Fallback: paste code -->
+        <details style="margin-bottom:8px">
+          <summary style="font-size:12px;color:rgba(255,255,255,.6);cursor:pointer;padding:6px 0">
+            💬 Non riesci a scansionare? Incolla il codice manualmente
+          </summary>
+          <textarea id="guest-code-input" placeholder="Incolla qui il codice TTS-... del tuo ospite"
+            style="width:100%;padding:10px;border-radius:11px;border:none;background:rgba(255,255,255,.12);color:#fff;font-family:var(--fm);font-size:10px;height:60px;resize:none;outline:none;margin-top:8px"></textarea>
+          <button onclick="addGuestFromCode()" style="width:100%;margin-top:6px;padding:10px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:100px;font-weight:bold;font-size:12px;cursor:pointer">
+            ➕ Aggiungi ospite dal codice
+          </button>
+        </details>
+        <!-- Guests list -->
+        <div id="together-guests" style="margin-top:8px"></div>
       </div>
 
       <!-- Card: Genera risultato per gli ospiti (visibile dopo sessione) -->
       <div class="p-card" id="result-card" style="display:none">
-        <div class="p-tag">📤 Sessione completata! Condividi i risultati</div>
-        <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:12px">
-          Manda il <strong>Codice Risultato</strong> a ogni ospite. Lo useranno per aggiornare i loro progressi.
+        <div class="p-tag">🎉 Sessione completata! Manda i risultati</div>
+        <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:10px">
+          Un solo codice per tutti gli ospiti — fallo inquadrare o condividi via WhatsApp.
         </p>
-        <div id="result-codes-list"></div>
+        <div id="result-codes-list">
+          <!-- QR del risultato -->
+          <div id="result-qr-wrap" style="text-align:center;margin-bottom:10px">
+            <div style="background:#fff;border-radius:14px;padding:14px;display:inline-block">
+              <div id="result-qr-canvas"></div>
+            </div>
+            <div style="font-size:11px;opacity:.7;margin-top:6px">Fai inquadrare questo QR agli ospiti 📷</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button onclick="shareResultCode()" id="btn-share-result"
+              style="flex:1;padding:11px;background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.4);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
+              📤 Condividi
+            </button>
+            <button onclick="copyResultCodeSingle()"
+              style="flex:1;padding:11px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
+              📋 Copia
+            </button>
+          </div>
+          <div id="result-code-single" style="display:none"></div>
+        </div>
       </div>
 
       <!-- Card: Sei l'ospite → importa risultato -->
@@ -4058,7 +4111,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 16:55';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 18:13';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4237,6 +4290,10 @@ function partyTab(tab){
 
 // ═══ ALLENA INSIEME ═══
 let togetherGuests=[];
+let _qrStream=null;
+let _qrScanInterval=null;
+let _lastGuestCode='';
+let _lastResultCode='';
 
 function showInstallGuide(){
   const modal=document.getElementById('install-modal');
@@ -4244,10 +4301,23 @@ function showInstallGuide(){
   if(urlEl)urlEl.textContent=location.href.replace(/[?#].*/,'');
   if(modal)modal.style.display='block';
 }
+
+// ── QR Code generation helper ─────────────────────────────────────
+function makeQR(containerId, text){
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  el.innerHTML='';
+  if(typeof QRCode==='undefined'){
+    el.innerHTML='<div style="padding:12px;font-size:11px;color:#666;text-align:center">QR non disponibile<br>usa il pulsante Copia</div>';
+    return;
+  }
+  new QRCode(el,{text,width:180,height:180,colorDark:'#1B5E20',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+}
+
+// ── GUEST: generate code + QR ────────────────────────────────────
 function generateGuestCode(){
   const guest={
-    type:'TTS_guest',
-    v:'0.4',
+    type:'TTS_guest',v:'0.5',
     name:P.name||'Ospite',
     level:P.level||'principiante',
     noFloor:!!P.noFloor,
@@ -4255,93 +4325,206 @@ function generateGuestCode(){
     dt:new Date().toISOString().slice(0,10)
   };
   const code='TTS-'+btoa(unescape(encodeURIComponent(JSON.stringify(guest))));
-  document.getElementById('guest-code-out').style.display='block';
+  _lastGuestCode=code;
   document.getElementById('guest-code-txt').textContent=code;
-  toast('🎫 Codice ospite generato!');
+  document.getElementById('guest-code-out').style.display='block';
+  makeQR('guest-qr-canvas', code);
+  toast('🎫 QR Code generato! Fallo inquadrare all\'host 📷');
 }
+
 function copyGuestCode(){
-  const code=document.getElementById('guest-code-txt').textContent;
-  if(navigator.clipboard){navigator.clipboard.writeText(code).then(()=>toast('📋 Codice copiato! Mandalo al tuo amico 🤝'))}
-  else{toast('📋 Seleziona e copia manualmente il codice!')}
+  const code=_lastGuestCode||document.getElementById('guest-code-txt').textContent;
+  if(!code)return;
+  if(navigator.clipboard){navigator.clipboard.writeText(code).then(()=>toast('📋 Codice copiato!'))}
+  else toast('📋 Seleziona e copia il codice manualmente');
 }
-function addGuestFromCode(){
-  const raw=(document.getElementById('guest-code-input').value||'').trim();
-  if(!raw.startsWith('TTS-')){toast('⚠️ Codice non valido! Deve iniziare con TTS-');return}
+
+function shareGuestCode(){
+  const code=_lastGuestCode;
+  if(!code){toast('⚠️ Genera prima il codice!');return}
+  const name=P.name||'Ospite';
+  const text='Ciao! Sono '+name+' — usa questo codice TurboTartaruga: '+code;
+  if(navigator.share){
+    navigator.share({title:'TurboTartaruga — Codice Ospite',text}).catch(()=>copyGuestCode());
+  } else copyGuestCode();
+}
+
+// ── HOST: QR scanner ─────────────────────────────────────────────
+async function startQRScan(){
+  const wrap=document.getElementById('qr-scan-wrap');
+  const video=document.getElementById('qr-video');
+  const btn=document.getElementById('btn-qr-scan');
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+    toast('⚠️ Fotocamera non disponibile su questo dispositivo');return;
+  }
+  // Load jsQR dynamically
+  if(typeof jsQR==='undefined'){
+    await new Promise((res,rej)=>{
+      const s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
+      s.onload=res;s.onerror=rej;document.head.appendChild(s);
+    }).catch(()=>{toast('⚠️ Impossibile caricare il lettore QR — usa il codice manuale');return;});
+  }
+  try{
+    _qrStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    video.srcObject=_qrStream;
+    video.play();
+    wrap.style.display='block';
+    if(btn)btn.style.display='none';
+    // Scan loop
+    const canvas=document.createElement('canvas');
+    const ctx2=canvas.getContext('2d');
+    _qrScanInterval=setInterval(()=>{
+      if(video.readyState!==video.HAVE_ENOUGH_DATA)return;
+      canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+      ctx2.drawImage(video,0,0);
+      const img=ctx2.getImageData(0,0,canvas.width,canvas.height);
+      if(typeof jsQR==='undefined')return;
+      const result=jsQR(img.data,img.width,img.height);
+      if(result&&result.data){
+        stopQRScan();
+        processScannedCode(result.data);
+      }
+    },300);
+  }catch(e){
+    toast('⚠️ Accesso fotocamera negato — usa il codice manuale');
+    stopQRScan();
+  }
+}
+
+function stopQRScan(){
+  if(_qrScanInterval){clearInterval(_qrScanInterval);_qrScanInterval=null;}
+  if(_qrStream){_qrStream.getTracks().forEach(t=>t.stop());_qrStream=null;}
+  const wrap=document.getElementById('qr-scan-wrap');
+  const btn=document.getElementById('btn-qr-scan');
+  if(wrap)wrap.style.display='none';
+  if(btn)btn.style.display='block';
+}
+
+function processScannedCode(raw){
+  // Handle guest code TTS-
+  if(raw.startsWith('TTS-')){
+    addGuestFromRaw(raw);return;
+  }
+  // Handle result code TTR- (guest importing their own results)
+  if(raw.startsWith('TTR-')){
+    const inp=document.getElementById('result-code-input');
+    if(inp){inp.value=raw;importResultCode();}
+    return;
+  }
+  toast('⚠️ QR non riconosciuto — assicurati che sia un codice TurboTartaruga');
+}
+
+function addGuestFromRaw(raw){
+  if(!raw.startsWith('TTS-')){toast('⚠️ Codice non valido!');return}
   try{
     const g=JSON.parse(decodeURIComponent(escape(atob(raw.slice(4)))));
-    if(g.type!=='TTS_guest'){toast('⚠️ Questo non è un codice ospite!');return}
+    if(g.type!=='TTS_guest'){toast('⚠️ Non è un codice ospite!');return}
     if(togetherGuests.find(x=>x.name===g.name)){toast('⚠️ '+g.name+' è già nella sessione!');return}
     togetherGuests.push(g);
-    document.getElementById('guest-code-input').value='';
     updateTogetherUI();
-    toast('✅ '+g.name+' aggiunto/a alla sessione! 🎉');
+    toast('✅ '+g.name+' aggiunto/a! 🎉');
+    beep(660,.15);
   }catch{toast('⚠️ Codice non valido o corrotto!')}
 }
+
+function addGuestFromCode(){
+  const raw=(document.getElementById('guest-code-input').value||'').trim();
+  addGuestFromRaw(raw);
+  document.getElementById('guest-code-input').value='';
+}
+
 function updateTogetherUI(){
   const wrap=document.getElementById('together-guests');
   if(!wrap)return;
   if(!togetherGuests.length){wrap.innerHTML='';return}
-  wrap.innerHTML=`<div style="margin-top:4px;font-size:11px;color:rgba(255,255,255,.6);margin-bottom:6px">Ospiti aggiunti:</div>`+
-    togetherGuests.map((g,i)=>`<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border-radius:10px;padding:8px 11px;margin-bottom:5px">
-      <span style="font-size:16px">👤</span>
-      <span style="color:#fff;font-weight:bold;font-size:13px;flex:1">${g.name}</span>
-      <span style="font-size:11px;color:rgba(255,255,255,.6)">${g.level}</span>
-      <button onclick="removeGuest(${i})" style="background:rgba(255,0,0,.2);border:none;border-radius:50%;width:22px;height:22px;color:#fff;cursor:pointer;font-size:11px">✕</button>
-    </div>`).join('');
+  wrap.innerHTML='<div style="margin-top:4px;font-size:11px;color:rgba(255,255,255,.6);margin-bottom:6px">'+togetherGuests.length+' ospite/i aggiunti:</div>'+
+    togetherGuests.map((g,i)=>'<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border-radius:10px;padding:8px 11px;margin-bottom:5px">'+
+      '<span style="font-size:16px">👤</span>'+
+      '<span style="color:#fff;font-weight:bold;font-size:13px;flex:1">'+g.name+'</span>'+
+      '<span style="font-size:11px;color:rgba(255,255,255,.6)">'+g.level+'</span>'+
+      '<button onclick="removeGuest('+i+')" style="background:rgba(255,0,0,.2);border:none;border-radius:50%;width:22px;height:22px;color:#fff;cursor:pointer;font-size:11px">✕</button>'+
+    '</div>').join('');
 }
 function removeGuest(i){togetherGuests.splice(i,1);updateTogetherUI();toast('Ospite rimosso')}
 
+// ── RESULT: single code for all guests ───────────────────────────
 function buildResultCodes(histEntry){
-  const list=document.getElementById('result-codes-list');
-  if(!list||!togetherGuests.length)return;
-  list.innerHTML=togetherGuests.map(g=>{
-    const result={
-      type:'TTR_result',v:'0.4',
-      for:g.name,
-      date:histEntry.date,
-      type_ses:histEntry.type,
-      icon:histEntry.icon||'💪',
-      dur:histEntry.dur||0,
-      exCount:histEntry.exCount||0,
-      xp:histEntry.xp||0,
-      tags:histEntry.tags||[],
-      exercises:histEntry.exercises||[]
-    };
-    const code='TTR-'+btoa(unescape(encodeURIComponent(JSON.stringify(result))));
-    return`<div style="background:rgba(255,255,255,.08);border-radius:10px;padding:11px;margin-bottom:9px">
-      <div style="font-weight:bold;color:#fff;margin-bottom:7px">📤 Risultato per ${g.name}</div>
-      <div style="font-family:var(--fm);font-size:9px;color:rgba(255,255,255,.7);word-break:break-all;background:rgba(0,0,0,.2);padding:8px;border-radius:7px;max-height:52px;overflow-y:auto;margin-bottom:7px" id="rcode_${g.name}">${code}</div>
-      <button onclick="copyResultCode('${g.name}')" style="width:100%;padding:9px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3);border-radius:100px;font-weight:bold;font-size:12px;cursor:pointer">📋 Copia codice per ${g.name}</button>
-    </div>`;
-  }).join('');
+  if(!togetherGuests.length)return;
+  const card=document.getElementById('result-card');
+  if(card)card.style.display='block';
+  // Build ONE code containing all guests
+  const result={
+    type:'TTR_result',v:'0.5',
+    guests:togetherGuests.map(g=>g.name),
+    date:histEntry.date,
+    type_ses:histEntry.type,
+    icon:histEntry.icon||'💪',
+    dur:histEntry.dur||0,
+    exCount:histEntry.exCount||0,
+    xp:histEntry.xp||0,
+    tags:histEntry.tags||[],
+    exercises:(histEntry.exercises||[]).slice(0,10)
+  };
+  const code='TTR-'+btoa(unescape(encodeURIComponent(JSON.stringify(result))));
+  _lastResultCode=code;
+  document.getElementById('result-code-single').textContent=code;
+  makeQR('result-qr-canvas', code);
+  // Auto-show result card when returning to party tab
+  const pane=document.getElementById('party-pane-insieme');
+  if(pane)pane.scrollTop=0;
 }
-function copyResultCode(name){
-  const el=document.getElementById('rcode_'+name);
-  if(!el)return;
-  if(navigator.clipboard){navigator.clipboard.writeText(el.textContent).then(()=>toast('📋 Codice per '+name+' copiato! Mandaglielo 📱'))}
+
+function copyResultCodeSingle(){
+  const code=_lastResultCode;
+  if(!code){toast('⚠️ Nessun codice disponibile — completa prima una sessione!');return}
+  if(navigator.clipboard){navigator.clipboard.writeText(code).then(()=>toast('📋 Codice risultato copiato!'))}
+  else toast('📋 Seleziona e copia manualmente');
 }
+
+function shareResultCode(){
+  const code=_lastResultCode;
+  if(!code){toast('⚠️ Nessun codice disponibile!');return}
+  const names=togetherGuests.map(g=>g.name).join(', ');
+  const text='Risultati sessione TurboTartaruga ('+names+'): '+code+' — Incollalo in Party > Allena Insieme > Importa risultato 🐢';
+  if(navigator.share){
+    navigator.share({title:'TurboTartaruga — Risultato Sessione',text}).catch(()=>copyResultCodeSingle());
+  } else copyResultCodeSingle();
+}
+
+// ── IMPORT result (backward compat with v0.4 single + v0.5 multi) ──
 function importResultCode(){
   const raw=(document.getElementById('result-code-input').value||'').trim();
   if(!raw.startsWith('TTR-')){toast('⚠️ Codice non valido! Deve iniziare con TTR-');return}
   try{
     const r=JSON.parse(decodeURIComponent(escape(atob(raw.slice(4)))));
     if(r.type!=='TTR_result'){toast('⚠️ Questo non è un codice risultato!');return}
-    // Add to history as a shared session
+    // v0.5: multi-guest — check if current user is in the list
+    const myName=P.name||'';
+    if(r.guests&&r.guests.length){
+      if(!r.guests.includes(myName)){
+        toast('⚠️ Il tuo nome ('+myName+') non è in questo codice risultato!');return;
+      }
+    }
+    // v0.4 backward compat: single for field
+    if(r.for&&r.for!==myName&&!r.guests){
+      toast('⚠️ Questo codice è per '+r.for+', non per '+myName+'!');return;
+    }
     const entry={
       date:r.date,type:r.type_ses||'misto',
-      icon:r.icon||'💪',label:'Sessione condivisa con '+r.for,
+      icon:r.icon||'💪',
+      label:'Sessione party 🎉',
       dur:r.dur,exCount:r.exCount,xp:r.xp,
       tags:r.tags||[],exercises:r.exercises||[],
-      shared:true,sharedWith:r.for
+      shared:true
     };
-    // Add to days for streak
     if(!S.days.includes(r.date))S.days.push(r.date);
     S.tot++;S.xp=(S.xp||0)+r.xp;
-    addHistory(entry);
-    updateStreak();checkBadges();save();
+    addHistory(entry);updateStreak();checkBadges();save();
     document.getElementById('result-code-input').value='';
     toast('✅ Sessione importata! +'+r.xp+' XP guadagnati 🎉');
-  }catch{toast('⚠️ Codice non valido o corrotto!')}
+    beep(660,.15);
+  }catch(e){toast('⚠️ Codice non valido o corrotto!')}
 }
 
 // ═══ INIT ═══
@@ -4444,7 +4627,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604111655'; // auto-set on each release
+const APP_BUILD='202604111813'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
