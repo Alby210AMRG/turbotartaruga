@@ -1,5 +1,5 @@
 // TurboTartaruga Service Worker v202604110822
-const CACHE_NAME = 'turbotartaruga-202604111005';
+const CACHE_NAME = 'turbotartaruga-202604111020';
 const PRECACHE = ['./TurboTartaruga.html', './manifest.json'];
 
 self.addEventListener('install', event => {
@@ -77,7 +77,7 @@ self.addEventListener('message', event => {
       clearTimeout(tid);
       _notifTimers.delete(key);
     }
-    self.registration.getNotifications({tag:'turbotartaruga-202604111005'})
+    self.registration.getNotifications({tag:'turbotartaruga-202604111020'})
       .then(notifs => notifs.forEach(n => n.close()));
     return;
   }
@@ -94,7 +94,7 @@ self.addEventListener('message', event => {
         body,
         icon: './icon-192.png',
         badge: './icon-192.png',
-        tag: 'turbotartaruga-202604111005',
+        tag: 'turbotartaruga-202604111020',
         renotify: true,
         data: { url: './TurboTartaruga.html' }
       });

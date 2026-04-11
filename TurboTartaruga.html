@@ -364,7 +364,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <button class="fbtn fbtn-sub" data-f="elastici" onclick="setScelgoFeeling(this)"><span class="fi">🎽</span>Elastici</button>
         <button class="fbtn fbtn-sub" data-f="cardio" onclick="setScelgoFeeling(this)"><span class="fi">🥊</span>Cardio</button>
         <button class="fbtn fbtn-sub" data-f="presonno" onclick="setScelgoFeeling(this)"><span class="fi">😴</span>Pre-sonno</button>
-        <button class="fbtn fbtn-sub" data-f="postura" onclick="setScelgoFeeling(this)"><span class="fi">🪑+</span>Postura</button>
+        <button class="fbtn fbtn-sub" data-f="postura" onclick="setScelgoFeeling(this)"><span class="fi">🖥️</span>Postura</button>
         <button class="fbtn fbtn-sub" data-f="misto" onclick="setScelgoFeeling(this)"><span class="fi">🌈</span>Misto</button>
         <button class="fbtn fbtn-sub" data-f="misto_plus" onclick="setScelgoFeeling(this)"><span class="fi">🪑💪</span>Misto+</button>
       </div>
@@ -899,40 +899,48 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
             <div class="guide-a">Dalla Home premi "Inizia sessione". Prima vedi il piano dell'esercizio, poi parte il timer. Tra un esercizio e l'altro hai una pausa con il preview del prossimo. Puoi saltare, mettere in pausa o aggiungere 10 secondi di pausa.</div>
           </div>
           <div class="guide-item" onclick="toggleGuide(this)">
+            <div class="guide-q">⚡ Come funziona l'energia pre-sessione?</div>
+            <div class="guide-a">Nella Home, prima di iniziare, scegli il tuo livello di energia (😴 1 → 🚀 5). L'app adatta silenziosamente l'intensità della sessione: energia bassa = esercizi più morbidi e pause più lunghe, energia alta = sessione più intensa. Non sovrascrive il tuo storico.</div>
+          </div>
+          <div class="guide-item" onclick="toggleGuide(this)">
             <div class="guide-q">💥 Cos'è la Riserva Turbo?</div>
-            <div class="guide-a">Quando mancano 3 esercizi alla fine, appare un banner arancione. Se te la senti, premi "Attiva!" per aggiungere 2 esercizi bonus alla sessione e guadagnare XP extra.</div>
+            <div class="guide-a">Durante la pausa prima del terzultimo esercizio appare un grande banner arancione. Se te la senti, premi "Sì, attiva!" per aggiungere 2 esercizi bonus e guadagnare XP extra. Non disponibile nelle mini sessioni da 5 minuti.</div>
           </div>
           <div class="guide-item" onclick="toggleGuide(this)">
             <div class="guide-q">😴 Cosa succede se sono stanco?</div>
-            <div class="guide-a">Nella Home scegli "😴 Stanco" tra le opzioni "Come ti senti". Puoi fare una mini sessione da 5 minuti di solo stretching, oppure saltare completamente. Il tuo streak viene preservato per 1 giorno di riposo volontario.</div>
+            <div class="guide-a">Nella Home scegli "😴 Stanco". Puoi fare una mini sessione da 5 minuti di stretching, oppure saltare completamente. Il tuo streak viene preservato per 1 giorno di riposo volontario. I riposi frequenti danno malus XP.</div>
           </div>
           <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">🏅 Come funzionano i badge?</div>
-            <div class="guide-a">Ci sono 29 badge su 3 livelli: Tartarughina, Tartaruga e TurboTartaruga. Si sbloccano completando sessioni, streak, sessioni seduto/stretch, accumulando XP e raggiungendo l'obiettivo. Ogni badge dà 25 XP bonus.</div>
+            <div class="guide-q">🏅 Come funzionano badge e livelli?</div>
+            <div class="guide-a">Ci sono oltre 37 badge su 3 livelli: Tartarughina, Tartaruga e TurboTartaruga. Ogni badge dà 25 XP. Gli XP accumulati fanno salire il tuo Livello globale (1→50), visibile nella Home accanto allo streak. Il livello sblocca la progressione automatica delle sessioni.</div>
           </div>
           <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">💾 Come salvo i miei dati?</div>
-            <div class="guide-a">I dati sono salvati automaticamente sul tuo dispositivo. Per trasferirli su un altro telefono vai in Impostazioni → Backup: puoi esportare un file JSON, oppure generare un codice da copiare e incollare sull'altro dispositivo.</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">🤝 Come funziona "Allena insieme"?</div>
-            <div class="guide-a">Vai in Party → "Allena insieme". Se sei ospite, genera il tuo Codice Ospite e mandalo all'host. L'host lo incolla per aggiungerti. Alla fine, l'host genera un Codice Risultato che tu importi per aggiornare i tuoi progressi.</div>
+            <div class="guide-q">🔔 Come funzionano le notifiche?</div>
+            <div class="guide-a">Le notifiche sono personalizzate: cambiano in base al tuo streak, al meteo della tua città e alla fascia oraria in cui di solito ti alleni. Dopo 3 sessioni l'app impara il tuo orario e suggerisce automaticamente il momento migliore. Se hai già fatto la sessione del giorno, la notifica viene annullata automaticamente.</div>
           </div>
           <div class="guide-item" onclick="toggleGuide(this)">
             <div class="guide-q">🧬 Cosa fa il sistema BMI/Profilo?</div>
-            <div class="guide-a">L'app calcola il tuo BMI e adatta automaticamente la durata degli esercizi e le pause. Over 50: +5s di recupero. BMI alto: sessioni più leggere. Under 30 in forma: sessioni più intense. Il sesso biologico serve per il calcolo del metabolismo basale (BMR).</div>
+            <div class="guide-a">L'app calcola il tuo BMI e adatta automaticamente esercizi e pause. Over 50: +5s di recupero. BMI alto: sessioni più leggere e suggerimento di evitare esercizi a terra. Under 30 in forma: sessioni più intense. Il piano si adatta anche ai tuoi feedback post-sessione (Difficile/Ottima).</div>
           </div>
           <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">🕹️ Cos'è "Scelgo io"?</div>
-            <div class="guide-a">Nella Home invece di "Segui piano" puoi premere "Scelgo io!" per espandere il menu con tutte le categorie: Gambe, Braccia, Core, Stretch, Orientale, Seduto, Misto, Misto+. Premi di nuovo "Segui piano" per tornare al piano del giorno.</div>
+            <div class="guide-q">🕹️ Come scelgo la sessione manualmente?</div>
+            <div class="guide-a">Nella Home premi "Scelgo io!" per espandere il menu con tutte le 10 categorie disponibili: Gambe, Braccia, Core, Stretching, Orientale, Da Seduto, Elastici, Cardio/Box, Pre-sonno, Postura, Misto, Misto+. Il piano del giorno rimane invariato.</div>
+          </div>
+          <div class="guide-item" onclick="toggleGuide(this)">
+            <div class="guide-q">📊 Come funzionano le statistiche?</div>
+            <div class="guide-a">In Progressi trovi il grafico 7/30 giorni, il confronto prima settimana vs ultima, i totali (sessioni, streak, XP, boost, saltate, badge) e l'avanzamento verso l'obiettivo. Ogni 7 sessioni completate la Home mostra un riepilogo settimanale automatico.</div>
           </div>
           <div class="guide-item" onclick="toggleGuide(this)">
             <div class="guide-q">📅 Cosa succede se salto le sessioni?</div>
-            <div class="guide-a">Se salti 3 o più giorni consecutivi compare un messaggio motivazionale in Home. Le sessioni saltate danno un malus XP. Ci sono badge appositi per chi accumula sessioni saltate — ma l'obiettivo è non sbloccarli! 😄</div>
+            <div class="guide-a">Dopo 3 giorni saltati consecutivi appare un messaggio in rosso in Home. Le sessioni saltate danno un malus di XP (-10 per ogni giorno oltre i 2). Ci sono badge "divertenti" da non sbloccare: Divano Lover (3), Ultra Pigro (50)… 😄</div>
           </div>
           <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">🔄 Come aggiorno il piano esercizi?</div>
-            <div class="guide-a">Il piano si rigenera automaticamente quando modifichi il profilo, le categorie o i giorni di riposo. Puoi anche farlo manualmente in Impostazioni → Elenco esercizi → "Rigenera piano 14 giorni".</div>
+            <div class="guide-q">💾 Come salvo e trasferisco i dati?</div>
+            <div class="guide-a">I dati sono salvati automaticamente sul dispositivo. Per trasferirli vai in Impostazioni → Backup: esporta JSON o genera un codice TT-... da copiare sul nuovo dispositivo. Ogni 10 sessioni l'app chiede di aggiornare il peso per ricalcolare il piano.</div>
+          </div>
+          <div class="guide-item" onclick="toggleGuide(this)">
+            <div class="guide-q">🔄 Come funziona il piano automatico?</div>
+            <div class="guide-a">Il piano 14 giorni si rigenera automaticamente quando modifichi profilo, categorie o giorni di riposo. Si adatta anche ai feedback: 3 sessioni "Difficile" di fila → sessioni più brevi; 3 "Ottima" di fila → sessioni più lunghe. I giorni 🔄 nel calendario sono recupero automatico contro il sovrallenamento.</div>
           </div>
 
         </div>
@@ -1143,7 +1151,7 @@ const CAT_INFO={
   elastici:{label:'Elastici',icon:'🎽',cls:'workout'},
   cardio:{label:'Cardio/Box',icon:'🥊',cls:'workout'},
   presonno:{label:'Pre-sonno',icon:'😴',cls:'stretching'},
-  postura:{label:'Postura',icon:'🪑+',cls:'workout'},
+  postura:{label:'Postura',icon:'🖥️',cls:'workout'},
   misto:{label:'Misto',icon:'🌈',cls:'workout'},
   misto_plus:{label:'Misto+',icon:'🪑💪',cls:'workout'},
   riposo:{label:'Riposo',icon:'😴',cls:'rest'},
@@ -1465,7 +1473,7 @@ const WIZ_STEPS = [
           ['core','🎯','Core'],['stretching','🤸','Stretching'],
           ['seduto','🪑','Da Seduto'],['orientale','🧘','Orientale'],
           ['elastici','🎽','Elastici'],['cardio','🥊','Cardio/Box'],
-          ['presonno','😴','Pre-sonno'],['postura','🪑+','Postura'],
+          ['presonno','😴','Pre-sonno'],['postura','🖥️','Postura'],
         ].map(([v,ico,lbl])=>{const sel=(_wizData.cats||[]).includes(v);return`<button class="wiz-cat-btn${sel?' sel':''}" data-cat="${v}" onclick="wizToggleCat(this)"
           style="padding:14px 10px;border-radius:14px;border:3px solid ${sel?'#fff':'rgba(255,255,255,.25)'};background:${sel?'rgba(255,255,255,.25)':'rgba(255,255,255,.1)'};color:#fff;cursor:pointer;text-align:center">
           <div style="font-size:28px;margin-bottom:4px">${ico}</div>
@@ -2820,10 +2828,9 @@ function doShowEx(idx){
   const doneExs=T.exs.slice(0,idx).filter(e=>!e._transition).length;
   document.getElementById('tr-count').textContent=`${doneExs+1}/${realExs.length}`;
   updatePbar();buildNextList();
-  const remReal=T.exs.slice(idx+1).filter(e=>!e._transition&&!e._bonus).length;
+  // Riserva is shown during the REST before the 3rd-to-last exercise, not here
   const rb=document.getElementById('riserva-banner');
-  // Don't show riserva on mini sessions (5min) — too few exercises
-  if(rb)rb.style.display=(remReal===2&&!riservaDone&&T.dur!==5)?'block':'none';
+  if(rb)rb.style.display='none'; // always hide on exercise start
   go_scr('training');startTimer();
 }
 function updatePbar(){
@@ -2913,6 +2920,10 @@ function showRestPreview(targetIdx, onDone){
     if(nm)nm.textContent='Ultimo esercizio completato!';
     if(nd)nd.textContent='Quasi al traguardo — ancora un ultimo sforzo! 🏆';
   }
+  // Show Riserva Turbo during rest screen if 2 real exercises remain (= before terzultimo)
+  const remAfterRest=T.exs.slice(targetIdx).filter(e=>!e._transition&&!e._bonus).length;
+  const rb2=document.getElementById('riserva-banner');
+  if(rb2)rb2.style.display=(remAfterRest===2&&!riservaDone&&(T.dur||12)!==5)?'block':'none';
   // Set header text based on context
   const rstHdr=document.getElementById('rst-header');
   const rstEmoji=document.getElementById('rst-emoji');
@@ -3524,7 +3535,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 10:05';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 10:20';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -3571,7 +3582,7 @@ function buildExList(){
     {key:'elastici',label:'🎽 Elastici'},
     {key:'cardio',label:'🥊 Cardio/Box'},
     {key:'presonno',label:'😴 Pre-sonno'},
-    {key:'postura',label:'🪑+ Postura'},
+    {key:'postura',label:'🖥️ Postura'},
     {key:'party',label:'🎉 Party / Sfide'},
   ];
   const total=DB.length;
@@ -3910,7 +3921,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604111005'; // auto-set on each release
+const APP_BUILD='202604111020'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
