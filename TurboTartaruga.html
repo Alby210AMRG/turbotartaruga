@@ -426,6 +426,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div class="card" style="margin:0 0 12px"><div class="card-title">🎯 Focus oggi</div>
       <div id="ps-focus-info" style="background:var(--bg2);border-radius:12px;padding:11px 13px;font-size:var(--fs-sm);color:var(--tmid)">📅 Seguendo il piano di oggi</div>
     </div>
+    <!-- Equipment warning — shown when session needs chair or elastic -->
+    <div id="ps-equipment-warn" style="display:none;margin-bottom:12px">
+      <div style="background:#FFF3E0;border:2px solid #FF8F00;border-radius:14px;padding:13px 15px">
+        <div style="font-weight:bold;font-size:14px;color:#E65100;margin-bottom:5px" id="ps-equip-title">🪑 Prepara la sedia!</div>
+        <div style="font-size:13px;color:#BF360C;line-height:1.5" id="ps-equip-desc">Questa sessione include esercizi da seduto — usa una sedia stabile prima di iniziare.</div>
+      </div>
+    </div>
     <button class="btn btn-p btn-full btn-lg" onclick="startTraining()">🐢 Iniziamo!</button>
   </div>
 </div>
@@ -859,15 +866,29 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
       <!-- Card: Sei l'ospite → importa risultato -->
       <div class="p-card">
-        <div class="p-tag">📥 Hai ricevuto il codice risultato?</div>
-        <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:12px">
-          Incolla il codice che ti ha mandato il tuo amico per aggiornare i tuoi progressi.
+        <div class="p-tag">📥 Importa i tuoi risultati</div>
+        <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:10px">
+          Il tuo amico ha un <strong>QR Code risultato</strong> — inquadralo con la fotocamera!
         </p>
-        <textarea id="result-code-input" placeholder="Incolla qui il codice TTR-... del risultato"
-          style="width:100%;padding:10px;border-radius:11px;border:none;background:rgba(255,255,255,.12);color:#fff;font-family:var(--fm);font-size:10px;height:68px;resize:none;outline:none"></textarea>
-        <button onclick="importResultCode()" style="width:100%;margin-top:8px;padding:11px;background:rgba(255,255,255,.9);color:#1B5E20;border:none;border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
-          📥 Aggiorna i miei progressi
+        <!-- QR scan button for result -->
+        <button onclick="startQRScan('result-code-input')" id="btn-qr-result"
+          style="width:100%;padding:13px;background:var(--lime);color:#1B5E20;border:none;border-radius:100px;font-weight:bold;font-size:14px;cursor:pointer;margin-bottom:10px">
+          📷 Scansiona QR risultato
         </button>
+        <!-- QR video preview for result scan -->
+        <div id="qr-result-scan-wrap" style="display:none;margin-bottom:10px">
+          <p style="font-size:11px;opacity:.7;text-align:center;margin-bottom:4px">La stessa fotocamera sopra si usa per entrambe le scansioni</p>
+        </div>
+        <details style="margin-bottom:8px">
+          <summary style="font-size:12px;color:rgba(255,255,255,.6);cursor:pointer;padding:6px 0">
+            💬 Preferisci incollare il codice manualmente?
+          </summary>
+          <textarea id="result-code-input" placeholder="Incolla qui il codice TTR-... del risultato"
+            style="width:100%;padding:10px;border-radius:11px;border:none;background:rgba(255,255,255,.12);color:#fff;font-family:var(--fm);font-size:10px;height:60px;resize:none;outline:none;margin-top:8px"></textarea>
+          <button onclick="importResultCode()" style="width:100%;margin-top:6px;padding:10px;background:rgba(255,255,255,.9);color:#1B5E20;border:none;border-radius:100px;font-weight:bold;font-size:12px;cursor:pointer">
+            📥 Aggiorna i miei progressi
+          </button>
+        </details>
       </div>
 
     </div>
@@ -2275,18 +2296,32 @@ function buildPresession(){
   const tp=getTodayPlan();const ci=CAT_INFO[tp.focus]||{label:'Misto',icon:'🌈'};
   const fLabel=T.feeling&&T.feeling!=='piano'?(CAT_INFO[T.feeling]||ci):{label:ci.label,icon:ci.icon};
   document.getElementById('ps-focus-info').innerHTML=`${fLabel.icon} <strong>${fLabel.label}</strong> — sessione di oggi`;
+  // Equipment warning: detect chair or elastic need
+  const focus=T.feeling&&T.feeling!=='piano'?T.feeling:tp.focus;
+  const needsChair=['seduto','misto_plus'].includes(focus);
+  const needsElastic=focus==='elastici';
+  const warnEl=document.getElementById('ps-equipment-warn');
+  const titleEl=document.getElementById('ps-equip-title');
+  const descEl=document.getElementById('ps-equip-desc');
+  if(warnEl&&(needsChair||needsElastic)){
+    warnEl.style.display='block';
+    if(needsChair&&needsElastic){
+      if(titleEl)titleEl.textContent='🪑🎽 Prepara sedia ed elastico!';
+      if(descEl)descEl.textContent='Questa sessione include esercizi da seduto con elastico — tieni entrambi a portata di mano.';
+    } else if(needsChair){
+      if(titleEl)titleEl.textContent='🪑 Prepara la sedia!';
+      if(descEl)descEl.textContent='Questa sessione include esercizi da seduto — usa una sedia stabile e posizionala prima di iniziare.';
+    } else {
+      if(titleEl)titleEl.textContent='🎽 Prepara l\'elastico!';
+      if(descEl)descEl.textContent='Questa sessione usa gli elastici da allenamento — tienili a portata di mano prima di iniziare.';
+    }
+  } else if(warnEl){warnEl.style.display='none';}
 }
 function selDur(el){
   document.querySelectorAll('#dur-opts > div').forEach(e=>{e.style.borderColor='var(--bdr)';e.style.background='var(--card)'});
   el.style.borderColor='var(--g1)';el.style.background='var(--g4)';T.dur=parseInt(el.dataset.dur)||12;
 }
 function startTraining(){
-  // Chair warning for seduto sessions
-  const _focus=T.feeling!=='piano'?T.feeling:getTodayPlan().focus;
-  if((_focus==='seduto'||_focus==='misto_plus')&&!sessionStorage.getItem('chair_warned')){
-    sessionStorage.setItem('chair_warned','1');
-    toast('🪑 Per questa sessione ti servirà una sedia stabile! Posizionala prima di iniziare.',5000);
-  }
   // Pre-sonno out-of-hours gentle warning
   if(T.feeling==='presonno'||(T.feeling==='piano'&&getTodayPlan().focus==='presonno')){
     const h=new Date().getHours();
@@ -4150,7 +4185,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 12/04/2026 05:25';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 12/04/2026 05:45';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4330,6 +4365,7 @@ function partyTab(tab){
 // ═══ ALLENA INSIEME ═══
 let togetherGuests=[];
 let _qrStream=null;
+let _qrScanTarget=null;
 let _qrScanInterval=null;
 let _lastGuestCode='';
 let _lastResultCode='';
@@ -4389,44 +4425,67 @@ function shareGuestCode(){
 }
 
 // ── HOST: QR scanner ─────────────────────────────────────────────
-async function startQRScan(){
+async function startQRScan(targetElId){
+  // targetElId: optional — which textarea to fill after scanning (for result codes)
+  _qrScanTarget=targetElId||null;
   const wrap=document.getElementById('qr-scan-wrap');
   const video=document.getElementById('qr-video');
   const btn=document.getElementById('btn-qr-scan');
   if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
     toast('⚠️ Fotocamera non disponibile su questo dispositivo');return;
   }
-  // Load jsQR dynamically
-  if(typeof jsQR==='undefined'){
-    await new Promise((res,rej)=>{
-      const s=document.createElement('script');
-      s.src='https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
-      s.onload=res;s.onerror=rej;document.head.appendChild(s);
-    }).catch(()=>{toast('⚠️ Impossibile caricare il lettore QR — usa il codice manuale');return;});
-  }
   try{
-    _qrStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    _qrStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}});
     video.srcObject=_qrStream;
-    video.play();
+    await video.play();
     wrap.style.display='block';
     if(btn)btn.style.display='none';
-    // Scan loop
-    const canvas=document.createElement('canvas');
-    const ctx2=canvas.getContext('2d');
-    _qrScanInterval=setInterval(()=>{
-      if(video.readyState!==video.HAVE_ENOUGH_DATA)return;
-      canvas.width=video.videoWidth;canvas.height=video.videoHeight;
-      ctx2.drawImage(video,0,0);
-      const img=ctx2.getImageData(0,0,canvas.width,canvas.height);
-      if(typeof jsQR==='undefined')return;
-      const result=jsQR(img.data,img.width,img.height);
-      if(result&&result.data){
-        stopQRScan();
-        processScannedCode(result.data);
+    // Also hide result scan button if visible
+    const btnR=document.getElementById('btn-qr-result');
+    if(btnR)btnR.style.display='none';
+
+    // Try BarcodeDetector API first (built-in on Android Chrome 83+, no library needed)
+    if('BarcodeDetector' in window){
+      const detector=new BarcodeDetector({formats:['qr_code']});
+      _qrScanInterval=setInterval(async()=>{
+        if(video.readyState<2)return;
+        try{
+          const codes=await detector.detect(video);
+          if(codes&&codes.length>0){
+            stopQRScan();
+            processScannedCode(codes[0].rawValue);
+          }
+        }catch(_){}
+      },300);
+    } else {
+      // Fallback: jsQR via canvas (works on iOS/older browsers)
+      const canvas=document.createElement('canvas');
+      const ctx2=canvas.getContext('2d',{willReadFrequently:true});
+      // Try to load jsQR from SW cache or network
+      if(typeof jsQR==='undefined'){
+        const s=document.createElement('script');
+        s.src='https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js';
+        document.head.appendChild(s);
+        await new Promise(r=>setTimeout(r,1500)); // wait for load
       }
-    },300);
+      if(typeof jsQR==='undefined'){
+        // jsQR unavailable — show guidance
+        toast('📱 jsQR non disponibile. Su Android: aggiorna Chrome. Su iOS: usa Fotocamera di sistema per leggere il QR, poi incolla il testo.',6000);
+        stopQRScan();return;
+      }
+      _qrScanInterval=setInterval(()=>{
+        if(video.readyState<2)return;
+        canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+        ctx2.drawImage(video,0,0);
+        try{
+          const img=ctx2.getImageData(0,0,canvas.width,canvas.height);
+          const result=jsQR(img.data,img.width,img.height);
+          if(result&&result.data){stopQRScan();processScannedCode(result.data);}
+        }catch(_){}
+      },300);
+    }
   }catch(e){
-    toast('⚠️ Accesso fotocamera negato — usa il codice manuale');
+    toast('⚠️ Accesso fotocamera negato. Permetti la fotocamera nelle impostazioni del browser.');
     stopQRScan();
   }
 }
@@ -4435,17 +4494,17 @@ function stopQRScan(){
   if(_qrScanInterval){clearInterval(_qrScanInterval);_qrScanInterval=null;}
   if(_qrStream){_qrStream.getTracks().forEach(t=>t.stop());_qrStream=null;}
   const wrap=document.getElementById('qr-scan-wrap');
-  const btn=document.getElementById('btn-qr-scan');
   if(wrap)wrap.style.display='none';
+  // Restore both scan buttons
+  const btn=document.getElementById('btn-qr-scan');
   if(btn)btn.style.display='block';
+  const btnR=document.getElementById('btn-qr-result');
+  if(btnR)btnR.style.display='block';
+  _qrScanTarget=null;
 }
 
 function processScannedCode(raw){
-  // Handle guest code TTS-
-  if(raw.startsWith('TTS-')){
-    addGuestFromRaw(raw);return;
-  }
-  // Handle result code TTR- (guest importing their own results)
+  if(raw.startsWith('TTS-')){addGuestFromRaw(raw);return;}
   if(raw.startsWith('TTR-')){
     const inp=document.getElementById('result-code-input');
     if(inp){inp.value=raw;importResultCode();}
@@ -4721,7 +4780,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604120525'; // auto-set on each release
+const APP_BUILD='202604120545'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
