@@ -1,5 +1,6 @@
 {
   "version": "0.9",
-  "build": "202604120545",
-  "date": "12/04/2026 05:45"
+  "build": "202604120748",
+  "date": "12/04/2026 07:48",
+  "notes": "Fix critico streak: S.last aggiornato solo quando sessione completata"
 }

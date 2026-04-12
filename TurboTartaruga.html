@@ -970,8 +970,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <span class="sec-title">🔄 Piano allenamento</span>
     <div class="sblk"><div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
       <div class="stitle">Rigenera piano</div>
-      <div class="sval">Rigenera il piano 14 giorni tenendo conto del tuo profilo, categorie preferite, giorni di riposo e nuovi esercizi. Lo storico non viene toccato.</div>
-      <button class="btn btn-s btn-full mt10" style="padding:10px" onclick="refreshPlan()">🔄 Rigenera piano 14 giorni</button>
+      <div class="sval">Rigenera il piano 30 giorni tenendo conto del tuo profilo, categorie preferite, giorni di riposo e nuovi esercizi. Lo storico non viene toccato.</div>
+      <button class="btn btn-s btn-full mt10" style="padding:10px" onclick="refreshPlan()">🔄 Rigenera piano 30 giorni</button>
     </div></div>
     <span class="sec-title">🔔 Notifiche</span>
     <div class="sblk">
@@ -1086,7 +1086,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           </div>
           <div class="guide-item" onclick="toggleGuide(this)">
             <div class="guide-q">🔄 Come funziona il piano automatico?</div>
-            <div class="guide-a">Il piano 14 giorni si rigenera automaticamente quando modifichi profilo, categorie o giorni di riposo. Si adatta anche ai feedback: 3 sessioni "Difficile" di fila → sessioni più brevi; 3 "Ottima" di fila → sessioni più lunghe. I giorni 🔄 nel calendario sono recupero automatico contro il sovrallenamento.</div>
+            <div class="guide-a">Il piano 30 giorni si rigenera automaticamente quando modifichi profilo, categorie o giorni di riposo. Si adatta anche ai feedback: 3 sessioni "Difficile" di fila → sessioni più brevi; 3 "Ottima" di fila → sessioni più lunghe. I giorni 🔄 nel calendario sono recupero automatico contro il sovrallenamento.</div>
           </div>
           <div class="guide-item" onclick="toggleGuide(this)">
             <div class="guide-q">☀️ Come funziona la routine mattutina?</div>
@@ -1223,6 +1223,16 @@ const DB=[
   {id:'c10',n:'Bird-dog',cat:'core',t:'🎯 Core',zona:'🎯 Core · 🍑 Glutei · 🔄 Equilibrio',desc:'A quattro zampe: estendi il braccio dx e la gamba sx insieme. Tieni 3 sec. Alterna. Schiena piatta.',floor:true},
   {id:'c11',n:'Hollow hold',cat:'core',t:'🎯 Core',zona:'🎯 Addominali · 🎯 Core profondo',desc:'Sdraiato, solleva leggermente spalle e gambe. Corpo a banana. Respira. Più è basso più è difficile.',floor:true},
   {id:'c12',n:'Plank laterale',cat:'core',t:'🎯 Core',zona:'🎯 Obliqui · 🎯 Core laterale',desc:'Su un fianco, appoggiato sull\'avambraccio e sul bordo del piede. Fianchi alti e allineati. Tieni.',floor:true},
+  // ── CORE extra non-floor (c13-c20) ─────────────────────────────────
+  {id:'c13',n:'Crunch in piedi',cat:'core',t:'🎯 Core',zona:'🎯 Addominali · 🎯 Obliqui',desc:'In piedi, mani alla nuca, gomiti larghi. Porta il ginocchio dx verso il gomito sx contraendo gli addominali. Alterna lento.',floor:false},
+  {id:'c14',n:'Sollevamento ginocchio in piedi',cat:'core',t:'🎯 Core',zona:'🎯 Addominali inferiori · 🦵 Flessori anca',desc:'In piedi con una mano al muro. Porta il ginocchio verso il petto lentamente, tieni 2 sec, abbassa. Alterna lati.',floor:false},
+  {id:'c15',n:'Torsione obliqua in piedi',cat:'core',t:'🎯 Core',zona:'🎯 Obliqui · 🦴 Colonna toracica',desc:'In piedi, braccia piegate davanti al petto. Ruota il busto a destra e sinistra alternando, il bacino non si muove.',floor:false},
+  {id:'c16',n:'Inclinazione laterale con braccio',cat:'core',t:'🎯 Core',zona:'🎯 Obliqui laterali · 💪 Intercostali',desc:'In piedi, un braccio lungo il fianco, l\'altro sopra la testa. Piegati lentamente di lato verso il basso. 15 sec, poi alterna.',floor:false},
+  {id:'c17',n:'Compressione addominale seduto',cat:'core',t:'🎯 Core',zona:'🎯 Core profondo · 🫁 Diaframma',desc:'Seduto dritto, inspira gonfiando la pancia. Espira contraendo gli addominali verso la schiena. Tieni 5 sec. 10 ripetizioni.',floor:false},
+  {id:'c18',n:'Sollevamento gambe seduto',cat:'core',t:'🎯 Core',zona:'🎯 Addominali inferiori · 🦵 Flessori anca',desc:'Seduto sul bordo della sedia, mani ai lati. Porta entrambe le ginocchia verso il petto lentamente, abbassa senza toccare terra.',floor:false},
+  {id:'c19',n:'Torsione seduto con le braccia',cat:'core',t:'🎯 Core',zona:'🎯 Obliqui · 🦴 Colonna',desc:'Seduto dritto, braccia tese davanti a te. Ruota il busto a destra poi a sinistra. Il bacino rimane fermo sulla sedia.',floor:false},
+  {id:'c20',n:'Pressione palmi contro ginocchio',cat:'core',t:'🎯 Core',zona:'🎯 Addominali · 🎯 Core isometrico',desc:'In piedi o seduto: premi il palmo contro il ginocchio sollevato, il ginocchio spinge contro la mano. Resisti 5 sec. Alterna.',floor:false},
+
   // ── STRETCHING extra (s11-s15) ─────────────────────────────────────
   {id:'s11',n:'Piccione seduto su sedia',cat:'stretching',t:'🤸 Stretching',zona:'🍑 Piriforme · 🦵 Anca',desc:'Seduto, metti la caviglia dx sul ginocchio sx. Piegati in avanti lentamente. 30 sec, poi alterna.',floor:false},
   {id:'s12',n:'Figura 4 a terra',cat:'stretching',t:'🤸 Stretching',zona:'🍑 Glutei · 🍑 Piriforme',desc:'Sdraiato, piega la gamba dx e metti la sx sopra. Porta le gambe verso il petto. Strech profondo.',floor:true},
@@ -1827,7 +1837,7 @@ const WIZ_STEPS = [
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:32px 24px;text-align:center;color:#fff">
       <img src="logo-turtle.png" style="width:min(55vw,180px);margin-bottom:16px;filter:drop-shadow(0 3px 12px rgba(0,0,0,.3));animation:bnc 1s ease infinite alternate">
       <div style="font-family:var(--ft);font-size:28px;font-weight:bold;margin-bottom:8px">Tutto pronto, <span id="wiz-final-name">Tartaruga</span>! 🎉</div>
-      <div style="opacity:.85;font-size:15px;margin-bottom:20px;line-height:1.6">Il tuo piano di 14 giorni è pronto.<br>Lento ma costante vince la gara! 🐢</div>
+      <div style="opacity:.85;font-size:15px;margin-bottom:20px;line-height:1.6">Il tuo piano di 30 giorni è pronto.<br>Lento ma costante vince la gara! 🐢</div>
       <div id="wiz-summary" style="background:rgba(255,255,255,.15);border-radius:16px;padding:16px 20px;width:100%;max-width:300px;text-align:left;font-size:14px;line-height:1.8;margin-bottom:20px"></div>
       <button onclick="saveProfile()" style="width:100%;max-width:300px;padding:16px;border-radius:100px;border:none;background:#fff;color:#1B5E20;font-family:var(--ft);font-size:18px;font-weight:bold;cursor:pointer">
         🐢 Iniziamo!
@@ -3675,10 +3685,39 @@ function calcSkippedSessions(){
 }
 function updateStreak(){
   const today=new Date().toISOString().slice(0,10);
-  if(!S.last)S.str=S.days.includes(today)?1:0;
-  else{const diff=Math.round((new Date(today)-new Date(S.last))/86400000);
-    if(diff===0){}else if(diff===1&&S.days.includes(today))S.str++;else S.str=S.days.includes(today)?1:0;}
-  S.last=today;
+  // Only count real sessions — S.days entries with '_volrest' suffix are voluntary rests
+  const todayDone=S.days.some(d=>d===today);
+
+  if(todayDone){
+    // Session completed today — update streak properly
+    if(!S.last){
+      S.str=1;
+    } else {
+      const diff=Math.round((new Date(today)-new Date(S.last))/86400000);
+      if(diff===0){
+        // Same day as last update — streak already counted, leave it
+      } else if(diff===1){
+        S.str=(S.str||0)+1; // consecutive day — increment
+      } else {
+        S.str=1; // gap > 1 day — restart from 1
+      }
+    }
+    S.last=today; // Only update S.last when a session is actually done
+  } else {
+    // No session today — only check if streak should be broken, but DON'T update S.last
+    if(S.last){
+      const diff=Math.round((new Date(today)-new Date(S.last))/86400000);
+      if(diff>1){
+        // Check voluntary rest (preserves streak for 1 day)
+        const yest=new Date(today);yest.setDate(yest.getDate()-1);
+        const yStr=yest.toISOString().slice(0,10);
+        const volRest=S.days.includes(yStr+'_volrest');
+        if(!volRest)S.str=0;
+      }
+      // diff===1: user hasn't trained yet today but could still — don't reset
+    }
+    // S.last NOT updated — preserve it for when session is done
+  }
 }
 function checkBadges(){
   const nb=[];
@@ -4185,7 +4224,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 12/04/2026 05:45';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 12/04/2026 07:48';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4780,7 +4819,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604120545'; // auto-set on each release
+const APP_BUILD='202604120748'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
