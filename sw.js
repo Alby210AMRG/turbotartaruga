@@ -1,5 +1,5 @@
 // TurboTartaruga Service Worker v202604110822
-const CACHE_NAME = 'turbotartaruga-202604120517';
+const CACHE_NAME = 'turbotartaruga-202604120525';
 const PRECACHE = ['./TurboTartaruga.html', './manifest.json'];
 // jsQR is precached so QR scanning works offline after first load
 const EXTERNAL_CACHE = ['https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js'];
@@ -82,7 +82,7 @@ self.addEventListener('message', event => {
       clearTimeout(tid);
       _notifTimers.delete(key);
     }
-    self.registration.getNotifications({tag:'turbotartaruga-202604120517'})
+    self.registration.getNotifications({tag:'turbotartaruga-202604120525'})
       .then(notifs => notifs.forEach(n => n.close()));
     return;
   }
@@ -99,7 +99,7 @@ self.addEventListener('message', event => {
         body,
         icon: './icon-192.png',
         badge: './icon-192.png',
-        tag: 'turbotartaruga-202604120517',
+        tag: 'turbotartaruga-202604120525',
         renotify: true,
         data: { url: './TurboTartaruga.html' }
       });

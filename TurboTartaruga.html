@@ -4150,7 +4150,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 12/04/2026 05:17';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 12/04/2026 05:25';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4573,8 +4573,9 @@ function importResultCode(){
     toast('✅ Sessione importata! +'+r.xp+' XP guadagnati 🎉');
     beep(660,.15);
   }catch(e){toast('⚠️ Codice non valido o corrotto!')}
-}</script>
-<!-- Exercise image modal -->
+}
+
+</script>
 <div id="ex-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;align-items:center;justify-content:center;padding:20px" onclick="closeExModal()">
   <div style="background:var(--card);border-radius:20px;max-width:360px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)" onclick="event.stopPropagation()">
     <div style="position:relative">
@@ -4593,7 +4594,7 @@ function importResultCode(){
     </div>
   </div>
 </div>
-
+<script>
 function openExModal(exId){
   const ex=DB.find(e=>e.id===exId);if(!ex)return;
   const modal=document.getElementById('ex-modal');
@@ -4720,7 +4721,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604120517'; // auto-set on each release
+const APP_BUILD='202604120525'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
@@ -4816,6 +4817,6 @@ if('serviceWorker' in navigator){
       reg.update().catch(()=>{});
     }).catch(()=>{});
 }
-
+</script>
 </body>
 </html>

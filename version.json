@@ -1,6 +1,6 @@
 {
   "version": "0.9",
-  "build": "202604120517",
-  "date": "12/04/2026 05:17",
-  "notes": "8 fix: party, riserva, piano 30gg, noFloor, sedia, modale esercizi"
+  "build": "202604120525",
+  "date": "12/04/2026 05:25",
+  "notes": "Fix critico struttura script \u2014 app funzionante con tutti gli 8 fix"
 }
