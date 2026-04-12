@@ -471,20 +471,22 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <button class="btn btn-o" style="flex:1" id="btn-pause" onclick="togglePause()">⏸️ Pausa</button>
     <button class="btn btn-s" style="flex:1" onclick="skipExercise()">⏭️ Salta</button>
   </div>
-  <div id="riserva-banner" class="riserva" style="display:none">
-    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
-      <span style="font-size:40px;animation:bnc .8s ease infinite alternate">💥</span>
-      <div style="flex:1">
-        <div style="font-family:var(--ft);font-size:20px;font-weight:bold;letter-spacing:.5px">RISERVA TURBO!</div>
-        <div style="font-size:14px;opacity:.9;margin-top:2px">Quasi finito — vuoi aggiungere 2 esercizi bonus e guadagnare XP extra?</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px">
-      <button onclick="activateRiserva()" style="flex:2;padding:13px;background:#fff;color:#E65100;border:none;border-radius:100px;font-weight:bold;font-size:16px;cursor:pointer;font-family:var(--ft)">💥 Sì, attiva!</button>
-      <button onclick="dismissRiserva()" style="flex:1;padding:13px;background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:100px;font-size:14px;cursor:pointer;font-weight:bold">No</button>
+  <div class="card" style="margin-top:0"><div class="card-title">📋 Prossimi esercizi</div><div id="tr-next-list"></div></div>
+</div>
+
+<!-- RISERVA TURBO — body-level fixed overlay, visible over any screen -->
+<div id="riserva-banner" class="riserva" style="display:none">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+    <span style="font-size:40px;animation:bnc .8s ease infinite alternate">💥</span>
+    <div style="flex:1">
+      <div style="font-family:var(--ft);font-size:20px;font-weight:bold;letter-spacing:.5px">RISERVA TURBO!</div>
+      <div style="font-size:14px;opacity:.9;margin-top:2px">Quasi finito — vuoi aggiungere 2 esercizi bonus e guadagnare XP extra?</div>
     </div>
   </div>
-  <div class="card" style="margin-top:0"><div class="card-title">📋 Prossimi esercizi</div><div id="tr-next-list"></div></div>
+  <div style="display:flex;gap:10px">
+    <button onclick="activateRiserva()" style="flex:2;padding:13px;background:#fff;color:#E65100;border:none;border-radius:100px;font-weight:bold;font-size:16px;cursor:pointer;font-family:var(--ft)">💥 Sì, attiva!</button>
+    <button onclick="dismissRiserva()" style="flex:1;padding:13px;background:rgba(255,255,255,.2);color:#fff;border:none;border-radius:100px;font-size:14px;cursor:pointer;font-weight:bold">No</button>
+  </div>
 </div>
 
 <!-- TRANSITION -->
@@ -758,13 +760,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
       <!-- Card: Sei l'OSPITE → genera il tuo codice -->
       <div class="p-card">
-        <div class="p-tag">🎫 Sei l'ospite?</div>
+        <div class="p-tag">🎫 Unisciti a un amico</div>
         <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:12px">
-          Premi il bottone — l'host inquadra il <strong>QR Code</strong> con il suo telefono e sei aggiunto! 📱
+          Premi il bottone — il tuo amico inquadra il <strong>QR Code</strong> con il suo telefono e sei aggiunto! 📱
         </p>
         <button onclick="generateGuestCode()" class="btn btn-full"
           style="background:var(--lime);color:#1B5E20;font-size:14px;padding:13px">
-          🎫 Genera il mio QR Code ospite
+          🎫 Genera il mio QR Code
         </button>
         <div id="guest-code-out" style="display:none;margin-top:14px;text-align:center">
           <!-- QR Code display -->
@@ -792,14 +794,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
       <!-- Card: Sei l'HOST → aggiungi ospiti -->
       <div class="p-card">
-        <div class="p-tag">📱 Sei l'host? Aggiungi ospiti</div>
+        <div class="p-tag">🐢 Avvia con amici</div>
         <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:10px">
-          Inquadra il QR dell'ospite con la fotocamera del tuo telefono.
+          Inquadra il QR dei tuoi amici con la fotocamera — vengono aggiunti automaticamente!
         </p>
         <!-- QR Scanner button -->
         <button onclick="startQRScan()" id="btn-qr-scan"
           style="width:100%;padding:13px;background:var(--lime);color:#1B5E20;border:none;border-radius:100px;font-weight:bold;font-size:14px;cursor:pointer;margin-bottom:10px">
-          📷 Scansiona QR ospite
+          📷 Scansiona QR amico
         </button>
         <!-- QR video preview -->
         <div id="qr-scan-wrap" style="display:none;margin-bottom:10px">
@@ -825,9 +827,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
       <!-- Card: Genera risultato per gli ospiti (visibile dopo sessione) -->
       <div class="p-card" id="result-card" style="display:none">
-        <div class="p-tag">🎉 Sessione completata! Manda i risultati</div>
+        <div class="p-tag">🎉 Sessione completata! Manda i risultati ai tuoi amici</div>
         <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:10px">
-          Un solo codice per tutti gli ospiti — fallo inquadrare o condividi via WhatsApp.
+          Un solo codice per tutti i tuoi amici — fallo inquadrare oppure condividi via WhatsApp.
         </p>
         <div id="result-codes-list">
           <!-- QR del risultato -->
@@ -847,15 +849,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
               📋 Copia
             </button>
           </div>
+          <button onclick="resetPartySession()"
+            style="width:100%;margin-top:10px;padding:10px;background:transparent;color:rgba(255,255,255,.5);border:1px dashed rgba(255,255,255,.25);border-radius:100px;font-size:12px;cursor:pointer">
+            🔄 Nuova sessione (resetta amici)
+          </button>
           <div id="result-code-single" style="display:none"></div>
         </div>
       </div>
 
       <!-- Card: Sei l'ospite → importa risultato -->
       <div class="p-card">
-        <div class="p-tag">📥 Hai ricevuto un risultato?</div>
+        <div class="p-tag">📥 Hai ricevuto il codice risultato?</div>
         <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:12px">
-          Incolla il <strong>Codice Risultato</strong> che ti ha mandato l'host per aggiornare i tuoi progressi.
+          Incolla il codice che ti ha mandato il tuo amico per aggiornare i tuoi progressi.
         </p>
         <textarea id="result-code-input" placeholder="Incolla qui il codice TTR-... del risultato"
           style="width:100%;padding:10px;border-radius:11px;border:none;background:rgba(255,255,255,.12);color:#fff;font-family:var(--fm);font-size:10px;height:68px;resize:none;outline:none"></textarea>
@@ -1426,6 +1432,26 @@ function load(){
 function bkData(){return{v:'0.4',dt:new Date().toISOString(),profile:P,stats:S,settings:SET}}
 function restore(d){if(d.profile)P=d.profile;if(d.stats)S=d.stats;if(d.settings)SET=d.settings;if(!S.history)S.history=[];if(!S.plan)S.plan=[];save();applyTheme();applyView();toast('✅ Dati ripristinati!');go('home')}
 </script>
+<!-- Exercise image modal -->
+<div id="ex-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;align-items:center;justify-content:center;padding:20px" onclick="closeExModal()">
+  <div style="background:var(--card);border-radius:20px;max-width:360px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)" onclick="event.stopPropagation()">
+    <div style="position:relative">
+      <img id="ex-modal-img" src="" alt="" style="width:100%;max-height:260px;object-fit:contain;background:var(--bg2);display:block">
+      <div id="ex-modal-placeholder" style="display:none;height:180px;background:var(--bg2);align-items:center;justify-content:center;flex-direction:column;gap:8px">
+        <span style="font-size:48px">📷</span>
+        <span style="font-size:12px;color:var(--tlt)">Immagine non disponibile</span>
+      </div>
+      <button onclick="closeExModal()" style="position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div style="padding:16px 18px 20px">
+      <div style="font-family:var(--ft);font-size:18px;font-weight:bold;margin-bottom:6px" id="ex-modal-name"></div>
+      <div style="font-size:12px;color:var(--tlt);margin-bottom:8px" id="ex-modal-cat"></div>
+      <div style="font-size:14px;color:var(--tmid);line-height:1.6" id="ex-modal-desc"></div>
+      <div style="margin-top:10px;font-size:12px;color:var(--g1);font-weight:bold" id="ex-modal-zona"></div>
+    </div>
+  </div>
+</div>
+
 <script>
 // ═══ NAVIGATION & THEME ═══
 // Screen navigation with back-stack tracking
@@ -2035,7 +2061,7 @@ function generatePlan(){
   const cats=(P.categories||['gambe','braccia','core','stretching','orientale']).filter(c=>c!=='riscaldamento');
   const restDays=P.restDays||[0,6];
   const plan=[];let focusIdx=0,consec=0;
-  for(let i=0;i<14;i++){
+  for(let i=0;i<30;i++){
     const d=new Date();d.setDate(d.getDate()+i);
     const dow=d.getDay();const ds=d.toISOString().slice(0,10);
     const isRest=restDays.includes(dow)||(consec>=(P.level==='principiante'?2:P.level==='esperto'?5:3));
@@ -2065,7 +2091,7 @@ function refreshPlan(){
   const restDays=P.restDays||[0,6];
   const maxConsec=P.level==='principiante'?2:P.level==='esperto'?5:3;
   const plan=[];let focusIdx=0,consec=0;
-  for(let i=0;i<14;i++){
+  for(let i=0;i<30;i++){
     const d=new Date();d.setDate(d.getDate()+i);
     const dow=d.getDay();const ds=d.toISOString().slice(0,10);
     const isRest=restDays.includes(dow)||(consec>=maxConsec);
@@ -2255,6 +2281,12 @@ function selDur(el){
   el.style.borderColor='var(--g1)';el.style.background='var(--g4)';T.dur=parseInt(el.dataset.dur)||12;
 }
 function startTraining(){
+  // Chair warning for seduto sessions
+  const _focus=T.feeling!=='piano'?T.feeling:getTodayPlan().focus;
+  if((_focus==='seduto'||_focus==='misto_plus')&&!sessionStorage.getItem('chair_warned')){
+    sessionStorage.setItem('chair_warned','1');
+    toast('🪑 Per questa sessione ti servirà una sedia stabile! Posizionala prima di iniziare.',5000);
+  }
   // Pre-sonno out-of-hours gentle warning
   if(T.feeling==='presonno'||(T.feeling==='piano'&&getTodayPlan().focus==='presonno')){
     const h=new Date().getHours();
@@ -3177,9 +3209,16 @@ function genSession(focus){
     pool=[...sedPool.slice(0,Math.ceil(sedPool.length/2)),...normPool].sort(()=>Math.random()-.5);
   }
   else pool=shuffleArr(DB.filter(e=>e.cat===focus&&e.cat!=='party'));
-  if(P.noFloor)pool=pool.filter(e=>!e.floor);
+  if(P.noFloor){
+    const nfPool=pool.filter(e=>!e.floor);
+    if(nfPool.length<3&&['core','gambe','braccia'].includes(focus)){
+      toast('💡 Pochi esercizi non-terra in questa categoria — uso alternative. 🐢',4000);
+      const alt=shuffleArr(DB.filter(e=>['seduto','stretching'].includes(e.cat)&&!e.floor));
+      pool=[...nfPool,...alt.slice(0,6)];
+    } else pool=nfPool;
+  }
   pool=pool.filter(e=>!avoided.has(e.id));
-  if(!pool.length)pool=shuffleArr(DB.filter(e=>e.cat==='gambe'));
+  if(!pool.length)pool=shuffleArr(DB.filter(e=>e.cat==='stretching'&&!e.floor));
   const mainCnt=cnt-warmCnt;
   const mainExs=[];
   // Insert favorites first (up to P.favCount, default 3)
@@ -3358,7 +3397,7 @@ function showRestPreview(targetIdx, onDone){
   // Show Riserva Turbo during rest screen if 2 real exercises remain (= before terzultimo)
   const remAfterRest=T.exs.slice(targetIdx).filter(e=>!e._transition&&!e._bonus).length;
   const rb2=document.getElementById('riserva-banner');
-  if(rb2)rb2.style.display=(remAfterRest===2&&!riservaDone&&(T.dur||12)!==5)?'block':'none';
+  if(rb2)rb2.style.display=(remAfterRest===3&&!riservaDone&&(T.dur||12)!==5)?'block':'none';
   // Set header text based on context
   const rstHdr=document.getElementById('rst-header');
   const rstEmoji=document.getElementById('rst-emoji');
@@ -4111,7 +4150,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 11/04/2026 18:13';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 12/04/2026 05:17';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4174,7 +4213,7 @@ function buildExList(){
         const fname=ex.id+'.png';
         const imgSrc='images/exercises/'+fname;
         return`<div class="ex-card-mini">
-          <div class="ex-card-mini-img" title="File: ${fname}">
+          <div class="ex-card-mini-img" onclick="openExModal('${ex.id}')" style="cursor:pointer" title="Tocca per ingrandire">
             <img src="${imgSrc}" alt="${ex.n}"
               onload="this.style.display='block';this.parentElement.style.background='transparent'"
               onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\\'font-size:9px;color:var(--tlt);text-align:center;padding:2px\\' title=\\'Atteso: ${fname}\\'>${ex.id}</span>'">
@@ -4329,7 +4368,7 @@ function generateGuestCode(){
   document.getElementById('guest-code-txt').textContent=code;
   document.getElementById('guest-code-out').style.display='block';
   makeQR('guest-qr-canvas', code);
-  toast('🎫 QR Code generato! Fallo inquadrare all\'host 📷');
+  toast('🎫 QR Code pronto! Fallo inquadrare al tuo amico 📷');
 }
 
 function copyGuestCode(){
@@ -4423,7 +4462,7 @@ function addGuestFromRaw(raw){
     if(togetherGuests.find(x=>x.name===g.name)){toast('⚠️ '+g.name+' è già nella sessione!');return}
     togetherGuests.push(g);
     updateTogetherUI();
-    toast('✅ '+g.name+' aggiunto/a! 🎉');
+    toast('✅ '+g.name+' si è unito/a! Bentartarughino! 🐢🎉');
     beep(660,.15);
   }catch{toast('⚠️ Codice non valido o corrotto!')}
 }
@@ -4446,7 +4485,16 @@ function updateTogetherUI(){
       '<button onclick="removeGuest('+i+')" style="background:rgba(255,0,0,.2);border:none;border-radius:50%;width:22px;height:22px;color:#fff;cursor:pointer;font-size:11px">✕</button>'+
     '</div>').join('');
 }
-function removeGuest(i){togetherGuests.splice(i,1);updateTogetherUI();toast('Ospite rimosso')}
+function removeGuest(i){togetherGuests.splice(i,1);updateTogetherUI();toast('Amico rimosso')}
+function resetPartySession(){
+  togetherGuests=[];
+  _lastResultCode='';
+  updateTogetherUI();
+  const rc=document.getElementById('result-card');if(rc)rc.style.display='none';
+  const qrWrap=document.getElementById('result-qr-wrap');if(qrWrap)qrWrap.innerHTML='';
+  document.getElementById('result-qr-canvas').innerHTML='';
+  toast('🔄 Sessione resettata — pronti per una nuova partita! 🐢');
+}
 
 // ── RESULT: single code for all guests ───────────────────────────
 function buildResultCodes(histEntry){
@@ -4525,6 +4573,51 @@ function importResultCode(){
     toast('✅ Sessione importata! +'+r.xp+' XP guadagnati 🎉');
     beep(660,.15);
   }catch(e){toast('⚠️ Codice non valido o corrotto!')}
+}</script>
+<!-- Exercise image modal -->
+<div id="ex-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;align-items:center;justify-content:center;padding:20px" onclick="closeExModal()">
+  <div style="background:var(--card);border-radius:20px;max-width:360px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)" onclick="event.stopPropagation()">
+    <div style="position:relative">
+      <img id="ex-modal-img" src="" alt="" style="width:100%;max-height:260px;object-fit:contain;background:var(--bg2);display:block">
+      <div id="ex-modal-placeholder" style="display:none;height:180px;background:var(--bg2);align-items:center;justify-content:center;flex-direction:column;gap:8px">
+        <span style="font-size:48px">📷</span>
+        <span style="font-size:12px;color:var(--tlt)">Immagine non disponibile</span>
+      </div>
+      <button onclick="closeExModal()" style="position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div style="padding:16px 18px 20px">
+      <div style="font-family:var(--ft);font-size:18px;font-weight:bold;margin-bottom:6px" id="ex-modal-name"></div>
+      <div style="font-size:12px;color:var(--tlt);margin-bottom:8px" id="ex-modal-cat"></div>
+      <div style="font-size:14px;color:var(--tmid);line-height:1.6" id="ex-modal-desc"></div>
+      <div style="margin-top:10px;font-size:12px;color:var(--g1);font-weight:bold" id="ex-modal-zona"></div>
+    </div>
+  </div>
+</div>
+
+function openExModal(exId){
+  const ex=DB.find(e=>e.id===exId);if(!ex)return;
+  const modal=document.getElementById('ex-modal');
+  const img=document.getElementById('ex-modal-img');
+  const ph=document.getElementById('ex-modal-placeholder');
+  const nm=document.getElementById('ex-modal-name');
+  const cat=document.getElementById('ex-modal-cat');
+  const desc=document.getElementById('ex-modal-desc');
+  const zona=document.getElementById('ex-modal-zona');
+  if(nm)nm.textContent=ex.n;
+  if(cat)cat.textContent=(ex.t||ex.cat);
+  if(desc)desc.textContent=ex.desc||'';
+  if(zona)zona.textContent=ex.zona||'';
+  if(img&&ph){
+    img.style.display='none';ph.style.display='flex';
+    img.onload=()=>{img.style.display='block';ph.style.display='none';};
+    img.onerror=()=>{img.style.display='none';ph.style.display='flex';};
+    img.src='images/exercises/'+exId+'.png';img.alt=ex.n;
+  }
+  if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}
+}
+function closeExModal(){
+  const modal=document.getElementById('ex-modal');
+  if(modal){modal.style.display='none';document.body.style.overflow='';}
 }
 
 // ═══ INIT ═══
@@ -4627,7 +4720,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604111813'; // auto-set on each release
+const APP_BUILD='202604120517'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
@@ -4724,6 +4817,5 @@ if('serviceWorker' in navigator){
     }).catch(()=>{});
 }
 
-</script>
 </body>
 </html>
