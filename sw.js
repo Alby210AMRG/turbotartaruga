@@ -1,5 +1,5 @@
 // f"TurboTartaruga Service Worker v{build}
-"const CACHE_NAME = 'turbotartaruga-202604151300';
+"const CACHE_NAME = 'turbotartaruga-202604151325';
 const PRECACHE = ['./TurboTartaruga.html', './manifest.json'];
 const EXTERNAL_CACHE = ['https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js'];
 
@@ -93,7 +93,7 @@ async function checkAndFireNotifs() {
         body: n.body,
         icon: './icon-192.png',
         badge: './icon-192.png',
-        tag: n.tag || 'turbotartaruga-202604151300',
+        tag: n.tag || 'turbotartaruga-202604151325',
         renotify: true,
         data: { url: './TurboTartaruga.html' }
       });
@@ -106,15 +106,6 @@ async function checkAndFireNotifs() {
   }
 }
 
-// Check notifications on every fetch (SW is alive during page load)
-self.addEventListener('fetch', event => {
-  // Piggyback a notif check on page loads (non-blocking)
-  if (event.request.url.includes('TurboTartaruga.html') || 
-      new URL(event.request.url).pathname === '/') {
-    event.waitUntil(checkAndFireNotifs());
-  }
-}, { passive: true }); // second listener — does not interfere with first
-
 // Message handler
 self.addEventListener('message', async event => {
   if (!event.data) return;
@@ -125,10 +116,10 @@ self.addEventListener('message', async event => {
   if (event.data.type === 'CANCEL_TODAY_NOTIF') {
     // Remove today's daily notification from pending
     const pending = await loadPendingNotifs();
-    const filtered = pending.filter(n => n.tag !== 'turbotartaruga-202604151300');
+    const filtered = pending.filter(n => n.tag !== 'turbotartaruga-202604151325');
     await savePendingNotifs(filtered);
     // Close any shown notification with that tag
-    self.registration.getNotifications({ tag: 'turbotartaruga-202604151300' })
+    self.registration.getNotifications({ tag: 'turbotartaruga-202604151325' })
       .then(notifs => notifs.forEach(n => n.close()));
     return;
   }
@@ -139,7 +130,7 @@ self.addEventListener('message', async event => {
     
     const pending = await loadPendingNotifs();
     // Replace any existing notif with same tag
-    const notifTag = tag || 'turbotartaruga-202604151300';
+    const notifTag = tag || 'turbotartaruga-202604151325';
     const filtered = pending.filter(n => n.tag !== notifTag);
     filtered.push({ at, title, body, tag: notifTag });
     await savePendingNotifs(filtered);

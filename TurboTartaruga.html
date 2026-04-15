@@ -3522,7 +3522,8 @@ function showRestPreview(targetIdx, onDone){
   } else if(isLast){
     if(rstHdr)rstHdr.textContent='Ultimo sforzo fatto! Complimenti! 🏆';
     if(rstEmoji)rstEmoji.textContent='🎉';
-    // No "Preparati" and no countdown on last rest — just go directly
+    // Stop main exercise timer to prevent double-trigger
+    clearInterval(T.iv);T.iv=null;
     go_scr('rest');beep(880,.2);
     if(SET.voice)setTimeout(()=>speak('Complimenti! Hai finito!'),300);
     clearInterval(restIv);
@@ -3711,6 +3712,18 @@ function completeSession(){
   });
   const planEntry=S.plan.find(p=>p.date===today);if(planEntry)planEntry.done=true;
   save();
+  // Auto-generate result code for party guests if any
+  if(togetherGuests&&togetherGuests.length>0){
+    // Build the result entry now (before going to complete screen)
+    setTimeout(()=>{
+      const hist=S.history[0]; // most recent
+      if(hist){
+        buildResultCodes(hist);
+        const rc=document.getElementById('result-card');
+        if(rc)rc.style.display='block';
+      }
+    },500);
+  }
   // Update complete screen
   document.getElementById('cmp-ex').textContent=exCnt;
   document.getElementById('cmp-time').textContent=min+'m';
@@ -4328,7 +4341,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 13:00';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 13:25';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4411,6 +4424,15 @@ function buildExList(){
       }).join('')}
     </div>`;
   }).join('');
+  // Set text content safely (avoids apostrophe/quote issues in innerHTML)
+  wrap.querySelectorAll('[data-name]').forEach(el=>{
+    const ex=DB.find(e=>e.id===el.dataset.name);
+    if(ex)el.textContent=ex.n;
+  });
+  wrap.querySelectorAll('[data-desc]').forEach(el=>{
+    const ex=DB.find(e=>e.id===el.dataset.desc);
+    if(ex)el.textContent=ex.desc||ex.n;
+  });
 }
 function toggleFavList(id,btn){
   if(!P.favorites)P.favorites=[];
@@ -5005,7 +5027,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604151300'; // auto-set on each release
+const APP_BUILD='202604151325'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
