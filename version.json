@@ -1,5 +1,6 @@
 {
   "version": "0.9",
-  "build": "202604151910",
-  "date": "15/04/2026 19:10"
+  "build": "202604151931",
+  "date": "15/04/2026 19:31",
+  "notes": "Fix chart routine dots, notif test semplificato"
 }

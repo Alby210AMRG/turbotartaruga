@@ -3995,16 +3995,39 @@ function setChartView(days){
   if(btn30){btn30.style.background=days===30?'var(--g1)':'var(--card)';btn30.style.color=days===30?'#fff':'var(--text)';btn30.style.borderColor=days===30?'var(--g1)':'var(--bdr)';}
   const now=new Date();const DN=['Do','Lu','Ma','Me','Gi','Ve','Sa'];
   const bars=[];
-  for(let i=days-1;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);
-    const done=S.history.some(h=>h.date===ds&&h.type!=='riposo_vol');
+  for(let i=days-1;i>=0;i--){
+    const d=new Date(now);d.setDate(d.getDate()-i);
+    const ds=localDate(d);
+    const done=S.history.some(h=>h.date===ds&&h.type!=='riposo_vol'&&(h.dur||0)>0);
+    const morningDone=(S.morningDone===ds)||(S.history.some(h=>h.date===ds&&h.type==='mattino'));
+    const sleepDone=(S.sleepDone===ds)||(S.history.some(h=>h.date===ds&&h.type==='presonno'));
     const lbl=days<=7?DN[d.getDay()]:(i%7===0?d.getDate().toString():'');
-    bars.push({lbl,done});}
+    bars.push({lbl,done,morning:morningDone,sleep:sleepDone});
+  }
   const svg=document.getElementById('chart7');
-  if(svg){const W=300,H=95,padB=18,bW=Math.max(2,Math.floor((W-20)/bars.length)-2);
-    let h='';bars.forEach((b,i)=>{const x=10+(i*(bW+2));const bh=b.done?H-padB-4:0;const y=H-padB-bh;
+  if(svg){
+    const W=300,H=95,padB=18,bW=Math.max(2,Math.floor((W-20)/bars.length)-2);
+    let h='';
+    bars.forEach((b,i)=>{
+      const x=10+(i*(bW+2));
+      const bh=b.done?H-padB-4:0;const y=H-padB-bh;
       h+=`<rect x="${x}" y="${y}" width="${bW}" height="${bh}" rx="2" fill="${b.done?'#43A047':'#C8E6C9'}"/>`;
-      if(b.lbl)h+=`<text x="${x+bW/2}" y="${H}" text-anchor="middle" font-size="${days<=7?9:8}" fill="var(--tlt)" font-family="sans-serif">${b.lbl}</text>`;});
-    svg.innerHTML=h;}
+      // Routine dots above bar (only show on 7-day view to avoid clutter)
+      if(days<=7){
+        const dotY=b.done?y-5:H-padB-6;
+        if(b.morning)h+=`<circle cx="${x+bW/2-3}" cy="${dotY}" r="2.5" fill="#F9A825"/>`;
+        if(b.sleep)h+=`<circle cx="${x+bW/2+3}" cy="${dotY}" r="2.5" fill="#5C6BC0"/>`;
+      }
+      if(b.lbl)h+=`<text x="${x+bW/2}" y="${H}" text-anchor="middle" font-size="${days<=7?9:8}" fill="var(--tlt)" font-family="sans-serif">${b.lbl}</text>`;
+    });
+    // Legend (only 7-day)
+    if(days<=7){
+      h+=`<circle cx="16" cy="8" r="3.5" fill="#43A047"/><text x="22" y="12" font-size="8" fill="var(--tlt)" font-family="sans-serif">Sessione</text>`;
+      h+=`<circle cx="76" cy="8" r="2.5" fill="#F9A825"/><text x="81" y="12" font-size="8" fill="var(--tlt)" font-family="sans-serif">☀️Mattino</text>`;
+      h+=`<circle cx="138" cy="8" r="2.5" fill="#5C6BC0"/><text x="143" y="12" font-size="8" fill="var(--tlt)" font-family="sans-serif">🌙Sera</text>`;
+    }
+    svg.innerHTML=h;
+  }
 }
 function buildProgress(){
   const bars=[];const now=new Date();const DN=['Do','Lu','Ma','Me','Gi','Ve','Sa'];
@@ -4016,27 +4039,7 @@ function buildProgress(){
     const sleepDone=(S.sleepDone===ds)||(S.history.some(h=>h.date===ds&&h.type==='presonno'));
     bars.push({lbl:DN[d.getDay()],done:mainDone,morning:morningDone,sleep:sleepDone});
   }
-  const svg=document.getElementById('chart7');
-  if(svg){
-    const W=300,H=95,padB=18,bW=Math.floor((W-20)/bars.length)-6;
-    let h='';
-    bars.forEach((b,i)=>{
-      const x=10+(i*(bW+6));
-      // Main session bar
-      const bh=b.done?H-padB-4:0;const y=H-padB-bh;
-      h+=`<rect x="${x}" y="${y}" width="${bW}" height="${bh}" rx="4" fill="${b.done?'#43A047':'#C8E6C9'}"/>`;
-      // Morning dot (☀️ small indicator)
-      if(b.morning)h+=`<circle cx="${x+bW/2-5}" cy="${H-padB-bh-(b.done?6:4)}" r="3" fill="#F9A825"/>`;
-      // Sleep dot (🌙)
-      if(b.sleep)h+=`<circle cx="${x+bW/2+5}" cy="${H-padB-bh-(b.done?6:4)}" r="3" fill="#5C6BC0"/>`;
-      h+=`<text x="${x+bW/2}" y="${H}" text-anchor="middle" font-size="9" fill="var(--tlt)" font-family="sans-serif">${b.lbl}</text>`;
-    });
-    // Legend
-    h+=`<circle cx="20" cy="8" r="4" fill="#43A047"/><text x="27" y="12" font-size="8" fill="var(--tlt)" font-family="sans-serif">Sessione</text>`;
-    h+=`<circle cx="80" cy="8" r="3" fill="#F9A825"/><text x="86" y="12" font-size="8" fill="var(--tlt)" font-family="sans-serif">☀️ Mattino</text>`;
-    h+=`<circle cx="148" cy="8" r="3" fill="#5C6BC0"/><text x="154" y="12" font-size="8" fill="var(--tlt)" font-family="sans-serif">🌙 Sera</text>`;
-    svg.innerHTML=h;
-  }
+  // Chart rendered by setChartView() below
   const goal=P.goal||90;const pct=Math.min(100,Math.round(S.tot/goal*100));
   document.getElementById('prg-goal-lbl').textContent=`${S.tot} / ${goal}`;
   document.getElementById('prg-goal-pct').textContent=pct+'%';
@@ -4403,7 +4406,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 19:10';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 19:31';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -5159,7 +5162,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604151910'; // auto-set on each release
+const APP_BUILD='202604151931'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
