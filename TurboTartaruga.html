@@ -307,7 +307,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <!-- HOME -->
 <div id="screen-home" class="screen">
   <div class="home-hero" style="position:relative">
-    <button onclick="go('settings')" style="position:absolute;top:10px;right:12px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.95);border:2px solid #fff;cursor:pointer;font-size:19px;display:flex;align-items:center;justify-content:center;color:#1B5E20;z-index:10;box-shadow:0 2px 8px rgba(0,0,0,.25)" title="Impostazioni">⚙️</button>
+    <div style="position:absolute;top:10px;right:12px;display:flex;flex-direction:column;align-items:center;gap:3px;z-index:10">
+      <button onclick="go('settings')" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.95);border:2px solid #fff;cursor:pointer;font-size:19px;display:flex;align-items:center;justify-content:center;color:#1B5E20;box-shadow:0 2px 8px rgba(0,0,0,.25)" title="Impostazioni">⚙️</button>
+      <button id="backup-alert-btn" onclick="showBackupModal()" style="display:none;width:26px;height:26px;border-radius:50%;background:#E53935;border:2px solid #fff;cursor:pointer;font-size:13px;display:none;align-items:center;justify-content:center;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);animation:pulse 1.5s ease infinite" title="Backup consigliato!">⚠️</button>
+    </div>
     <img src="logo-turtle.png" alt="" style="width:min(65vw,240px);max-height:130px;object-fit:contain;object-position:center bottom;margin-bottom:4px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.25));display:block;margin-left:auto;margin-right:auto">
     <h2 id="home-greeting">Ciao!</h2><p id="home-phrase" style="font-size:15px;font-weight:600;opacity:1;line-height:1.5;margin-top:4px;text-shadow:0 1px 3px rgba(0,0,0,.15);font-style:italic">Pronto per il tuo allenamento?</p>
     <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:6px">
@@ -526,8 +529,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <!-- Prossimo esercizio -->
     <div style="flex:1;background:var(--card);border-radius:22px 22px 0 0;padding:18px 16px 30px;margin-top:6px" id="rst-next-block">
       <div style="font-size:11px;font-weight:bold;letter-spacing:1.5px;text-transform:uppercase;color:var(--tlt);margin-bottom:10px;text-align:center">📋 PROSSIMO ESERCIZIO</div>
-      <div style="display:flex;align-items:center;gap:9px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap">
         <div class="ex-cat-tag" id="rst-next-cat">🦵 Gambe</div>
+        <div id="rst-next-type" style="display:none;font-size:11px;font-weight:bold;padding:3px 9px;border-radius:100px;background:var(--bg2);color:var(--g1);border:1.5px solid var(--g1)"></div>
       </div>
       <div style="font-family:var(--ft);font-size:19px;font-weight:bold;color:var(--text);margin-bottom:8px" id="rst-next-name">Squat base</div>
       <!-- Immagine prossimo esercizio -->
@@ -635,15 +639,34 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <div id="screen-progress" class="screen">
   <div class="hdr"><button class="hdr-back" onclick="go('home')">←</button><h1>📊 Progressi</h1></div>
   <div class="scrollable">
+    <!-- A: HEATMAP 90 giorni -->
     <div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div class="card-title" style="margin-bottom:0">📈 Grafico attività</div>
-        <div style="display:flex;gap:6px">
-          <button id="chart-btn-7" onclick="setChartView(7)" style="padding:4px 10px;border-radius:100px;border:2px solid var(--g1);background:var(--g1);color:#fff;font-size:11px;font-weight:bold;cursor:pointer">7g</button>
-          <button id="chart-btn-30" onclick="setChartView(30)" style="padding:4px 10px;border-radius:100px;border:2px solid var(--bdr);background:var(--card);color:var(--text);font-size:11px;font-weight:bold;cursor:pointer">30g</button>
-        </div>
+        <div class="card-title" style="margin-bottom:0">🗓️ Attività — ultimi 90 giorni</div>
       </div>
-      <svg id="chart7" style="width:100%;height:110px;overflow:visible" viewBox="0 0 300 110"></svg>
+      <div id="heatmap-wrap" style="overflow-x:auto">
+        <svg id="heatmap-svg" style="min-width:260px;width:100%" viewBox="0 0 280 120"></svg>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;margin-top:8px;font-size:10px;color:var(--tlt)">
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:#C8E6C9;border-radius:2px;display:inline-block"></span>Nessuna</span>
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:#81C784;border-radius:2px;display:inline-block"></span>1 sessione</span>
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:#43A047;border-radius:2px;display:inline-block"></span>2+</span>
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:#F9A825;border-radius:2px;display:inline-block"></span>☀️</span>
+        <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:#5C6BC0;border-radius:2px;display:inline-block"></span>🌙</span>
+      </div>
+      <!-- keep chart7 for backward compat -->
+      <svg id="chart7" style="display:none" viewBox="0 0 300 110"></svg>
+      <button id="chart-btn-7" style="display:none"></button>
+      <button id="chart-btn-30" style="display:none"></button>
+    </div>
+    <!-- B: MAPPA CORPOREA TARTARUGA -->
+    <div class="card">
+      <div class="card-title" style="margin-bottom:6px">🐢 Mappa muscolare</div>
+      <div style="font-size:11px;color:var(--tlt);margin-bottom:10px">Zone allenate negli ultimi 14 giorni · 🟢 recente · 🟡 questa sett. · ⬜ non allenata</div>
+      <div style="display:flex;align-items:flex-start;gap:16px">
+        <svg id="bodymap-svg" viewBox="0 0 110 200" style="width:min(110px,30vw);flex-shrink:0"></svg>
+        <div id="bodymap-legend" style="font-size:12px;color:var(--tmid);flex:1;padding-top:6px"></div>
+      </div>
     </div>
     <div class="card" id="improvement-card">
       <div class="card-title">📊 Come sono migliorato?</div>
@@ -668,13 +691,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div class="card"><div class="card-title">🍩 Distribuzione allenamenti</div>
       <div id="prg-catdist" style="display:flex;flex-direction:column;gap:7px"></div>
     </div>
-    <!-- STAT 3: Trend XP -->
+    <!-- C: RADAR categorie -->
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-        <div class="card-title" style="margin-bottom:0">⭐ Andamento XP</div>
+      <div class="card-title" style="margin-bottom:8px">🕸️ Bilanciamento categorie</div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <svg id="radar-svg" viewBox="0 0 200 200" style="width:min(180px,45vw);flex-shrink:0"></svg>
+        <div id="radar-legend" style="font-size:11px;color:var(--tmid);line-height:1.9;flex:1"></div>
       </div>
-      <svg id="chart-xp" style="width:100%;height:90px;overflow:visible" viewBox="0 0 300 90"></svg>
-      <div id="prg-xp-trend" style="font-size:11px;color:var(--tlt);margin-top:4px;text-align:center"></div>
+      <div id="prg-xp-trend" style="font-size:11px;color:var(--tlt);margin-top:6px;text-align:center"></div>
+      <svg id="chart-xp" style="display:none" viewBox="0 0 300 90"></svg>
     </div>
     <!-- STAT 4: Riepilogo allenamento (last 15 days) -->
     <div class="card" id="prg-recap-card">
@@ -709,6 +734,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div style="font-size:var(--fs-xs);color:var(--tmid);margin-bottom:5px" id="prf-xp-lbl">0 XP</div>
       <div class="xp-bar"><div id="prf-xp-fill" class="xp-fill" style="width:0%"></div></div>
     </div>
+
     <div class="card"><div class="card-title">🥚 Tartarughina <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv1-prog">(0/9)</span></div><div class="badges-grid" id="badges-lv1"></div></div>
     <div class="card"><div class="card-title">🐢 Tartaruga <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv2-prog">(0/11)</span></div><div class="badges-grid" id="badges-lv2"></div></div>
     <div class="card"><div class="card-title">🚀 TurboTartaruga <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv3-prog">(0/9)</span></div><div class="badges-grid" id="badges-lv3"></div></div>
@@ -1006,6 +1032,21 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         </div>
         <div id="ex-list-wrap" style="display:none;width:100%"></div>
       </div>
+    <span class="sec-title">📷 Esercizi con foto</span>
+    <div class="sblk">
+      <div class="srow">
+        <div class="si">📷</div>
+        <div class="sinfo">
+          <div class="stitle">Solo esercizi con foto</div>
+          <div class="sval">Esegui solo gli esercizi che hanno una foto dimostrativa</div>
+          <div class="sval" id="photo-filter-status" style="margin-top:3px;font-size:11px;color:var(--tlt)">In attesa di verifica...</div>
+        </div>
+        <button class="toggle" id="st-photo-filter" onclick="togglePhotoFilter()"></button>
+      </div>
+      <div class="srow" style="justify-content:center;padding-top:0">
+        <button class="btn btn-s" style="padding:8px 20px;font-size:var(--fs-xs)" onclick="recheckPhotos()">🔄 Ricontrolla foto disponibili</button>
+      </div>
+    </div>
     </div>
 
     <span class="sec-title">🔄 Piano allenamento</span>
@@ -1051,6 +1092,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         </div>
       </div>
     </div>
+
 
     <span class="sec-title">☀️🌙 Routine quotidiane</span>
     <div class="sblk">
@@ -1177,7 +1219,7 @@ const DB=[
   {id:'w8',n:'Respiro attivante',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'🫁 Respiro · ❤️ Attivazione',desc:'Inspira 4 sec aprendo le braccia, espira 4 sec abbassandole. Ripeti lentamente.',floor:false},
   // GAMBE (12)
   {id:'g1',n:'Squat base',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Quadricipiti · 🍑 Glutei',desc:'Piedi larghi, punte fuori. Scendi come su una sedia mantenendo la schiena dritta, poi risali sui talloni.',floor:false},
-  {id:'g2',n:'Squat sumo',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Adduttori · 🍑 Glutei',desc:'Piedi molto larghi, punte verso fuori. Scendi con busto eretto, ginocchia verso l\'esterno.',floor:false},
+  {id:'g2',n:'Squat sumo',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Adduttori · 🍑 Glutei',desc:'Piedi molto larghi, punte verso fuori. Scendi con busto eretto, ginocchia verso l\'esterno.',switch:true,floor:false},
   {id:'g3',n:'Affondo frontale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Quadricipiti · 🍑 Glutei',desc:'Passo avanti, piega entrambe le ginocchia a 90°. Risali spingendo sul piede davanti. Alterna.',floor:false},
   {id:'g4',n:'Affondo laterale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Adduttori · 🦵 Quadricipiti',desc:'Passo laterale ampio, piega il ginocchio tenendo l\'altro dritto. Torna al centro e alterna.',floor:false},
   {id:'g5',n:'Sollevamento talloni',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Polpacci · 🦴 Caviglie',desc:'Alzati sulle punte dei piedi, tieni 2 sec, scendi piano. Appoggiati al muro se serve.',floor:false},
@@ -1185,7 +1227,7 @@ const DB=[
   {id:'g7',n:'Step touch laterale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Abduttori · 🎯 Equilibrio',desc:'Passo laterale a destra poi porta il piede sinistro. Stesso movimento a sinistra. Continua.',floor:false},
   {id:'g8',n:'Sollevamento gamba laterale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Abduttori · 🍑 Glutei',desc:'Appoggiato al muro, solleva una gamba di lato con piede a flex. Abbassa lento. Alterna.',floor:false},
   {id:'g9',n:'Sollevamento gamba posteriore',cat:'gambe',t:'🦵 Gambe',zona:'🍑 Glutei · 🦵 Femorali',desc:'Appoggiato a un supporto, spingi una gamba indietro contraendo il gluteo. Abbassa lento. Alterna.',floor:false},
-  {id:'g10',n:'Mini-squat isometrico',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Quadricipiti · 🎯 Resistenza',desc:'Scendi a metà squat e tieni la posizione respirando regolarmente. Risali lento dopo 20 sec.',floor:false},
+  {id:'g10',n:'Mini-squat isometrico',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Quadricipiti · 🎯 Resistenza',desc:'Scendi a metà squat e tieni la posizione respirando regolarmente. Risali lento quando senti la fatica.',floor:false},
   {id:'g11',n:'Passo avanti e dietro',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Gambe completo · ❤️ Cardio',desc:'Un passo avanti, torna al centro, un passo indietro con lo stesso piede. Alterna lato.',floor:false},
   {id:'g12',n:'Abduzione in piedi',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Abduttori · 🍑 Glutei',desc:'Appoggiato al muro, porta la gamba di lato mantenendola dritta. Movimenti lenti. Alterna.',floor:false},
   // BRACCIA (10)
@@ -1194,9 +1236,9 @@ const DB=[
   {id:'b3',n:'Push-up in ginocchio',cat:'braccia',t:'💪 Braccia',zona:'💪 Pettorali · 💪 Tricipiti',desc:'In ginocchio, mani larghe. Piega le braccia abbassando il petto, poi risali lentamente.',floor:true},
   {id:'b4',n:'Apertura braccia laterale',cat:'braccia',t:'💪 Braccia',zona:'💪 Pettorali · 💪 Deltoidi',desc:'Braccia avanti: apri ai lati lentamente poi torna davanti. Mai movimenti bruschi.',floor:false},
   {id:'b5',n:'Curl isometrico',cat:'braccia',t:'💪 Braccia',zona:'💪 Bicipiti · 💪 Avambracci',desc:'Una mano sotto il polso dell\'altra. Piega il braccio di sopra mentre quello sotto fa resistenza.',floor:false},
-  {id:'b6',n:'Stretching tricipite',cat:'braccia',t:'💪 Braccia',zona:'💪 Tricipiti · 💪 Spalle',desc:'Un braccio sopra la testa, piega il gomito verso la nuca. L\'altra mano spinge il gomito. 20 sec.',floor:false},
+  {id:'b6',n:'Stretching tricipite',cat:'braccia',t:'💪 Braccia',zona:'💪 Tricipiti · 💪 Spalle',desc:'Un braccio sopra la testa, piega il gomito verso la nuca. L\'altra mano spinge il gomito. Poi alterna.',switch:true,floor:false},
   {id:'b7',n:'Rotazione polsi',cat:'braccia',t:'💪 Braccia',zona:'💪 Avambracci · 🦴 Polsi',desc:'Braccia davanti: ruota i polsi in cerchio 10 volte in avanti, poi 10 all\'indietro.',floor:false},
-  {id:'b8',n:'Braccia incrociate stretch',cat:'braccia',t:'💪 Braccia',zona:'💪 Spalle posteriori',desc:'Porta un braccio attraverso il petto, l\'altra mano lo spinge verso di te. 20 sec, poi alterna.',floor:false},
+  {id:'b8',n:'Stretching spalle',cat:'braccia',t:'💪 Braccia',zona:'💪 Spalle posteriori',desc:'Porta un braccio attraverso il petto, l\'altra mano lo spinge verso di te. Tieni, poi alterna.',switch:true,floor:false},
   {id:'b9',n:'Spinte in avanti',cat:'braccia',t:'💪 Braccia',zona:'💪 Pettorali · 💪 Tricipiti',desc:'Mani al petto: spingi le braccia completamente in avanti poi ritira lento. Respira regolare.',floor:false},
   {id:'b10',n:'Sollevamento frontale',cat:'braccia',t:'💪 Braccia',zona:'💪 Deltoidi anteriori',desc:'Braccia lungo i fianchi: solleva fino all\'altezza delle spalle poi abbassa con controllo.',floor:false},
   // CORE (8)
@@ -1209,25 +1251,25 @@ const DB=[
   {id:'c7',n:'Gatto-Mucca',cat:'core',t:'🎯 Core',zona:'🦴 Colonna · 🦴 Lombari',desc:'In quadrupedia: inspira abbassando la pancia e alzando la testa (Mucca), espira incurvando la schiena (Gatto).',floor:true},
   {id:'c8',n:'Sollevamento gambe supino',cat:'core',t:'🎯 Core',zona:'🎯 Addominali inferiori',desc:'Sdraiato, gambe dritte. Solleva fino a 45°, abbassa lento senza toccare terra.',floor:true},
   // STRETCHING (10)
-  {id:'s1',n:'Stretching quadricipiti',cat:'stretching',t:'🤸 Stretching',zona:'🦵 Quadricipiti · 🦴 Anca',desc:'In piedi, piega un ginocchio portando il piede ai glutei. Tieni 20 sec, poi cambia gamba.',floor:false},
-  {id:'s2',n:'Stretching polpacci',cat:'stretching',t:'🤸 Stretching',zona:'🦵 Polpacci · 🦴 Achille',desc:'Passo avanti, tallone posteriore a terra. Spingi dolcemente finché senti il polpaccio. 20 sec.',floor:false},
-  {id:'s3',n:'Farfalla (inguine)',cat:'stretching',t:'🤸 Stretching',zona:'🦵 Adduttori · 🦴 Anca',desc:'Seduto a terra, piante dei piedi unite. Spingi dolcemente le ginocchia verso il basso. 20 sec.',floor:true},
+  {id:'s1',n:'Stretching quadricipiti',cat:'stretching',t:'🤸 Stretching',zona:'🦵 Quadricipiti · 🦴 Anca',desc:'In piedi, piega un ginocchio portando il piede ai glutei. Tieni bene, poi cambia gamba.',switch:true,floor:false},
+  {id:'s2',n:'Stretching polpacci',cat:'stretching',t:'🤸 Stretching',zona:'🦵 Polpacci · 🦴 Achille',desc:'Passo avanti, tallone posteriore a terra. Spingi dolcemente finché senti il polpaccio allungarsi.',switch:true,floor:false},
+  {id:'s3',n:'Farfalla (inguine)',cat:'stretching',t:'🤸 Stretching',zona:'🦵 Adduttori · 🦴 Anca',desc:'Seduto a terra, piante dei piedi unite. Spingi dolcemente le ginocchia verso il basso. Respira.',floor:true},
   {id:'s4',n:'Stretching schiena seduto',cat:'stretching',t:'🤸 Stretching',zona:'🦴 Colonna · 🦴 Lombari',desc:'Seduto, ruota il busto a destra e sinistra lentamente. Senti l\'allungamento nella schiena.',floor:false},
   {id:'s5',n:'Stretching spalle',cat:'stretching',t:'🤸 Stretching',zona:'💪 Spalle posteriori',desc:'Porta un braccio attraverso il petto, l\'altra mano lo spinge. Tieni 20 sec, poi alterna.',floor:false},
-  {id:'s6',n:'Stretching collo laterale',cat:'stretching',t:'🤸 Stretching',zona:'🦴 Collo · 💪 Trapezio',desc:'Inclina la testa verso la spalla destra dolcemente. Tieni 15 sec, poi cambia lato.',floor:false},
+  {id:'s6',n:'Stretching collo laterale',cat:'stretching',t:'🤸 Stretching',zona:'🦴 Collo · 💪 Trapezio',desc:'Inclina la testa verso la spalla destra dolcemente. Tieni, poi cambia lato.',switch:true,floor:false},
   {id:'s7',n:'Apertura del torace',cat:'stretching',t:'🤸 Stretching',zona:'💪 Pettorali · 💪 Spalle',desc:'Mani intrecciate dietro la schiena. Spingi le spalle indietro e apri il petto. Respira.',floor:false},
-  {id:'s8',n:'Stretching flessori anca',cat:'stretching',t:'🤸 Stretching',zona:'🦴 Anca · 🦵 Flessori',desc:'Affondo con un ginocchio a terra. Spingi il bacino in avanti finché senti lo stretch. 20 sec.',floor:true},
+  {id:'s8',n:'Stretching flessori anca',cat:'stretching',t:'🤸 Stretching',zona:'🦴 Anca · 🦵 Flessori',desc:'Affondo con un ginocchio a terra. Spingi il bacino in avanti finché senti lo stretch. Respira.',floor:true},
   {id:'s9',n:'Ginocchia al petto',cat:'stretching',t:'🤸 Stretching',zona:'🦴 Lombari · 🍑 Glutei',desc:'Sdraiato, porta entrambe le ginocchia al petto e abbraccia le gambe. Respira profondo.',floor:true},
   {id:'s10',n:'Allungamento corpo intero',cat:'stretching',t:'🤸 Stretching',zona:'🎯 Corpo completo',desc:'In piedi, porta le braccia sopra la testa lentamente. Allunga tutto il corpo verso l\'alto.',floor:false},
   // SEDUTO (12)
   {id:'sd1',n:'Sollevamento gambe alternate',cat:'seduto',t:'🪑 Da seduto',zona:'🦵 Quadricipiti · 🦵 Flessori',desc:'Seduto sul bordo, solleva una gamba tesa e tieni 3 sec. Abbassa lento, poi alterna.',floor:false},
   {id:'sd2',n:'Rotazioni braccia seduto',cat:'seduto',t:'🪑 Da seduto',zona:'💪 Spalle · 🦴 Articolazione',desc:'Seduto, ruota entrambe le spalle in cerchi ampi in avanti, poi all\'indietro.',floor:false},
   {id:'sd3',n:'Torsione busto seduto',cat:'seduto',t:'🪑 Da seduto',zona:'🎯 Obliqui · 🦴 Colonna',desc:'Seduto, mani sulle spalle: ruota il busto a destra poi a sinistra lentamente.',floor:false},
-  {id:'sd4',n:'Stretching laterale seduto',cat:'seduto',t:'🪑 Da seduto',zona:'🎯 Fianchi · 🦴 Colonna',desc:'Seduto, alza un braccio e inclina il busto sul lato opposto. Tieni 15 sec, poi alterna.',floor:false},
+  {id:'sd4',n:'Stretching laterale seduto',cat:'seduto',t:'🪑 Da seduto',zona:'🎯 Fianchi · 🦴 Colonna',desc:'Seduto, alza un braccio e inclina il busto sul lato opposto. Tieni, poi alterna lato.',switch:true,floor:false},
   {id:'sd5',n:'Flessioni caviglie',cat:'seduto',t:'🪑 Da seduto',zona:'🦵 Caviglie · ❤️ Circolazione',desc:'Seduto, piedi sollevati. Fletti le caviglie verso di te e poi distendi le punte. Ritmo costante.',floor:false},
   {id:'sd6',n:'Alzarsi e sedersi lento',cat:'seduto',t:'🪑 Da seduto',zona:'🦵 Quadricipiti · 🍑 Glutei',desc:'Seduto sul bordo, porta il peso avanti e alzati spingendo sulle cosce. Siediti lento.',floor:false},
   {id:'sd7',n:'Pressione palmi seduto',cat:'seduto',t:'🪑 Da seduto',zona:'💪 Pettorali · 💪 Isometrico',desc:'Seduto, unisci i palmi davanti al petto e spingi forte. Tieni 5 sec, rilascia. Ripeti.',floor:false},
-  {id:'sd8',n:'Inclinazione collo seduto',cat:'seduto',t:'🪑 Da seduto',zona:'🦴 Collo · 💪 Trapezio',desc:'Seduto, inclina la testa verso la spalla destra dolcemente. Tieni 15 sec, poi cambia.',floor:false},
+  {id:'sd8',n:'Inclinazione collo seduto',cat:'seduto',t:'🪑 Da seduto',zona:'🦴 Collo · 💪 Trapezio',desc:'Seduto, inclina la testa verso la spalla destra dolcemente. Tieni, poi cambia lato.',floor:false},
   {id:'sd9',n:'Sollevamento braccia seduto',cat:'seduto',t:'🪑 Da seduto',zona:'💪 Spalle · 💪 Deltoidi',desc:'Seduto, solleva entrambe le braccia lateralmente fino all\'altezza delle spalle. Abbassa lento.',floor:false},
   {id:'sd10',n:'Pedalata seduta',cat:'seduto',t:'🪑 Da seduto',zona:'🦵 Flessori anca · ❤️ Circol.',desc:'Seduto sul bordo, gambe sollevate. Simula il pedalare con ritmo lento e regolare.',floor:false},
   {id:'sd11',n:'Scrollata spalle seduto',cat:'seduto',t:'🪑 Da seduto',zona:'💪 Trapezio · 💪 Spalle',desc:'Seduto, solleva le spalle verso le orecchie lentamente, poi abbassale di scatto. Ripeti.',floor:false},
@@ -1235,7 +1277,7 @@ const DB=[
   // ORIENTALE (10)
   {id:'o1',n:'Respirazione Qi Gong',cat:'orientale',t:'🧘 Orientale',zona:'🫁 Respiro · ❤️ Benessere',desc:'Schiena dritta, mani sulla pancia. Inspira 4 sec gonfiando la pancia, espira 6 sec svuotando.',floor:false},
   {id:'o2',n:'Onde Tai Chi',cat:'orientale',t:'🧘 Orientale',zona:'💪 Braccia · 🎯 Coordinazione',desc:'Gambe leggermente piegate, muovi le braccia come onde del mare. Lento e fluido. Respira.',floor:false},
-  {id:'o3',n:'Equilibrio cigno',cat:'orientale',t:'🧘 Orientale',zona:'🦵 Caviglie · 🎯 Equilibrio',desc:'Fissa un punto fisso. Alza un piede sollevando il tallone. Tieni 10 sec. Poi cambia.',floor:false},
+  {id:'o3',n:'Equilibrio cigno',cat:'orientale',t:'🧘 Orientale',zona:'🦵 Caviglie · 🎯 Equilibrio',desc:'Fissa un punto fisso. Alza un piede sollevando il tallone. Tieni stabile. Poi cambia.',switch:true,floor:false},
   {id:'o4',n:'Apertura al cielo',cat:'orientale',t:'🧘 Orientale',zona:'🫁 Respiro · 💪 Spalle',desc:'Inspira portando le braccia verso il cielo, espira abbassandole lentamente. Fluido.',floor:false},
   {id:'o5',n:'Raccolta di energia',cat:'orientale',t:'🧘 Orientale',zona:'🫁 Respiro · 🎯 Focus',desc:'Mani al basso ventre, immagina di raccogliere energia. Porta le mani lentamente verso il cuore.',floor:false},
   {id:'o6',n:'Cammino consapevole',cat:'orientale',t:'🧘 Orientale',zona:'🦵 Gambe · 🧠 Presenza',desc:'Cammina lentamente sul posto sentendo ogni passo. Respira profondo ad ogni passo.',floor:false},
@@ -1252,54 +1294,54 @@ const DB=[
   {id:'w14',n:'Apertura braccia dinamica',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'💪 Petto · 💪 Spalle',desc:'Braccia avanti, poi apri velocemente portandole indietro come ali. Ritorno lento. Attiva il petto.',floor:false},
   // ── GAMBE extra (g13-g18) ──────────────────────────────────────────
   {id:'g13',n:'Squat sumo',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Interno coscia · 🍑 Glutei',desc:'Piedi larghi e punte verso fuori. Scendi tenendo il petto su e le ginocchia sui piedi. Risali lento.',floor:false},
-  {id:'g14',n:'Affondo laterale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Interno coscia · 🦵 Quadricipiti',desc:'Passo largo di lato, piega il ginocchio esterno, tieni l\'altro teso. Spingi per tornare. Alterna.',floor:false},
-  {id:'g15',n:'Stacco monogamba',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Femorali · 🍑 Glutei · 🎯 Equilibrio',desc:'Su un piede, piega in avanti portando la gamba libera dietro come una bilancia. Torna lento.',floor:false},
+  {id:'g14',n:'Affondo laterale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Interno coscia · 🦵 Quadricipiti',desc:'Passo largo di lato, piega il ginocchio esterno, tieni l\'altro teso. Spingi per tornare. Alterna.',switch:true,floor:false},
+  {id:'g15',n:'Stacco monogamba',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Femorali · 🍑 Glutei · 🎯 Equilibrio',desc:'Su un piede, piega in avanti portando la gamba libera dietro come una bilancia. Torna lento.',switch:true,floor:false},
   {id:'g16',n:'Ponte glutei',cat:'gambe',t:'🦵 Gambe',zona:'🍑 Glutei · 🦵 Femorali',desc:'Sdraiato con ginocchia piegate. Spingi i fianchi verso l\'alto, contrai i glutei in cima. Abbassa lento.',floor:true},
-  {id:'g17',n:'Calf raise singolo',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Polpaccio · 🦴 Caviglie',desc:'Appoggiato al muro, su un piede solo: sali sulla punta più volte. Movimenti lenti e controllati.',floor:false},
+  {id:'g17',n:'Calf raise singolo',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Polpaccio · 🦴 Caviglie',desc:'Appoggiato al muro, su un piede solo: sali sulla punta più volte. Movimenti lenti e controllati.',switch:true,floor:false},
   {id:'g18',n:'Squat isometrico al muro',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Quadricipiti · 🍑 Glutei',desc:'Schiena al muro, gambe a 90°. Tieni la posizione. Respira regolarmente. Brucia? È normale!',floor:false},
   // ── BRACCIA extra (b11-b15) ────────────────────────────────────────
   {id:'b11',n:'Tricep dip su sedia',cat:'braccia',t:'💪 Braccia',zona:'💪 Tricipiti · 💪 Spalle',desc:'Mani sul bordo della sedia, piedi avanti. Scendi piegando i gomiti poi spingi su. Schiena vicina alla sedia.',floor:false},
   {id:'b12',n:'Push-up a diamante',cat:'braccia',t:'💪 Braccia',zona:'💪 Tricipiti · 💪 Petto interno',desc:'Mani vicine formando un diamante. Push-up lento. Più difficile del classico, ottimo per i tricipiti.',floor:true},
-  {id:'b13',n:'Curl isometrico',cat:'braccia',t:'💪 Braccia',zona:'💪 Bicipiti · 💪 Avambracci',desc:'Porta le mani a 90°, tieni per 20 sec contraendo i bicipiti. Poi due dita su un tavolo per resistenza.',floor:false},
-  {id:'b14',n:'Rotazione interna spalla',cat:'braccia',t:'💪 Braccia',zona:'💪 Spalle · 🦴 Cuffia rotatori',desc:'Gomito a 90°, ruota l\'avambraccio verso la pancia poi verso l\'esterno. Lento. Salute delle spalle.',floor:false},
+  {id:'b13',n:'Curl isometrico',cat:'braccia',t:'💪 Braccia',zona:'💪 Bicipiti · 💪 Avambracci',desc:'Porta le mani a 90°, tieni contraendo i bicipiti. Poi due dita su un tavolo per resistenza.',floor:false},
+  {id:'b14',n:'Rotazione interna spalla',cat:'braccia',t:'💪 Braccia',zona:'💪 Spalle · 🦴 Cuffia rotatori',desc:'Gomito a 90°, ruota l\'avambraccio verso la pancia poi verso l\'esterno. Lento. Salute delle spalle.',switch:true,floor:false},
   {id:'b15',n:'Press frontale simulato',cat:'braccia',t:'💪 Braccia',zona:'💪 Deltoidi · 💪 Tricipiti',desc:'Porta i pugni chiusi avanti all\'altezza delle spalle, spingi in avanti con resistenza. 15 ripetizioni.',floor:false},
   // ── CORE extra (c9-c12) ────────────────────────────────────────────
   {id:'c9', n:'Dead bug',cat:'core',t:'🎯 Core',zona:'🎯 Core profondo · 🎯 Stabilità',desc:'Sdraiato, braccia su e ginocchia a 90°. Abbassa alternando braccio dx e gamba sx. Core sempre attivo.',floor:true},
-  {id:'c10',n:'Bird-dog',cat:'core',t:'🎯 Core',zona:'🎯 Core · 🍑 Glutei · 🔄 Equilibrio',desc:'A quattro zampe: estendi il braccio dx e la gamba sx insieme. Tieni 3 sec. Alterna. Schiena piatta.',floor:true},
+  {id:'c10',n:'Bird-dog',cat:'core',t:'🎯 Core',zona:'🎯 Core · 🍑 Glutei · 🔄 Equilibrio',desc:'A quattro zampe: estendi il braccio dx e la gamba sx insieme. Tieni 3 sec. Alterna. Schiena piatta.',switch:true,floor:true},
   {id:'c11',n:'Hollow hold',cat:'core',t:'🎯 Core',zona:'🎯 Addominali · 🎯 Core profondo',desc:'Sdraiato, solleva leggermente spalle e gambe. Corpo a banana. Respira. Più è basso più è difficile.',floor:true},
   {id:'c12',n:'Plank laterale',cat:'core',t:'🎯 Core',zona:'🎯 Obliqui · 🎯 Core laterale',desc:'Su un fianco, appoggiato sull\'avambraccio e sul bordo del piede. Fianchi alti e allineati. Tieni.',floor:true},
   // ── CORE extra non-floor (c13-c20) ─────────────────────────────────
-  {id:'c13',n:'Crunch in piedi',cat:'core',t:'🎯 Core',zona:'🎯 Addominali · 🎯 Obliqui',desc:'In piedi, mani alla nuca, gomiti larghi. Porta il ginocchio dx verso il gomito sx contraendo gli addominali. Alterna lento.',floor:false},
-  {id:'c14',n:'Sollevamento ginocchio in piedi',cat:'core',t:'🎯 Core',zona:'🎯 Addominali inferiori · 🦵 Flessori anca',desc:'In piedi con una mano al muro. Porta il ginocchio verso il petto lentamente, tieni 2 sec, abbassa. Alterna lati.',floor:false},
+  {id:'c13',n:'Crunch in piedi',cat:'core',t:'🎯 Core',zona:'🎯 Addominali · 🎯 Obliqui',desc:'In piedi, mani alla nuca, gomiti larghi. Porta il ginocchio dx verso il gomito sx contraendo gli addominali. Alterna lento.',switch:true,floor:false},
+  {id:'c14',n:'Sollevamento ginocchio in piedi',cat:'core',t:'🎯 Core',zona:'🎯 Addominali inferiori · 🦵 Flessori anca',desc:'In piedi con una mano al muro. Porta il ginocchio verso il petto lentamente, tieni 2 sec, abbassa. Alterna lati.',switch:true,floor:false},
   {id:'c15',n:'Torsione obliqua in piedi',cat:'core',t:'🎯 Core',zona:'🎯 Obliqui · 🦴 Colonna toracica',desc:'In piedi, braccia piegate davanti al petto. Ruota il busto a destra e sinistra alternando, il bacino non si muove.',floor:false},
   {id:'c16',n:'Inclinazione laterale con braccio',cat:'core',t:'🎯 Core',zona:'🎯 Obliqui laterali · 💪 Intercostali',desc:'In piedi, un braccio lungo il fianco, l\'altro sopra la testa. Piegati lentamente di lato verso il basso. 15 sec, poi alterna.',floor:false},
   {id:'c17',n:'Compressione addominale seduto',cat:'core',t:'🎯 Core',zona:'🎯 Core profondo · 🫁 Diaframma',desc:'Seduto dritto, inspira gonfiando la pancia. Espira contraendo gli addominali verso la schiena. Tieni 5 sec. 10 ripetizioni.',floor:false},
   {id:'c18',n:'Sollevamento gambe seduto',cat:'core',t:'🎯 Core',zona:'🎯 Addominali inferiori · 🦵 Flessori anca',desc:'Seduto sul bordo della sedia, mani ai lati. Porta entrambe le ginocchia verso il petto lentamente, abbassa senza toccare terra.',floor:false},
   {id:'c19',n:'Torsione seduto con le braccia',cat:'core',t:'🎯 Core',zona:'🎯 Obliqui · 🦴 Colonna',desc:'Seduto dritto, braccia tese davanti a te. Ruota il busto a destra poi a sinistra. Il bacino rimane fermo sulla sedia.',floor:false},
-  {id:'c20',n:'Pressione palmi contro ginocchio',cat:'core',t:'🎯 Core',zona:'🎯 Addominali · 🎯 Core isometrico',desc:'In piedi o seduto: premi il palmo contro il ginocchio sollevato, il ginocchio spinge contro la mano. Resisti 5 sec. Alterna.',floor:false},
+  {id:'c20',n:'Pressione palmi contro ginocchio',cat:'core',t:'🎯 Core',zona:'🎯 Addominali · 🎯 Core isometrico',desc:'In piedi o seduto: premi il palmo contro il ginocchio sollevato, il ginocchio spinge contro la mano. Resisti 5 sec. Alterna.',switch:true,floor:false},
 
   // ── STRETCHING extra (s11-s15) ─────────────────────────────────────
-  {id:'s11',n:'Piccione seduto su sedia',cat:'stretching',t:'🤸 Stretching',zona:'🍑 Piriforme · 🦵 Anca',desc:'Seduto, metti la caviglia dx sul ginocchio sx. Piegati in avanti lentamente. 30 sec, poi alterna.',floor:false},
+  {id:'s11',n:'Piccione seduto su sedia',cat:'stretching',t:'🤸 Stretching',zona:'🍑 Piriforme · 🦵 Anca',desc:'Seduto, metti la caviglia dx sul ginocchio sx. Piegati in avanti lentamente. Poi alterna lato.',switch:true,floor:false},
   {id:'s12',n:'Figura 4 a terra',cat:'stretching',t:'🤸 Stretching',zona:'🍑 Glutei · 🍑 Piriforme',desc:'Sdraiato, piega la gamba dx e metti la sx sopra. Porta le gambe verso il petto. Strech profondo.',floor:true},
   {id:'s13',n:'Cobra modificato',cat:'stretching',t:'🤸 Stretching',zona:'🔄 Lombari · 🎯 Addominali',desc:'A pancia in giù, mani sotto le spalle. Alza il petto usando i dorsali prima che le mani. Respira.',floor:true},
-  {id:'s14',n:'Stretching IT band in piedi',cat:'stretching',t:'🤸 Stretching',zona:'🦵 IT band · 🦵 Esterno coscia',desc:'In piedi, incrocia la gamba dx davanti alla sx. Piegati lateralmente verso sx. 20 sec, poi alterna.',floor:false},
+  {id:'s14',n:'Stretching IT band in piedi',cat:'stretching',t:'🤸 Stretching',zona:'🦵 IT band · 🦵 Esterno coscia',desc:'In piedi, incrocia la gamba dx davanti alla sx. Piegati lateralmente verso sx. Poi alterna lato.',switch:true,floor:false},
   {id:'s15',n:'Allungamento toracico su sedia',cat:'stretching',t:'🤸 Stretching',zona:'🔄 Toracica · 💪 Petto',desc:'Seduto, intreccia le mani dietro la testa. Apri i gomiti e porta il petto in avanti verso l\'alto.',floor:false},
   // ── SEDUTO extra (sd13-sd16) ───────────────────────────────────────
   {id:'sd13',n:'Squat da seduto a in piedi',cat:'seduto',t:'🪑 Da seduto',zona:'🦵 Quadricipiti · 🍑 Glutei',desc:'Siediti sul bordo, poi alzati senza usare le mani. Riscendi lentamente. Rinforza gambe e stabilità.',floor:false},
   {id:'sd14',n:'Chin tuck seduto',cat:'seduto',t:'🪑 Da seduto',zona:'🦴 Cervicale · 💪 Collo',desc:'Siediti dritto. Fai un doppio mento portando la testa indietro senza abbassarla. Tieni 5 sec. 10 rip.',floor:false},
   {id:'sd15',n:'Apertura petto con braccia',cat:'seduto',t:'🪑 Da seduto',zona:'💪 Petto · 💪 Spalle posteriori',desc:'Siediti dritto, porta le braccia davanti. Apri velocemente dietro come ali. 15 rip. Respira ad ogni apertura.',floor:false},
-  {id:'sd16',n:'Massaggio piedi seduto',cat:'seduto',t:'🪑 Da seduto',zona:'🦶 Pianta · 🦴 Caviglie',desc:'Metti un piede sull\'altro ginocchio. Massaggia la pianta con i pollici in cerchi. 30 sec per piede.',floor:false},
+  {id:'sd16',n:'Massaggio piedi seduto',cat:'seduto',t:'🪑 Da seduto',zona:'🦶 Pianta · 🦴 Caviglie',desc:'Metti un piede sull\'altro ginocchio. Massaggia la pianta con i pollici in cerchi. 30 sec per piede.',switch:true,floor:false},
   // ── ORIENTALE extra (o11-o14) ──────────────────────────────────────
   {id:'o11',n:'Sequenza 5 elementi Qi Gong',cat:'orientale',t:'🧘 Orientale',zona:'🎯 Corpo completo · 🫁 Energia',desc:'5 movimenti fluidi: terra, acqua, legno, fuoco, metallo. Ogni elemento 3 respiri. Tutto lento.',floor:false},
   {id:'o12',n:'Camminata Zen sul posto',cat:'orientale',t:'🧘 Orientale',zona:'🧠 Presenza · 🦶 Consapevolezza',desc:'Cammina lentissimo sul posto sentendo ogni millimetro del piede. Mente sul corpo, non sui pensieri.',floor:false},
-  {id:'o13',n:'Albero con respiro',cat:'orientale',t:'🧘 Orientale',zona:'🎯 Equilibrio · 🫁 Respiro',desc:'Posizione albero (piede sul polpaccio). Respira 4 sec dentro e 6 sec fuori. 5 cicli per lato.',floor:false},
+  {id:'o13',n:'Albero con respiro',cat:'orientale',t:'🧘 Orientale',zona:'🎯 Equilibrio · 🫁 Respiro',desc:'Posizione albero (piede sul polpaccio). Respira 4 sec dentro e 6 sec fuori. 5 cicli per lato.',switch:true,floor:false},
   {id:'o14',n:'Guardare le nuvole',cat:'orientale',t:'🧘 Orientale',zona:'🧠 Rilassamento · 💪 Spalle',desc:'Braccia lungo i fianchi, capo verso l\'alto, occhi socchiusi. Immagina nuvole che portano via lo stress.',floor:false},
   // ── ELASTICI/ATTREZZI (el1-el20) ──────────────────────────────────
   {id:'el1', n:'Curl bicipiti con elastico',cat:'elastici',t:'🎽 Elastici',zona:'💪 Bicipiti · 💪 Avambracci',desc:'Piedi sull\'elastico, impugna le estremità. Piega i gomiti portando le mani alle spalle. Lento.',floor:false},
   {id:'el2', n:'Rowing con elastico',cat:'elastici',t:'🎽 Elastici',zona:'🔄 Dorsali · 💪 Bicipiti',desc:'Elastico attorno a un appoggio fisso. Tira verso di te piegando i gomiti, gomiti vicini al corpo.',floor:false},
   {id:'el3', n:'Press orizzontale con elastico',cat:'elastici',t:'🎽 Elastici',zona:'💪 Petto · 💪 Tricipiti',desc:'Elastico dietro la schiena, spingi in avanti con entrambe le mani. Braccia all\'altezza delle spalle.',floor:false},
   {id:'el4', n:'Squat con elastico',cat:'elastici',t:'🎽 Elastici',zona:'🦵 Gambe · 🍑 Glutei',desc:'Elastico attorno alle cosce, sopra le ginocchia. Squat normale: l\'elastico aumenta l\'attivazione dei glutei.',floor:false},
-  {id:'el5', n:'Abduzione anca con elastico',cat:'elastici',t:'🎽 Elastici',zona:'🦵 Abduttori · 🍑 Glutei laterali',desc:'Elastico attorno alle caviglie. In piedi, porta una gamba di lato contro resistenza. 15 rip per lato.',floor:false},
+  {id:'el5', n:'Abduzione anca con elastico',cat:'elastici',t:'🎽 Elastici',zona:'🦵 Abduttori · 🍑 Glutei laterali',desc:'Elastico attorno alle caviglie. In piedi, porta una gamba di lato contro resistenza. 15 rip per lato.',switch:true,floor:false},
   {id:'el6', n:'Pull-apart con elastico',cat:'elastici',t:'🎽 Elastici',zona:'💪 Spalle posteriori · 🔄 Dorsali',desc:'Tieni l\'elastico davanti a te con entrambe le mani. Apri le braccia fino al petto. Fondamentale per postura.',floor:false},
   {id:'el7', n:'Tricep pushdown con elastico',cat:'elastici',t:'🎽 Elastici',zona:'💪 Tricipiti',desc:'Elastico in alto (porta chiusa o mobile). Tira verso il basso con i gomiti fissi ai fianchi. 12 rip.',floor:false},
   {id:'el8', n:'Shoulder press con elastico',cat:'elastici',t:'🎽 Elastici',zona:'💪 Deltoidi · 💪 Tricipiti',desc:'Piedi sull\'elastico, spingi verso l\'alto con entrambe le mani. Estendi completamente le braccia.',floor:false},
@@ -1319,13 +1361,13 @@ const DB=[
   {id:'cb1', n:'Jab-Cross',cat:'cardio',t:'🥊 Cardio',zona:'💪 Spalle · ❤️ Cardio',desc:'Guardia base: jab sinistro (braccio guida), cross destro (braccio potente). Ruota il busto ad ogni colpo.',floor:false},
   {id:'cb2', n:'Gancio alternato',cat:'cardio',t:'🥊 Cardio',zona:'💪 Spalle · 🎯 Core · ❤️ Cardio',desc:'Gancio sinistro poi destro a mezz\'altezza. Ruota i fianchi ad ogni colpo. Gomiti a 90°.',floor:false},
   {id:'cb3', n:'Uppercut alternato',cat:'cardio',t:'🥊 Cardio',zona:'💪 Braccia · 🎯 Core · ❤️ Cardio',desc:'Pugno verso l\'alto alternato come a colpire sotto il mento. Piega leggermente le gambe ad ogni colpo.',floor:false},
-  {id:'cb4', n:'Calcio frontale alternato',cat:'cardio',t:'🥊 Cardio',zona:'🦵 Quadricipiti · 🦵 Flessori · ❤️ Cardio',desc:'Ginocchio al petto poi calcio frontale basso. Atterraggio morbido. Non forzare la gamba oltre il comfort.',floor:false},
-  {id:'cb5', n:'Calcio laterale alternato',cat:'cardio',t:'🥊 Cardio',zona:'🦵 Abduttori · 🍑 Glutei · ❤️ Cardio',desc:'Calcio laterale basso e controllato. Tieni il piede a martello. Alterna i lati. Mantieni l\'equilibrio.',floor:false},
+  {id:'cb4', n:'Calcio frontale alternato',cat:'cardio',t:'🥊 Cardio',zona:'🦵 Quadricipiti · 🦵 Flessori · ❤️ Cardio',desc:'Ginocchio al petto poi calcio frontale basso. Atterraggio morbido. Non forzare la gamba oltre il comfort.',switch:true,floor:false},
+  {id:'cb5', n:'Calcio laterale alternato',cat:'cardio',t:'🥊 Cardio',zona:'🦵 Abduttori · 🍑 Glutei · ❤️ Cardio',desc:'Calcio laterale basso e controllato. Tieni il piede a martello. Alterna i lati. Mantieni l\'equilibrio.',switch:true,floor:false},
   {id:'cb6', n:'Combinazione 4 colpi',cat:'cardio',t:'🥊 Cardio',zona:'💪 Braccia · 🎯 Core · ❤️ Cardio',desc:'Jab — Cross — Gancio sx — Gancio dx. Ripeti continuamente per la durata. Aumenta il ritmo progressivamente.',floor:false},
   {id:'cb7', n:'Bob and weave',cat:'cardio',t:'🥊 Cardio',zona:'🎯 Core · 🦵 Gambe · ❤️ Cardio',desc:'Schivata a U: piega le gambe, scendi a sinistra, passa sotto, rialzati a destra. Come schivare un colpo.',floor:false},
   {id:'cb8', n:'Footwork base',cat:'cardio',t:'🥊 Cardio',zona:'🦵 Gambe · ❤️ Cardio · 🎯 Coordinazione',desc:'Sul posto: avanti-indietro, destra-sinistra in posizione di guardia. Leggero sulle punte, sempre in movimento.',floor:false},
   {id:'cb9', n:'Jab veloce sul posto',cat:'cardio',t:'🥊 Cardio',zona:'💪 Spalle · ❤️ Cardio',desc:'Jab velocissimo con il braccio guida. Più rapido che puoi per la durata. Allena la velocità di reazione.',floor:false},
-  {id:'cb10',n:'Combinazione jab-calcio',cat:'cardio',t:'🥊 Cardio',zona:'💪 Braccia · 🦵 Gambe · ❤️ Cardio',desc:'Jab sinistro, calcio frontale destro. Alterna il lato ogni 5 ripetizioni. Coordinazione totale.',floor:false},
+  {id:'cb10',n:'Combinazione jab-calcio',cat:'cardio',t:'🥊 Cardio',zona:'💪 Braccia · 🦵 Gambe · ❤️ Cardio',desc:'Jab sinistro, calcio frontale destro. Alterna il lato ogni 5 ripetizioni. Coordinazione totale.',switch:true,floor:false},
   {id:'cb11',n:'Shadow boxing libero',cat:'cardio',t:'🥊 Cardio',zona:'💪 Corpo completo · ❤️ Cardio',desc:'Muoviti liberamente combinando jab, cross, ganci, uppercut e schivate. Immagina un avversario davanti.',floor:false},
   {id:'cb12',n:'Burpee box (senza salto)',cat:'cardio',t:'🥊 Cardio',zona:'🎯 Full body · ❤️ Cardio',desc:'Squat, mani a terra, porta i piedi indietro in posizione plank, torna, alzati. Zero salto per le articolazioni.',floor:true},
   // ── PRE-SONNO (ps1-ps10) ───────────────────────────────────────────
@@ -1335,28 +1377,28 @@ const DB=[
   {id:'ps4', n:'Torsione supina',cat:'presonno',t:'😴 Pre-sonno',zona:'🔄 Colonna toracica · 🎯 Obliqui',desc:'Sdraiato, un ginocchio piega verso il lato opposto. Braccia aperte. 30 sec per lato. Nessuna forzatura.',floor:true},
   {id:'ps5', n:'Butterfly sdraiato',cat:'presonno',t:'😴 Pre-sonno',zona:'🦵 Inguine · 🍑 Anca',desc:'Sdraiato, piante dei piedi unite. Lascia scendere le ginocchia per gravità. Respira e rilascia ogni espiro.',floor:true},
   {id:'ps6', n:'Gambe al muro',cat:'presonno',t:'😴 Pre-sonno',zona:'🦵 Gambe · ❤️ Circolazione',desc:'Sdraiato con le gambe verticali al muro. Favorisce il ritorno venoso. Ideale dopo una lunga giornata.',floor:true},
-  {id:'ps7', n:'Stretching collo notturno',cat:'presonno',t:'😴 Pre-sonno',zona:'🦴 Collo · 💪 Trapezio',desc:'Seduto, lascia cadere l\'orecchio verso la spalla. Poi mano leggera sulla testa. 30 sec per lato.',floor:false},
+  {id:'ps7', n:'Stretching collo notturno',cat:'presonno',t:'😴 Pre-sonno',zona:'🦴 Collo · 💪 Trapezio',desc:'Seduto, lascia cadere l\'orecchio verso la spalla. Poi mano leggera sulla testa. 30 sec per lato.',switch:true,floor:false},
   {id:'ps8', n:'Respirazione diaframmatica',cat:'presonno',t:'😴 Pre-sonno',zona:'🫁 Diaframma · 🧠 Rilassamento',desc:'Mano sulla pancia. Inspira gonfiando solo la pancia, espira svuotando. Il petto non si muove. 10 cicli.',floor:false},
   {id:'ps9', n:'Scansione corporea',cat:'presonno',t:'😴 Pre-sonno',zona:'🧠 Mindfulness · 🎯 Corpo completo',desc:'Occhi chiusi. Porta l\'attenzione dai piedi fino alla testa, zona per zona. Nota le sensazioni senza giudicare.',floor:true},
   {id:'ps10',n:'Visualizzazione rilassante',cat:'presonno',t:'😴 Pre-sonno',zona:'🧠 Mente · 🫁 Respiro',desc:'Occhi chiusi, respiro lento. Immagina un posto sereno (spiaggia, bosco). Dettagli sensoriali. Lascia andare.',floor:false},
   // ── POSTURA/UFFICIO (po1-po10) ─────────────────────────────────────
   {id:'po1', n:'Chin tuck anti-cervicale',cat:'postura',t:'🪑+ Postura',zona:'🦴 Cervicale · 💪 Flessori collo',desc:'Seduto dritto: ritrai il mento facendo un doppio mento. Tieni 5 sec. 10 ripetizioni. Combatte il collo in avanti.',floor:false},
   {id:'po2', n:'Correzione spalle',cat:'postura',t:'🪑+ Postura',zona:'💪 Spalle posteriori · 🔄 Trapezio',desc:'Ruota le spalle indietro e tienile giù lontano dalle orecchie. Conta 10 sec. Ripeti spesso durante il lavoro.',floor:false},
-  {id:'po3', n:'Apertura petto al muro',cat:'postura',t:'🪑+ Postura',zona:'💪 Petto · 💪 Spalle anteriori',desc:'Mano al muro all\'altezza della spalla. Ruota il corpo lontano dal muro. 30 sec per lato. Combatte la postura curva.',floor:false},
+  {id:'po3', n:'Apertura petto al muro',cat:'postura',t:'🪑+ Postura',zona:'💪 Petto · 💪 Spalle anteriori',desc:'Mano al muro all\'altezza della spalla. Ruota il corpo lontano dal muro. 30 sec per lato. Combatte la postura curva.',switch:true,floor:false},
   {id:'po4', n:'Rotazione toracica seduto',cat:'postura',t:'🪑+ Postura',zona:'🔄 Colonna toracica · 🎯 Mobilità',desc:'Seduto dritto, mani alle spalle. Ruota solo il busto a destra poi sinistra. Il bacino non si muove.',floor:false},
   {id:'po5', n:'Regola 20-20-20 occhi',cat:'postura',t:'🪑+ Postura',zona:'👀 Occhi · 🧠 Affaticamento',desc:'Ogni 20 min guarda qualcosa a 6 metri per 20 secondi. In questo esercizio: 3 cicli completi. Salute degli occhi.',floor:false},
   {id:'po6', n:'Stretching polsi da tastiera',cat:'postura',t:'🪑+ Postura',zona:'🦴 Polsi · 💪 Avambracci',desc:'Braccio teso, piega il polso verso di te poi verso il basso. 15 sec per direzione per braccio. Anti-tunnel carpale.',floor:false},
   {id:'po7', n:'Rilascio tensione mandibola',cat:'postura',t:'🪑+ Postura',zona:'🦷 Mandibola · 🧠 Tensione',desc:'Labbra chiuse, denti distanti. Massaggia le guance con le mani in cerchi. Apri la bocca lentamente 5 volte.',floor:false},
-  {id:'po8', n:'Stretching flessori anca',cat:'postura',t:'🪑+ Postura',zona:'🦵 Flessori anca · 🔄 Lombare',desc:'Affondo lungo: ginocchio posteriore a terra, spingi i fianchi in avanti. 30 sec per lato. Combatte lo star seduti.',floor:true},
+  {id:'po8', n:'Stretching flessori anca',cat:'postura',t:'🪑+ Postura',zona:'🦵 Flessori anca · 🔄 Lombare',desc:'Affondo lungo: ginocchio posteriore a terra, spingi i fianchi in avanti. 30 sec per lato. Combatte lo star seduti.',switch:true,floor:true},
   {id:'po9', n:'Esercizio respiro desk',cat:'postura',t:'🪑+ Postura',zona:'🫁 Respiro · 🎯 Concentrazione',desc:'Seduto: inspira 4 sec, espira 6 sec. 5 cicli. Reidrata il cervello, riduce lo stress da schermo.',floor:false},
   // ── MATTINO (am1-am8) ─────────────────────────────────────────────
   {id:'am1',n:'Stiramento farfalla nel letto',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Schiena · 💪 Spalle',desc:'Sdraiato, apri le braccia come ali e porta i gomiti indietro. Senti lo stiramento nel petto. 5 respiri profondi.',floor:true},
   {id:'am2',n:'Ginocchia al petto lente',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Lombari · 🎯 Core',desc:'Sdraiato, porta entrambe le ginocchia al petto abbracciandole. Tieni 5 respiri, poi rilascia lentamente.',floor:true},
   {id:'am3',n:'Stiramento gatto nel letto',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Colonna · 🦴 Schiena',desc:'A quattro zampe sul letto. Incurva la schiena verso il cielo (gatto), poi abbassala (mucca). Lento e fluido.',floor:true},
   {id:'am4',n:'Stiramento braccia sopra la testa',cat:'mattino',t:'☀️ Mattino',zona:'💪 Spalle · 🔄 Colonna',desc:'Seduto sul bordo del letto, intreccia le mani sopra la testa. Spingi verso l\'alto allungando la schiena. 5 respiri.',floor:false},
-  {id:'am5',n:'Torsione seduta sul letto',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Colonna toracica · 🎯 Obliqui',desc:'Seduto, mani sulle spalle opposte. Ruota lentamente a destra poi a sinistra. Muovi solo il busto.',floor:false},
+  {id:'am5',n:'Torsione seduta sul letto',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Colonna toracica · 🎯 Obliqui',desc:'Seduto, mani sulle spalle opposte. Ruota lentamente a destra poi a sinistra. Muovi solo il busto.',switch:true,floor:false},
   {id:'am6',n:'Rotazione caviglie e polsi',cat:'mattino',t:'☀️ Mattino',zona:'🦴 Caviglie · 🦴 Polsi · ❤️ Circol.',desc:'Seduto sul bordo del letto: 5 cerchi con le caviglie, poi 5 con i polsi. Attiva la circolazione prima di alzarti.',floor:false},
-  {id:'am7',n:'Stiramento laterale in piedi',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Dorsali · 💪 Intercostali',desc:'In piedi accanto al letto. Un braccio sopra la testa, piegati lentamente di lato. 15 sec per lato. Respira.',floor:false},
+  {id:'am7',n:'Stiramento laterale in piedi',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Dorsali · 💪 Intercostali',desc:'In piedi accanto al letto. Un braccio sopra la testa, piegati lentamente di lato. Respira. Poi alterna.',floor:false},
   {id:'am8',n:'Respirazione profonda attivante',cat:'mattino',t:'☀️ Mattino',zona:'🫁 Respiro · 🧠 Attivazione',desc:'In piedi. Inspira 4 sec portando le braccia in alto, espira 4 sec abbassandole. Ripeti 5 volte. Sveglia il corpo.',floor:false},
   {id:'po10',n:'Cammino consapevole pausa',cat:'postura',t:'🪑+ Postura',zona:'🦵 Gambe · ❤️ Circolazione',desc:'Alzati e cammina 2 minuti. Anche solo in casa. Necessario ogni ora per la salute metabolica. Niente scuse!',floor:false},
 ];
@@ -1411,15 +1453,15 @@ const PARTY_EX=[
   {id:'p2',n:'Squat sincronizzati',desc:'Tutti scendono e salgono insieme. Chi perde il ritmo è eliminato! Contiamo insieme.',img:'p2.png',dur:45},
   {id:'p3',n:'Equilibrio su un piede',desc:'Tutti su un piede solo. Chi cade per ultimo è il campione! Occhi fissi su un punto.',img:'p3.png',dur:60},
   {id:'p4',n:'Cerchi braccia in sincronia',desc:'Tutti ruotano le braccia nello stesso senso. Chi si sbaglia riparte da zero!',img:'p4.png',dur:45},
-  {id:'p5',n:'Marcia sul posto – ritmo!',desc:'Tutti marciano insieme sullo stesso ritmo. Il leader cambia ritmo ogni 10 sec!',img:'p5.png',dur:60},
+  {id:'p5',n:'Marcia sul posto – ritmo!',desc:'Tutti marciano insieme sullo stesso ritmo. Il leader cambia ritmo di tanto in tanto!',img:'p5.png',dur:60},
   {id:'p6',n:'Wall sit (sedia immaginaria)',desc:'Schiena al muro, gambe a 90°. Chi tiene più a lungo senza appoggiarsi vince!',img:'p6.png',dur:60},
   {id:'p7',n:'Respirazione profonda gara',desc:'Tutti inspirano insieme per 4 sec, espirano per 8 sec. Chi rompe il ritmo è fuori!',img:'p7.png',dur:45},
-  {id:'p8',n:'Tocca il pavimento più volte',desc:'In piedi, tocca il pavimento e torna su. Chi fa più ripetizioni in 30 sec vince!',img:'p8.png',dur:30},
+  {id:'p8',n:'Tocca il pavimento più volte',desc:'In piedi, tocca il pavimento e torna su. Chi fa più ripetizioni vince!',img:'p8.png',dur:30},
   {id:'p9',n:'Stretching chi si allunga di più',desc:'Piedi uniti, piegati in avanti. Chi arriva più in basso senza piegare le ginocchia!',img:'p9.png',dur:30},
   {id:'p10',n:'Alzate talloni sincronizzate',desc:'Tutti sulle punte dei piedi insieme. 20 ripetizioni: chi perde la sincronia ricomincia!',img:'p10.png',dur:45},
   {id:'p11',n:'Rotazione fianchi – chi dura',desc:'Tutti ruotano i fianchi. Chi ferma per primo ha perso! Cerchi sempre più grandi.',img:'p11.png',dur:45},
   {id:'p12',n:'Pose yoga: albero',desc:'Un piede sul polpaccio opposto, braccia su. Chi resta in equilibrio più a lungo vince!',img:'p12.png',dur:60},
-  {id:'p13',n:'Step touch in sincronia',desc:'Tutti insieme: passo destra, passo sinistra. Il leader accelera ogni 15 sec!',img:'p13.png',dur:45},
+  {id:'p13',n:'Step touch in sincronia',desc:'Tutti insieme: passo destra, passo sinistra. Il leader accelera di tanto in tanto!',img:'p13.png',dur:45},
   {id:'p14',n:'Sollevamento gambe seduto – gara',desc:'Seduti sul bordo, gambe tese sollevate. Chi tiene più a lungo le gambe alzate?',img:'p14.png',dur:45},
   {id:'p15',n:'Torsioni sincronizzate',desc:'Tutti ruotano il busto destra e sinistra insieme. Chi perde il ritmo è fuori!',img:'p15.png',dur:45},
 ];
@@ -1503,11 +1545,42 @@ function load(){
   try{const x=localStorage.getItem('tt4_p');if(x)P=JSON.parse(x)}catch(e){}
   try{const x=localStorage.getItem('tt4_s');if(x)S=JSON.parse(x)}catch(e){}
   try{const x=localStorage.getItem('tt4_set');if(x)SET=JSON.parse(x)}catch(e){}
-  if(!S.history)S.history=[];if(!S.plan)S.plan=[];if(!S.catSet)S.catSet=[];if(!S.sed)S.sed=0;if(!S.stretch_ct)S.stretch_ct=0;if(!S.skipped)S.skipped=0;if(!S.skippedTotal)S.skippedTotal=0;if(!S.boosts)S.boosts=0;if(!S.morningDone)S.morningDone=null;if(!S.sleepDone)S.sleepDone=null;if(!S.morningTotal)S.morningTotal=0;if(!S.sleepTotal)S.sleepTotal=0;
+  
+  if(typeof SET.onlyWithPhoto==='undefined')SET.onlyWithPhoto=true;if(!S.history)S.history=[];if(!S.plan)S.plan=[];if(!S.catSet)S.catSet=[];if(!S.sed)S.sed=0;if(!S.stretch_ct)S.stretch_ct=0;if(!S.skipped)S.skipped=0;if(!S.skippedTotal)S.skippedTotal=0;if(!S.boosts)S.boosts=0;if(!S.morningDone)S.morningDone=null;if(!S.sleepDone)S.sleepDone=null;if(!S.morningTotal)S.morningTotal=0;if(!S.sleepTotal)S.sleepTotal=0;
 }
 function bkData(){return{v:'0.4',dt:new Date().toISOString(),profile:P,stats:S,settings:SET}}
 function restore(d){if(d.profile)P=d.profile;if(d.stats)S=d.stats;if(d.settings)SET=d.settings;if(!S.history)S.history=[];if(!S.plan)S.plan=[];save();applyTheme();applyView();toast('✅ Dati ripristinati!');go('home')}
 </script>
+
+
+<!-- Backup reminder modal -->
+<div id="backup-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9500;align-items:center;justify-content:center;padding:20px" onclick="closeBackupModal()">
+  <div style="background:var(--card);border-radius:20px;max-width:340px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.4)" onclick="event.stopPropagation()">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:48px;margin-bottom:8px">💾</div>
+      <div style="font-family:var(--ft);font-size:18px;font-weight:bold;color:var(--text)">Fai il backup dei tuoi dati!</div>
+    </div>
+    <div style="font-size:14px;color:var(--tmid);line-height:1.6;margin-bottom:18px" id="backup-modal-msg">
+      Hai completato tante sessioni — i tuoi progressi sono salvati solo su questo dispositivo.<br><br>
+      Se pulisci la memoria del browser potresti perderli. Esporta ora il file JSON di backup!
+    </div>
+    <button onclick="exportJSON();markBackupDone();closeBackupModal()" style="width:100%;padding:13px;background:var(--g1);color:#fff;border:none;border-radius:100px;font-weight:bold;font-size:14px;cursor:pointer;margin-bottom:10px">
+      📥 Esporta backup JSON
+    </button>
+    <button onclick="closeBackupModal()" style="width:100%;padding:10px;background:var(--bg2);color:var(--tmid);border:none;border-radius:100px;font-size:13px;cursor:pointer">
+      Dopo — ricordamelo tra 5 sessioni
+    </button>
+  </div>
+</div>
+<!-- CAMBIO LATO overlay — shows during switch exercises at halfway -->
+<div id="switch-overlay" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,50,.82);align-items:center;justify-content:center;flex-direction:column">
+  <div style="text-align:center;color:#fff;padding:30px">
+    <div style="font-size:64px;margin-bottom:8px;animation:spin .6s ease infinite alternate">🔄</div>
+    <div style="font-family:var(--ft);font-size:30px;font-weight:bold;letter-spacing:1px;margin-bottom:6px">CAMBIA LATO!</div>
+    <div style="font-size:80px;font-weight:bold;font-family:var(--fm);color:var(--lime);line-height:1" id="switch-timer">5</div>
+    <div style="font-size:14px;opacity:.75;margin-top:8px">L'esercizio continua tra...</div>
+  </div>
+</div>
 <!-- Exercise image modal -->
 <div id="ex-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;align-items:center;justify-content:center;padding:20px" onclick="closeExModal()">
   <div style="background:var(--card);border-radius:20px;max-width:360px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)" onclick="event.stopPropagation()">
@@ -1590,7 +1663,7 @@ function beep(f=440,d=0.15,v=0.25){if(!SET.audio)return;try{const c=getACtx();if
 function speak(t){if(!SET.voice||!window.speechSynthesis)return;try{window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='it-IT';u.rate=1.1;window.speechSynthesis.speak(u);}catch(e){}}
 function toggleAudio(){SET.audio=!SET.audio;save();syncToggles()}
 function toggleVoice(){SET.voice=!SET.voice;save();syncToggles()}
-function syncToggles(){const a=document.getElementById('st-audio'),v=document.getElementById('st-voice');if(a)a.classList.toggle('on',SET.audio);if(v)v.classList.toggle('on',SET.voice)}
+function syncToggles(){const a=document.getElementById('st-audio'),v=document.getElementById('st-voice');if(a)a.classList.toggle('on',SET.audio);if(v)v.classList.toggle('on',SET.voice);const pf=document.getElementById('st-photo-filter');if(pf)pf.classList.toggle('on',SET.onlyWithPhoto!==false);}
 
 // ═══ POSE ANIMATION ═══
 // ═══ EXERCISE IMAGE LOADER ═══
@@ -2214,6 +2287,10 @@ function buildHome(){
   const h=new Date().getHours();
   document.getElementById('home-greeting').textContent=`${h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera'}, ${P.name}! 👋`;
   document.getElementById('home-phrase').textContent=PHRASES[Math.floor(Math.random()*PHRASES.length)];
+  checkBackupReminder();
+  // Photo check (background, non-blocking)
+  if(P.name)setTimeout(()=>checkPhotosAvailable(false),3000);
+  updatePhotoStatus(getPhotoIds());
   // Ask SW to check & fire any due notifications
   if('serviceWorker' in navigator&&navigator.serviceWorker.controller){
     navigator.serviceWorker.controller.postMessage({type:'CHECK_NOTIFS'});
@@ -3346,6 +3423,8 @@ function genSession(focus){
   // Warmup
   let warmPool=shuffleArr(DB.filter(e=>e.cat==='riscaldamento'));
   if(P.noFloor)warmPool=warmPool.filter(e=>!e.floor);
+  // Apply photo filter to warmup pool too
+  if(SET.onlyWithPhoto){const _wp=getPhotoIds();if(_wp&&_wp.length>3){const _ws=new Set(_wp);const _wf=warmPool.filter(e=>_ws.has(e.id));if(_wf.length>0)warmPool=_wf;}}
   const warmCnt=dur<=10?1:2;
   const warmExs=warmPool.slice(0,warmCnt).map(e=>({...e,a:30,r:15}));
   // Main pool — exclude avoided exercises
@@ -3363,6 +3442,16 @@ function genSession(focus){
     pool=[...sedPool.slice(0,Math.ceil(sedPool.length/2)),...normPool].sort(()=>Math.random()-.5);
   }
   else pool=shuffleArr(DB.filter(e=>e.cat===focus&&e.cat!=='party'));
+  // Filter to only-with-photo if enabled
+  if(SET.onlyWithPhoto){
+    const photoIds=getPhotoIds();
+    if(photoIds&&photoIds.length>5){
+      const photoSet=new Set(photoIds);
+      const photoPool=pool.filter(e=>photoSet.has(e.id));
+      if(photoPool.length>=2)pool=photoPool;
+      // else: not enough photos in this category, fall back to full pool
+    }
+  }
   if(P.noFloor){
     const nfPool=pool.filter(e=>!e.floor);
     if(nfPool.length<3&&['core','gambe','braccia'].includes(focus)){
@@ -3511,9 +3600,14 @@ function tick(){
     const half=Math.floor((ex?.a||45)/2);
     if(T.left===half){
       T._halfSpoken=true;
-      beep(660,.1);
-      setTimeout(()=>beep(660,.1),150);
-      speak('Metà tempo!');
+      if(ex&&ex.switch){
+        // CAMBIO LATO — show 5-second visual countdown
+        showSwitchSide();
+      } else {
+        beep(660,.1);
+        setTimeout(()=>beep(660,.1),150);
+        speak('Metà tempo!');
+      }
     }
   }
   if(T.left<=3&&T.left>0){beep(440,.08);speak(String(T.left))}
@@ -3536,6 +3630,14 @@ function showRestPreview(targetIdx, onDone){
   if(nx){
     document.getElementById('rst-next-cat').textContent=nx.t;
     document.getElementById('rst-next-name').textContent=nx.n;
+    // Exercise type chip
+    const typeEl=document.getElementById('rst-next-type');
+    if(typeEl){
+      if(nx.switch){typeEl.textContent='🔄 Cambio lato';typeEl.style.display='block';typeEl.style.background='#E3F2FD';typeEl.style.color='#1565C0';typeEl.style.borderColor='#42A5F5';}
+      else if(nx.floor&&(nx.desc||'').match(/tieni|hold|mantieni/i)){typeEl.textContent='🧘 Mantieni posizione';typeEl.style.display='block';typeEl.style.background='#F3E5F5';typeEl.style.color='#6A1B9A';typeEl.style.borderColor='#AB47BC';}
+      else if((nx.desc||'').match(/tieni \d|mantieni|isometric/i)){typeEl.textContent='🧘 Mantieni posizione';typeEl.style.display='block';typeEl.style.background='#F3E5F5';typeEl.style.color='#6A1B9A';typeEl.style.borderColor='#AB47BC';}
+      else{typeEl.textContent='';typeEl.style.display='none';}
+    }
     document.getElementById('rst-next-desc').textContent=nx.desc||'';
     const nxImg=document.getElementById('rst-next-img');
     const nxPh=document.getElementById('rst-next-placeholder');
@@ -3877,6 +3979,209 @@ function checkBadges(){
   return nb;
 }
 
+
+// ═══ CHARTS v0.99 ═══
+
+// A: Heatmap 90 giorni
+function buildHeatmap(){
+  const svg=document.getElementById('heatmap-svg');
+  if(!svg)return;
+  const CW=14,CH=14,GAP=2,STEP=CW+GAP;
+  const WEEKS=13,DAYS=7;
+  const W=WEEKS*STEP+26,H=DAYS*STEP+20;
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  const now=new Date();
+  // Build lookup: date string → {sessions, morning, sleep}
+  const lookup={};
+  (S.history||[]).forEach(h=>{
+    if(!h.date)return;
+    const ds=h.date;
+    if(!lookup[ds])lookup[ds]={sessions:0,morning:false,sleep:false};
+    if(h.type==='mattino')lookup[ds].morning=true;
+    else if(h.type==='presonno')lookup[ds].sleep=true;
+    else if(h.type!=='riposo_vol')lookup[ds].sessions++; // count ALL non-rest sessions
+  });
+  if(S.morningDone){if(!lookup[S.morningDone])lookup[S.morningDone]={sessions:0,morning:true,sleep:false};else lookup[S.morningDone].morning=true;}
+  if(S.sleepDone){if(!lookup[S.sleepDone])lookup[S.sleepDone]={sessions:0,morning:false,sleep:true};else lookup[S.sleepDone].sleep=true;}
+
+  const DN=['L','Ma','Me','G','V','S','D'];
+  let html='';
+  for(let d=0;d<7;d++){
+    html+='<text x="2" y="'+(d*STEP+20+CH/2+3)+'" font-size="8" fill="var(--tlt)" font-family="sans-serif">'+DN[d]+'</text>';
+  }
+  // ANCHOR to current week's Monday — so today is always visible
+  const todayDow=(now.getDay()+6)%7; // Mon=0,Tue=1,...,Sun=6
+  const thisMonday=new Date(now);
+  thisMonday.setDate(now.getDate()-todayDow);
+  // Start date = (WEEKS-1) weeks before this Monday
+  const startDate=new Date(thisMonday);
+  startDate.setDate(thisMonday.getDate()-(WEEKS-1)*7);
+
+  let prevMonth='';
+  for(let w=0;w<WEEKS;w++){
+    for(let d=0;d<7;d++){
+      const cur=new Date(startDate);
+      cur.setDate(startDate.getDate()+w*7+d);
+      if(cur>now)continue;
+      const ds=localDate(cur); // YYYY-MM-DD local date
+      const info=lookup[ds]||{sessions:0,morning:false,sleep:false};
+      const x=18+w*STEP,y=d*STEP+18;
+      const fill=info.sessions===0?'#E8F5E9':info.sessions===1?'#81C784':info.sessions>=2?'#2E7D32':'#E8F5E9';
+      html+='<rect x="'+x+'" y="'+y+'" width="'+CW+'" height="'+CH+'" rx="2" fill="'+fill+'"/>';
+      if(info.morning)html+='<circle cx="'+(x+CW-2)+'" cy="'+(y+2)+'" r="2" fill="#F9A825"/>';
+      if(info.sleep)html+='<circle cx="'+(x+CW-2)+'" cy="'+(y+CH-2)+'" r="2" fill="#5C6BC0"/>';
+    }
+    const colDate=new Date(startDate);colDate.setDate(startDate.getDate()+w*7);
+    const mo=['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'][colDate.getMonth()];
+    if(mo!==prevMonth){
+      html+='<text x="'+(18+w*STEP+1)+'" y="13" font-size="7" fill="var(--tlt)" font-family="sans-serif">'+mo+'</text>';
+      prevMonth=mo;
+    }
+  }
+  svg.innerHTML=html;
+}
+
+// C: Radar categorie (ultimi 30 giorni)
+function buildRadar(){
+  const svg=document.getElementById('radar-svg');
+  const legend=document.getElementById('radar-legend');
+  if(!svg)return;
+  const cats=[
+    {key:'gambe',label:'🦵 Gambe',color:'#43A047'},
+    {key:'braccia',label:'💪 Braccia',color:'#1E88E5'},
+    {key:'core',label:'🎯 Core',color:'#E53935'},
+    {key:'stretching',label:'🤸 Stretching',color:'#8E24AA'},
+    {key:'orientale',label:'🧘 Orient.',color:'#00ACC1'},
+    {key:'cardio',label:'🥊 Cardio',color:'#F4511E'},
+    {key:'seduto',label:'🪑 Seduto',color:'#6D4C41'},
+    {key:'elastici',label:'🎽 Elastici',color:'#039BE5'},
+  ];
+  const N=cats.length;
+  const CX=100,CY=100,R=72,RINGS=4;
+  const since=new Date();since.setDate(since.getDate()-30);
+  const sinceStr=localDate(since);
+  // Count sessions per category (last 30 days)
+  const counts={};
+  (S.history||[]).forEach(h=>{
+    if(h.date<sinceStr)return;
+    if(h.type==='riposo_vol'||(h.dur||0)===0)return;
+    const key=h.type||h.focus;
+    counts[key]=(counts[key]||0)+1;
+  });
+  const maxCount=Math.max(1,...Object.values(counts));
+  // Compute points
+  const pts=cats.map((cat,i)=>{
+    const angle=(i/N)*2*Math.PI-Math.PI/2;
+    const val=Math.min(1,(counts[cat.key]||0)/maxCount);
+    const r=val*R;
+    return {x:CX+r*Math.cos(angle),y:CY+r*Math.sin(angle),val:counts[cat.key]||0,
+            ax:CX+R*Math.cos(angle),ay:CY+R*Math.sin(angle),angle,cat};
+  });
+  let html='';
+  // Background rings
+  for(let r=1;r<=RINGS;r++){
+    const cr=R*(r/RINGS);
+    let ringPts=cats.map((_,i)=>{
+      const a=(i/N)*2*Math.PI-Math.PI/2;
+      return (i===0?'M':'L')+(CX+cr*Math.cos(a))+' '+(CY+cr*Math.sin(a));
+    }).join(' ')+'Z';
+    html+='<path d="'+ringPts+'" fill="none" stroke="var(--bdr)" stroke-width="0.5"/>';
+  }
+  // Axis lines
+  pts.forEach(p=>{
+    html+='<line x1="'+CX+'" y1="'+CY+'" x2="'+p.ax+'" y2="'+p.ay+'" stroke="var(--bdr)" stroke-width="0.5"/>';
+  });
+  // Filled polygon
+  if(pts.some(p=>p.val>0)){
+    const poly=pts.map((p,i)=>(i===0?'M':'L')+p.x+' '+p.y).join(' ')+'Z';
+    html+='<path d="'+poly+'" fill="rgba(67,160,71,.25)" stroke="var(--g1)" stroke-width="1.5"/>';
+    pts.forEach(p=>{if(p.val>0)html+='<circle cx="'+p.x+'" cy="'+p.y+'" r="3" fill="'+p.cat.color+'"/>';});
+  }
+  // Category labels
+  pts.forEach(p=>{
+    const off=12;
+    const lx=CX+(R+off)*Math.cos(p.angle);
+    const ly=CY+(R+off)*Math.sin(p.angle);
+    const anchor=Math.abs(p.angle)<0.1||Math.abs(p.angle-Math.PI)<0.1?'middle':Math.cos(p.angle)>0?'start':'end';
+    html+='<text x="'+lx+'" y="'+(ly+3)+'" font-size="7.5" fill="var(--tmid)" font-family="sans-serif" text-anchor="'+anchor+'">'+p.cat.label+'</text>';
+  });
+  svg.innerHTML=html;
+  // Legend text
+  if(legend){
+    const sorted=[...cats].sort((a,b)=>(counts[b.key]||0)-(counts[a.key]||0));
+    legend.innerHTML=sorted.map(cat=>{
+      const n=counts[cat.key]||0;
+      const bar='█'.repeat(Math.min(5,n))+'░'.repeat(Math.max(0,5-n));
+      return'<div style="color:'+cat.cat+'"><span style="color:'+cat.color+'">'+bar+'</span> '+cat.label.split(' ')[1]+' <span style="color:var(--tlt);font-size:10px">'+n+'</span></div>';
+    }).join('');
+    // Fix: legend uses cat.cat which is undefined — remap
+    legend.innerHTML=sorted.map(cat=>{
+      const n=counts[cat.key]||0;
+      const bars=n===0?'<span style="color:var(--bdr)">—</span>':'<span style="color:'+cat.color+'">'+('●').repeat(Math.min(5,n))+'</span>';
+      return '<div>'+bars+' '+cat.label+' <span style="color:var(--tlt)">('+n+')</span></div>';
+    }).join('');
+  }
+}
+
+// B: Mappa corporea tartaruga (in progress screen)
+function buildBodyMap(){
+  const svg=document.getElementById('bodymap-svg');
+  const legend=document.getElementById('bodymap-legend');
+  if(!svg)return;
+  const zoneMap={
+    gambe:['zampe'],braccia:['zampe'],core:['corpo'],stretching:['corpo','zampe'],
+    orientale:['corpo','testa'],elastici:['zampe'],cardio:['corpo','zampe'],
+    seduto:['zampe','corpo'],postura:['testa','corpo'],mattino:['corpo','zampe','testa'],
+    presonno:['corpo','testa'],riscaldamento:['corpo'],
+    misto:['corpo','zampe'],misto_plus:['zampe','corpo']
+  };
+  const daysSince={};
+  (S.history||[]).forEach(h=>{
+    if(!h.date||h.type==='riposo_vol')return;
+    const cat=h.type||h.focus;
+    if(cat&&daysSince[cat]===undefined){
+      const dval=Math.floor((Date.now()-new Date(h.date+'T12:00:00').getTime())/86400000);
+      daysSince[cat]=Math.max(0,dval); // ensure non-negative (0 = today)
+    }
+  });
+  const zA={testa:99,corpo:99,zampe:99};
+  Object.keys(zoneMap).forEach(cat=>{
+    const d=daysSince[cat];if(d===undefined)return;
+    (zoneMap[cat]||[]).forEach(z=>{if(d<zA[z])zA[z]=d;});
+  });
+  function zc(z){const d=zA[z]||99;return d<=3?'#43A047':d<=7?'#81C784':d<=14?'#FFF9C4':'#ECEFF1';}
+  function zs(z){return'stroke="'+((zA[z]||99)<14?'#388E3C':'#CFD8DC')+'" stroke-width="1.5"';}
+  // Turtle silhouette SVG
+  const html=
+    // Shell (corpo)
+    '<ellipse cx="55" cy="95" rx="38" ry="50" fill="'+zc('corpo')+'" '+zs('corpo')+'/>'+
+    '<ellipse cx="55" cy="95" rx="28" ry="38" fill="none" stroke="'+((zA.corpo||99)<14?'#2E7D32':'#B0BEC5')+'" stroke-width="1" stroke-dasharray="4 3" opacity=".6"/>'+
+    // Testa
+    '<ellipse cx="55" cy="32" rx="18" ry="16" fill="'+zc('testa')+'" '+zs('testa')+'/>'+
+    '<text x="55" y="37" text-anchor="middle" font-size="14">🐢</text>'+
+    // Collo
+    '<rect x="48" y="45" width="14" height="14" rx="4" fill="'+zc('corpo')+'" '+zs('corpo')+'/>'+
+    // Zampa sx ant
+    '<ellipse cx="14" cy="68" rx="12" ry="18" fill="'+zc('zampe')+'" '+zs('zampe')+' transform="rotate(-25,14,68)"/>'+
+    // Zampa dx ant
+    '<ellipse cx="96" cy="68" rx="12" ry="18" fill="'+zc('zampe')+'" '+zs('zampe')+' transform="rotate(25,96,68)"/>'+
+    // Zampa sx post
+    '<ellipse cx="18" cy="128" rx="11" ry="17" fill="'+zc('zampe')+'" '+zs('zampe')+' transform="rotate(20,18,128)"/>'+
+    // Zampa dx post
+    '<ellipse cx="92" cy="128" rx="11" ry="17" fill="'+zc('zampe')+'" '+zs('zampe')+' transform="rotate(-20,92,128)"/>'+
+    // Coda
+    '<ellipse cx="55" cy="150" rx="7" ry="12" fill="'+zc('corpo')+'" '+zs('corpo')+'"/>';
+  svg.innerHTML=html;
+  if(legend){
+    const zones=[{key:'testa',label:'Collo/Testa'},{key:'corpo',label:'Busto/Core'},{key:'zampe',label:'Braccia/Gambe'}];
+    legend.innerHTML=zones.map(z=>{
+      const d=zA[z.key]||99;
+      const lbl=d>=99?'⬜ Non allenata':d===0?'🟢 Oggi':d<=3?'🟢 '+d+'g fa':d<=7?'🟡 '+d+'g fa':'⬜ '+d+'g fa';
+      return'<div style="margin-bottom:8px"><span style="width:12px;height:12px;background:'+zc(z.key)+';border-radius:3px;border:1px solid var(--bdr);display:inline-block;vertical-align:middle;margin-right:5px"></span><b>'+z.label+'</b><br><span style="font-size:10px;color:var(--tlt);margin-left:17px">'+lbl+'</span></div>';
+    }).join('');
+  }
+}
+
 // ═══ CALENDAR ═══
 function calMove(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++}else if(calMonth<0){calMonth=11;calYear--}buildCal()}
 
@@ -4055,6 +4360,9 @@ function buildProgress(){
   const slEl=document.getElementById('prg-sleep');if(slEl)slEl.textContent=S.sleepTotal||0;
   const lvEl=document.getElementById('prg-level-num');if(lvEl)lvEl.textContent=getUserLevel(S.xp||0);
   setChartView(7);
+  buildHeatmap();
+  buildRadar();
+  buildBodyMap();
   // Improvement comparison: first week vs last week
   const ic=document.getElementById('improvement-content');
   if(ic&&S.history.length>=2){
@@ -4406,7 +4714,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 19:31';
+  if(vdisp)vdisp.textContent='Versione v0.99 · 15/04/2026 21:01';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -5062,6 +5370,143 @@ async function handleQRImageFile(evt,target){
   img.src=URL.createObjectURL(file);
 }
 
+
+
+
+// ═══ PHOTO AVAILABILITY CHECK ═══
+var _photoCheckRunning=false;
+
+async function checkPhotosAvailable(force){
+  if(_photoCheckRunning)return;
+  const lastCheck=parseInt(localStorage.getItem('tt4_photoCheck')||'0');
+  const photos=JSON.parse(localStorage.getItem('tt4_photos')||'null');
+  const sevenDays=7*24*3600*1000;
+  if(!force&&photos&&(Date.now()-lastCheck)<sevenDays){
+    updatePhotoStatus(photos);return;
+  }
+  _photoCheckRunning=true;
+  updatePhotoStatus(null,'⏳ Verifica foto in corso...');
+  const ids=DB.map(e=>e.id);
+  const found=[];
+  // Use Image() — works on file:// and https:// alike
+  for(let i=0;i<ids.length;i+=8){
+    const batch=ids.slice(i,i+8);
+    await Promise.all(batch.map(id=>new Promise(res=>{
+      const img=new Image();
+      img.onload=()=>{found.push(id);res();};
+      img.onerror=()=>res();
+      img.src='images/exercises/'+id+'.png?_='+Date.now();
+    })));
+  }
+  localStorage.setItem('tt4_photos',JSON.stringify(found));
+  localStorage.setItem('tt4_photoCheck',Date.now().toString());
+  _photoCheckRunning=false;
+  updatePhotoStatus(found);
+}
+
+function updatePhotoStatus(photos,msg){
+  const el=document.getElementById('photo-filter-status');
+  if(!el)return;
+  if(msg){el.textContent=msg;return;}
+  if(!photos){el.textContent='Non verificato ancora';return;}
+  const total=DB.length;
+  const date=new Date(parseInt(localStorage.getItem('tt4_photoCheck')||'0'));
+  const dateStr=date>new Date(2020,0,1)?localDate(date):'mai';
+  el.textContent=photos.length+'/'+total+' esercizi con foto — verificato il '+dateStr;
+}
+
+function recheckPhotos(){
+  toast('🔄 Avvio verifica foto...');
+  checkPhotosAvailable(true);
+}
+
+function togglePhotoFilter(){
+  SET.onlyWithPhoto=!SET.onlyWithPhoto;
+  save();
+  const pfEl=document.getElementById('st-photo-filter');
+  if(pfEl){if(SET.onlyWithPhoto)pfEl.classList.add('on');else pfEl.classList.remove('on');}
+  if(SET.onlyWithPhoto){
+    const photos=JSON.parse(localStorage.getItem('tt4_photos')||'null');
+    if(!photos){
+      toast('📷 Avvio verifica foto in background...');
+      checkPhotosAvailable(false);
+    }
+    toast('📷 Attivo: verranno proposti solo esercizi con foto');
+  } else {
+    toast('📷 Disattivato: tutti gli esercizi disponibili');
+  }
+}
+
+function getPhotoIds(){
+  return JSON.parse(localStorage.getItem('tt4_photos')||'null');
+}
+
+function checkBackupReminder(){
+  const lastBackup=S.lastBackupSession||0;
+  const sessionsSince=S.tot-lastBackup;
+  const btn=document.getElementById('backup-alert-btn');
+  if(btn){
+    if(sessionsSince>=5&&S.tot>0){
+      btn.style.display='flex';
+    } else {
+      btn.style.display='none';
+    }
+  }
+}
+function showBackupModal(){
+  const lastBackup=S.lastBackupSession||0;
+  const sessions=S.tot-lastBackup;
+  const msg=document.getElementById('backup-modal-msg');
+  if(msg){
+    msg.innerHTML='Hai completato <strong>'+S.tot+' sessioni</strong> — i tuoi progressi sono salvati solo su questo dispositivo.<br><br>'+
+      (sessions>=5?'Sono passate <strong>'+sessions+' sessioni</strong> dall\'ultimo backup. ':'')+'Esporta ora il file JSON per non perdere nulla!';
+  }
+  const modal=document.getElementById('backup-modal');
+  if(modal)modal.style.display='flex';
+}
+function closeBackupModal(){
+  const modal=document.getElementById('backup-modal');
+  if(modal)modal.style.display='none';
+  // "Dopo" — posticipa di 5 sessioni (non conta come backup fatto)
+  S.lastBackupSession=S.tot;
+  save();
+  const btn=document.getElementById('backup-alert-btn');
+  if(btn)btn.style.display='none';
+}
+function markBackupDone(){
+  S.lastBackupSession=S.tot;
+  save();
+  const btn=document.getElementById('backup-alert-btn');
+  if(btn)btn.style.display='none';
+  toast('✅ Backup esportato! Conserva il file JSON al sicuro 🐢');
+}
+
+var _switchIv=null;
+function showSwitchSide(){
+  const overlay=document.getElementById('switch-overlay');
+  if(!overlay)return;
+  // Pause main exercise timer
+  clearInterval(T.iv);T.iv=null;
+  overlay.style.display='flex';
+  beep(880,.15);
+  setTimeout(()=>beep(660,.1),200);
+  speak('Cambia lato!');
+  let left=5;
+  const timerEl=document.getElementById('switch-timer');
+  if(timerEl)timerEl.textContent=left;
+  clearInterval(_switchIv);
+  _switchIv=setInterval(()=>{
+    left--;
+    if(timerEl)timerEl.textContent=Math.max(0,left);
+    if(left<=0){
+      clearInterval(_switchIv);
+      overlay.style.display='none';
+      // Resume main timer
+      T.iv=setInterval(tick,1000);
+    }
+  },1000);
+}
+
 // ═══ INIT ═══
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 if(P.name){
@@ -5162,7 +5607,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604151931'; // auto-set on each release
+const APP_BUILD='202604152101'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');

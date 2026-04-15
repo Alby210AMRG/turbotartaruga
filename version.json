@@ -1,6 +1,6 @@
 {
-  "version": "0.9",
-  "build": "202604151931",
-  "date": "15/04/2026 19:31",
-  "notes": "Fix chart routine dots, notif test semplificato"
+  "version": "0.99",
+  "build": "202604152101",
+  "date": "15/04/2026 21:01",
+  "notes": "Fix foto warmup, backup Dopo/export, bodymap daysSince+misto"
 }
