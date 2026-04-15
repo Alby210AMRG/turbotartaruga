@@ -441,7 +441,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <div id="screen-training" class="screen">
   <div class="tr-hdr">
     <button class="btn btn-o" style="padding:7px 12px;font-size:var(--fs-xs)" onclick="confirmQuit()">✕ Esci</button>
-    <div style="font-size:var(--fs-xs);color:var(--tmid);font-weight:bold">🐢 TurboTartaruga</div>
+    <div style="font-size:var(--fs-xs);color:var(--tmid);font-weight:bold">🐢 TurboTartaruga<span id="tr-party-badge" style="display:none;margin-left:6px;background:var(--lime);color:#1B5E20;border-radius:100px;padding:2px 8px;font-size:10px;font-weight:bold">🎉 Party</span></div>
     <div style="display:flex;align-items:center;gap:8px">
       <div id="tr-count" style="font-size:var(--fs-sm);font-weight:bold;color:var(--g1)">1/10</div>
       <button onclick="goSettingsFromTraining()" style="width:32px;height:32px;border-radius:50%;background:var(--bg2);border:none;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center" title="Impostazioni">⚙️</button>
@@ -835,6 +835,38 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         </details>
         <!-- Guests list -->
         <div id="together-guests" style="margin-top:8px"></div>
+      </div>
+
+      <!-- Card: Genera e condividi risultati (sempre visibile se ci sono ospiti) -->
+      <div class="p-card" id="share-session-card" style="display:none">
+        <div class="p-tag">📤 Condividi sessione con gli amici</div>
+        <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:10px">
+          Genera il QR con i dati della sessione corrente da mandare ai tuoi amici.
+        </p>
+        <button onclick="generateShareSession()"
+          style="width:100%;padding:13px;background:var(--lime);color:#1B5E20;border:none;border-radius:100px;font-weight:bold;font-size:14px;cursor:pointer;margin-bottom:10px">
+          📱 Genera QR sessione
+        </button>
+        <div id="share-session-out" style="display:none;text-align:center">
+          <div style="background:#fff;border-radius:14px;padding:14px;display:inline-block;margin-bottom:8px">
+            <div id="share-session-qr"></div>
+          </div>
+          <div style="font-size:11px;opacity:.7;margin-bottom:10px">Fai inquadrare ai tuoi amici 📷</div>
+          <div style="display:flex;gap:8px;margin-bottom:10px">
+            <button onclick="shareSessionCode()"
+              style="flex:1;padding:11px;background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.4);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
+              📤 Condividi
+            </button>
+            <button onclick="copySessionCode()"
+              style="flex:1;padding:11px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
+              📋 Copia
+            </button>
+          </div>
+          <button onclick="releaseAllGuests()"
+            style="width:100%;padding:10px;background:rgba(255,0,0,.15);color:rgba(255,255,255,.8);border:1px dashed rgba(255,0,0,.4);border-radius:100px;font-size:12px;cursor:pointer">
+            🔓 Termina sessione e libera tutti gli amici
+          </button>
+        </div>
       </div>
 
       <!-- Card: Genera risultato per gli ospiti (visibile dopo sessione) -->
@@ -2934,14 +2966,14 @@ async function sendTestNotification(){
     if(res)res.textContent='⚠️ Permesso non concesso. Attiva le notifiche prima.';return;
   }
   if(!('serviceWorker' in navigator)||!navigator.serviceWorker.controller){
-    // SW not active — show notification directly
-    try{
-      new Notification('🐢 TurboTartaruga — Test',{
-        body:'Se vedi questo messaggio, le notifiche funzionano! 🎉',
-        icon:'./icon-192.png'
+    // SW not ready yet - wait for it
+    if(res)res.textContent='⏳ Service Worker in avvio, riprova tra 2 secondi...';
+    navigator.serviceWorker.ready.then(reg=>{
+      reg.showNotification('🐢 TurboTartaruga — Test',{
+        body:'Le notifiche funzionano! 🎉',icon:'./icon-192.png',tag:'test'
       });
-      if(res)res.textContent='✅ Notifica inviata! Controlla il pannello notifiche.';
-    }catch(e){if(res)res.textContent='❌ Errore: '+e.message;}
+      if(res)res.textContent='✅ Notifica inviata!';
+    }).catch(e=>{if(res)res.textContent='❌ Errore SW: '+e.message;});
     return;
   }
   // Via SW — schedule for 5 seconds from now
@@ -3427,6 +3459,9 @@ function doShowEx(idx){
   // Riserva is shown during the REST before the 3rd-to-last exercise, not here
   const rb=document.getElementById('riserva-banner');
   if(rb)rb.style.display='none'; // always hide on exercise start
+  // Show party badge if guests are present
+  const pb=document.getElementById('tr-party-badge');
+  if(pb)pb.style.display=(typeof togetherGuests!=='undefined'&&togetherGuests.length>0)?'inline':'none';
   go_scr('training');startTimer();
 }
 function updatePbar(){
@@ -3752,7 +3787,12 @@ function completeSession(){
   document.getElementById('cmp-xp').textContent='+'+xpGain;
   // Funny phrase
   const ph=document.getElementById('cmp-phrase');
-  if(ph)ph.textContent=DONE_PHRASES[Math.floor(Math.random()*DONE_PHRASES.length)];
+  if(ph){
+    const _dp=(typeof DONE_PHRASES!=='undefined'&&DONE_PHRASES&&DONE_PHRASES.length)?
+      DONE_PHRASES:
+      ['Ottimo lavoro! 🐢','Ce l\'hai fatta! 💪','Fantastico! Continua così! 🌟','Lento ma costante vince! 🐢'];
+    ph.textContent=_dp[Math.floor(Math.random()*_dp.length)];
+  }
   // Tags chips
   const tagWrap=document.getElementById('cmp-tags');
   if(tagWrap){tagWrap.innerHTML=tags.map(t=>`<div style="background:rgba(255,255,255,.18);border-radius:100px;padding:4px 11px;font-size:11px;font-weight:bold;color:#fff">${t}</div>`).join('')}
@@ -4363,7 +4403,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 16:06';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 19:10';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4739,6 +4779,7 @@ function addGuestFromCode(){
 function updateTogetherUI(){
   const wrap=document.getElementById('together-guests');
   if(!wrap)return;
+  const sc=document.getElementById('share-session-card');if(sc)sc.style.display=togetherGuests.length>0?'block':'none';
   if(!togetherGuests.length){wrap.innerHTML='';return}
   wrap.innerHTML='<div style="margin-top:4px;font-size:11px;color:rgba(255,255,255,.6);margin-bottom:6px">'+togetherGuests.length+' ospite/i aggiunti:</div>'+
     togetherGuests.map((g,i)=>'<div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border-radius:10px;padding:8px 11px;margin-bottom:5px">'+
@@ -4748,6 +4789,58 @@ function updateTogetherUI(){
       '<button onclick="removeGuest('+i+')" style="background:rgba(255,0,0,.2);border:none;border-radius:50%;width:22px;height:22px;color:#fff;cursor:pointer;font-size:11px">✕</button>'+
     '</div>').join('');
 }
+
+var _sessionCode='';
+
+function generateShareSession(){
+  if(!togetherGuests||!togetherGuests.length){toast('⚠️ Nessun amico nella sessione!');return;}
+  const today=localDate();
+  const lastH=(S.history||[]).find(h=>h.date===today)||{};
+  const result={
+    type:'TTR_result',v:'0.5',
+    guests:togetherGuests.map(g=>g.name),
+    date:today,
+    type_ses:lastH.type||T.sesType||'misto',
+    icon:lastH.icon||CAT_INFO[T.sesType]?.icon||'💪',
+    dur:lastH.dur||Math.max(1,Math.round((Date.now()-T.t0)/60000)),
+    exCount:lastH.exCount||(T.exs?T.exs.filter(e=>!e._transition).length:0),
+    xp:lastH.xp||10,
+    tags:lastH.tags||[],
+    exercises:(lastH.exercises||[]).slice(0,10)
+  };
+  _sessionCode='TTR-'+btoa(unescape(encodeURIComponent(JSON.stringify(result))));
+  document.getElementById('share-session-out').style.display='block';
+  makeQR('share-session-qr',_sessionCode);
+  toast('✅ QR pronto! Fallo inquadrare ai tuoi amici 📱');
+}
+
+function shareSessionCode(){
+  if(!_sessionCode){toast('⚠️ Genera prima il QR!');return;}
+  const names=togetherGuests.map(g=>g.name).join(', ');
+  const text='Risultati sessione TurboTartaruga ('+names+'): '+_sessionCode+' — Incollalo in Party > Unisciti > Importa risultato 🐢';
+  if(navigator.share){navigator.share({title:'TurboTartaruga — Sessione',text}).catch(()=>copySessionCode());}
+  else copySessionCode();
+}
+
+function copySessionCode(){
+  if(!_sessionCode){toast('⚠️ Genera prima il QR!');return;}
+  if(navigator.clipboard){navigator.clipboard.writeText(_sessionCode).then(()=>toast('📋 Codice copiato!'));}
+  else toast('📋 Copia manualmente il codice');
+}
+
+function releaseAllGuests(){
+  if(!confirm('Terminare la sessione party e liberare tutti gli amici?'))return;
+  togetherGuests=[];
+  _sessionCode='';
+  _lastResultCode='';
+  updateTogetherUI();
+  const rc=document.getElementById('result-card');if(rc)rc.style.display='none';
+  const sc=document.getElementById('share-session-card');if(sc)sc.style.display='none';
+  const qrEl=document.getElementById('share-session-qr');if(qrEl)qrEl.innerHTML='';
+  document.getElementById('share-session-out').style.display='none';
+  toast('🔓 Sessione party terminata. Tutti gli amici liberati! 🐢');
+}
+
 function removeGuest(i){togetherGuests.splice(i,1);updateTogetherUI();toast('Amico rimosso')}
 function resetPartySession(){
   togetherGuests=[];
@@ -5066,7 +5159,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604151606'; // auto-set on each release
+const APP_BUILD='202604151910'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');

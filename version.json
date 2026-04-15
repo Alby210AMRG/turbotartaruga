@@ -1,6 +1,5 @@
 {
   "version": "0.9",
-  "build": "202604151606",
-  "date": "15/04/2026 16:06",
-  "notes": "Tutti let/const top-level \u2192 var in block1"
+  "build": "202604151910",
+  "date": "15/04/2026 19:10"
 }
