@@ -143,8 +143,8 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 .xp-fill{height:100%;background:linear-gradient(90deg,var(--y1),var(--orange));border-radius:100px;transition:width .6s}
 .level-badge{display:inline-flex;align-items:center;gap:6px;background:var(--g4);border-radius:100px;padding:6px 14px;font-weight:bold;color:var(--g1);font-size:var(--fs-sm);margin-bottom:9px}
 [data-theme="dark"] .level-badge{background:#1A3A1A}
-.badges-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
-.bdg{border-radius:14px;padding:12px 6px;text-align:center;background:var(--g4)}
+.badges-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;grid-auto-rows:1fr}
+.bdg{border-radius:14px;padding:12px 6px;text-align:center;background:var(--g4);display:flex;flex-direction:column;align-items:center;justify-content:flex-start}
 [data-theme="dark"] .bdg{background:#1A3A1A}
 .bdg.locked{background:var(--bg2);filter:grayscale(.85);opacity:.55}
 .bdg .bi{font-size:28px;display:block;margin-bottom:5px}.bdg .bn{font-size:10px;font-weight:bold;color:var(--text);line-height:1.3}.bdg.locked{opacity:.4}
@@ -810,6 +810,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           style="width:100%;padding:13px;background:var(--lime);color:#1B5E20;border:none;border-radius:100px;font-weight:bold;font-size:14px;cursor:pointer;margin-bottom:10px">
           📷 Scansiona QR amico
         </button>
+        <!-- iOS fallback: file input with camera capture -->
+        <label id="btn-qr-ios" style="display:none;width:100%;text-align:center;padding:11px;background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.4);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer;box-sizing:border-box;margin-bottom:6px">
+          📱 iOS: usa Fotocamera
+          <input type="file" accept="image/*" capture="environment" style="display:none" onchange="handleQRImageFile(event,'guest')">
+        </label>
         <!-- QR video preview -->
         <div id="qr-scan-wrap" style="display:none;margin-bottom:10px">
           <video id="qr-video" style="width:100%;border-radius:12px;background:#000;max-height:220px;object-fit:cover"></video>
@@ -875,6 +880,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           style="width:100%;padding:13px;background:var(--lime);color:#1B5E20;border:none;border-radius:100px;font-weight:bold;font-size:14px;cursor:pointer;margin-bottom:10px">
           📷 Scansiona QR risultato
         </button>
+        <label id="btn-qr-result-ios" style="display:none;width:100%;text-align:center;padding:11px;background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.4);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer;box-sizing:border-box;margin-bottom:6px">
+          📱 iOS: usa Fotocamera
+          <input type="file" accept="image/*" capture="environment" style="display:none" onchange="handleQRImageFile(event,'result')">
+        </label>
         <!-- QR video preview for result scan -->
         <div id="qr-result-scan-wrap" style="display:none;margin-bottom:10px">
           <p style="font-size:11px;opacity:.7;text-align:center;margin-bottom:4px">La stessa fotocamera sopra si usa per entrambe le scansioni</p>
@@ -1791,7 +1800,7 @@ const WIZ_STEPS = [
       <div id="wiz-morning-time" style="display:none;width:100%;max-width:300px">
         <div style="font-size:13px;opacity:.85;margin-bottom:8px;font-weight:bold">A che ora ti svegli di solito?</div>
         <div style="display:flex;gap:8px;justify-content:center">
-          ${[['05:00-06:30','🌄','Presto',5],['06:30-08:00','☀️','Mattina',7],['08:00-10:00','🌤️','Tardi',8]].map(([r,ico,lbl,h])=>`
+          ${[['06:00-07:30','🌄','Presto',6],['07:30-09:00','☀️','Mattina',8],['09:00-10:00','🌤️','Tardi',9]].map(([r,ico,lbl,h])=>`
           <button class="wiz-wake-btn" data-h="${h}" onclick="wizSelWake(this)"
             style="flex:1;padding:12px 6px;border-radius:12px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:bold;cursor:pointer">
             ${ico}<br>${lbl}<br><span style="opacity:.7;font-size:10px">${r}</span>
@@ -2146,7 +2155,11 @@ function refreshPlan(){
   const autoRests=S.plan.filter(p=>p.restKind==='auto').length;
   toast('✅ Piano aggiornato! '+(autoRests>0?'('+autoRests+' giorni recupero automatico inseriti per evitare sovrallenamento)':''));
 }
-function getTodayPlan(){const today=new Date().toISOString().slice(0,10);return S.plan.find(p=>p.date===today)||{focus:'misto',icon:'🌈',type:'workout'}}
+function localDate(d){
+  const dd=d||new Date();
+  return dd.getFullYear()+'-'+String(dd.getMonth()+1).padStart(2,'0')+'-'+String(dd.getDate()).padStart(2,'0');
+}
+function getTodayPlan(){const today=localDate();return S.plan.find(p=>p.date===today)||{focus:'misto',icon:'🌈',type:'workout'}}
 
 // ═══ HOME ═══
 function buildHome(){
@@ -2984,8 +2997,8 @@ function wizEnableMorning(enable){
     if(timeDiv)timeDiv.style.display='block';
     if(yesBtn){yesBtn.style.background='rgba(255,255,255,.35)';yesBtn.style.borderColor='#fff';}
     // Default wake hour
-    if(!_wizData.morningHour)_wizData.morningHour=7;
-    const def=document.querySelector('.wiz-wake-btn[data-h="7"]');if(def)wizSelWake(def);
+    if(!_wizData.morningHour)_wizData.morningHour=8;
+    const def=document.querySelector('.wiz-wake-btn[data-h="8"]');if(def)wizSelWake(def);
   } else {
     _wizData.morningHour=null;
     if(timeDiv)timeDiv.style.display='none';
@@ -3066,7 +3079,7 @@ function completeRoutine(){
 
 // ── Build banner visibility in Home ───────────────────────────────
 function buildRoutineBanners(){
-  const today=new Date().toISOString().slice(0,10);
+  const today=localDate();
   const h=new Date().getHours();
   // Morning banner: show ±2h from wake time, if not done today
   const morningBanner=document.getElementById('home-morning-banner');
@@ -3524,9 +3537,18 @@ function activateRiserva(){
   S.boosts=(S.boosts||0)+1;save();
   const bonus=genBonusExs();
   if(!bonus.length){toast('⚠️ Nessun esercizio bonus disponibile!');return;}
-  T.exs.splice(T.idx+1,0,...bonus);
-  toast('💥 Riserva Turbo! +'+bonus.length+' esercizi bonus!',3500);buildNextList();updatePbar();
-  const real=T.exs.filter(e=>!e._transition);const done=T.exs.slice(0,T.idx).filter(e=>!e._transition).length;
+  // Insert bonus AFTER all remaining real exercises (not before them)
+  // Find index of last real (non-transition, non-bonus) exercise
+  let lastRealIdx=-1;
+  for(let i=T.exs.length-1;i>=0;i--){
+    if(!T.exs[i]._transition&&!T.exs[i]._bonus){lastRealIdx=i;break;}
+  }
+  const insertAt=lastRealIdx>=0?lastRealIdx+1:T.exs.length;
+  T.exs.splice(insertAt,0,...bonus);
+  toast('💥 Riserva Turbo attivata! Finisci gli esercizi in corso, poi arrivano i 2 bonus!',4000);
+  buildNextList();updatePbar();
+  const real=T.exs.filter(e=>!e._transition);
+  const done=T.exs.slice(0,T.idx).filter(e=>!e._transition).length;
   document.getElementById('tr-count').textContent=`${done+1}/${real.length}`;
   S.xp=(S.xp||0)+5;save();
 }
@@ -3592,7 +3614,7 @@ function completeSession(){
   SET._sessionEnergyBias=0; // reset session energy bias
   launchConfetti();
   clearInterval(T.iv);clearInterval(restIv);clearInterval(transIv);
-  const today=new Date().toISOString().slice(0,10);
+  const today=localDate();
   const xpGain=10+(S.str>0?Math.min(S.str,5):0)+(riservaDone?5:0);
   S.tot++;S.xp=(S.xp||0)+xpGain;
   if(!S.days.includes(today))S.days.push(today);
@@ -3684,7 +3706,7 @@ function calcSkippedSessions(){
   save();
 }
 function updateStreak(){
-  const today=new Date().toISOString().slice(0,10);
+  const today=localDate();
   // Only count real sessions — S.days entries with '_volrest' suffix are voluntary rests
   const todayDone=S.days.some(d=>d===today);
 
@@ -4072,7 +4094,7 @@ function buildProfile(){
   [1,2,3].forEach(lv=>{
     const bs=BADGES.filter(b=>b.lv===lv);const done=bs.filter(b=>unlocked.has(b.id)).length;
     document.getElementById(`lv${lv}-prog`).textContent=`(${done}/${bs.length})`;
-    document.getElementById(`badges-lv${lv}`).innerHTML=bs.map(b=>`<div class="bdg${unlocked.has(b.id)?'':' locked'}"><span class="bi">${b.icon}</span><span class="bn">${b.name}</span><span class="bv bv${lv}">${b.hint}</span></div>`).join('');
+    document.getElementById(`badges-lv${lv}`).innerHTML=bs.map(b=>`<div class="bdg${unlocked.has(b.id)?'':' locked'}" data-bid="${b.id}" onclick="openBadgeModal(this)" style="cursor:pointer"><span class="bi">${b.icon}</span><span class="bn">${b.name}</span><span class="bv bv${lv}">${b.hint}</span></div>`).join('');
   });
 }
 
@@ -4224,7 +4246,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 12/04/2026 07:48';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 12:29';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4666,10 +4688,23 @@ function importResultCode(){
     };
     if(!S.days.includes(r.date))S.days.push(r.date);
     S.tot++;S.xp=(S.xp||0)+r.xp;
-    addHistory(entry);updateStreak();checkBadges();save();
+    // Track category in catSet for badge checking
+    if(r.type_ses&&!['riposo','riposo_vol'].includes(r.type_ses)){
+      if(!S.catSet)S.catSet=[];
+      if(!S.catSet.includes(r.type_ses))S.catSet.push(r.type_ses);
+    }
+    addHistory(entry);
+    updateStreak();
+    const newBadges=checkBadges();
+    save();
     document.getElementById('result-code-input').value='';
-    toast('✅ Sessione importata! +'+r.xp+' XP guadagnati 🎉');
+    launchConfetti();
+    toast('✅ Sessione party importata! +'+r.xp+' XP guadagnati 🎉',3500);
     beep(660,.15);
+    // Show new badges
+    if(newBadges.length){
+      setTimeout(()=>{newBadges.forEach((b,i)=>{setTimeout(()=>toast('🏅 Badge sbloccato: '+b.name+'! +25 XP',3500),i*3600);});},1000);
+    }
   }catch(e){toast('⚠️ Codice non valido o corrotto!')}
 }
 
@@ -4693,6 +4728,31 @@ function importResultCode(){
   </div>
 </div>
 <script>
+
+function openBadgeModal(el){
+  const badgeId=el.dataset.bid;
+  const b=BADGES.find(x=>x.id===badgeId);if(!b)return;
+  const unlocked=(S.badges||[]).includes(badgeId);
+  const modal=document.getElementById('ex-modal');
+  const img=document.getElementById('ex-modal-img');
+  const ph=document.getElementById('ex-modal-placeholder');
+  const nm=document.getElementById('ex-modal-name');
+  const cat=document.getElementById('ex-modal-cat');
+  const desc=document.getElementById('ex-modal-desc');
+  const zona=document.getElementById('ex-modal-zona');
+  if(nm)nm.textContent=b.icon+' '+b.name;
+  if(cat)cat.textContent=['','🥚 Tartarughina','🐢 Tartaruga','🚀 TurboTartaruga'][b.lv]+(unlocked?' — Sbloccato! ✅':' — Bloccato 🔒');
+  if(desc)desc.textContent=unlocked?'Badge sbloccato! Ottimo lavoro 🐢':'Come sbloccarlo: '+b.hint;
+  if(zona)zona.textContent=unlocked?'+25 XP guadagnati':'Requisito: '+b.hint;
+  if(img)img.style.display='none';
+  if(ph){
+    ph.style.display='flex';
+    ph.innerHTML='<span style="font-size:80px">'+b.icon+'</span>';
+    ph.style.height='160px';
+  }
+  if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}
+}
+
 function openExModal(exId){
   const ex=DB.find(e=>e.id===exId);if(!ex)return;
   const modal=document.getElementById('ex-modal');
@@ -4717,6 +4777,50 @@ function openExModal(exId){
 function closeExModal(){
   const modal=document.getElementById('ex-modal');
   if(modal){modal.style.display='none';document.body.style.overflow='';}
+}
+
+
+// Detect iOS and show file-capture fallback for QR
+(function detectIOS(){
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+  const noBarcode=!('BarcodeDetector' in window);
+  if(isIOS||noBarcode){
+    // Show iOS file-based QR buttons
+    setTimeout(()=>{
+      const b1=document.getElementById('btn-qr-ios');
+      const b2=document.getElementById('btn-qr-result-ios');
+      if(b1)b1.style.display='block';
+      if(b2)b2.style.display='block';
+    },500);
+  }
+})();
+
+async function handleQRImageFile(evt,target){
+  const file=evt.target.files[0];if(!file)return;
+  // Try BarcodeDetector on the image file (works on some iOS versions)
+  if('BarcodeDetector' in window){
+    try{
+      const bmp=await createImageBitmap(file);
+      const det=new BarcodeDetector({formats:['qr_code']});
+      const codes=await det.detect(bmp);
+      if(codes&&codes.length>0){processScannedCode(codes[0].rawValue);return;}
+    }catch(_){}
+  }
+  // Fallback: draw to canvas and use jsQR
+  const img=new Image();
+  img.onload=()=>{
+    const cv=document.createElement('canvas');
+    cv.width=img.width;cv.height=img.height;
+    const ctx=cv.getContext('2d');ctx.drawImage(img,0,0);
+    const imgData=ctx.getImageData(0,0,cv.width,cv.height);
+    if(typeof jsQR!=='undefined'){
+      const res=jsQR(imgData.data,cv.width,cv.height);
+      if(res){processScannedCode(res.data);return;}
+    }
+    // If all fails, guide user
+    toast('⚠️ QR non riconosciuto. Prova ad avvicinarti o usa il codice manuale.',4000);
+  };
+  img.src=URL.createObjectURL(file);
 }
 
 // ═══ INIT ═══
@@ -4819,7 +4923,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604120748'; // auto-set on each release
+const APP_BUILD='202604151229'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
