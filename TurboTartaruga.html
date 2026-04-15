@@ -1457,13 +1457,13 @@ const BADGES=[
 ];
 
 // ═══ APP STATE ═══
-let P={},S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0};
+var P={},S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0};
 // P.favorites = [] of exercise ids starred
 // P.avoided   = [] of exercise ids avoided
 // P.favCount  = number of favorites to include per session (0-5, default 3)
-let SET={theme:'light',audio:true,voice:true,viewScale:'1x',pauseSec:20};
-let T={exs:[],idx:0,phase:'act',left:0,iv:null,paused:false,t0:null,sesType:'',dur:12,feeling:'piano'};
-let restIv=null,transIv=null,grIv=null,audioCtx=null,riservaDone=false,calYear=0,calMonth=0;
+var SET={theme:'light',audio:true,voice:true,viewScale:'1x',pauseSec:20};
+var T={exs:[],idx:0,phase:'act',left:0,iv:null,paused:false,t0:null,sesType:'',dur:12,feeling:'piano'};
+var restIv=null,transIv=null,grIv=null,audioCtx=null,riservaDone=false,calYear=0,calMonth=0;
 
 // ═══ STORAGE ═══
 function save(){localStorage.setItem('tt4_p',JSON.stringify(P));localStorage.setItem('tt4_s',JSON.stringify(S));localStorage.setItem('tt4_set',JSON.stringify(SET))}
@@ -1617,7 +1617,7 @@ function saveProfile(){
 
 
 // ═══ WIZARD ONBOARDING ═══
-const WIZ_STEPS = [
+var WIZ_STEPS = [
   // 0: Nome
   {id:'wiz-nome', bg:'linear-gradient(155deg,#1B5E20,#2E7D32,#43A047)', render:()=>`
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:40px 24px;text-align:center;color:#fff">
@@ -2590,7 +2590,7 @@ function requestGPS(ctx){
 }
 
 // ── WEATHER ──────────────────────────────────────────────────────
-const WX_CODES={
+var WX_CODES={
   0:'☀️',1:'🌤️',2:'⛅',3:'☁️',
   45:'🌫️',48:'🌫️',
   51:'🌦️',53:'🌦️',55:'🌧️',
@@ -2599,7 +2599,7 @@ const WX_CODES={
   80:'🌦️',81:'🌧️',82:'⛈️',
   95:'⛈️',96:'⛈️',99:'⛈️'
 };
-const WX_LABELS={
+var WX_LABELS={
   0:'Sereno',1:'Poco nuvoloso',2:'Nuvoloso',3:'Coperto',
   45:'Nebbia',51:'Pioggerella',61:'Pioggia',71:'Neve',
   80:'Rovesci',95:'Temporale'
@@ -2842,7 +2842,7 @@ function buildRecapText(){
 }
 
 // ── NOTIFICATION SCHEDULING ───────────────────────────────────────
-const NOTIF_HOURS={morning:[7,8,9],afternoon:[13,14,15],evening:[18,19,20]};
+var NOTIF_HOURS={morning:[7,8,9],afternoon:[13,14,15],evening:[18,19,20]};
 
 async function scheduleNotifications(){
   if(!SET.notifEnabled)return;
@@ -3041,7 +3041,7 @@ function selNotifTime(btn){
 }
 
 // Call fetchWeather on home build
-const _origApplyDynTheme=typeof applyDynamicTheme==='function'?applyDynamicTheme:null;
+var _origApplyDynTheme=typeof applyDynamicTheme==='function'?applyDynamicTheme:null;
 
 
 // ═══ ROUTINE MATTUTINA E PRE-SONNO ═══
@@ -3658,7 +3658,7 @@ function showTransition(ex,idx){
 }
 
 // ═══ COMPLETE ═══
-const DONE_PHRASES=[
+var DONE_PHRASES=[
   'Per oggi la tartaruga ha vinto! 🐢',
   'Lento ma l\'hai fatto! Fantastico! 💪',
   'Il divano può aspettare — tu hai vinto! 🛋️✨',
@@ -4363,7 +4363,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 14:27';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 16:06';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -5066,7 +5066,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604151427'; // auto-set on each release
+const APP_BUILD='202604151606'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');

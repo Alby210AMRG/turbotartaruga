@@ -1,6 +1,6 @@
 {
   "version": "0.9",
-  "build": "202604151427",
-  "date": "15/04/2026 14:27",
-  "notes": "var hoisting completo, guard su togetherGuests"
+  "build": "202604151606",
+  "date": "15/04/2026 16:06",
+  "notes": "Tutti let/const top-level \u2192 var in block1"
 }
