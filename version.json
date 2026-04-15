@@ -1,6 +1,6 @@
 {
   "version": "0.9",
-  "build": "202604151350",
-  "date": "15/04/2026 13:50",
-  "notes": "Fix isLast direct completeSession, buildExList DOM puro"
+  "build": "202604151427",
+  "date": "15/04/2026 14:27",
+  "notes": "var hoisting completo, guard su togetherGuests"
 }

@@ -1497,9 +1497,18 @@ function restore(d){if(d.profile)P=d.profile;if(d.stats)S=d.stats;if(d.settings)
 </div>
 
 <script>
+// ── Global state variables (hoisted to avoid TDZ) ──────────────────────
+var exListVisible=false;
+var togetherGuests=[];
+var _qrStream=null;
+var _qrScanInterval=null;
+var _qrScanTarget=null;
+var _lastGuestCode='';
+var _lastResultCode='';
+var players=[],scores={},chalIdx=0,partyIv=null,partyLeft=60;
 // ═══ NAVIGATION & THEME ═══
 // Screen navigation with back-stack tracking
-let _prevScreen='home';
+var _prevScreen='home';
 function go(scr){
   const curActive=document.querySelector('.screen.active');
   _prevScreen=curActive?curActive.id.replace('screen-',''):'home';
@@ -1859,8 +1868,8 @@ const WIZ_STEPS = [
   },
 ];
 
-let _wizStep = 0;
-let _wizData = { sex:'M', level:'principiante', cats:['gambe','braccia','core','stretching','orientale'], notifTime:'evening', wantNotif:true };
+var _wizStep = 0;
+var _wizData = { sex:'M', level:'principiante', cats:['gambe','braccia','core','stretching','orientale'], notifTime:'evening', wantNotif:true };
 
 function initWizard(){
   _wizStep=0;_wizData={sex:'M',level:'principiante',cats:['gambe','braccia','core','stretching','orientale'],notifTime:'evening',wantNotif:true};
@@ -2605,7 +2614,7 @@ function wxGroup(code){
   return'stormy';
 }
 
-let _wxCache=null,_wxCacheTime=0;
+var _wxCache=null,_wxCacheTime=0;
 
 async function fetchWeather(){
   if(!SET.gpsLat||!SET.gpsLon)return null;
@@ -3726,7 +3735,7 @@ function completeSession(){
   const planEntry=S.plan.find(p=>p.date===today);if(planEntry)planEntry.done=true;
   save();
   // Auto-generate result code for party guests if any
-  if(togetherGuests&&togetherGuests.length>0){
+  if(typeof togetherGuests!=='undefined'&&togetherGuests&&togetherGuests.length>0){
     // Build the result entry now (before going to complete screen)
     setTimeout(()=>{
       const hist=S.history[0]; // most recent
@@ -3832,7 +3841,7 @@ function checkBadges(){
 function calMove(dir){calMonth+=dir;if(calMonth>11){calMonth=0;calYear++}else if(calMonth<0){calMonth=11;calYear--}buildCal()}
 
 // ── Calendar day tooltip ──────────────────────────────────────────
-let _calTipTimer=null;
+var _calTipTimer=null;
 function showCalTip(el, dataEnc){
   // Remove any existing tooltip
   const old=document.getElementById('cal-tip-popup');if(old)old.remove();
@@ -4207,7 +4216,7 @@ function buildProfile(){
 }
 
 // ═══ PARTY ═══
-let players=[],scores={},chalIdx=0,partyIv=null,partyLeft=60;
+
 function initParty(){
   players=P.name?[P.name]:['Giocatore 1'];scores={};chalIdx=0;
   showPartyChal(CHALLENGES[0]);
@@ -4354,7 +4363,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 13:50';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 14:27';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4378,7 +4387,7 @@ function saveField(f){
 
 // ═══ BACKUP ═══
 // ═══ EXERCISE LIST IN SETTINGS ═══
-let exListVisible=false;
+
 function toggleExList(){
   exListVisible=!exListVisible;
   const wrap=document.getElementById('ex-list-wrap');
@@ -4562,12 +4571,8 @@ function partyTab(tab){
 }
 
 // ═══ ALLENA INSIEME ═══
-let togetherGuests=[];
-let _qrStream=null;
-let _qrScanTarget=null;
-let _qrScanInterval=null;
-let _lastGuestCode='';
-let _lastResultCode='';
+
+
 
 function showInstallGuide(){
   const modal=document.getElementById('install-modal');
@@ -5061,7 +5066,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604151350'; // auto-set on each release
+const APP_BUILD='202604151427'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
