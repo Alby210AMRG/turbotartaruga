@@ -3522,16 +3522,27 @@ function showRestPreview(targetIdx, onDone){
   } else if(isLast){
     if(rstHdr)rstHdr.textContent='Ultimo sforzo fatto! Complimenti! 🏆';
     if(rstEmoji)rstEmoji.textContent='🎉';
-    // Stop main exercise timer to prevent double-trigger
+    // Hide next-exercise block since there is none
+    const nb2=document.getElementById('rst-next-block');if(nb2)nb2.style.display='none';
+    // Stop ALL timers immediately
     clearInterval(T.iv);T.iv=null;
+    clearInterval(restIv);restIv=null;
     go_scr('rest');beep(880,.2);
     if(SET.voice)setTimeout(()=>speak('Complimenti! Hai finito!'),300);
-    clearInterval(restIv);
-    T._restDone=onDone;
-    // Short auto-complete after brief celebration (3s)
+    // After 3 seconds go directly to completeSession — no intermediate nextEx call
+    T._restDone=null; // clear any stale callback
     let lastLeft=3;
-    document.getElementById('rst-timer').textContent=lastLeft;
-    restIv=setInterval(()=>{if(T.paused)return;lastLeft--;const el=document.getElementById('rst-timer');if(el)el.textContent=Math.max(0,lastLeft);if(lastLeft<=0){clearInterval(restIv);const fn=T._restDone;T._restDone=null;if(fn)fn();}},1000);
+    const timerEl=document.getElementById('rst-timer');
+    if(timerEl)timerEl.textContent=lastLeft;
+    restIv=setInterval(()=>{
+      if(T.paused)return;
+      lastLeft--;
+      if(timerEl)timerEl.textContent=Math.max(0,lastLeft);
+      if(lastLeft<=0){
+        clearInterval(restIv);restIv=null;
+        completeSession();
+      }
+    },1000);
     return;
   } else {
     if(rstHdr)rstHdr.textContent='Ottimo lavoro! Riposa...';
@@ -3582,8 +3593,10 @@ function skipExercise(){
   showRestPreview(nextIdx,()=>doShowEx(nextIdx));
 }
 function skipRest(){
-  clearInterval(restIv);
-  const fn=T._restDone;T._restDone=null;if(fn)fn();
+  clearInterval(restIv);restIv=null;
+  const fn=T._restDone;T._restDone=null;
+  if(fn){fn();}
+  else if(!T.exs[T.idx+1]){completeSession();} // isLast path with no callback
 }
 
 function togglePause(){T.paused=!T.paused;document.getElementById('btn-pause').textContent=T.paused?'▶️ Riprendi':'⏸️ Pausa'}
@@ -4341,7 +4354,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 13:25';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 13:50';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4394,44 +4407,65 @@ function buildExList(){
   ];
   const total=DB.length;
   const lbl=document.getElementById('ex-count-lbl');
-  if(lbl)lbl.textContent=`${total} esercizi in ${cats.filter(c=>DB.some(e=>e.cat===c.key)).length} categorie`;
-  wrap.innerHTML=cats.map(cat=>{
+  const numCats=cats.filter(ct=>DB.some(e=>e.cat===ct.key)).length;
+  if(lbl)lbl.textContent=total+' esercizi in '+numCats+' categorie';
+  // Build DOM programmatically — no innerHTML with user data
+  wrap.innerHTML='';
+  cats.forEach(cat=>{
     const exs=DB.filter(e=>e.cat===cat.key);
-    if(!exs.length)return'';
-    return`<div class="ex-cat-section">
-      <div class="ex-cat-hdr">${cat.label} <span style="color:var(--tlt);font-weight:normal">(${exs.length})</span></div>
-      ${exs.map(ex=>{
-        const fname=ex.id+'.png';
-        const imgSrc='images/exercises/'+fname;
-        return`<div class="ex-card-mini">
-          <div class="ex-card-mini-img" onclick="openExModal('${ex.id}')" style="cursor:pointer" title="Tocca per ingrandire">
-            <img src="${imgSrc}" alt="${ex.n}"
-              onload="this.style.display='block';this.parentElement.style.background='transparent'"
-              onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\\'font-size:9px;color:var(--tlt);text-align:center;padding:2px\\' title=\\'Atteso: ${fname}\\'>${ex.id}</span>'">
-          </div>
-          <div class="ex-card-mini-info">
-            <div class="ex-card-mini-name">${ex.n}</div>
-            <div class="ex-card-mini-desc">${ex.desc||ex.n}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
-            <button onclick="toggleFavList('${ex.id}',this)" title="Preferito"
-              style="font-size:18px;background:none;border:none;cursor:pointer;padding:2px;line-height:1;opacity:${(P.favorites||[]).includes(ex.id)?'1':'0.3'}">⭐</button>
-            <button onclick="toggleAvoidList('${ex.id}',this)" title="Non mi piace"
-              style="font-size:18px;background:none;border:none;cursor:pointer;padding:2px;line-height:1;opacity:${(P.avoided||[]).includes(ex.id)?'1':'0.3'}">🚫</button>
-          </div>
-          ${ex.floor?'<span class="ex-floor-tag">🏔️ terra</span>':''}
-        </div>`;
-      }).join('')}
-    </div>`;
-  }).join('');
-  // Set text content safely (avoids apostrophe/quote issues in innerHTML)
-  wrap.querySelectorAll('[data-name]').forEach(el=>{
-    const ex=DB.find(e=>e.id===el.dataset.name);
-    if(ex)el.textContent=ex.n;
-  });
-  wrap.querySelectorAll('[data-desc]').forEach(el=>{
-    const ex=DB.find(e=>e.id===el.dataset.desc);
-    if(ex)el.textContent=ex.desc||ex.n;
+    if(!exs.length)return;
+    const sec=document.createElement('div');
+    sec.className='ex-cat-section';
+    const hdr=document.createElement('div');
+    hdr.className='ex-cat-hdr';
+    hdr.textContent=cat.label+' ('+exs.length+')';
+    sec.appendChild(hdr);
+    exs.forEach(ex=>{
+      const row=document.createElement('div');
+      row.className='ex-card-mini';
+      // Image cell
+      const imgWrap=document.createElement('div');
+      imgWrap.className='ex-card-mini-img';
+      imgWrap.style.cursor='pointer';
+      imgWrap.title='Tocca per ingrandire';
+      imgWrap.onclick=()=>openExModal(ex.id);
+      const img=document.createElement('img');
+      img.src='images/exercises/'+ex.id+'.png';
+      img.alt='';
+      img.onload=()=>{img.style.display='block';imgWrap.style.background='transparent';};
+      img.onerror=()=>{img.style.display='none';imgWrap.textContent=ex.id;};
+      imgWrap.appendChild(img);
+      row.appendChild(imgWrap);
+      // Info cell
+      const info=document.createElement('div');
+      info.className='ex-card-mini-info';
+      const nm=document.createElement('div');
+      nm.className='ex-card-mini-name';
+      nm.textContent=ex.n;
+      const dc=document.createElement('div');
+      dc.className='ex-card-mini-desc';
+      dc.textContent=ex.desc||ex.n;
+      info.appendChild(nm);info.appendChild(dc);
+      row.appendChild(info);
+      // Buttons
+      const btns=document.createElement('div');
+      btns.style.cssText='display:flex;flex-direction:column;gap:4px;flex-shrink:0';
+      const bf=document.createElement('button');
+      bf.title='Preferito';
+      bf.style.cssText='font-size:18px;background:none;border:none;cursor:pointer;padding:2px;line-height:1;opacity:'+(((P.favorites||[]).includes(ex.id))?'1':'0.3');
+      bf.textContent='⭐';
+      bf.onclick=()=>toggleFavList(ex.id,bf);
+      const ba=document.createElement('button');
+      ba.title='Non mi piace';
+      ba.style.cssText='font-size:18px;background:none;border:none;cursor:pointer;padding:2px;line-height:1;opacity:'+(((P.avoided||[]).includes(ex.id))?'1':'0.3');
+      ba.textContent='🚫';
+      ba.onclick=()=>toggleAvoidList(ex.id,ba);
+      btns.appendChild(bf);btns.appendChild(ba);
+      row.appendChild(btns);
+      if(ex.floor){const ft=document.createElement('span');ft.className='ex-floor-tag';ft.textContent='🏔️ terra';row.appendChild(ft);}
+      sec.appendChild(row);
+    });
+    wrap.appendChild(sec);
   });
 }
 function toggleFavList(id,btn){
@@ -5027,7 +5061,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604151325'; // auto-set on each release
+const APP_BUILD='202604151350'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');

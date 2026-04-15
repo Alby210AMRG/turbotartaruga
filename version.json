@@ -1,6 +1,6 @@
 {
   "version": "0.9",
-  "build": "202604151325",
-  "date": "15/04/2026 13:25",
-  "notes": "Fix ex list, end session, party result auto"
+  "build": "202604151350",
+  "date": "15/04/2026 13:50",
+  "notes": "Fix isLast direct completeSession, buildExList DOM puro"
 }
