@@ -1,11 +1,9 @@
-// TurboTartaruga Service Worker v202604110822
-const CACHE_NAME = 'turbotartaruga-202604151229';
+// f"TurboTartaruga Service Worker v{build}
+"const CACHE_NAME = 'turbotartaruga-202604151300';
 const PRECACHE = ['./TurboTartaruga.html', './manifest.json'];
-// jsQR is precached so QR scanning works offline after first load
 const EXTERNAL_CACHE = ['https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js'];
 
 self.addEventListener('install', event => {
-  // skipWaiting immediately — don't wait for old SW to be released
   self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache =>
@@ -16,7 +14,6 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  // Delete ALL old caches immediately
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))))
@@ -29,7 +26,6 @@ self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   if (url.origin !== location.origin) return;
 
-  // version.json: ALWAYS network — never cache (used for update check)
   if (url.pathname.includes('version.json')) {
     event.respondWith(
       fetch(event.request, { cache: 'no-store' })
@@ -38,23 +34,20 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // TurboTartaruga.html: network-first — always try to get latest
   if (url.pathname.includes('TurboTartaruga.html') || url.pathname.endsWith('/')) {
     event.respondWith(
       fetch(event.request, { cache: 'no-cache' })
         .then(response => {
           if (response && response.status === 200) {
-            const clone = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone()));
           }
           return response;
         })
-        .catch(() => caches.match(event.request)) // fallback to cache if offline
+        .catch(() => caches.match(event.request))
     );
     return;
   }
 
-  // Everything else (icons, manifest): cache-first
   event.respondWith(
     caches.match(event.request).then(cached => {
       const fetchPromise = fetch(event.request).then(response => {
@@ -68,44 +61,103 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// ── Notification scheduling ──────────────────────────────────────
-const _notifTimers = new Map();
+// ── Notification store (persisted in Cache API as JSON) ──────────────────
+const NOTIF_STORE_KEY = 'tt-pending-notifications';
 
-self.addEventListener('message', event => {
+async function loadPendingNotifs() {
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    const resp = await cache.match(NOTIF_STORE_KEY);
+    if (!resp) return [];
+    return await resp.json();
+  } catch { return []; }
+}
+
+async function savePendingNotifs(list) {
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(NOTIF_STORE_KEY, new Response(JSON.stringify(list), {
+      headers: { 'Content-Type': 'application/json' }
+    }));
+  } catch {}
+}
+
+async function checkAndFireNotifs() {
+  const now = Date.now();
+  const pending = await loadPendingNotifs();
+  const remaining = [];
+  for (const n of pending) {
+    if (n.at <= now) {
+      // Fire it
+      await self.registration.showNotification(n.title, {
+        body: n.body,
+        icon: './icon-192.png',
+        badge: './icon-192.png',
+        tag: n.tag || 'turbotartaruga-202604151300',
+        renotify: true,
+        data: { url: './TurboTartaruga.html' }
+      });
+    } else {
+      remaining.push(n);
+    }
+  }
+  if (remaining.length !== pending.length) {
+    await savePendingNotifs(remaining);
+  }
+}
+
+// Check notifications on every fetch (SW is alive during page load)
+self.addEventListener('fetch', event => {
+  // Piggyback a notif check on page loads (non-blocking)
+  if (event.request.url.includes('TurboTartaruga.html') || 
+      new URL(event.request.url).pathname === '/') {
+    event.waitUntil(checkAndFireNotifs());
+  }
+}, { passive: true }); // second listener — does not interfere with first
+
+// Message handler
+self.addEventListener('message', async event => {
   if (!event.data) return;
   if (event.data === 'skipWaiting' || event.data?.type === 'skipWaiting') {
     self.skipWaiting(); return;
   }
 
   if (event.data.type === 'CANCEL_TODAY_NOTIF') {
-    for (const [key, tid] of _notifTimers.entries()) {
-      clearTimeout(tid);
-      _notifTimers.delete(key);
-    }
-    self.registration.getNotifications({tag:'turbotartaruga-202604151229'})
+    // Remove today's daily notification from pending
+    const pending = await loadPendingNotifs();
+    const filtered = pending.filter(n => n.tag !== 'turbotartaruga-202604151300');
+    await savePendingNotifs(filtered);
+    // Close any shown notification with that tag
+    self.registration.getNotifications({ tag: 'turbotartaruga-202604151300' })
       .then(notifs => notifs.forEach(n => n.close()));
     return;
   }
 
   if (event.data.type === 'SCHEDULE_NOTIF') {
-    const { at, title, body } = event.data.payload;
+    const { at, title, body, tag } = event.data.payload;
     if (!at || !title || !body) return;
-    const delay = at - Date.now();
-    if (delay < 0) return;
-    const key = title + at;
-    if (_notifTimers.has(key)) clearTimeout(_notifTimers.get(key));
-    const tid = setTimeout(() => {
-      self.registration.showNotification(title, {
-        body,
-        icon: './icon-192.png',
-        badge: './icon-192.png',
-        tag: 'turbotartaruga-202604151229',
-        renotify: true,
-        data: { url: './TurboTartaruga.html' }
-      });
-      _notifTimers.delete(key);
-    }, Math.min(delay, 2147483647));
-    _notifTimers.set(key, tid);
+    
+    const pending = await loadPendingNotifs();
+    // Replace any existing notif with same tag
+    const notifTag = tag || 'turbotartaruga-202604151300';
+    const filtered = pending.filter(n => n.tag !== notifTag);
+    filtered.push({ at, title, body, tag: notifTag });
+    await savePendingNotifs(filtered);
+    
+    // Also check immediately in case we're past the time
+    await checkAndFireNotifs();
+    return;
+  }
+  
+  if (event.data.type === 'CHECK_NOTIFS') {
+    // Explicit check request from app
+    await checkAndFireNotifs();
+    return;
+  }
+  
+  if (event.data.type === 'CLEAR_ALL_NOTIFS') {
+    await savePendingNotifs([]);
+    return;
   }
 });
 

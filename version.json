@@ -1,6 +1,6 @@
 {
   "version": "0.9",
-  "build": "202604151229",
-  "date": "15/04/2026 12:29",
-  "notes": "7 fix: badge import, badge modal, iOS QR, localDate, Riserva posizione, ore mattino"
+  "build": "202604151300",
+  "date": "15/04/2026 13:00",
+  "notes": "Notifiche persistenti, test, grafico routine"
 }

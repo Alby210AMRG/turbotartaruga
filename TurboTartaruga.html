@@ -1013,6 +1013,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <div id="ios-notif-warning" style="display:none;margin-top:10px;background:#FFF9C4;border:1.5px solid #F9A825;border-radius:10px;padding:10px;font-size:12px;color:#5D4037;line-height:1.5">
           🍎 <strong>iPhone/iPad:</strong> per ricevere le notifiche aggiungi prima TurboTartaruga alla schermata Home:<br>Safari → 📤 Condividi → "Aggiungi alla schermata Home"
         </div>
+        <div style="border-top:1px solid var(--bdr);padding-top:12px;margin-top:10px">
+          <button onclick="sendTestNotification()" style="width:100%;padding:11px;background:#FFF3E0;color:#E65100;border:2px solid #FF8F00;border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">🔔 Invia notifica di prova</button>
+          <div id="notif-test-result" style="font-size:11px;color:var(--tlt);text-align:center;margin-top:6px;line-height:1.4"></div>
+        </div>
       </div>
     </div>
 
@@ -2169,6 +2173,10 @@ function buildHome(){
   const h=new Date().getHours();
   document.getElementById('home-greeting').textContent=`${h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera'}, ${P.name}! 👋`;
   document.getElementById('home-phrase').textContent=PHRASES[Math.floor(Math.random()*PHRASES.length)];
+  // Ask SW to check & fire any due notifications
+  if('serviceWorker' in navigator&&navigator.serviceWorker.controller){
+    navigator.serviceWorker.controller.postMessage({type:'CHECK_NOTIFS'});
+  }
   applyDynamicTheme();
   calcSkippedSessions();
   buildSkippedMsg();
@@ -2890,15 +2898,62 @@ async function scheduleNotifications(){
   }
 
   save();
-  // Tell SW to schedule
-  if(navigator.serviceWorker.controller){
-    navigator.serviceWorker.controller.postMessage({type:'SCHEDULE_NOTIF',payload:SET.nextNotif});
+  // Tell SW to store and schedule notification
+  if('serviceWorker' in navigator && navigator.serviceWorker.controller){
+    navigator.serviceWorker.controller.postMessage({
+      type:'SCHEDULE_NOTIF',
+      payload:{...SET.nextNotif, tag:'turbotartaruga-daily'}
+    });
     if(SET.nextRecap){
       const recapAt=new Date(Date.now()+15*24*3600*1000);
-      navigator.serviceWorker.controller.postMessage({type:'SCHEDULE_NOTIF',payload:{...SET.nextRecap,at:recapAt.getTime()}});
+      navigator.serviceWorker.controller.postMessage({
+        type:'SCHEDULE_NOTIF',
+        payload:{...SET.nextRecap,at:recapAt.getTime(),tag:'turbotartaruga-recap'}
+      });
       SET.lastRecap=Date.now();SET.nextRecap=null;save();
     }
+    // Ask SW to check immediately (fires if we're in the right window)
+    navigator.serviceWorker.controller.postMessage({type:'CHECK_NOTIFS'});
   }
+}
+
+async 
+async function sendTestNotification(){
+  const res=document.getElementById('notif-test-result');
+  if(!('Notification' in window)){if(res)res.textContent='⚠️ Notifiche non supportate.';return;}
+  if(Notification.permission!=='granted'){
+    if(res)res.textContent='⚠️ Permesso non concesso. Attiva le notifiche prima.';return;
+  }
+  if(!('serviceWorker' in navigator)||!navigator.serviceWorker.controller){
+    // SW not active — show notification directly
+    try{
+      new Notification('🐢 TurboTartaruga — Test',{
+        body:'Se vedi questo messaggio, le notifiche funzionano! 🎉',
+        icon:'./icon-192.png'
+      });
+      if(res)res.textContent='✅ Notifica inviata! Controlla il pannello notifiche.';
+    }catch(e){if(res)res.textContent='❌ Errore: '+e.message;}
+    return;
+  }
+  // Via SW — schedule for 5 seconds from now
+  const at=Date.now()+5000;
+  navigator.serviceWorker.controller.postMessage({
+    type:'SCHEDULE_NOTIF',
+    payload:{
+      at,
+      title:'🐢 TurboTartaruga — Test notifica',
+      body:'Se vedi questo messaggio tra 5 secondi, le notifiche funzionano perfettamente! 🎉',
+      tag:'turbotartaruga-test'
+    }
+  });
+  // Also ask SW to check immediately
+  navigator.serviceWorker.controller.postMessage({type:'CHECK_NOTIFS'});
+  if(res)res.textContent='⏳ Notifica programmata... arriva tra ~5 secondi!';
+  setTimeout(()=>{
+    navigator.serviceWorker.controller.postMessage({type:'CHECK_NOTIFS'});
+  },5100);
+  // Update result after 8 seconds
+  setTimeout(()=>{if(res&&res.textContent.includes('⏳'))res.textContent='✅ La notifica dovrebbe essere arrivata. Non l\'hai vista? Controlla le impostazioni notifiche del telefono per questa app.';},8000);
 }
 
 async function requestNotifPermission(){
@@ -3878,8 +3933,35 @@ function setChartView(days){
 }
 function buildProgress(){
   const bars=[];const now=new Date();const DN=['Do','Lu','Ma','Me','Gi','Ve','Sa'];
-  for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);const ds=d.toISOString().slice(0,10);bars.push({lbl:DN[d.getDay()],done:S.history.some(h=>h.date===ds&&h.type!=='riposo_vol')})}
-  const svg=document.getElementById('chart7');if(svg){const W=300,H=95,padB=18,bW=Math.floor((W-20)/bars.length)-6;let h='';bars.forEach((b,i)=>{const x=10+(i*(bW+6));const bh=b.done?H-padB-4:0;const y=H-padB-bh;h+=`<rect x="${x}" y="${y}" width="${bW}" height="${bh}" rx="4" fill="${b.done?'#43A047':'#C8E6C9'}"/><text x="${x+bW/2}" y="${H}" text-anchor="middle" font-size="9" fill="var(--tlt)" font-family="sans-serif">${b.lbl}</text>`});svg.innerHTML=h}
+  for(let i=6;i>=0;i--){
+    const d=new Date(now);d.setDate(d.getDate()-i);
+    const ds=localDate(d);
+    const mainDone=S.history.some(h=>h.date===ds&&h.type!=='riposo_vol'&&(h.dur||0)>0);
+    const morningDone=(S.morningDone===ds)||(S.history.some(h=>h.date===ds&&h.type==='mattino'));
+    const sleepDone=(S.sleepDone===ds)||(S.history.some(h=>h.date===ds&&h.type==='presonno'));
+    bars.push({lbl:DN[d.getDay()],done:mainDone,morning:morningDone,sleep:sleepDone});
+  }
+  const svg=document.getElementById('chart7');
+  if(svg){
+    const W=300,H=95,padB=18,bW=Math.floor((W-20)/bars.length)-6;
+    let h='';
+    bars.forEach((b,i)=>{
+      const x=10+(i*(bW+6));
+      // Main session bar
+      const bh=b.done?H-padB-4:0;const y=H-padB-bh;
+      h+=`<rect x="${x}" y="${y}" width="${bW}" height="${bh}" rx="4" fill="${b.done?'#43A047':'#C8E6C9'}"/>`;
+      // Morning dot (☀️ small indicator)
+      if(b.morning)h+=`<circle cx="${x+bW/2-5}" cy="${H-padB-bh-(b.done?6:4)}" r="3" fill="#F9A825"/>`;
+      // Sleep dot (🌙)
+      if(b.sleep)h+=`<circle cx="${x+bW/2+5}" cy="${H-padB-bh-(b.done?6:4)}" r="3" fill="#5C6BC0"/>`;
+      h+=`<text x="${x+bW/2}" y="${H}" text-anchor="middle" font-size="9" fill="var(--tlt)" font-family="sans-serif">${b.lbl}</text>`;
+    });
+    // Legend
+    h+=`<circle cx="20" cy="8" r="4" fill="#43A047"/><text x="27" y="12" font-size="8" fill="var(--tlt)" font-family="sans-serif">Sessione</text>`;
+    h+=`<circle cx="80" cy="8" r="3" fill="#F9A825"/><text x="86" y="12" font-size="8" fill="var(--tlt)" font-family="sans-serif">☀️ Mattino</text>`;
+    h+=`<circle cx="148" cy="8" r="3" fill="#5C6BC0"/><text x="154" y="12" font-size="8" fill="var(--tlt)" font-family="sans-serif">🌙 Sera</text>`;
+    svg.innerHTML=h;
+  }
   const goal=P.goal||90;const pct=Math.min(100,Math.round(S.tot/goal*100));
   document.getElementById('prg-goal-lbl').textContent=`${S.tot} / ${goal}`;
   document.getElementById('prg-goal-pct').textContent=pct+'%';
@@ -4246,7 +4328,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 12:29';
+  if(vdisp)vdisp.textContent='Versione v0.9 · 15/04/2026 13:00';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4923,7 +5005,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604151229'; // auto-set on each release
+const APP_BUILD='202604151300'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
