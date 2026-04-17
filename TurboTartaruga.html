@@ -350,7 +350,29 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div class="streak-chip">🔥 <span id="home-streak">0</span> giorni di fila!</div>
       <div class="streak-chip" id="home-level-chip" style="background:rgba(255,215,0,.25)">⭐ Lv.<span id="home-level">1</span></div>
     </div>
+  
+  <!-- Routine mattutina banner -->
+  <div id="home-morning-banner" style="display:none;margin:8px 12px 0">
+    <div style="background:linear-gradient(135deg,#F57F17,#F9A825);border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:12px">
+      <span style="font-size:28px">☀️</span>
+      <div style="flex:1">
+        <div style="font-weight:bold;color:#fff;font-size:14px">Routine mattutina</div>
+        <div style="color:rgba(255,255,255,.85);font-size:12px">4 minuti per iniziare bene la giornata</div>
+      </div>
+      <button onclick="startRoutine('mattino')" style="background:#fff;color:#F57F17;border:none;border-radius:100px;padding:8px 14px;font-weight:bold;font-size:13px;cursor:pointer;font-family:var(--ft)">Avvia ☀️</button>
+    </div>
   </div>
+  <!-- Routine pre-sonno banner -->
+  <div id="home-sleep-banner" style="display:none;margin:8px 12px 0">
+    <div style="background:linear-gradient(135deg,#283593,#3949AB);border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:12px">
+      <span style="font-size:28px">🌙</span>
+      <div style="flex:1">
+        <div style="font-weight:bold;color:#fff;font-size:14px">Routine pre-sonno</div>
+        <div style="color:rgba(255,255,255,.85);font-size:12px">8 minuti per rilassarti prima di dormire</div>
+      </div>
+      <button onclick="startRoutine('presonno')" style="background:#fff;color:#3949AB;border:none;border-radius:100px;padding:8px 14px;font-weight:bold;font-size:13px;cursor:pointer;font-family:var(--ft)">Avvia 🌙</button>
+    </div>
+  </div></div>
   <div id="rest-banner" class="rest-banner" style="display:none">
     <span style="font-size:28px">😴</span>
     <div><div style="font-weight:bold;font-size:var(--fs)">Oggi è il tuo giorno di riposo!</div><div style="font-size:var(--fs-xs);color:var(--tmid)">Hai lavorato bene. Riposa e torna domani 🌿</div></div>
@@ -1148,7 +1170,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.012</div>
+      <div id="app-version-display">Versione v1.013</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -2181,6 +2203,24 @@ function buildHome(){
   const h=new Date().getHours();
   document.getElementById('home-greeting').textContent=`${h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera'}, ${P.name}! 👋`;
   document.getElementById('home-phrase').textContent=PHRASES[Math.floor(Math.random()*PHRASES.length)];
+  // Routine banners — show based on time and completion status
+  const _morningBanner = document.getElementById('home-morning-banner');
+  const _sleepBanner   = document.getElementById('home-sleep-banner');
+  const _todayRoutine  = localDate();
+  const _curHour       = new Date().getHours();
+  if(_morningBanner){
+    const wakeH = P.morningRoutineHour||7;
+    const showMorning = P.morningRoutine &&
+      S.morningDone !== _todayRoutine &&
+      _curHour >= (wakeH-1) && _curHour <= (wakeH+4);
+    _morningBanner.style.display = showMorning ? 'block' : 'none';
+  }
+  if(_sleepBanner){
+    const showSleep = P.sleepRoutine &&
+      S.sleepDone !== _todayRoutine &&
+      _curHour >= 19;
+    _sleepBanner.style.display = showSleep ? 'block' : 'none';
+  }
   // Coach bubble: mostra banner "non hai allenato" se nessuna sessione reale oggi
   checkLevelSuggestion();
   const _noSessBanner=document.getElementById('home-no-session-banner');
@@ -4336,7 +4376,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.012 · 17/04/2026 21:16 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.013 · 17/04/2026 23:13 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -5665,7 +5705,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604172116'; // auto-set on each release
+const APP_BUILD='202604172313'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
