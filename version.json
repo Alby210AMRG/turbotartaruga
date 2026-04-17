@@ -1,6 +1,6 @@
 {
-  "version": "1.008",
-  "build": "202604171146",
-  "date": "17/04/2026 11:46",
-  "notes": "syncToggles routine+viewScale, async notif, SET defaults viewScale"
+  "version": "1.012",
+  "build": "202604172116",
+  "date": "17/04/2026 21:16",
+  "notes": "Level suggestion: localStorage cooldown 15gg, chain validation, no duplicate banner"
 }

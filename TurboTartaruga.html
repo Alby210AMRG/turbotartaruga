@@ -339,11 +339,16 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <button id="backup-alert-btn" onclick="showBackupModal()" style="display:none;width:26px;height:26px;border-radius:50%;background:#E53935;border:2px solid #fff;cursor:pointer;font-size:13px;display:none;align-items:center;justify-content:center;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);animation:pulse 1.5s ease infinite" title="Backup consigliato!">⚠️</button>
     </div>
     <img src="logo-turtle.png" alt="" style="width:min(65vw,240px);max-height:130px;object-fit:contain;object-position:center bottom;margin-bottom:4px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.25));display:block;margin-left:auto;margin-right:auto">
-    <h2 id="home-greeting">Ciao!</h2><p id="home-phrase" style="font-size:15px;font-weight:600;opacity:1;line-height:1.5;margin-top:4px;text-shadow:0 1px 3px rgba(0,0,0,.15);font-style:italic">Pronto per il tuo allenamento?</p>
-    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:6px">
+    <h2 id="home-greeting">Ciao!</h2>
+    <div id="coach-bubble" style="background:rgba(255,255,255,.18);backdrop-filter:blur(8px);border-radius:18px;border:1.5px solid rgba(255,255,255,.35);padding:11px 16px;margin:6px 12px 0">
+      <p id="home-phrase" style="font-size:14px;font-weight:600;line-height:1.5;font-style:italic;margin:0">Pronto per il tuo allenamento?</p>
+      <div id="home-no-session-banner" style="display:none;margin-top:8px;padding:7px 10px;background:rgba(255,152,0,.25);border-radius:10px;border:1px solid rgba(255,152,0,.4);font-size:12px;font-weight:600">
+        ⏰ Oggi nessuna sessione ancora — ci sei?
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px">
       <div class="streak-chip">🔥 <span id="home-streak">0</span> giorni di fila!</div>
       <div class="streak-chip" id="home-level-chip" style="background:rgba(255,215,0,.25)">⭐ Lv.<span id="home-level">1</span></div>
-      <div class="streak-chip" id="home-weather-chip" style="display:none;background:rgba(255,255,255,.15)"><span id="home-weather-ico">🌤️</span> <span id="home-weather-txt">--°</span></div>
     </div>
   </div>
   <div id="rest-banner" class="rest-banner" style="display:none">
@@ -413,27 +418,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
   </div>
   <!-- Morning routine banner (context-aware) -->
-  <div id="home-morning-banner" style="display:none;margin:0 13px 10px">
-    <div style="background:linear-gradient(135deg,#FFF9C4,#FFF3E0);border:2px solid #F9A825;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px">
-      <span style="font-size:28px">☀️</span>
-      <div style="flex:1">
-        <div style="font-weight:bold;font-size:14px;color:#E65100">Routine mattutina</div>
-        <div style="font-size:12px;color:#BF360C;margin-top:1px">4 min nel letto · Attiva il corpo prima di alzarti</div>
-      </div>
-      <button onclick="startRoutine('mattino')" style="background:#F9A825;color:#fff;border:none;border-radius:100px;padding:8px 14px;font-weight:bold;font-size:13px;cursor:pointer;white-space:nowrap">Inizia</button>
-    </div>
-  </div>
+  
   <!-- Sleep routine banner (context-aware) -->
-  <div id="home-sleep-banner" style="display:none;margin:0 13px 10px">
-    <div style="background:linear-gradient(135deg,#E8EAF6,#C5CAE9);border:2px solid #5C6BC0;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:10px">
-      <span style="font-size:28px">🌙</span>
-      <div style="flex:1">
-        <div style="font-weight:bold;font-size:14px;color:#283593">Routine pre-sonno</div>
-        <div style="font-size:12px;color:#1A237E;margin-top:1px">8-10 min · Rilassati per dormire bene</div>
-      </div>
-      <button onclick="startRoutine('presonno')" style="background:#5C6BC0;color:#fff;border:none;border-radius:100px;padding:8px 14px;font-weight:bold;font-size:13px;cursor:pointer;white-space:nowrap">Inizia</button>
-    </div>
-  </div>
+  
   <div class="agrid">
     <button class="abtn" onclick="go('calendar')"><span class="ai">📅</span><span class="al">Calendario</span><span class="as">Piano & storico</span></button>
     <button class="abtn party" onclick="go('party')"><span class="ai">🎉</span><span class="al">Party!</span><span class="as">Insieme è meglio!</span></button>
@@ -589,6 +576,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div id="cmp-badges" style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:18px;max-width:290px"></div>
     <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;align-items:center">
       <button class="btn btn-a btn-lg" onclick="go('feedback')" style="font-size:17px;width:100%">🐢 Per oggi è fatta!</button>
+      <button onclick="shareResultLink()" style="background:var(--g1);color:#fff;border:none;border-radius:100px;padding:11px 20px;font-family:var(--ft);font-size:14px;font-weight:bold;cursor:pointer;margin-bottom:8px;width:100%">🔗 Condividi risultato</button>
       <button onclick="shareResultCard()" style="background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.5);border-radius:100px;padding:12px 24px;font-family:var(--ft);font-size:14px;font-weight:bold;cursor:pointer;width:100%">📤 Condividi risultato</button>
     </div>
   </div>
@@ -805,7 +793,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div class="p-card">
         <div class="p-tag">🎫 Unisciti a un amico</div>
         <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:12px">
-          Premi il bottone — il tuo amico inquadra il <strong>QR Code</strong> con il suo telefono e sei aggiunto! 📱
+          Premi <strong>Condividi link</strong> — il tuo amico apre il link e viene aggiunto automaticamente! 🔗 Funziona su tutti i dispositivi.
         </p>
         <button onclick="generateGuestCode()" class="btn btn-full"
           style="background:var(--lime);color:#1B5E20;font-size:14px;padding:13px">
@@ -822,13 +810,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           </div>
           <!-- Share + Copy buttons -->
           <div style="display:flex;gap:8px">
-            <button onclick="shareGuestCode()" id="btn-share-guest"
+            <button onclick="shareGuestLink()"
               style="flex:1;padding:11px;background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.4);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
-              📤 Condividi
+              🔗 Condividi link
             </button>
             <button onclick="copyGuestCode()"
               style="flex:1;padding:11px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
-              📋 Copia
+              📋 Copia codice
             </button>
           </div>
           <div id="guest-code-txt" style="display:none"></div>
@@ -992,9 +980,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
             <div style="display:flex;align-items:center;gap:8px"><div class="si">⚡</div><div class="stitle">Livello</div></div>
             <div style="display:flex;gap:6px;width:100%" data-g="ps-type">
-              <button class="btn btn-s sel" data-v="principiante" onclick="setLevel(this)" style="flex:1;font-size:12px">🌱 Base</button>
-              <button class="btn btn-s" data-v="intermedio" onclick="setLevel(this)" style="flex:1;font-size:12px">🔥 Intermedio</button>
-              <button class="btn btn-s" data-v="esperto" onclick="setLevel(this)" style="flex:1;font-size:12px">🚀 Avanzato</button>
+              <button class="btn lv-btn" data-v="principiante" onclick="setLevel(this)" style="flex:1;font-size:12px;padding:10px 6px;border-radius:12px;border:2px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;font-family:var(--ft);font-weight:bold;transition:all .2s">🌱 Base</button>
+              <button class="btn lv-btn" data-v="intermedio" onclick="setLevel(this)" style="flex:1;font-size:12px;padding:10px 6px;border-radius:12px;border:2px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;font-family:var(--ft);font-weight:bold;transition:all .2s">🔥 Intermedio</button>
+              <button class="btn lv-btn" data-v="esperto" onclick="setLevel(this)" style="flex:1;font-size:12px;padding:10px 6px;border-radius:12px;border:2px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;font-family:var(--ft);font-weight:bold;transition:all .2s">🚀 Avanzato</button>
             </div>
           </div>
         </div>
@@ -1077,37 +1065,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <!-- 5. NOTIFICHE -->
-    <div class="acc-card">
-      <button class="acc-hdr" onclick="toggleAcc('acc-notifiche')"><span>🔔 Notifiche</span><span class="acc-arr" id="arr-notifiche">▼</span></button>
-      <div class="acc-body" id="acc-notifiche">
-        <div class="sblk" style="margin:0">
-          <div class="srow"><div class="si">🔔</div><div class="sinfo"><div class="stitle">Notifiche attive</div><div class="sval">Promemoria giornaliero + recap ogni 15 giorni</div></div><button class="toggle" id="st-notif" onclick="requestNotifPermission()"></button></div>
-          <div id="notif-settings" style="display:none;padding:0 15px 12px;border-top:1px solid var(--bdr)">
-            <div style="margin:12px 0 6px;font-weight:bold;font-size:var(--fs-sm);color:var(--text)">⏰ Fascia oraria preferita</div>
-            <div style="display:flex;gap:6px;margin-bottom:12px">
-              <button class="notif-time-btn sel" data-t="morning" onclick="selNotifTime(this)" style="flex:1;padding:9px 4px;border-radius:11px;border:2px solid var(--g1);background:var(--g4);color:var(--g1);font-size:12px;font-weight:bold;cursor:pointer">🌅 Mattina<br><span style="font-size:10px;font-weight:normal">6-10</span></button>
-              <button class="notif-time-btn" data-t="afternoon" onclick="selNotifTime(this)" style="flex:1;padding:9px 4px;border-radius:11px;border:2px solid var(--bdr);background:var(--card);color:var(--text);font-size:12px;font-weight:bold;cursor:pointer">🌞 Pomeriggio<br><span style="font-size:10px;font-weight:normal">12-17</span></button>
-              <button class="notif-time-btn" data-t="evening" onclick="selNotifTime(this)" style="flex:1;padding:9px 4px;border-radius:11px;border:2px solid var(--bdr);background:var(--card);color:var(--text);font-size:12px;font-weight:bold;cursor:pointer">🌇 Sera<br><span style="font-size:10px;font-weight:normal">18-22</span></button>
-            </div>
-            <div id="notif-smart-tip" style="font-size:12px;color:var(--g1);margin-bottom:6px;font-style:italic;line-height:1.5"></div>
-            <div id="notif-suggest-banner" style="display:none;background:var(--g4);border:1.5px solid var(--g1);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:13px">
-              <div style="font-weight:bold;color:var(--g1);margin-bottom:6px" id="notif-suggest-text"></div>
-              <div style="display:flex;gap:8px"><button onclick="acceptSuggestion()" style="flex:1;padding:8px;background:var(--g1);color:#fff;border:none;border-radius:100px;font-size:12px;font-weight:bold;cursor:pointer">✅ Usa questo orario</button><button onclick="document.getElementById('notif-suggest-banner').style.display='none'" style="flex:1;padding:8px;background:var(--bg2);color:var(--tmid);border:none;border-radius:100px;font-size:12px;cursor:pointer">Scelgo io</button></div>
-            </div>
-            <div style="font-weight:bold;font-size:var(--fs-sm);color:var(--text);margin-bottom:8px">📍 Posizione per meteo</div>
-            <div style="font-size:12px;color:var(--tlt);margin-bottom:8px;line-height:1.5">La posizione personalizza le notifiche con il meteo locale.</div>
-            <button onclick="requestGPS('settings')" id="settings-gps-btn" style="width:100%;padding:10px;border-radius:11px;border:2px solid var(--bdr);background:var(--bg2);color:var(--g1);font-weight:bold;font-size:13px;cursor:pointer">📍 Imposta / Aggiorna posizione</button>
-            <div id="settings-gps-status" style="font-size:12px;color:var(--tlt);margin-top:5px;text-align:center"></div>
-            <div id="ios-notif-warning" style="display:none;margin-top:10px;background:#FFF9C4;border:1.5px solid #F9A825;border-radius:10px;padding:10px;font-size:12px;color:#5D4037;line-height:1.5">🍎 <strong>iPhone:</strong> aggiungi l'app alla schermata Home: Safari → 📤 → "Aggiungi a schermata Home"</div>
-            <div style="border-top:1px solid var(--bdr);padding-top:12px;margin-top:10px">
-              <button onclick="sendTestNotification()" style="width:100%;padding:11px;background:#FFF3E0;color:#E65100;border:2px solid #FF8F00;border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">🔔 Invia notifica di prova</button>
-              <div id="notif-test-result" style="font-size:11px;color:var(--tlt);text-align:center;margin-top:6px;line-height:1.4"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- 6. ASPETTO & AUDIO -->
     <div class="acc-card">
       <button class="acc-hdr" onclick="toggleAcc('acc-aspetto')"><span>🎨 Aspetto e audio</span><span class="acc-arr" id="arr-aspetto">▼</span></button>
@@ -1191,7 +1148,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.008</div>
+      <div id="app-version-display">Versione v1.012</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1532,7 +1489,6 @@ var restIv=null,transIv=null,grIv=null,audioCtx=null;
 var riservaDone=false,calYear=0,calMonth=0;
 var _switchIv=null,_photoCheckRunning=false;
 var _wizStep=0,_wizData={};
-var _wxCache=null,_wxCacheTime=0;
 var _calTipTimer=null;
 var _prevScreen='home';
 
@@ -1706,9 +1662,6 @@ function saveProfile(){
   P.morningRoutineHour=_wizData.morningHour||7;
   P.sleepRoutine=_wizData.sleepRoutine||false;
   P.sleepRoutineHour=_wizData.sleepHour||21;
-  if(SET.notifTime)P.notifTime=SET.notifTime;
-  // Carry notification settings — preserve what was set during wizard
-  // SET.notifEnabled is already set by wizEnableNotif() if user activated notifications
   calcProfileBias();
   S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[]};
   generatePlan();updateStreak();save();
@@ -1855,43 +1808,6 @@ var WIZ_STEPS = [
       </div>
     </div>`
   },
-  // 7: Notifiche (coach)
-  {id:'wiz-notif', bg:'linear-gradient(155deg,#E65100,#BF360C,#1B5E20)', render:()=>`
-    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 80px);padding:52px 24px 24px;text-align:center;color:#fff">
-      <div style="font-size:52px;margin-bottom:10px">📬</div>
-      <div style="font-family:var(--ft);font-size:22px;font-weight:bold;margin-bottom:8px">Messaggi del coach</div>
-      <div style="opacity:.85;font-size:13px;line-height:1.6;margin-bottom:16px;max-width:300px">
-        Non il solito "allenati!". Un messaggio ogni giorno che sa se hai saltato, se sei in streak, e anche il meteo —
-        perché <em>pioggia e freddo abbassano il morale, ma muoversi lo cambia</em>.<br>
-        <span style="opacity:.65;font-size:11px">Puoi disattivarlo sempre nelle Impostazioni.</span>
-      </div>
-      <!-- Toggle default ON -->
-      <div style="width:100%;max-width:300px;background:rgba(255,255,255,.12);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
-        <div style="text-align:left">
-          <div style="font-weight:bold;font-size:15px">🔔 Attiva i messaggi</div>
-          <div style="font-size:11px;opacity:.7;margin-top:2px">Consigliato — puoi disattivare quando vuoi</div>
-        </div>
-        <button id="wiz-notif-toggle" onclick="wizToggleNotif(this)"
-          class="toggle on" style="flex-shrink:0"></button>
-      </div>
-      <div style="width:100%;max-width:300px;margin-bottom:14px">
-        <div style="font-size:13px;opacity:.8;margin-bottom:8px;font-weight:bold">Quando ti alleni di solito?</div>
-        <div style="display:flex;gap:8px">
-          <button class="wiz-time-btn sel" data-t="morning" onclick="wizSelTime(this)" style="flex:1;padding:10px 4px;border-radius:12px;border:2px solid #fff;background:rgba(255,255,255,.25);color:#fff;font-size:11px;font-weight:bold;cursor:pointer">🌅<br>Mattina<br><span style="opacity:.7;font-size:9px">6-10</span></button>
-          <button class="wiz-time-btn" data-t="afternoon" onclick="wizSelTime(this)" style="flex:1;padding:10px 4px;border-radius:12px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:11px;font-weight:bold;cursor:pointer">🌞<br>Pomeriggio<br><span style="opacity:.7;font-size:9px">12-17</span></button>
-          <button class="wiz-time-btn" data-t="evening" onclick="wizSelTime(this)" style="flex:1;padding:10px 4px;border-radius:12px;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:11px;font-weight:bold;cursor:pointer">🌇<br>Sera<br><span style="opacity:.7;font-size:9px">18-22</span></button>
-        </div>
-      </div>
-      <div style="width:100%;max-width:300px">
-        <div style="background:rgba(255,255,255,.1);border-radius:12px;padding:10px 12px;margin-bottom:10px;font-size:12px;line-height:1.5;opacity:.9;text-align:left">
-          🌦️ <strong>Il meteo conta:</strong> pioggia e freddo abbassano il morale. Il tuo coach lo sa e ti scrive la cosa giusta al momento giusto.
-        </div>
-        <button onclick="requestGPS('ob')" id="ob-gps-btn" style="width:100%;padding:11px;border-radius:12px;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff;font-size:13px;font-weight:bold;cursor:pointer">📍 Attiva meteo personalizzato (opzionale)</button>
-        <div id="ob-gps-status" style="font-size:11px;opacity:.7;margin-top:4px;text-align:center"></div>
-        <div style="margin-top:12px;font-size:11px;opacity:.55">Premi "Avanti →" per continuare</div>
-      </div>
-    </div>`
-  },
   // 8: Routine mattutina
   {id:'wiz-morning', bg:'linear-gradient(155deg,#F57F17,#F9A825,#1B5E20)', render:()=>`
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 80px);padding:52px 24px 24px;text-align:center;color:#fff">
@@ -1970,7 +1886,6 @@ var WIZ_STEPS = [
   },
 ];
 
-var _wizData = { sex:'M', level:'principiante', cats:['gambe','braccia','core','stretching','orientale'], notifTime:'evening', wantNotif:true };
 
 function initWizard(){
   _wizStep=0;_wizData={sex:'M',level:'principiante',cats:['gambe','braccia','core','stretching','orientale'],notifTime:'evening',wantNotif:true};
@@ -2076,16 +1991,16 @@ function wizValidate(step){
     if(wantNotif&&'Notification' in window){
       // Request permission async — don't block navigation
       Notification.requestPermission().then(perm=>{
-        SET.notifEnabled=(perm==='granted');
-        SET.notifTime=_wizData.notifTime||'evening';
+        
+        
         save();
         if(perm!=='granted'){
           toast('⚠️ Permesso notifiche non concesso. Puoi attivarlo dalle Impostazioni.',4000);
         }
       });
     } else {
-      SET.notifEnabled=false;
-      SET.notifTime=_wizData.notifTime||'evening';
+      
+      
       save();
     }
   }
@@ -2159,7 +2074,7 @@ function wizSelTime(btn){
     b.style.borderColor='rgba(255,255,255,.3)';b.style.background='rgba(255,255,255,.1)';b.classList.remove('sel');
   });
   btn.classList.add('sel');btn.style.borderColor='#fff';btn.style.background='rgba(255,255,255,.25)';
-  _wizData.notifTime=btn.dataset.t;SET.notifTime=btn.dataset.t;
+  _wizData.notifTime=btn.dataset.t;
 }
 
 function wizUpdateGoal(v){
@@ -2176,20 +2091,6 @@ function wizUpdateGoal(v){
   if(msg)msg.textContent=m;
 }
 
-async function wizEnableNotif(){
-  if(!('Notification' in window)){toast('⚠️ Notifiche non supportate su questo dispositivo.');wizNav(1);return;}
-  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
-  const isStandalone=window.navigator.standalone||window.matchMedia('(display-mode: standalone)').matches;
-  if(isIOS&&!isStandalone){
-    toast('🍎 Per le notifiche su iPhone aggiungi prima l\'app alla schermata Home!',5000);
-    wizNav(1);return;
-  }
-  const perm=await Notification.requestPermission();
-  if(perm==='granted'){SET.notifEnabled=true;SET.notifTime=_wizData.notifTime||'evening';save();toast('✅ Perfetto! Riceverai i messaggi della tartaruga ogni giorno. 🔔');}
-  else toast('ℹ️ Nessun problema — potrai attivarlo dalle Impostazioni quando vuoi.');
-  wizNav(1);
-}
-
 function wizBuildSummary(){
   const el=document.getElementById('wiz-summary');
   const nm=document.getElementById('wiz-final-name');
@@ -2204,9 +2105,6 @@ function wizBuildSummary(){
     <div>🏋️ Categorie: ${(_wizData.cats||[]).map(c=>catLabels[c]||c).join(' ')}</div>
     <div>😴 Riposo: ${rds||'Sabato e Domenica'}</div>
     <div>🎯 Obiettivo: ${_wizData.goal||90} sessioni</div>
-    ${SET.notifEnabled?'<div>🔔 Messaggi del coach: attivi</div>':''}
-    ${_wizData.morningRoutine?'<div>☀️ Routine mattutina: attiva (ore '+(_wizData.morningHour||7)+':00)</div>':''}
-    ${_wizData.sleepRoutine?'<div>🌙 Routine pre-sonno: attiva (ore '+(_wizData.sleepHour||21)+':00)</div>':''}
   `;
 }
 
@@ -2283,6 +2181,18 @@ function buildHome(){
   const h=new Date().getHours();
   document.getElementById('home-greeting').textContent=`${h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera'}, ${P.name}! 👋`;
   document.getElementById('home-phrase').textContent=PHRASES[Math.floor(Math.random()*PHRASES.length)];
+  // Coach bubble: mostra banner "non hai allenato" se nessuna sessione reale oggi
+  checkLevelSuggestion();
+  const _noSessBanner=document.getElementById('home-no-session-banner');
+  if(_noSessBanner){
+    const _todayStr=localDate();
+    // Solo sessioni reali (non routine mattino/presonno/volrest)
+    const _hasRealSession=S.history&&S.history.some(h=>h.date===_todayStr&&
+      h.type!=='riposo_vol'&&h.type!=='mattino'&&h.type!=='presonno');
+    // Mostra solo dopo le 10:00 (non di mattina presto)
+    const _curHour=new Date().getHours();
+    _noSessBanner.style.display=(!_hasRealSession&&_curHour>=10)?'flex':'none';
+  }
   checkBackupReminder();
   // Photo check (background, non-blocking)
   if(P.name)setTimeout(()=>checkPhotosAvailable(false),3000);
@@ -2295,12 +2205,10 @@ function buildHome(){
   calcSkippedSessions();
   buildSkippedMsg();
   buildWeeklyStats();
-  buildRoutineBanners();
-  scheduleRoutineNotifications();
+  
+  
   // Weather chip — async, non-blocking
-  if(SET.gpsLat&&SET.gpsLon){fetchWeather().then(wx=>{if(!wx)updateWeatherChip(null);}).catch(()=>updateWeatherChip(null));}
-  else updateWeatherChip(null);
-  const hsEl=document.getElementById('home-streak');if(hsEl)hsEl.textContent=typeof S.str==='number'?S.str:0;
+const hsEl=document.getElementById('home-streak');if(hsEl)hsEl.textContent=typeof S.str==='number'?S.str:0;
   const userLv=getUserLevel(S.xp||0);document.getElementById('home-level').textContent=userLv;
   const xpToNext=getXpToNextLevel(S.xp||0);if(document.getElementById('home-level-chip'))document.getElementById('home-level-chip').title='Livello '+userLv+' — ancora '+xpToNext+' XP per il prossimo livello';
   const done=S.tot,goal=P.goal||90,pct=Math.min(100,Math.round(done/goal*100));
@@ -2652,47 +2560,6 @@ function buildWeeklyStats(){
 // ═══ GPS + WEATHER + NOTIFICATIONS ═══
 
 // ── GPS ──────────────────────────────────────────────────────────
-function requestGPS(ctx){
-  const btn=document.getElementById(ctx+'-gps-btn');
-  const status=document.getElementById(ctx+'-gps-status');
-  if(btn)btn.textContent='⏳ Rilevamento...';
-  if(!navigator.geolocation){
-    if(status)status.textContent='❌ GPS non supportato su questo dispositivo.';
-    if(btn)btn.textContent='📍 Imposta / Aggiorna posizione';
-    return;
-  }
-  navigator.geolocation.getCurrentPosition(
-    pos=>{
-      SET.gpsLat=pos.coords.latitude;
-      SET.gpsLon=pos.coords.longitude;
-      save();
-      if(status)status.textContent='✅ Posizione salvata! ('+SET.gpsLat.toFixed(2)+'°, '+SET.gpsLon.toFixed(2)+'°)';
-      if(btn)btn.textContent='📍 Aggiorna posizione';
-      fetchWeather();
-    },
-    err=>{
-      if(status)status.textContent='⚠️ Impossibile rilevare la posizione. Controlla i permessi.';
-      if(btn)btn.textContent='📍 Riprova';
-    },
-    {timeout:8000}
-  );
-}
-
-// ── WEATHER ──────────────────────────────────────────────────────
-var WX_CODES={
-  0:'☀️',1:'🌤️',2:'⛅',3:'☁️',
-  45:'🌫️',48:'🌫️',
-  51:'🌦️',53:'🌦️',55:'🌧️',
-  61:'🌧️',63:'🌧️',65:'🌧️',
-  71:'🌨️',73:'🌨️',75:'❄️',
-  80:'🌦️',81:'🌧️',82:'⛈️',
-  95:'⛈️',96:'⛈️',99:'⛈️'
-};
-var WX_LABELS={
-  0:'Sereno',1:'Poco nuvoloso',2:'Nuvoloso',3:'Coperto',
-  45:'Nebbia',51:'Pioggerella',61:'Pioggia',71:'Neve',
-  80:'Rovesci',95:'Temporale'
-};
 function wxGroup(code){
   if(code===0||code===1)return'sunny';
   if(code<=3)return'cloudy';
@@ -2703,23 +2570,6 @@ function wxGroup(code){
   return'stormy';
 }
 
-var _wxCache=null,_wxCacheTime=0;
-
-async function fetchWeather(){
-  if(!SET.gpsLat||!SET.gpsLon)return null;
-  const now=Date.now();
-  if(_wxCache&&now-_wxCacheTime<1800000)return _wxCache; // 30min cache
-  try{
-    const url=`https://api.open-meteo.com/v1/forecast?latitude=${SET.gpsLat}&longitude=${SET.gpsLon}&current=weathercode,temperature_2m&timezone=auto`;
-    const r=await fetch(url,{signal:AbortSignal.timeout(5000)});
-    if(!r.ok)throw new Error('HTTP '+r.status);
-    const d=await r.json();
-    _wxCache={code:d.current.weathercode,temp:Math.round(d.current.temperature_2m)};
-    _wxCacheTime=now;
-    updateWeatherChip(_wxCache);
-    return _wxCache;
-  }catch{return null;}
-}
 
 function getSeasonWeather(){
   const m=new Date().getMonth();
@@ -2729,27 +2579,10 @@ function getSeasonWeather(){
   return{emoji:'❄️',label:'Inverno',group:'cold'};
 }
 
-function updateWeatherChip(wx){
-  const chip=document.getElementById('home-weather-chip');
-  const ico=document.getElementById('home-weather-ico');
-  const txt=document.getElementById('home-weather-txt');
-  if(!chip)return;
-  chip.style.display='flex';
-  if(wx){
-    ico.textContent=WX_CODES[wx.code]||'🌤️';
-    txt.textContent=wx.temp+'°';
-  } else {
-    const sw=getSeasonWeather();
-    ico.textContent=sw.emoji;
-    txt.textContent=sw.label;
-  }
-}
-
-// ── SMART TIMING ANALYSIS ─────────────────────────────────────────
 function getSuggestedTiming(){
   // Returns {slot, confident, avgHour} 
   const withHour=(S.history||[]).filter(h=>h.hour!=null&&h.type!=='riposo_vol');
-  if(withHour.length<3) return {slot:SET.notifTime||'evening', confident:false, count:withHour.length};
+  if(withHour.length<3) return {slot:'evening',confident:false,avgHour:19,count:0};
   const recent=withHour.slice(-14);
   const avgHour=Math.round(recent.reduce((s,h)=>s+h.hour,0)/recent.length);
   let slot='evening';
@@ -2918,130 +2751,6 @@ function buildRecapText(){
 // ── NOTIFICATION SCHEDULING ───────────────────────────────────────
 var NOTIF_HOURS={morning:[7,8,9],afternoon:[13,14,15],evening:[18,19,20]};
 
-async function scheduleNotifications(){
-  if(!SET.notifEnabled)return;
-  if(!('Notification' in window))return;
-  if(Notification.permission!=='granted')return;
-
-  const today=localDate(); // use local date, not UTC
-
-  // ── KEY CHECK: has the user already trained today? ─────────────
-  const trainedToday=(S.history||[]).some(h=>
-    h.date===today && h.type!=='riposo_vol' && (h.dur||0)>0
-  );
-  if(trainedToday){
-    // Cancel any pending notification for today and don't schedule a new one
-    if(navigator.serviceWorker.controller){
-      navigator.serviceWorker.controller.postMessage({type:'CANCEL_TODAY_NOTIF'});
-    }
-    // Still check recap (independent of daily session)
-    const lastRecap=SET.lastRecap||0;
-    if(Date.now()-lastRecap>15*24*3600*1000){
-      const recap=buildRecapText();
-      if(recap&&navigator.serviceWorker.controller){
-        const recapAt=new Date(Date.now()+15*24*3600*1000);
-        navigator.serviceWorker.controller.postMessage({type:'SCHEDULE_NOTIF',payload:{...recap,at:recapAt.getTime()}});
-        SET.lastRecap=Date.now();save();
-      }
-    }
-    return; // ← no daily notification needed
-  }
-
-  // Get current weather state
-  const wx=await fetchWeather().catch(()=>null);
-  const wxG=wx?wxGroup(wx.code):null;
-
-  // Determine user state
-  const tp=getTodayPlan();
-  let state='normal';
-  if(tp.type==='rest'&&tp.restKind!=='auto')state='rest';
-  else if(tp.restKind==='auto')state='recovery';
-  else if(S.skipped>0)state='skipped';
-  else if(S.str>=3)state='streak';
-
-  const tod=SET.notifTime||'evening';
-  const notif=buildNotifText(state,wxG,tod);
-
-  // Pick random hour in the chosen band
-  const hours=NOTIF_HOURS[tod]||NOTIF_HOURS['evening'];
-  const chosenHour=hours[Math.floor(Math.random()*hours.length)];
-  const now=new Date();
-  let fireAt=new Date(now);
-  fireAt.setHours(chosenHour,Math.floor(Math.random()*30),0,0);
-  if(fireAt<=now)fireAt.setDate(fireAt.getDate()+1);
-
-  // Store in SET for SW to pick up
-  SET.nextNotif={at:fireAt.getTime(),title:notif.title,body:notif.body,forDate:today};
-
-  // Recap every 15 days
-  const lastRecap=SET.lastRecap||0;
-  if(Date.now()-lastRecap>15*24*3600*1000){
-    const recap=buildRecapText();
-    if(recap)SET.nextRecap=recap;
-  }
-
-  save();
-  // Tell SW to store and schedule notification
-  if('serviceWorker' in navigator && navigator.serviceWorker.controller){
-    navigator.serviceWorker.controller.postMessage({
-      type:'SCHEDULE_NOTIF',
-      payload:{...SET.nextNotif, tag:'turbotartaruga-daily'}
-    });
-    if(SET.nextRecap){
-      const recapAt=new Date(Date.now()+15*24*3600*1000);
-      navigator.serviceWorker.controller.postMessage({
-        type:'SCHEDULE_NOTIF',
-        payload:{...SET.nextRecap,at:recapAt.getTime(),tag:'turbotartaruga-recap'}
-      });
-      SET.lastRecap=Date.now();SET.nextRecap=null;save();
-    }
-    // Ask SW to check immediately (fires if we're in the right window)
-    navigator.serviceWorker.controller.postMessage({type:'CHECK_NOTIFS'});
-  }
-}
-
-async function sendTestNotification(){
-  const res=document.getElementById('notif-test-result');
-  if(!('serviceWorker' in navigator)){if(res)res.textContent='⚠️ Browser non supportato.';return;}
-  if(!('Notification' in window)||Notification.permission!=='granted'){
-    if(res)res.textContent='⚠️ Permesso notifiche non concesso. Attiva le notifiche prima.';return;
-  }
-  if(res)res.textContent='⏳ Invio in corso...';
-  try{
-    const reg=await navigator.serviceWorker.ready;
-    await reg.showNotification('🐢 TurboTartaruga',{
-      body:'Notifiche attive! La tartaruga ti raggiungerà ogni giorno 🎉',
-      icon:'./icon-192.png',badge:'./icon-192.png',
-      tag:'turbotartaruga-test',renotify:true,vibrate:[200,100,200]
-    });
-    if(res)res.textContent='✅ Notifica inviata! Abbassa la tendina delle notifiche.';
-  }catch(e){
-    if(res)res.textContent='❌ '+e.message+' — Su iPhone: aggiungi prima l\'app alla schermata Home.';
-  }
-}
-
-async function requestNotifPermission(){
-  if(!('Notification' in window)){toast('⚠️ Notifiche non supportate su questo dispositivo.');return;}
-  // iOS warning
-  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
-  const isStandalone=window.navigator.standalone||window.matchMedia('(display-mode: standalone)').matches;
-  if(isIOS&&!isStandalone){
-    document.getElementById('ios-notif-warning').style.display='block';
-    return;
-  }
-  const perm=await Notification.requestPermission();
-  if(perm==='granted'){
-    SET.notifEnabled=true;save();
-    document.getElementById('notif-settings').style.display='block';
-    const tog=document.getElementById('st-notif');if(tog)tog.classList.add('on');
-    scheduleNotifications();
-    toast('✅ Notifiche attivate! Riceverai i promemoria giornalieri. 🔔');
-  } else {
-    toast('⚠️ Permesso notifiche negato. Puoi attivarlo nelle impostazioni del browser.');
-  }
-}
-
-
 function syncMorningTimeBtn(){
   const h=P.morningRoutineHour||7;
   document.querySelectorAll('.wiz-wake-btn').forEach(b=>{
@@ -3069,7 +2778,7 @@ function toggleMorningRoutine(){
   const wrap=document.getElementById('morning-time-wrap');
   if(wrap)wrap.style.display=P.morningRoutine?'block':'none';
   syncMorningTimeBtn();
-  buildRoutineBanners();scheduleRoutineNotifications();
+  
   toast(P.morningRoutine?'☀️ Routine mattutina attivata!':'Routine mattutina disattivata.');
 }
 function toggleSleepRoutine(){
@@ -3078,7 +2787,7 @@ function toggleSleepRoutine(){
   const wrap=document.getElementById('sleep-time-wrap');
   if(wrap)wrap.style.display=P.sleepRoutine?'block':'none';
   syncSleepTimeBtn();
-  buildRoutineBanners();scheduleRoutineNotifications();
+  
   toast(P.sleepRoutine?'🌙 Routine pre-sonno attivata!':'Routine pre-sonno disattivata.');
 }
 function setEnergy(btn){
@@ -3093,12 +2802,12 @@ function setEnergy(btn){
 
 function acceptSuggestion(){
   const s=getSuggestedTiming();
-  SET.notifTime=s.slot;save();
+  save();
   const btn=document.querySelector('.notif-time-btn[data-t="'+s.slot+'"]');
   if(btn)selNotifTime(btn);
   document.getElementById('notif-suggest-banner').style.display='none';
   toast('✅ Orario impostato su '+{morning:'Mattina',afternoon:'Pomeriggio',evening:'Sera'}[s.slot]+'!');
-  scheduleNotifications();
+  
 }
 
 function selNotifTime(btn){
@@ -3108,12 +2817,10 @@ function selNotifTime(btn){
   });
   btn.style.borderColor='var(--g1)';btn.style.background='var(--g4)';btn.style.color='var(--g1)';
   btn.classList.add('sel');
-  SET.notifTime=btn.dataset.t;save();
-  scheduleNotifications();
+  save();
+  
 }
 
-// Call fetchWeather on home build
-var _origApplyDynTheme=typeof applyDynamicTheme==='function'?applyDynamicTheme:null;
 
 
 // ═══ ROUTINE MATTUTINA E PRE-SONNO ═══
@@ -3214,73 +2921,6 @@ function completeRoutine(){
 }
 
 // ── Build banner visibility in Home ───────────────────────────────
-function buildRoutineBanners(){
-  const today=localDate();
-  const h=new Date().getHours();
-  // Morning banner: show ±2h from wake time, if not done today
-  const morningBanner=document.getElementById('home-morning-banner');
-  if(morningBanner){
-    const wakeH=P.morningRoutineHour||7;
-    const showMorning=P.morningRoutine&&S.morningDone!==today&&h>=(wakeH-1)&&h<=(wakeH+3);
-    morningBanner.style.display=showMorning?'block':'none';
-  }
-  // Sleep banner: show from sleepRoutineHour-1 onward, if not done today
-  const sleepBanner=document.getElementById('home-sleep-banner');
-  if(sleepBanner){
-    const sleepH=P.sleepRoutineHour||21;
-    const showSleep=P.sleepRoutine&&S.sleepDone!==today&&h>=(sleepH-1);
-    sleepBanner.style.display=showSleep?'block':'none';
-  }
-}
-
-// ── Routine-specific notifications ────────────────────────────────
-async function scheduleRoutineNotifications(){
-  if(!SET.notifEnabled||Notification.permission!=='granted')return;
-  const today=localDate(); // use local date, not UTC
-  const wx=await fetchWeather().catch(()=>null);
-  const wxG=wx?wxGroup(wx.code):null;
-  const temp=wx?wx.temp:null;
-  const name=P.name||'Tartaruga';
-
-  // Morning notification
-  if(P.morningRoutine&&S.morningDone!==today){
-    const wakeH=P.morningRoutineHour||7;
-    const morningTexts={
-      sunny:'☀️ Buongiorno '+name+'! '+(temp!=null?temp+'° e sole':'Bella mattina')+' — 4 minuti nel letto per partire alla grande!',
-      rainy:"🌧️ Buongiorno "+name+"! Fuori piove — più ragione per la routine mattutina nel letto! ☀️",
-      cold:'❄️ Buongiorno '+name+'! Fa freddo — 4 minuti di stiramento nel letto scalda il corpo prima di alzarti!',
-      cloudy:'⛅ Buongiorno '+name+'! 4 minuti di routine mattutina e la giornata parte nel verso giusto. 💪',
-      offline:'☀️ Buongiorno '+name+'! Sono le '+wakeH+':00 — 4 minuti nel letto per attivare il corpo. Inizia bene!'
-    };
-    const mTxt=morningTexts[wxG]||morningTexts.offline;
-    const mAt=new Date();mAt.setHours(wakeH,Math.floor(Math.random()*15),0,0);
-    if(mAt<=new Date())mAt.setDate(mAt.getDate()+1);
-    if(navigator.serviceWorker.controller){
-      navigator.serviceWorker.controller.postMessage({type:'SCHEDULE_NOTIF',payload:{at:mAt.getTime(),title:'☀️ Routine mattutina',body:mTxt,tag:'routine-morning'}});
-    }
-  }
-
-  // Sleep notification
-  if(P.sleepRoutine&&S.sleepDone!==today){
-    const sleepH=P.sleepRoutineHour||21;
-    const tempStr=temp!=null?(temp+'° '):''
-    const sleepTexts={
-      sunny:'🌙 Quasi ora di dormire, '+name+'! '+tempStr+'— 8 minuti di stretching e dormirai come un ghiro.',
-      rainy:'🌧️ Serata di pioggia, '+name+' — perfetta per la routine pre-sonno. 8 minuti e poi sotto le coperte! 🌙',
-      cold:'❄️ Fa freddo, '+name+' — 8 minuti di stretching ti scalda prima di dormire. Il corpo ti ringrazierà! 🌙',
-      cloudy:'🌙 Buonasera '+name+'! La routine pre-sonno ti aspetta — 8 minuti per staccare davvero dalla giornata.',
-      offline:'🌙 Buonasera '+name+'! Sono quasi le '+sleepH+':00 — 8 minuti di stretching prima di dormire. Il corpo ne ha bisogno!'
-    };
-    const sTxt=sleepTexts[wxG]||sleepTexts.offline;
-    const sAt=new Date();sAt.setHours(sleepH,Math.floor(Math.random()*20),0,0);
-    if(sAt<=new Date())sAt.setDate(sAt.getDate()+1);
-    if(navigator.serviceWorker.controller){
-      navigator.serviceWorker.controller.postMessage({type:'SCHEDULE_NOTIF',payload:{at:sAt.getTime(),title:'🌙 Routine pre-sonno',body:sTxt,tag:'routine-sleep'}});
-    }
-  }
-}
-
-// ═══ DYNAMIC THEME (time/season) ═══
 function applyDynamicTheme(){
   const now=new Date();
   const h=now.getHours();
@@ -3880,7 +3520,7 @@ function completeSession(){
   });
   go('complete');
   // Session done — cancel today's notification if pending
-  scheduleNotifications();
+  
 }
 function calcSkippedSessions(){
   // Count planned workout days in the past that have no history entry
@@ -4634,7 +4274,13 @@ function buildSettings(){
   document.getElementById('val-age').textContent=P.age?(P.age+' anni'):'—';
   document.getElementById('val-weight').textContent=P.weight?(P.weight+' kg'):'—';
   document.getElementById('val-height').textContent=P.height?(P.height+' cm'):'—';
-  const lvSel=document.getElementById('st-level');if(lvSel)lvSel.value=P.level||'principiante';
+  // Sync level buttons — green = active, grey = inactive
+  document.querySelectorAll('[data-g="ps-type"] .lv-btn').forEach(b=>{
+    const active=b.dataset.v===(P.level||'principiante');
+    b.style.borderColor=active?'var(--g1)':' var(--bdr)';
+    b.style.background=active?'var(--g4)':' var(--card)';
+    b.style.color=active?'var(--g1)':' var(--text)';
+  });
   const nf=document.getElementById('st-nofloor');if(nf)nf.classList.toggle('on',!!P.noFloor);
   // Categories
   const catWrap=document.getElementById('st-cats');
@@ -4659,35 +4305,9 @@ function buildSettings(){
   const slpTog=document.getElementById('st-sleep');if(slpTog)slpTog.classList.toggle('on',!!P.sleepRoutine);
   syncMorningTimeBtn();
   syncSleepTimeBtn();
-  // Notif toggle: usa SET.notifEnabled — il permesso browser non va ricontrollato ad ogni apertura
-  const notifTog=document.getElementById('st-notif');if(notifTog)notifTog.classList.toggle('on',!!SET.notifEnabled);
-  const notifPanel=document.getElementById('notif-settings');
-  if(notifPanel)notifPanel.style.display=SET.notifEnabled?'block':'none';
-  const notifSettings=document.getElementById('notif-settings');
-  if(notifSettings)notifSettings.style.display=(SET.notifEnabled&&Notification.permission==='granted')?'block':'none';
-  // Re-check browser permission state (user might have revoked it)
-  if(SET.notifEnabled&&Notification.permission!=='granted'){SET.notifEnabled=false;save();}
-  // Auto-suggest best timing from session history
-  const suggested=getSuggestedTiming();
-  const bestSlot=suggested.slot;
-  // Pre-select the suggested slot if user hasn't set a preference yet
-  if(!SET.notifTime&&suggested.confident){SET.notifTime=bestSlot;save();}
-  const ntBtn=document.querySelector('.notif-time-btn[data-t="'+(SET.notifTime||bestSlot)+'"]');if(ntBtn)selNotifTime(ntBtn);
-  // Routine settings
-  const morningToggle=document.getElementById('st-morning');
-  if(morningToggle)morningToggle.classList.toggle('on',!!P.morningRoutine);
-  const sleepToggle=document.getElementById('st-sleep');
-  if(sleepToggle)sleepToggle.classList.toggle('on',!!P.sleepRoutine);
-  const gpsStatus=document.getElementById('settings-gps-status');if(gpsStatus&&SET.gpsLat)gpsStatus.textContent='✅ Posizione attiva ('+SET.gpsLat.toFixed(2)+'°, '+SET.gpsLon.toFixed(2)+'°)';
-  const smartTip=document.getElementById('notif-smart-tip');if(smartTip)smartTip.textContent=getSmartTimingTip();
-  const s=getSuggestedTiming();
-  const banner=document.getElementById('notif-suggest-banner');
-  const bannerTxt=document.getElementById('notif-suggest-text');
-  const labels={morning:'🌅 Mattina (6-10)',afternoon:'🌞 Pomeriggio (12-17)',evening:'🌇 Sera (18-22)'};
-  if(banner&&s.confident&&SET.notifTime!==s.slot){
-    banner.style.display='block';
-    if(bannerTxt)bannerTxt.textContent='💡 Suggerimento: ti alleni di solito intorno alle '+s.avgHour+':00 — consiglio notifiche '+labels[s.slot]+'.';
-  } else if(banner){banner.style.display='none';}
+  // Notifiche rimosse — nessuna sincronizzazione toggle
+
+
   // BMI / Profile display
   if(P.weight&&P.height){
     const hm=P.height/100;const bmi=P.weight/(hm*hm);P.bmi=Math.round(bmi*10)/10;
@@ -4716,7 +4336,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.008 · 17/04/2026 11:46 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.012 · 17/04/2026 21:16 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4756,15 +4376,14 @@ function setMorningHour(btn){
   document.querySelectorAll('.wiz-wake-btn').forEach(b=>{b.style.borderColor='var(--bdr)';b.style.background='var(--card)';});
   btn.style.borderColor='var(--g1)';btn.style.background='var(--g4)';
   P.morningRoutineHour=parseInt(btn.dataset.h)||7;save();
-  if(typeof scheduleRoutineNotifications==='function')scheduleRoutineNotifications();
   toast('✅ Orario sveglia aggiornato!');
 }
+
 function setSleepHour(btn){
   document.querySelectorAll('.wiz-sleep-btn').forEach(b=>{b.style.borderColor='var(--bdr)';b.style.background='var(--card)';});
   btn.style.borderColor='var(--g1)';btn.style.background='var(--g4)';
   P.sleepRoutineHour=parseInt(btn.dataset.h)||22;save();
-  if(typeof scheduleRoutineNotifications==='function')scheduleRoutineNotifications();
-  toast('✅ Orario pre-sonno aggiornato!');
+  
 }
 
 function toggleExList(){
@@ -4869,8 +4488,16 @@ function setGoal(v){
   if(r)r.style.setProperty('--pct',pct);
 }
 function setLevel(btn){
-  document.querySelectorAll('[data-g="ps-type"] .btn-s').forEach(b=>b.classList.remove('sel'));
-  btn.classList.add('sel');
+  // Reset all level buttons to inactive style
+  document.querySelectorAll('[data-g="ps-type"] .lv-btn').forEach(b=>{
+    b.style.borderColor='var(--bdr)';
+    b.style.background='var(--card)';
+    b.style.color='var(--text)';
+  });
+  // Highlight selected
+  btn.style.borderColor='var(--g1)';
+  btn.style.background='var(--g4)';
+  btn.style.color='var(--g1)';
   P.level=btn.dataset.v||'principiante';
   save();
   calcProfileBias();
@@ -5218,7 +4845,7 @@ var CAT_INFO={
 // ── Core state objects ──────────────────────────────────────────────────
 var P={};  // Profile
 var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0};  // Stats
-var SET={audio:true,voice:false,pauseSec:20,notifEnabled:false,notifTime:'evening',preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light'};  // Settings
+var SET={audio:true,voice:false,pauseSec:20,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light'};  // Settings
 var T={exs:[],idx:0,phase:'act',left:0,paused:false,t0:0,iv:null,dur:12,feeling:'piano',sesType:'misto',_halfSpoken:false,_restDone:null,_isRoutine:false};  // Timer state
 
 function generateShareSession(){
@@ -5628,6 +5255,9 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.009',date:'17/04/2026',changes:['Notifiche rimosse (sostituite con coach bubble)','Link-nell-hash per Party: condivisione via WhatsApp senza QR','Coach bubble tartaruga in home','Banner motivazionale se nessuna sessione oggi','Pulizia codice -19KB']},
+  {v:'1.008',date:'17/04/2026',changes:['syncToggles include routine mattina/sera','Funzione notifiche async corretta','viewScale nei default di SET','go(settings) chiama buildSettings']},
+  {v:'1.007',date:'17/04/2026',changes:['Boost escluso nelle routine mattina/sera','riserva-banner non appare in routine','viewScale sincronizzato in impostazioni','Notif toggle usa solo SET.notifEnabled']},
   {v:'1.006',date:'17/04/2026',changes:['15 funzioni zombie rimosse','CSS utility classes aggiunte','Changelog UI aggiunto','Integration test 32/32']},
   {v:'1.005',date:'17/04/2026',changes:['po9 sostituito con allungamento cervicale','No boost per routine mattino/sera','Slider orario routine funzionanti','Notifiche: toggle sincronizzato al rientro in impostazioni']},
   {v:'1.004',date:'17/04/2026',changes:['DB ripristinato dalla versione originale','PHRASES e PARTY_EX ripristinati','Calendario aggiornato a mezzanotte','Giorni riposo aggiornano home e calendario','Streak: init sicuro senza reset errati']},
@@ -5652,8 +5282,248 @@ function toggleChangelog(){
   }else{panel.style.display='none';}
 }
 
+
+// ═══ LINK-NELL-HASH — Condivisione Party senza QR ═══════════════════════
+function getAppBaseUrl(){
+  return location.href.split('#')[0];
+}
+
+function shareGuestLink(){
+  // Ospite condivide il suo link — host lo apre e viene aggiunto automaticamente
+  const guest={
+    type:'TTS_guest',v:'0.5',
+    name:P.name||'Ospite',
+    level:P.level||'principiante',
+    noFloor:!!P.noFloor,
+    categories:P.categories||[],
+    dt:localDate()
+  };
+  const code='TTS-'+btoa(unescape(encodeURIComponent(JSON.stringify(guest))));
+  _lastGuestCode=code;
+  const link=getAppBaseUrl()+'#'+code;
+  const text='🐢 '+( P.name||'Ospite')+' vuole unirti al Party di TurboTartaruga!\nPremi il link per aggiungermi automaticamente:\n'+link;
+  if(navigator.share){
+    navigator.share({title:'TurboTartaruga — Unisciti al Party!',text,url:link})
+      .catch(()=>_copyToClipboard(link,'🔗 Link copiato! Mandalo all\'host'));
+  } else {
+    _copyToClipboard(link,'🔗 Link copiato! Mandalo all\'host');
+  }
+}
+
+function shareResultLink(){
+  // Host condivide il risultato — ospiti aprono il link e vedono la sessione
+  const d=bkData();
+  const code='TTR-'+btoa(unescape(encodeURIComponent(JSON.stringify({
+    name:P.name,xp:S.xp,str:S.str,tot:S.tot,badges:(S.badges||[]).length,
+    lastSession:S.history&&S.history[0]||null,dt:localDate()
+  }))));
+  _lastResultCode=code;
+  const link=getAppBaseUrl()+'#'+code;
+  const text='🐢 '+( P.name||'Tartaruga')+' ha completato una sessione TurboTartaruga!\n\n'+
+    '🔥 Streak: '+S.str+' giorni\n'+
+    '⭐ XP totali: '+S.xp+'\n\n'+
+    'Guarda il risultato: '+link;
+  if(navigator.share){
+    navigator.share({title:'TurboTartaruga — Risultato!',text,url:link})
+      .catch(()=>_copyToClipboard(link,'🔗 Link risultato copiato!'));
+  } else {
+    _copyToClipboard(link,'🔗 Link risultato copiato!');
+  }
+}
+
+function _copyToClipboard(text, successMsg){
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text)
+      .then(()=>toast(successMsg||'📋 Copiato!'))
+      .catch(()=>toast('📋 Copia manuale: '+text.slice(0,40)+'...'));
+  } else {
+    toast('📋 Copia: '+text.slice(0,50)+'...');
+  }
+}
+
+// Gestisce l'hash all'avvio o quando si clicca un link
+function handleHashLink(hash){
+  if(!hash||hash.length<5)return false;
+  const code=hash.startsWith('#')?hash.slice(1):hash;
+  
+  if(code.startsWith('TTS-')){
+    // Ospite vuole unirsi — decodifica e aggiungi
+    try{
+      const guest=JSON.parse(decodeURIComponent(escape(atob(code.slice(4)))));
+      if(!guest||!guest.name)return false;
+      // Naviga a Party e aggiungi l'ospite
+      go('party');
+      partyTab('insieme');
+      setTimeout(()=>{
+        // Aggiungi il guest alla sessione
+        if(!players.includes(guest.name)){
+          players.push(guest.name);
+          updatePartyUI();
+        }
+        toast('🎉 '+guest.name+' aggiunto/a al Party!',3000);
+      },400);
+      return true;
+    }catch(e){return false;}
+  }
+  
+  if(code.startsWith('TTR-')){
+    // Risultato da vedere — mostra riepilogo
+    try{
+      const result=JSON.parse(decodeURIComponent(escape(atob(code.slice(4)))));
+      if(!result||!result.name)return false;
+      // Mostra toast con il risultato e naviga a home
+      setTimeout(()=>{
+        toast('🎉 Risultato di '+result.name+': 🔥'+result.str+' streak, ⭐'+result.xp+' XP!',5000);
+        // Mostra un modal semplice
+        _showResultModal(result);
+      },500);
+      return true;
+    }catch(e){return false;}
+  }
+  
+  return false;
+}
+
+function _showResultModal(result){
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9000;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.innerHTML=`
+    <div style="background:var(--card);border-radius:22px;padding:24px;width:100%;max-width:320px;text-align:center">
+      <div style="font-size:40px;margin-bottom:8px">🐢</div>
+      <div style="font-family:var(--ft);font-size:20px;font-weight:bold;color:var(--g1);margin-bottom:4px">${result.name} ha completato!</div>
+      <div style="font-size:13px;color:var(--tmid);margin-bottom:16px">${result.dt||''}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+        <div style="background:var(--bg2);border-radius:12px;padding:12px">
+          <div style="font-size:22px;font-weight:bold;color:var(--g1)">🔥${result.str}</div>
+          <div style="font-size:11px;color:var(--tlt)">Streak</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:12px;padding:12px">
+          <div style="font-size:22px;font-weight:bold;color:var(--g1)">⭐${result.xp}</div>
+          <div style="font-size:11px;color:var(--tlt)">XP totali</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:12px;padding:12px">
+          <div style="font-size:22px;font-weight:bold;color:var(--g1)">${result.tot}</div>
+          <div style="font-size:11px;color:var(--tlt)">Sessioni</div>
+        </div>
+        <div style="background:var(--bg2);border-radius:12px;padding:12px">
+          <div style="font-size:22px;font-weight:bold;color:var(--g1)">🏅${result.badges}</div>
+          <div style="font-size:11px;color:var(--tlt)">Badge</div>
+        </div>
+      </div>
+      <button onclick="this.closest('div').parentElement.remove()" style="width:100%;padding:13px;background:var(--g1);color:#fff;border:none;border-radius:100px;font-family:var(--ft);font-size:15px;font-weight:bold;cursor:pointer">Chiudi</button>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+
+// ═══ SUGGERIMENTO CAMBIO LIVELLO ═══════════════════════════════════════════
+// Cooldown key in localStorage — 15 giorni dopo "Non ancora"
+var LEVEL_SUGGEST_KEY = 'tt4_lvl_suggest';
+
+function _getLevelSuggestTime(){
+  try{ return parseInt(localStorage.getItem(LEVEL_SUGGEST_KEY)||'0'); }
+  catch(e){ return 0; }
+}
+function _setLevelSuggestTime(){
+  try{ localStorage.setItem(LEVEL_SUGGEST_KEY, String(Date.now())); }
+  catch(e){}
+}
+
+function checkLevelSuggestion(){
+  if(!P.name || !P.level) return;
+  // Al massimo livello: niente da suggerire
+  if(P.level === 'esperto') return;
+  // Cooldown 15 giorni da localStorage
+  if(Date.now() - _getLevelSuggestTime() < 15*24*3600*1000) return;
+  // Rimuovi eventuale banner residuo
+  const existing = document.getElementById('level-suggest-banner');
+  if(existing) return; // già mostrato in questa sessione
+
+  const str    = S.str||0;
+  const tot    = S.tot||0;
+  const xp     = S.xp||0;
+  const boosts = S.boosts||0;
+
+  let shouldSuggest = false;
+  let reason = '';
+  let targetLevel = '';
+
+  if(P.level === 'principiante'){
+    // Base → Intermedio
+    if(str >= 20)      { shouldSuggest=true; reason='Sei a '+str+' giorni di fila!';       targetLevel='intermedio'; }
+    else if(tot >= 30) { shouldSuggest=true; reason='Hai completato '+tot+' sessioni!';    targetLevel='intermedio'; }
+    else if(xp >= 2000){ shouldSuggest=true; reason='Hai guadagnato '+xp+' XP!';           targetLevel='intermedio'; }
+    else if(boosts>=10){ shouldSuggest=true; reason='Hai usato il boost '+boosts+' volte!'; targetLevel='intermedio'; }
+  } else if(P.level === 'intermedio'){
+    // Intermedio → Avanzato
+    if(str >= 30)      { shouldSuggest=true; reason='Sei a '+str+' giorni di fila!';       targetLevel='esperto'; }
+  }
+
+  if(!shouldSuggest) return;
+
+  const lvNames = {intermedio:'🔥 Intermedio', esperto:'🚀 Avanzato'};
+  // Aggiorna la frase nel coach bubble
+  const msg = document.getElementById('home-phrase');
+  if(msg) msg.textContent = '🐢 '+reason+' Sei pronto per il livello '+lvNames[targetLevel]+'?';
+
+  const bubble = document.getElementById('coach-bubble');
+  if(!bubble) return;
+
+  const banner = document.createElement('div');
+  banner.id = 'level-suggest-banner';
+  banner.dataset.target = targetLevel;
+  banner.style.cssText = 'margin-top:10px;padding:10px 12px;background:rgba(76,175,80,.2);border-radius:12px;border:1.5px solid rgba(76,175,80,.4);display:flex;flex-direction:column;gap:8px';
+  const lvTitle = document.createElement('div');
+  lvTitle.style.cssText = 'font-size:12px;font-weight:bold;color:var(--g1)';
+  lvTitle.textContent = '🎯 Pronto per il livello '+lvNames[targetLevel]+'?';
+  const lvBtns = document.createElement('div');
+  lvBtns.style.cssText = 'display:flex;gap:8px;margin-top:4px';
+  const lvYes = document.createElement('button');
+  lvYes.style.cssText = 'flex:1;padding:8px;background:var(--g1);color:#fff;border:none;border-radius:100px;font-size:12px;font-weight:bold;cursor:pointer;font-family:var(--ft)';
+  lvYes.textContent = 'Sì, proviamo! 🚀';
+  lvYes.onclick = () => confirmLevelUpgrade(banner.dataset.target);
+  const lvNo = document.createElement('button');
+  lvNo.style.cssText = 'flex:1;padding:8px;background:var(--bg2);color:var(--tmid);border:1px solid var(--bdr);border-radius:100px;font-size:12px;cursor:pointer;font-family:var(--ft)';
+  lvNo.textContent = 'Non ancora';
+  lvNo.onclick = dismissLevelSuggestion;
+  lvBtns.appendChild(lvYes); lvBtns.appendChild(lvNo);
+  banner.appendChild(lvTitle); banner.appendChild(lvBtns);
+  bubble.appendChild(banner);
+}
+
+function confirmLevelUpgrade(targetLevel){
+  // Validate: can only go UP the chain
+  const chain = ['principiante','intermedio','esperto'];
+  const currIdx = chain.indexOf(P.level);
+  const targIdx = chain.indexOf(targetLevel);
+  if(targIdx <= currIdx){ toast('⚠️ Livello non valido'); return; }
+  P.level = targetLevel;
+  save();
+  calcProfileBias();
+  // Clear cooldown — accepted, no need to wait
+  try{ localStorage.removeItem(LEVEL_SUGGEST_KEY); }catch(e){}
+  const existing = document.getElementById('level-suggest-banner');
+  if(existing) existing.remove();
+  const lvNames = {intermedio:'🔥 Intermedio', esperto:'🚀 Avanzato'};
+  toast('🎉 Livello aggiornato a '+lvNames[targetLevel]+'! Le sessioni si adatteranno.', 4000);
+  buildHome();
+}
+
+function dismissLevelSuggestion(){
+  const existing = document.getElementById('level-suggest-banner');
+  if(existing) existing.remove();
+  // Save cooldown timestamp — 15 giorni
+  _setLevelSuggestTime();
+  // Restore random phrase
+  const msg = document.getElementById('home-phrase');
+  if(msg && typeof PHRASES !== 'undefined')
+    msg.textContent = PHRASES[Math.floor(Math.random()*PHRASES.length)];
+}
+
 // ═══ INIT ═══
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
+// Handle shared link on startup
+if(location.hash&&location.hash.length>4){handleHashLink(location.hash);}
 if(P.name){
   console.log('✅ TurboTartaruga: profilo caricato per',P.name,'streak:',S.str,'xp:',S.xp,'badges:',S.badges.length,'last:',S.last);
   if(!S.plan||S.plan.length===0)generatePlan();
@@ -5714,6 +5584,9 @@ if(P.name){
     }
   },60000); // check every 60 seconds
 })();
+
+// Handle hash changes (shared links clicked while app is open)
+window.addEventListener('hashchange',()=>{if(location.hash)handleHashLink(location.hash);});
 
 // ═══ BACK BUTTON (Android + Browser) ═══
 var BACK_MSGS=[
@@ -5792,7 +5665,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604171146'; // auto-set on each release
+const APP_BUILD='202604172116'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
@@ -5833,10 +5706,7 @@ async function doUpdate(){
   if(status)status.textContent='Pulizia cache e riavvio...';
   try{
     // 1. Unregister all service workers
-    if('serviceWorker' in navigator){
-      const regs=await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map(r=>r.unregister()));
-    }
+    // SW registration removed
     // 2. Delete ALL caches
     if('caches' in window){
       const keys=await caches.keys();
@@ -5862,32 +5732,6 @@ setTimeout(()=>{
         if(s)s.textContent='🆕 v'+data.version+' disponibile — premi Verifica!';
       }
     }).catch(()=>{});
-},5000);
-
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'})
-    .then(reg=>{
-      // Force skipWaiting if a new SW is already waiting
-      if(reg.waiting){reg.waiting.postMessage('skipWaiting');}
-      // Watch for new SW being installed
-      reg.addEventListener('updatefound',()=>{
-        const nw=reg.installing;if(!nw)return;
-        nw.addEventListener('statechange',()=>{
-          if(nw.state==='installed'){
-            // Skip waiting regardless of whether there's an old controller
-            nw.postMessage('skipWaiting');
-          }
-        });
-      });
-      // When controller changes, reload to pick up new version
-      let refreshing=false;
-      navigator.serviceWorker.addEventListener('controllerchange',()=>{
-        if(!refreshing){refreshing=true;location.reload(true);}
-      });
-      // Proactively check for SW updates every time app opens
-      reg.update().catch(()=>{});
-    }).catch(()=>{});
-}
-</script>
+},5000);</script>
 </body>
 </html>
