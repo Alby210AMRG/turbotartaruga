@@ -23,7 +23,7 @@
   --fm:'Courier New','Lucida Console',monospace;
   --fs:14px;--fs-sm:12px;--fs-xs:11px;--fs-lg:16px;--timer:88px;--icon:28px;--pad:17px;
 }
-[data-theme="dark"]{--bg:#0D1A0D;--bg2:#0F200F;--card:#162316;--text:#E8F5E9;--tmid:#A5C8A5;--tlt:#4a6a4a;--bdr:#2A4A2A;--shadow:0 4px 20px rgba(0,0,0,.35)}
+[data-theme="dark"]{--bg:#111;--bg2:#1a1a1a;--card:#222;--text:#f0f0f0;--tmid:#aaa;--tlt:#666;--bdr:#333;--shadow:0 4px 20px rgba(0,0,0,.5);--g1:#66BB6A;--g4:#1a2d1a}
 body.v2x{--fs:17px;--fs-sm:14px;--fs-xs:13px;--fs-lg:19px;--timer:108px;--icon:36px;--pad:22px}
 body.v2x #home-phrase{font-size:18px!important}
 body.v2x .tcontrols{padding:0 13px 16px;gap:10px}
@@ -157,6 +157,25 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 .p-tag{font-size:var(--fs-xs);font-weight:bold;letter-spacing:2px;text-transform:uppercase;color:var(--lime);margin-bottom:6px}
 .p-timer{font-family:var(--fm);font-size:76px;color:var(--lime);text-align:center;font-weight:bold;line-height:1}
 /* Settings */
+
+/* Accordion settings */
+.acc-card{margin:0 13px 10px;border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow);overflow:hidden}
+.acc-hdr{width:100%;padding:15px 16px;display:flex;justify-content:space-between;align-items:center;background:var(--card);border:none;cursor:pointer;font-weight:bold;font-size:var(--fs-sm);color:var(--text);text-align:left}
+.acc-hdr:active{background:var(--bg2)}
+.acc-arr{font-size:12px;color:var(--tlt);transition:transform .2s}
+.acc-arr.open{transform:rotate(180deg)}
+.acc-body{display:none;border-top:1px solid var(--bdr)}
+.acc-body.open{display:block}
+
+/* Accordion settings */
+.acc-card{margin:0 13px 10px;border-radius:var(--radius);background:var(--card);box-shadow:var(--shadow);overflow:hidden}
+.acc-hdr{width:100%;padding:15px 16px;display:flex;justify-content:space-between;align-items:center;background:none;border:none;cursor:pointer;font-weight:bold;font-size:var(--fs-sm);color:var(--text);text-align:left}
+.acc-hdr:active{background:var(--bg2)}
+.acc-arr{font-size:12px;color:var(--tlt);transition:transform .25s}
+.acc-arr.open{transform:rotate(180deg)}
+.acc-body{display:none;border-top:1px solid var(--bdr)}
+.acc-body.open{display:block}
+
 .sec-title{font-size:var(--fs-xs);font-weight:bold;letter-spacing:.8px;text-transform:uppercase;color:var(--tlt);padding:14px 16px 6px;display:block}
 .sblk{background:var(--card);border-radius:var(--radius);margin:0 13px 13px;overflow:hidden;box-shadow:var(--shadow)}
 .srow{padding:13px 15px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--bdr)}.srow:last-child{border-bottom:none}
@@ -203,6 +222,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 @keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
 .confetti-piece{position:fixed;width:10px;height:10px;top:-10px;z-index:999;border-radius:2px;animation:confettiFall 2.5s ease-in forwards;pointer-events:none}
+
+/* ── Utility classes (reduce inline style repetition) ─────── */
+.srow-col{flex-direction:column;align-items:flex-start;gap:8px}
+.srow-col-10{flex-direction:column;align-items:flex-start;gap:10px}
+.flex-between{display:flex;align-items:center;justify-content:space-between;width:100%}
+.flex-gap6{display:flex;gap:6px}
+.flex-gap8{display:flex;gap:8px}
+.guide-q{font-weight:bold;color:var(--text);margin:12px 0 4px}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
@@ -639,61 +666,44 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <div id="screen-progress" class="screen">
   <div class="hdr"><button class="hdr-back" onclick="go('home')">←</button><h1>📊 Progressi</h1></div>
   <div class="scrollable">
-    <!-- A: HEATMAP 90 giorni -->
+    <!-- 1. OBIETTIVO -->
+    <div class="card"><div class="card-title">🎯 Il mio obiettivo</div>
+      <div style="display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--tlt);margin-bottom:5px"><span id="prg-goal-lbl">0 / 90</span><span id="prg-goal-pct">0%</span></div>
+      <div class="goal-bar"><div id="prg-goal-fill" class="goal-fill" style="width:0%"></div></div>
+      <p id="prg-goal-msg" style="font-size:var(--fs-sm);color:var(--tmid);margin-top:9px;line-height:1.5"></p>
+    </div>
+    <!-- 2. NUMERI CHIAVE -->
+    <div class="card"><div class="card-title">📈 I miei numeri</div>
+      <div class="stat-grid"><div><div class="sv" id="prg-str">0</div><div class="sl">🔥 Streak</div></div><div><div class="sv" id="prg-tot">0</div><div class="sl">Sessioni</div></div><div><div class="sv" id="prg-level-num">1</div><div class="sl">⭐ Livello</div></div></div>
+      <div class="stat-grid" style="margin-top:10px"><div><div class="sv" id="prg-xp">0</div><div class="sl">XP totali</div></div><div><div class="sv" id="prg-morning">0</div><div class="sl">☀️ Mattino</div></div><div><div class="sv" id="prg-sleep">0</div><div class="sl">🌙 Sera</div></div></div>
+      <div class="stat-grid" style="margin-top:10px"><div><div class="sv" id="prg-badges">0</div><div class="sl">🏅 Badge</div></div><div><div class="sv" id="prg-boosts">0</div><div class="sl">💥 Boost</div></div><div><div class="sv" id="prg-skipped">0</div><div class="sl">😴 Saltate</div></div></div>
+    </div>
+    <!-- 3. HEATMAP -->
     <div class="card">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div class="card-title" style="margin-bottom:0">🗓️ Attività — ultimi 90 giorni</div>
-      </div>
-      <div id="heatmap-wrap" style="overflow-x:auto">
-        <svg id="heatmap-svg" style="min-width:260px;width:100%" viewBox="0 0 280 120"></svg>
-      </div>
-      <div style="display:flex;gap:10px;justify-content:center;margin-top:8px;font-size:10px;color:var(--tlt)">
+      <div class="card-title" style="margin-bottom:10px">🗓️ Attività — ultimi 90 giorni</div>
+      <div id="heatmap-wrap" style="overflow-x:auto"><svg id="heatmap-svg" style="min-width:260px;width:100%" viewBox="0 0 280 120"></svg></div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px;font-size:10px;color:var(--tlt)">
         <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:#C8E6C9;border-radius:2px;display:inline-block"></span>Nessuna</span>
         <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:#81C784;border-radius:2px;display:inline-block"></span>1 sessione</span>
         <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:#43A047;border-radius:2px;display:inline-block"></span>2+</span>
         <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:#F9A825;border-radius:2px;display:inline-block"></span>☀️</span>
         <span style="display:flex;align-items:center;gap:3px"><span style="width:10px;height:10px;background:#5C6BC0;border-radius:2px;display:inline-block"></span>🌙</span>
       </div>
-      <!-- keep chart7 for backward compat -->
       <svg id="chart7" style="display:none" viewBox="0 0 300 110"></svg>
-      <button id="chart-btn-7" style="display:none"></button>
-      <button id="chart-btn-30" style="display:none"></button>
+      <button id="chart-btn-7" style="display:none"></button><button id="chart-btn-30" style="display:none"></button>
     </div>
-    <!-- B: MAPPA CORPOREA TARTARUGA -->
+    <!-- 4. MAPPA MUSCOLARE -->
     <div class="card">
-      <div class="card-title" style="margin-bottom:6px">🐢 Mappa muscolare</div>
-      <div style="font-size:11px;color:var(--tlt);margin-bottom:10px">Zone allenate negli ultimi 14 giorni · 🟢 recente · 🟡 questa sett. · ⬜ non allenata</div>
+      <div class="card-title" style="margin-bottom:4px">🐢 Mappa muscolare</div>
+      <div style="font-size:11px;color:var(--tlt);margin-bottom:12px">Zone allenate negli ultimi 14 giorni · 🟢 recente · 🟡 questa sett. · ⬜ non allenata</div>
       <div style="display:flex;align-items:flex-start;gap:16px">
         <svg id="bodymap-svg" viewBox="0 0 110 200" style="width:min(110px,30vw);flex-shrink:0"></svg>
         <div id="bodymap-legend" style="font-size:12px;color:var(--tmid);flex:1;padding-top:6px"></div>
       </div>
     </div>
-    <div class="card" id="improvement-card">
-      <div class="card-title">📊 Come sono migliorato?</div>
-      <div id="improvement-content" style="font-size:var(--fs-sm);color:var(--tmid);line-height:1.7"></div>
-    </div>
-    <div class="card"><div class="card-title">🎯 Obiettivo</div>
-      <div style="display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--tlt);margin-bottom:5px"><span id="prg-goal-lbl">0 / 90</span><span id="prg-goal-pct">0%</span></div>
-      <div class="goal-bar"><div id="prg-goal-fill" class="goal-fill" style="width:0%"></div></div>
-      <p id="prg-goal-msg" style="font-size:var(--fs-sm);color:var(--tmid);margin-top:9px;line-height:1.5"></p>
-    </div>
-    <!-- STAT 1: Totali + Record personali -->
-    <div class="card"><div class="card-title">📊 Totali</div>
-      <div class="stat-grid"><div><div class="sv" id="prg-tot">0</div><div class="sl">Sessioni</div></div><div><div class="sv" id="prg-str">0</div><div class="sl">Streak 🔥</div></div><div><div class="sv" id="prg-xp">0</div><div class="sl">XP ⭐</div></div></div>
-      <div class="stat-grid" style="margin-top:10px"><div><div class="sv" id="prg-boosts">0</div><div class="sl">💥 Boost</div></div><div><div class="sv" id="prg-skipped">0</div><div class="sl">😴 Saltate</div></div><div><div class="sv" id="prg-badges">0</div><div class="sl">🏅 Badge</div></div></div>
-      <div class="stat-grid" style="margin-top:10px"><div><div class="sv" id="prg-morning">0</div><div class="sl">☀️ Mattino</div></div><div><div class="sv" id="prg-sleep">0</div><div class="sl">🌙 Pre-sonno</div></div><div><div class="sv" id="prg-level-num">1</div><div class="sl">⭐ Livello</div></div></div>
-    </div>
-    <!-- STAT 1b: Record personali -->
-    <div class="card"><div class="card-title">🏆 Record personali</div>
-      <div id="prg-records" style="font-size:var(--fs-sm);color:var(--tmid);line-height:2"></div>
-    </div>
-    <!-- STAT 2: Distribuzione per categoria -->
-    <div class="card"><div class="card-title">🍩 Distribuzione allenamenti</div>
-      <div id="prg-catdist" style="display:flex;flex-direction:column;gap:7px"></div>
-    </div>
-    <!-- C: RADAR categorie -->
+    <!-- 5. RADAR -->
     <div class="card">
-      <div class="card-title" style="margin-bottom:8px">🕸️ Bilanciamento categorie</div>
+      <div class="card-title" style="margin-bottom:8px">🕸️ Bilanciamento categorie <span style="font-size:10px;color:var(--tlt);font-weight:normal">— ultimi 30 giorni</span></div>
       <div style="display:flex;align-items:center;gap:12px">
         <svg id="radar-svg" viewBox="0 0 200 200" style="width:min(180px,45vw);flex-shrink:0"></svg>
         <div id="radar-legend" style="font-size:11px;color:var(--tmid);line-height:1.9;flex:1"></div>
@@ -701,17 +711,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div id="prg-xp-trend" style="font-size:11px;color:var(--tlt);margin-top:6px;text-align:center"></div>
       <svg id="chart-xp" style="display:none" viewBox="0 0 300 90"></svg>
     </div>
-    <!-- STAT 4: Riepilogo allenamento (last 15 days) -->
-    <div class="card" id="prg-recap-card">
-      <div class="card-title">📋 Riepilogo allenamento</div>
-      <div id="prg-recap-content" style="font-size:var(--fs-sm);color:var(--tmid);line-height:1.8"></div>
-    </div>
-    <!-- STAT 5: Statistiche peso (if available) -->
-    <div class="card" id="prg-weight-card" style="display:none">
-      <div class="card-title">⚖️ Il tuo percorso fisico</div>
-      <div id="prg-weight-content" style="font-size:var(--fs-sm);color:var(--tmid);line-height:1.8"></div>
-    </div>
-    <!-- Ultime sessioni -->
+    <!-- 6. MIGLIORAMENTO -->
+    <div class="card" id="improvement-card"><div class="card-title">📊 Come sono migliorato?</div><div id="improvement-content" style="font-size:var(--fs-sm);color:var(--tmid);line-height:1.7"></div></div>
+    <!-- 7. RECORD -->
+    <div class="card"><div class="card-title">🏆 Record personali</div><div id="prg-records" style="font-size:var(--fs-sm);color:var(--tmid);line-height:2"></div></div>
+    <!-- 8. DISTRIBUZIONE -->
+    <div class="card"><div class="card-title">🍩 Distribuzione allenamenti</div><div id="prg-catdist" style="display:flex;flex-direction:column;gap:7px"></div></div>
+    <!-- 9. RIEPILOGO -->
+    <div class="card" id="prg-recap-card"><div class="card-title">📋 Riepilogo ultimi 15 giorni</div><div id="prg-recap-content" style="font-size:var(--fs-sm);color:var(--tmid);line-height:1.8"></div></div>
+    <!-- 10. FISICO -->
+    <div class="card" id="prg-weight-card" style="display:none"><div class="card-title">⚖️ Il tuo percorso fisico</div><div id="prg-weight-content" style="font-size:var(--fs-sm);color:var(--tmid);line-height:1.8"></div></div>
+    <!-- 11. ULTIME SESSIONI -->
     <div class="card"><div class="card-title">📋 Ultime sessioni</div><div id="hist-list"></div></div>
   </div>
 </div>
@@ -720,7 +730,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <div id="screen-profile" class="screen">
   <div class="hdr"><button class="hdr-back" onclick="go('home')">←</button><h1>🏅 Badge & XP</h1></div>
   <div class="scrollable">
-    <div style="background:linear-gradient(135deg,var(--g4),var(--bg2));padding:18px;text-align:center;margin-bottom:12px">
+    <div style="background:var(--bg2);border-bottom:2px solid var(--bdr);padding:18px;text-align:center;margin-bottom:12px">
       <img src="logo-turtle.png" alt="" style="height:clamp(60px,18vw,90px);margin-bottom:6px;display:block;margin-left:auto;margin-right:auto">
       <div style="font-family:var(--ft);font-size:19px;font-weight:bold" id="prf-name">-</div>
       <div style="font-size:var(--fs-xs);color:var(--tmid);margin-top:3px" id="prf-sub">-</div>
@@ -965,249 +975,281 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <!-- SETTINGS -->
 <div id="screen-settings" class="screen">
   <div class="hdr"><button class="hdr-back" onclick="goBackFromSettings()">←</button><h1>⚙️ Impostazioni</h1></div>
-  <div class="scrollable">
-    <span class="sec-title">👤 Profilo utente</span>
-    <div class="sblk">
-      <div class="srow"><div class="si">✏️</div><div class="sinfo"><div class="stitle">Nome</div><div class="sval" id="val-name">-</div><div id="inp-name" style="display:none"><input type="text" class="sinp" id="fld-name" maxlength="30"><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-p" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="saveField('name')">✅</button><button class="btn btn-o" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="cancelEdit('name')">✕</button></div></div></div><button class="sedit" id="ebt-name" onclick="startEdit('name')">✏️</button></div>
-      <div class="srow"><div class="si">🎂</div><div class="sinfo"><div class="stitle">Età</div><div class="sval" id="val-age">-</div><div id="inp-age" style="display:none"><input type="number" class="sinp" id="fld-age" min="10" max="99"><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-p" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="saveField('age')">✅</button><button class="btn btn-o" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="cancelEdit('age')">✕</button></div></div></div><button class="sedit" id="ebt-age" onclick="startEdit('age')">✏️</button></div>
-      <div class="srow"><div class="si">⚖️</div><div class="sinfo"><div class="stitle">Peso</div><div class="sval" id="val-weight">-</div><div id="inp-weight" style="display:none"><input type="number" class="sinp" id="fld-weight" min="30" max="300"><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-p" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="saveField('weight')">✅</button><button class="btn btn-o" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="cancelEdit('weight')">✕</button></div></div></div><button class="sedit" id="ebt-weight" onclick="startEdit('weight')">✏️</button></div>
-      <div class="srow"><div class="si">📏</div><div class="sinfo"><div class="stitle">Altezza</div><div class="sval" id="val-height">-</div><div id="inp-height" style="display:none"><input type="number" class="sinp" id="fld-height" min="100" max="220"><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-p" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="saveField('height')">✅</button><button class="btn btn-o" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="cancelEdit('height')">✕</button></div></div></div><button class="sedit" id="ebt-height" onclick="startEdit('height')">✏️</button></div>
-      <div class="srow" id="st-bmi-row" style="display:none"><div class="si">📊</div><div class="sinfo"><div class="stitle">Il tuo profilo</div><div class="sval" id="st-bmi-val">-</div></div></div>
-      <div class="srow"><div class="si">🧬</div><div class="sinfo"><div class="stitle">Sesso biologico</div><div class="sval" id="val-sex">-</div></div>
-        <div style="display:flex;gap:6px">
-          <button onclick="setSexSetting('M')" id="sex-btn-m" style="padding:6px 10px;border-radius:100px;border:2px solid var(--bdr);background:var(--card);font-size:12px;cursor:pointer;font-weight:bold">👨</button>
-          <button onclick="setSexSetting('F')" id="sex-btn-f" style="padding:6px 10px;border-radius:100px;border:2px solid var(--bdr);background:var(--card);font-size:12px;cursor:pointer;font-weight:bold">👩</button>
-        </div>
-      </div>
-      <div class="srow"><div class="si">⚡</div><div class="sinfo"><div class="stitle">Livello</div></div>
-        <select id="st-level" onchange="saveSelectF('level',this.value)" style="border:2px solid var(--bdr);border-radius:100px;padding:6px 10px;font-size:var(--fs-xs);font-weight:bold;background:var(--card);color:var(--text);cursor:pointer;outline:none"><option value="principiante">🌱 Principiante</option><option value="intermedio">🔥 Intermedio</option><option value="esperto">🚀 Esperto</option></select></div>
-    </div>
-    <span class="sec-title">🏋️ Preferenze allenamento</span>
-    <div class="sblk">
-      <div class="srow"><div class="si">🚫</div><div class="sinfo"><div class="stitle">Evita esercizi a terra</div><div class="sval">Esclude esercizi che richiedono di sdraiarsi</div></div><button class="toggle" id="st-nofloor" onclick="toggleNoFloor()"></button></div>
-      <div class="srow" style="flex-direction:column;align-items:flex-start;gap:9px"><div class="stitle">Categorie attive</div><div id="st-cats" style="width:100%"></div></div>
-      <div class="srow" style="flex-direction:column;align-items:flex-start;gap:9px"><div class="stitle">Giorni di riposo</div><div class="day-sel" id="st-restdays" style="width:100%;margin-top:4px"></div><button class="btn btn-s" style="padding:8px 16px;font-size:var(--fs-xs);margin-top:8px" onclick="saveRestDays()">✅ Salva giorni riposo</button></div>
-      <div class="srow" style="flex-direction:column;align-items:flex-start;gap:10px">
-        <div style="display:flex;width:100%;align-items:center;justify-content:space-between">
-          <div><div class="stitle">⭐ Preferiti per sessione</div>
-            <div class="sval">0 = nessun preferito · max 5 per sessione</div></div>
-          <span style="font-family:var(--ft);font-size:22px;font-weight:bold;color:var(--g1);min-width:28px;text-align:right" id="st-fav-disp">3</span>
-        </div>
-        <input type="range" id="st-fav-range" min="0" max="5" value="3" step="1" style="width:100%" oninput="updFavSt(this.value)">
-        <div style="display:flex;justify-content:space-between;width:100%;font-size:var(--fs-xs);color:var(--tlt)"><span>0 (disattivato)</span><span>5 (max)</span></div>
-        <button class="btn btn-p btn-full" style="padding:9px" onclick="saveFavCount()">✅ Salva</button>
-      </div>
-    </div>
-    <span class="sec-title">🎯 Obiettivo</span>
-    <div class="sblk"><div class="srow" style="flex-direction:column;align-items:flex-start;gap:11px">
-      <div style="display:flex;width:100%;align-items:center;justify-content:space-between"><div class="stitle">Giorni target</div><span style="font-family:var(--ft);font-size:24px;font-weight:bold;color:var(--g1);min-width:48px;text-align:right" id="st-goal-disp">90</span></div>
-      <input type="range" id="st-goal-range" min="10" max="365" value="90" style="width:100%" oninput="updGoalSt(this.value)">
-      <button class="btn btn-p btn-full" style="padding:10px" onclick="saveGoal()">✅ Salva obiettivo</button>
-    </div></div>
-    <span class="sec-title">🎨 Aspetto</span>
-    <div class="sblk">
-      <div class="srow"><div class="si">🔍</div><div class="sinfo"><div class="stitle">Dimensione testo</div><div class="sval">1X normale · 2X più grande</div></div><div class="view-opts"><div class="vw-opt sel" data-vs="1x" onclick="selView(this)">1X</div><div class="vw-opt" data-vs="2x" onclick="selView(this)">2X</div></div></div>
-      <div class="srow"><div class="si">🌙</div><div class="sinfo"><div class="stitle">Tema</div></div><div class="theme-opts"><div class="th-opt sel" data-th="light" onclick="selTheme(this)">☀️</div><div class="th-opt" data-th="dark" onclick="selTheme(this)">🌙</div><div class="th-opt" data-th="auto" onclick="selTheme(this)">🔄</div></div></div>
-    </div>
-    <span class="sec-title">🔊 Audio e tempi</span>
-    <div class="sblk">
-      <div class="srow"><div class="si">🔔</div><div class="sinfo"><div class="stitle">Suoni esercizio</div><div class="sval">Beep cambio esercizio</div></div><button class="toggle" id="st-audio" onclick="toggleAudio()"></button></div>
-      <div class="srow"><div class="si">🗣️</div><div class="sinfo"><div class="stitle">Conto vocale</div><div class="sval">3… 2… 1… prima del cambio</div></div><button class="toggle" id="st-voice" onclick="toggleVoice()"></button></div>
-      <div class="srow" style="flex-direction:column;align-items:flex-start;gap:10px">
-        <div style="display:flex;width:100%;align-items:center;justify-content:space-between">
-          <div><div class="si" style="display:inline;margin-right:8px">⏸️</div><span class="stitle">Pausa tra esercizi</span></div>
-          <span style="font-family:var(--ft);font-size:20px;font-weight:bold;color:var(--g1)" id="st-pause-disp">20s</span>
-        </div>
-        <input type="range" id="st-pause-range" min="5" max="60" value="20" step="5" style="width:100%" oninput="updPauseSt(this.value)">
-        <div style="display:flex;justify-content:space-between;width:100%;font-size:var(--fs-xs);color:var(--tlt)"><span>5s (minima)</span><span>60s (massima)</span></div>
-        <button class="btn btn-p btn-full" style="padding:9px" onclick="savePause()">✅ Salva pausa</button>
-      </div>
-    </div>
-    <span class="sec-title">🏋️ Elenco esercizi</span>
-    <div class="sblk">
-      <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
-        <div style="display:flex;width:100%;align-items:center;justify-content:space-between">
-          <div><div class="stitle">📋 Tutti gli esercizi</div><div class="sval" id="ex-count-lbl">70 esercizi in 7 categorie</div></div>
-          <button class="sedit" id="ex-toggle-btn" onclick="toggleExList()">▼ Mostra</button>
-        </div>
-        <div id="ex-list-wrap" style="display:none;width:100%"></div>
-      </div>
-    <span class="sec-title">📷 Esercizi con foto</span>
-    <div class="sblk">
-      <div class="srow">
-        <div class="si">📷</div>
-        <div class="sinfo">
-          <div class="stitle">Solo esercizi con foto</div>
-          <div class="sval">Esegui solo gli esercizi che hanno una foto dimostrativa</div>
-          <div class="sval" id="photo-filter-status" style="margin-top:3px;font-size:11px;color:var(--tlt)">In attesa di verifica...</div>
-        </div>
-        <button class="toggle" id="st-photo-filter" onclick="togglePhotoFilter()"></button>
-      </div>
-      <div class="srow" style="justify-content:center;padding-top:0">
-        <button class="btn btn-s" style="padding:8px 20px;font-size:var(--fs-xs)" onclick="recheckPhotos()">🔄 Ricontrolla foto disponibili</button>
-      </div>
-    </div>
-    </div>
+  <div class="scrollable" style="padding-bottom:30px">
 
-    <span class="sec-title">🔄 Piano allenamento</span>
-    <div class="sblk"><div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
-      <div class="stitle">Rigenera piano</div>
-      <div class="sval">Rigenera il piano 30 giorni tenendo conto del tuo profilo, categorie preferite, giorni di riposo e nuovi esercizi. Lo storico non viene toccato.</div>
-      <button class="btn btn-s btn-full mt10" style="padding:10px" onclick="refreshPlan()">🔄 Rigenera piano 30 giorni</button>
-    </div></div>
-    <span class="sec-title">🔔 Notifiche</span>
-    <div class="sblk">
-      <div class="srow"><div class="si">🔔</div>
-        <div class="sinfo"><div class="stitle">Notifiche attive</div>
-          <div class="sval">Promemoria giornaliero + recap ogni 15 giorni</div></div>
-        <button class="toggle" id="st-notif" onclick="toggleNotifications()"></button>
-      </div>
-      <div id="notif-settings" style="display:none;padding:0 15px 12px;border-top:1px solid var(--bdr)">
-        <div style="margin:12px 0 6px;font-weight:bold;font-size:var(--fs-sm);color:var(--text)">⏰ Fascia oraria preferita</div>
-        <div style="display:flex;gap:6px;margin-bottom:12px">
-          <button class="notif-time-btn sel" data-t="morning" onclick="selNotifTime(this)" style="flex:1;padding:9px 4px;border-radius:11px;border:2px solid var(--g1);background:var(--g4);color:var(--g1);font-size:12px;font-weight:bold;cursor:pointer">🌅 Mattina<br><span style="font-size:10px;font-weight:normal">6-10</span></button>
-          <button class="notif-time-btn" data-t="afternoon" onclick="selNotifTime(this)" style="flex:1;padding:9px 4px;border-radius:11px;border:2px solid var(--bdr);background:var(--card);color:var(--text);font-size:12px;font-weight:bold;cursor:pointer">🌞 Pomeriggio<br><span style="font-size:10px;font-weight:normal">12-17</span></button>
-          <button class="notif-time-btn" data-t="evening" onclick="selNotifTime(this)" style="flex:1;padding:9px 4px;border-radius:11px;border:2px solid var(--bdr);background:var(--card);color:var(--text);font-size:12px;font-weight:bold;cursor:pointer">🌇 Sera<br><span style="font-size:10px;font-weight:normal">18-22</span></button>
-        </div>
-        <div id="notif-smart-tip" style="font-size:12px;color:var(--g1);margin-bottom:6px;font-style:italic;line-height:1.5"></div>
-        <div id="notif-suggest-banner" style="display:none;background:var(--g4);border:1.5px solid var(--g1);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:13px">
-          <div style="font-weight:bold;color:var(--g1);margin-bottom:6px" id="notif-suggest-text"></div>
-          <div style="display:flex;gap:8px">
-            <button onclick="acceptSuggestion()" style="flex:1;padding:8px;background:var(--g1);color:#fff;border:none;border-radius:100px;font-size:12px;font-weight:bold;cursor:pointer">✅ Usa questo orario</button>
-            <button onclick="document.getElementById('notif-suggest-banner').style.display='none'" style="flex:1;padding:8px;background:var(--bg2);color:var(--tmid);border:none;border-radius:100px;font-size:12px;cursor:pointer">Scelgo io</button>
+    <!-- 1. PROFILO -->
+    <div class="acc-card">
+      <button class="acc-hdr" onclick="toggleAcc('acc-profilo')"><span>👤 Profilo utente</span><span class="acc-arr" id="arr-profilo">▼</span></button>
+      <div class="acc-body" id="acc-profilo">
+        <div class="sblk" style="margin:0">
+          <div class="srow"><div class="si">✏️</div><div class="sinfo"><div class="stitle">Nome</div><div class="sval" id="val-name">-</div><div id="inp-name" style="display:none"><input type="text" class="sinp" id="fld-name" maxlength="30"><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-p" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="saveField('name')">✅</button><button class="btn btn-o" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="cancelEdit('name')">✕</button></div></div></div><button class="sedit" id="ebt-name" onclick="startEdit('name')">✏️</button></div>
+          <div class="srow"><div class="si">🎂</div><div class="sinfo"><div class="stitle">Età</div><div class="sval" id="val-age">-</div><div id="inp-age" style="display:none"><input type="number" class="sinp" id="fld-age" min="10" max="99"><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-p" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="saveField('age')">✅</button><button class="btn btn-o" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="cancelEdit('age')">✕</button></div></div></div><button class="sedit" id="ebt-age" onclick="startEdit('age')">✏️</button></div>
+          <div class="srow"><div class="si">⚖️</div><div class="sinfo"><div class="stitle">Peso</div><div class="sval" id="val-weight">-</div><div id="inp-weight" style="display:none"><input type="number" class="sinp" id="fld-weight" min="30" max="300"><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-p" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="saveField('weight')">✅</button><button class="btn btn-o" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="cancelEdit('weight')">✕</button></div></div></div><button class="sedit" id="ebt-weight" onclick="startEdit('weight')">✏️</button></div>
+          <div class="srow"><div class="si">📏</div><div class="sinfo"><div class="stitle">Altezza</div><div class="sval" id="val-height">-</div><div id="inp-height" style="display:none"><input type="number" class="sinp" id="fld-height" min="100" max="220"><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-p" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="saveField('height')">✅</button><button class="btn btn-o" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="cancelEdit('height')">✕</button></div></div></div><button class="sedit" id="ebt-height" onclick="startEdit('height')">✏️</button></div>
+          <div class="srow" id="st-bmi-row" style="display:none"><div class="si">📊</div><div class="sinfo"><div class="stitle">Il tuo profilo</div><div class="sval" id="st-bmi-val">-</div></div></div>
+          <div class="srow"><div class="si">🧬</div><div class="sinfo"><div class="stitle">Sesso biologico</div><div class="sval" id="val-sex">-</div></div>
+            <div style="display:flex;gap:6px"><button id="btn-sex-m" class="btn btn-s" style="padding:6px 12px;font-size:11px" onclick="setSex('M')">♂ Uomo</button><button id="btn-sex-f" class="btn btn-s" style="padding:6px 12px;font-size:11px" onclick="setSex('F')">♀ Donna</button></div></div>
+          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px"><div class="si">⚡</div><div class="stitle">Livello</div></div>
+            <div style="display:flex;gap:6px;width:100%" data-g="ps-type">
+              <button class="btn btn-s sel" data-v="principiante" onclick="setLevel(this)" style="flex:1;font-size:12px">🌱 Base</button>
+              <button class="btn btn-s" data-v="intermedio" onclick="setLevel(this)" style="flex:1;font-size:12px">🔥 Intermedio</button>
+              <button class="btn btn-s" data-v="esperto" onclick="setLevel(this)" style="flex:1;font-size:12px">🚀 Avanzato</button>
+            </div>
           </div>
-        </div>
-        <div style="font-weight:bold;font-size:var(--fs-sm);color:var(--text);margin-bottom:8px">📍 Posizione per meteo</div>
-        <div style="font-size:12px;color:var(--tlt);margin-bottom:8px;line-height:1.5">La posizione personalizza le notifiche con il meteo locale. Se ti sposti in un'altra città, ripremi il tasto per aggiornarla.</div>
-        <button onclick="requestGPS('settings')" id="settings-gps-btn" style="width:100%;padding:10px;border-radius:11px;border:2px solid var(--bdr);background:var(--bg2);color:var(--g1);font-weight:bold;font-size:13px;cursor:pointer">
-          📍 Imposta / Aggiorna posizione
-        </button>
-        <div id="settings-gps-status" style="font-size:12px;color:var(--tlt);margin-top:5px;text-align:center"></div>
-        <div id="ios-notif-warning" style="display:none;margin-top:10px;background:#FFF9C4;border:1.5px solid #F9A825;border-radius:10px;padding:10px;font-size:12px;color:#5D4037;line-height:1.5">
-          🍎 <strong>iPhone/iPad:</strong> per ricevere le notifiche aggiungi prima TurboTartaruga alla schermata Home:<br>Safari → 📤 Condividi → "Aggiungi alla schermata Home"
-        </div>
-        <div style="border-top:1px solid var(--bdr);padding-top:12px;margin-top:10px">
-          <button onclick="sendTestNotification()" style="width:100%;padding:11px;background:#FFF3E0;color:#E65100;border:2px solid #FF8F00;border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">🔔 Invia notifica di prova</button>
-          <div id="notif-test-result" style="font-size:11px;color:var(--tlt);text-align:center;margin-top:6px;line-height:1.4"></div>
         </div>
       </div>
     </div>
 
-
-    <span class="sec-title">☀️🌙 Routine quotidiane</span>
-    <div class="sblk">
-      <div class="srow"><div class="si">☀️</div>
-        <div class="sinfo"><div class="stitle">Routine mattutina</div>
-          <div class="sval">4 min nel letto appena svegli</div></div>
-        <button class="toggle" id="st-morning" onclick="toggleMorningRoutine()"></button>
-      </div>
-      <div class="srow"><div class="si">🌙</div>
-        <div class="sinfo"><div class="stitle">Routine pre-sonno</div>
-          <div class="sval">8-10 min prima di dormire</div></div>
-        <button class="toggle" id="st-sleep" onclick="toggleSleepRoutine()"></button>
+    <!-- 2. ALLENAMENTO + ESERCIZI -->
+    <div class="acc-card">
+      <button class="acc-hdr" onclick="toggleAcc('acc-allenamento')"><span>🏋️ Allenamento</span><span class="acc-arr" id="arr-allenamento">▼</span></button>
+      <div class="acc-body" id="acc-allenamento">
+        <div class="sblk" style="margin:0">
+          <div class="srow"><div class="si">🚫</div><div class="sinfo"><div class="stitle">Evita esercizi a terra</div><div class="sval">Esclude esercizi che richiedono di sdraiarsi</div></div><button class="toggle" id="st-nofloor" onclick="toggleNoFloor()"></button></div>
+          <div class="srow"><div class="si">📷</div><div class="sinfo"><div class="stitle">Solo esercizi con foto</div><div class="sval">Proponi solo esercizi con foto dimostrativa</div><div class="sval" id="photo-filter-status" style="margin-top:2px;font-size:11px;color:var(--tlt)">In attesa di verifica...</div></div><button class="toggle" id="st-photo-filter" onclick="togglePhotoFilter()"></button></div>
+          <div class="srow" style="padding-top:4px">
+            <button class="btn btn-s btn-full" style="padding:10px;font-size:var(--fs-xs)" onclick="recheckPhotos()">🔄 Ricontrolla foto disponibili</button>
+          </div>
+          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:9px"><div class="stitle">Categorie attive</div><div id="st-cats" style="width:100%"></div></div>
+          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:9px"><div class="stitle">Giorni di riposo</div><div class="day-sel" id="st-restdays" style="width:100%;margin-top:4px"></div><button class="btn btn-s" style="padding:8px 16px;font-size:var(--fs-xs);margin-top:8px" onclick="saveRestDays()">✅ Salva giorni riposo</button></div>
+          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:10px">
+            <div style="display:flex;width:100%;align-items:center;justify-content:space-between"><div><div class="si" style="display:inline;margin-right:8px">⭐</div><span class="stitle">Preferiti per sessione</span></div><span style="font-family:var(--ft);font-size:20px;font-weight:bold;color:var(--g1)" id="fav-count-disp">3</span></div>
+            <input type="range" min="0" max="5" value="3" id="fav-count-range" oninput="setFavCount(this.value)" style="width:100%">
+            <div style="display:flex;justify-content:space-between;width:100%;font-size:10px;color:var(--tlt)"><span>0 = nessuno</span><span>max 5</span></div>
+          </div>
+          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:10px">
+            <div style="display:flex;width:100%;align-items:center;justify-content:space-between">
+              <div><div class="si" style="display:inline;margin-right:8px">🎯</div><span class="stitle">Giorni target</span></div>
+              <span style="font-family:var(--ft);font-size:20px;font-weight:bold;color:var(--g1)" id="st-goal-disp2">90</span>
+            </div>
+            <input type="range" min="10" max="365" value="90" id="st-goal-range2" oninput="setGoal2(this.value)" style="width:100%">
+            <div style="display:flex;justify-content:space-between;width:100%;font-size:10px;color:var(--tlt)"><span>10 giorni</span><span>365 giorni</span></div>
+          </div>
+          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:10px">
+            <div style="display:flex;width:100%;align-items:center;justify-content:space-between"><div><div class="si" style="display:inline;margin-right:8px">⏸️</div><span class="stitle">Pausa tra esercizi</span></div><span style="font-family:var(--ft);font-size:20px;font-weight:bold;color:var(--g1)" id="pause-disp">20s</span></div>
+            <input type="range" min="5" max="60" step="5" value="20" id="pause-range" oninput="setPauseSec(this.value)" style="width:100%">
+            <div style="display:flex;justify-content:space-between;width:100%;font-size:10px;color:var(--tlt)"><span>5s veloce</span><span>60s lento</span></div>
+          </div>
+          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
+            <div style="display:flex;width:100%;align-items:center;justify-content:space-between"><div><div class="stitle">📋 Tutti gli esercizi</div><div class="sval" id="ex-count-lbl">187 esercizi in 12 categorie</div></div><button class="sedit" id="ex-toggle-btn" onclick="toggleExList()">▼ Mostra</button></div>
+            <div id="ex-list-wrap" style="display:none;width:100%"></div>
+          </div>
+          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
+            <div class="stitle">🔄 Piano 30 giorni</div>
+            <div class="sval">Rigenera il piano tenendo conto di profilo, categorie e giorni di riposo.</div>
+            <button class="btn btn-s btn-full mt10" style="padding:10px" onclick="refreshPlan()">🔄 Rigenera piano 30 giorni</button>
+          </div>
+        </div>
       </div>
     </div>
-    <span class="sec-title">💾 Backup</span>
-    <div class="sblk"><div class="srow" style="flex-direction:column;align-items:flex-start;gap:7px">
-      <div class="stitle">Trasferisci i tuoi dati</div>
-      <div style="display:flex;flex-direction:column;gap:7px;width:100%;margin-top:3px">
-        <button class="btn btn-p btn-full" style="justify-content:flex-start" onclick="exportJSON()">⬇️ Esporta JSON</button>
-        <label class="btn btn-s btn-full" style="cursor:pointer;justify-content:flex-start">⬆️ Importa JSON<input type="file" accept=".json" style="display:none" onchange="importJSON(event)"></label>
-        <button class="btn btn-a btn-full" style="justify-content:flex-start;color:var(--text)" onclick="genCode()">📋 Copia codice backup</button>
-        <div id="bk-code" class="bk-code"></div>
-        <button class="btn btn-o btn-full" style="justify-content:flex-start" onclick="showPaste()">📥 Incolla codice ripristino</button>
-        <div id="paste-area" style="display:none"><textarea id="paste-input" style="width:100%;padding:9px;border-radius:11px;border:2px solid var(--bdr);font-family:var(--fm);font-size:10px;height:65px;resize:none;outline:none;background:var(--card);color:var(--text);margin-top:5px" placeholder="Incolla qui il codice TT-..."></textarea><button class="btn btn-p btn-full mt10" onclick="restoreCode()">✅ Ripristina</button></div>
+
+    <!-- 4. ROUTINE -->
+    <div class="acc-card">
+      <button class="acc-hdr" onclick="toggleAcc('acc-routine')"><span>☀️🌙 Routine quotidiane</span><span class="acc-arr" id="arr-routine">▼</span></button>
+      <div class="acc-body" id="acc-routine">
+        <div class="sblk" style="margin:0">
+          <div class="srow"><div class="si">☀️</div><div class="sinfo"><div class="stitle">Routine mattutina</div><div class="sval">4 min nel letto appena svegli</div></div><button class="toggle" id="st-morning" onclick="toggleMorningRoutine()"></button></div>
+          <div id="morning-time-wrap" style="display:none">
+            <div class="srow" style="padding-top:8px;flex-direction:column;align-items:flex-start;gap:8px">
+              <div class="stitle" style="font-size:12px">⏰ Orario sveglia</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap" id="wiz-morning-time-settings">
+                <button class="wiz-wake-btn" data-h="6" onclick="setMorningHour(this)" style="padding:8px 14px;border-radius:10px;border:2px solid var(--bdr);background:var(--card);font-size:12px;cursor:pointer">🌄 6:00</button>
+                <button class="wiz-wake-btn" data-h="7" onclick="setMorningHour(this)" style="padding:8px 14px;border-radius:10px;border:2px solid var(--bdr);background:var(--card);font-size:12px;cursor:pointer">☀️ 7:00</button>
+                <button class="wiz-wake-btn" data-h="8" onclick="setMorningHour(this)" style="padding:8px 14px;border-radius:10px;border:2px solid var(--bdr);background:var(--card);font-size:12px;cursor:pointer">🌤️ 8:00</button>
+                <button class="wiz-wake-btn" data-h="9" onclick="setMorningHour(this)" style="padding:8px 14px;border-radius:10px;border:2px solid var(--bdr);background:var(--card);font-size:12px;cursor:pointer">🌞 9:00</button>
+              </div>
+            </div>
+          </div>
+          <div class="srow"><div class="si">🌙</div><div class="sinfo"><div class="stitle">Routine pre-sonno</div><div class="sval">8-10 min prima di dormire</div></div><button class="toggle" id="st-sleep" onclick="toggleSleepRoutine()"></button></div>
+          <div id="sleep-time-wrap" style="display:none">
+            <div class="srow" style="padding-top:8px;flex-direction:column;align-items:flex-start;gap:8px">
+              <div class="stitle" style="font-size:12px">⏰ Orario sonno</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button class="wiz-sleep-btn" data-h="21" onclick="setSleepHour(this)" style="padding:8px 14px;border-radius:10px;border:2px solid var(--bdr);background:var(--card);font-size:12px;cursor:pointer">🌙 21:00</button>
+                <button class="wiz-sleep-btn" data-h="22" onclick="setSleepHour(this)" style="padding:8px 14px;border-radius:10px;border:2px solid var(--bdr);background:var(--card);font-size:12px;cursor:pointer">🌙 22:00</button>
+                <button class="wiz-sleep-btn" data-h="23" onclick="setSleepHour(this)" style="padding:8px 14px;border-radius:10px;border:2px solid var(--bdr);background:var(--card);font-size:12px;cursor:pointer">🌙 23:00</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div></div>
-    <span class="sec-title">📖 Guida rapida</span>
-    <div class="sblk">
-      <div class="srow" style="flex-direction:column;align-items:flex-start;gap:0">
-        <div id="guide-wrap" style="width:100%">
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">🏠 Come funziona l'app?</div>
-            <div class="guide-a">TurboTartaruga ti propone ogni giorno una sessione di 10-15 minuti in base al tuo profilo. Nella Home vedi il piano del giorno e puoi dire come ti senti. L'app tiene traccia dei tuoi progressi, badge e streak.</div>
+    </div>
+
+    <!-- 5. NOTIFICHE -->
+    <div class="acc-card">
+      <button class="acc-hdr" onclick="toggleAcc('acc-notifiche')"><span>🔔 Notifiche</span><span class="acc-arr" id="arr-notifiche">▼</span></button>
+      <div class="acc-body" id="acc-notifiche">
+        <div class="sblk" style="margin:0">
+          <div class="srow"><div class="si">🔔</div><div class="sinfo"><div class="stitle">Notifiche attive</div><div class="sval">Promemoria giornaliero + recap ogni 15 giorni</div></div><button class="toggle" id="st-notif" onclick="requestNotifPermission()"></button></div>
+          <div id="notif-settings" style="display:none;padding:0 15px 12px;border-top:1px solid var(--bdr)">
+            <div style="margin:12px 0 6px;font-weight:bold;font-size:var(--fs-sm);color:var(--text)">⏰ Fascia oraria preferita</div>
+            <div style="display:flex;gap:6px;margin-bottom:12px">
+              <button class="notif-time-btn sel" data-t="morning" onclick="selNotifTime(this)" style="flex:1;padding:9px 4px;border-radius:11px;border:2px solid var(--g1);background:var(--g4);color:var(--g1);font-size:12px;font-weight:bold;cursor:pointer">🌅 Mattina<br><span style="font-size:10px;font-weight:normal">6-10</span></button>
+              <button class="notif-time-btn" data-t="afternoon" onclick="selNotifTime(this)" style="flex:1;padding:9px 4px;border-radius:11px;border:2px solid var(--bdr);background:var(--card);color:var(--text);font-size:12px;font-weight:bold;cursor:pointer">🌞 Pomeriggio<br><span style="font-size:10px;font-weight:normal">12-17</span></button>
+              <button class="notif-time-btn" data-t="evening" onclick="selNotifTime(this)" style="flex:1;padding:9px 4px;border-radius:11px;border:2px solid var(--bdr);background:var(--card);color:var(--text);font-size:12px;font-weight:bold;cursor:pointer">🌇 Sera<br><span style="font-size:10px;font-weight:normal">18-22</span></button>
+            </div>
+            <div id="notif-smart-tip" style="font-size:12px;color:var(--g1);margin-bottom:6px;font-style:italic;line-height:1.5"></div>
+            <div id="notif-suggest-banner" style="display:none;background:var(--g4);border:1.5px solid var(--g1);border-radius:10px;padding:10px 12px;margin-bottom:10px;font-size:13px">
+              <div style="font-weight:bold;color:var(--g1);margin-bottom:6px" id="notif-suggest-text"></div>
+              <div style="display:flex;gap:8px"><button onclick="acceptSuggestion()" style="flex:1;padding:8px;background:var(--g1);color:#fff;border:none;border-radius:100px;font-size:12px;font-weight:bold;cursor:pointer">✅ Usa questo orario</button><button onclick="document.getElementById('notif-suggest-banner').style.display='none'" style="flex:1;padding:8px;background:var(--bg2);color:var(--tmid);border:none;border-radius:100px;font-size:12px;cursor:pointer">Scelgo io</button></div>
+            </div>
+            <div style="font-weight:bold;font-size:var(--fs-sm);color:var(--text);margin-bottom:8px">📍 Posizione per meteo</div>
+            <div style="font-size:12px;color:var(--tlt);margin-bottom:8px;line-height:1.5">La posizione personalizza le notifiche con il meteo locale.</div>
+            <button onclick="requestGPS('settings')" id="settings-gps-btn" style="width:100%;padding:10px;border-radius:11px;border:2px solid var(--bdr);background:var(--bg2);color:var(--g1);font-weight:bold;font-size:13px;cursor:pointer">📍 Imposta / Aggiorna posizione</button>
+            <div id="settings-gps-status" style="font-size:12px;color:var(--tlt);margin-top:5px;text-align:center"></div>
+            <div id="ios-notif-warning" style="display:none;margin-top:10px;background:#FFF9C4;border:1.5px solid #F9A825;border-radius:10px;padding:10px;font-size:12px;color:#5D4037;line-height:1.5">🍎 <strong>iPhone:</strong> aggiungi l'app alla schermata Home: Safari → 📤 → "Aggiungi a schermata Home"</div>
+            <div style="border-top:1px solid var(--bdr);padding-top:12px;margin-top:10px">
+              <button onclick="sendTestNotification()" style="width:100%;padding:11px;background:#FFF3E0;color:#E65100;border:2px solid #FF8F00;border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">🔔 Invia notifica di prova</button>
+              <div id="notif-test-result" style="font-size:11px;color:var(--tlt);text-align:center;margin-top:6px;line-height:1.4"></div>
+            </div>
           </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">▶️ Come inizia una sessione?</div>
-            <div class="guide-a">Dalla Home premi "Inizia sessione". Prima vedi il piano dell'esercizio, poi parte il timer. Tra un esercizio e l'altro hai una pausa con il preview del prossimo. Puoi saltare, mettere in pausa o aggiungere 10 secondi di pausa.</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">⚡ Come funziona l'energia pre-sessione?</div>
-            <div class="guide-a">Nella Home, prima di iniziare, scegli il tuo livello di energia (😴 1 → 🚀 5). L'app adatta silenziosamente l'intensità della sessione: energia bassa = esercizi più morbidi e pause più lunghe, energia alta = sessione più intensa. Non sovrascrive il tuo storico.</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">💥 Cos'è la Riserva Turbo?</div>
-            <div class="guide-a">Durante la pausa prima del terzultimo esercizio appare un grande banner arancione. Se te la senti, premi "Sì, attiva!" per aggiungere 2 esercizi bonus e guadagnare XP extra. Non disponibile nelle mini sessioni da 5 minuti.</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">😴 Cosa succede se sono stanco?</div>
-            <div class="guide-a">Nella Home scegli "😴 Stanco". Puoi fare una mini sessione da 5 minuti di stretching, oppure saltare completamente. Il tuo streak viene preservato per 1 giorno di riposo volontario. I riposi frequenti danno malus XP.</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">🏅 Come funzionano badge e livelli?</div>
-            <div class="guide-a">Ci sono oltre 37 badge su 3 livelli: Tartarughina, Tartaruga e TurboTartaruga. Ogni badge dà 25 XP. Gli XP accumulati fanno salire il tuo Livello globale (1→50), visibile nella Home accanto allo streak. Il livello sblocca la progressione automatica delle sessioni.</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">🔔 Come funzionano le notifiche?</div>
-            <div class="guide-a">Le notifiche sono personalizzate: cambiano in base al tuo streak, al meteo della tua città e alla fascia oraria in cui di solito ti alleni. Dopo 3 sessioni l'app impara il tuo orario e suggerisce automaticamente il momento migliore. Se hai già fatto la sessione del giorno, la notifica viene annullata automaticamente.</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">🧬 Cosa fa il sistema BMI/Profilo?</div>
-            <div class="guide-a">L'app calcola il tuo BMI e adatta automaticamente esercizi e pause. Over 50: +5s di recupero. BMI alto: sessioni più leggere e suggerimento di evitare esercizi a terra. Under 30 in forma: sessioni più intense. Il piano si adatta anche ai tuoi feedback post-sessione (Difficile/Ottima).</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">🕹️ Come scelgo la sessione manualmente?</div>
-            <div class="guide-a">Nella Home premi "Scelgo io!" per espandere il menu con tutte le 10 categorie disponibili: Gambe, Braccia, Core, Stretching, Orientale, Da Seduto, Elastici, Cardio/Box, Pre-sonno, Postura, Misto, Misto+. Il piano del giorno rimane invariato.</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">📊 Come funzionano le statistiche?</div>
-            <div class="guide-a">In Progressi trovi il grafico 7/30 giorni, il confronto prima settimana vs ultima, i totali (sessioni, streak, XP, boost, saltate, badge) e l'avanzamento verso l'obiettivo. Ogni 7 sessioni completate la Home mostra un riepilogo settimanale automatico.</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">📅 Cosa succede se salto le sessioni?</div>
-            <div class="guide-a">Dopo 3 giorni saltati consecutivi appare un messaggio in rosso in Home. Le sessioni saltate danno un malus di XP (-10 per ogni giorno oltre i 2). Ci sono badge "divertenti" da non sbloccare: Divano Lover (3), Ultra Pigro (50)… 😄</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">💾 Come salvo e trasferisco i dati?</div>
-            <div class="guide-a">I dati sono salvati automaticamente sul dispositivo. Per trasferirli vai in Impostazioni → Backup: esporta JSON o genera un codice TT-... da copiare sul nuovo dispositivo. Ogni 10 sessioni l'app chiede di aggiornare il peso per ricalcolare il piano.</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">🔄 Come funziona il piano automatico?</div>
-            <div class="guide-a">Il piano 30 giorni si rigenera automaticamente quando modifichi profilo, categorie o giorni di riposo. Si adatta anche ai feedback: 3 sessioni "Difficile" di fila → sessioni più brevi; 3 "Ottima" di fila → sessioni più lunghe. I giorni 🔄 nel calendario sono recupero automatico contro il sovrallenamento.</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">☀️ Come funziona la routine mattutina?</div>
-            <div class="guide-a">4 minuti di stiramenti e respirazione nel letto, appena svegli. Si attiva nel wizard o in Impostazioni → Routine quotidiane. All'orario di sveglia scelto appare un banner nella Home e ricevi una notifica personalizzata. La routine conta +5 XP bonus e non influenza lo streak principale.</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">🌙 Come funziona la routine pre-sonno?</div>
-            <div class="guide-a">8-10 minuti di stretching e respirazione prima di dormire. Si attiva nel wizard o in Impostazioni → Routine quotidiane. Il banner appare in Home dalla sera, con notifica contestuale che include anche il meteo. +10 XP bonus a completamento. Se provi a farla di mattina, l'app ti avvisa gentilmente che è pensata per la sera.</div>
-          </div>
-          <div class="guide-item" onclick="toggleGuide(this)">
-            <div class="guide-q">🕹️ Posso fare risveglio o pre-sonno senza attivarli?</div>
-            <div class="guide-a">Sì! In Home premi "Scelgo io!" e trovi "☀️ Risveglio" e "🌙 Pre-sonno" disponibili sempre, anche se non hai attivato le routine automatiche. Utile per provarle prima di decidere se attivarle.</div>
-          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. ASPETTO & AUDIO -->
+    <div class="acc-card">
+      <button class="acc-hdr" onclick="toggleAcc('acc-aspetto')"><span>🎨 Aspetto e audio</span><span class="acc-arr" id="arr-aspetto">▼</span></button>
+      <div class="acc-body" id="acc-aspetto">
+        <div class="sblk" style="margin:0">
+          <div class="srow"><div class="si">🔍</div><div class="sinfo"><div class="stitle">Dimensione testo</div><div class="sval">1X normale · 2X più grande</div></div><div class="view-opts"><div class="vw-opt sel" data-vs="1x" onclick="selView(this)">1X</div><div class="vw-opt" data-vs="2x" onclick="selView(this)">2X</div></div></div>
+          <div class="srow"><div class="si">🌙</div><div class="sinfo"><div class="stitle">Tema</div></div><div class="theme-opts"><div class="th-opt sel" data-th="light" onclick="selTheme(this)">☀️</div><div class="th-opt" data-th="dark" onclick="selTheme(this)">🌙</div><div class="th-opt" data-th="auto" onclick="selTheme(this)">🔄</div></div></div>
+          <div class="srow"><div class="si">🔔</div><div class="sinfo"><div class="stitle">Suoni esercizio</div><div class="sval">Beep cambio esercizio</div></div><button class="toggle" id="st-audio" onclick="toggleAudio()"></button></div>
+          <div class="srow"><div class="si">🗣️</div><div class="sinfo"><div class="stitle">Conto vocale</div><div class="sval">3… 2… 1… prima del cambio</div></div><button class="toggle" id="st-voice" onclick="toggleVoice()"></button></div>
 
         </div>
       </div>
     </div>
 
-    <span class="sec-title">ℹ️ Info</span>
-    <div class="sblk">
-      <div class="srow"><div class="si">🐢</div><div class="sinfo"><div class="stitle">TurboTartaruga</div><div class="sval" id="app-version-display">Versione v0.9 · 10/04/2026 21:53</div></div></div>
-      <div class="srow"><div class="si">🔄</div><div class="sinfo"><div class="stitle">Aggiornamento</div><div class="sval" id="update-status">Tocca per verificare</div></div>
-        <button onclick="checkForUpdate()" id="btn-update" style="background:var(--b1);color:#fff;border:none;border-radius:100px;padding:7px 12px;font-size:var(--fs-xs);font-weight:bold;cursor:pointer;white-space:nowrap">🔄 Verifica</button>
+    <!-- 7. DATI & BACKUP -->
+    <div class="acc-card">
+      <button class="acc-hdr" onclick="toggleAcc('acc-dati')"><span>💾 Dati e backup</span><span class="acc-arr" id="arr-dati">▼</span></button>
+      <div class="acc-body" id="acc-dati">
+        <div class="sblk" style="margin:0">
+          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px"><div class="stitle">💾 Esporta dati</div><div class="sval">Salva tutti i tuoi progressi in un file JSON.</div><button class="btn btn-s btn-full" style="padding:10px" onclick="exportJSON()">📥 Esporta JSON</button></div>
+          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px"><div class="stitle">📤 Importa dati</div><div class="sval">Ripristina i progressi da un file JSON esportato.</div><label class="btn btn-s btn-full" style="padding:10px;text-align:center;cursor:pointer">📂 Seleziona file JSON<input type="file" accept=".json" style="display:none" onchange="importJSON(event)"></label></div>
+          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px"><div class="stitle" style="color:#E53935">⚠️ Reimposta app</div><div class="sval">Cancella tutti i dati. Non recuperabile!</div><button class="btn btn-s btn-full" style="padding:10px;background:#FFEBEE;color:#E53935;border-color:#E53935" onclick="if(confirm('Sei sicuro? Tutti i dati verranno cancellati!'))resetAll()">🗑️ Reimposta app</button></div>
+        </div>
       </div>
-      <div class="srow"><div class="si">❤️</div><div class="sinfo"><div class="stitle">Crediti</div><div class="sval">Ideato e fatto da Alby con l'aiuto della tartarughina Claude 🐢❤️</div></div></div>
-      <div class="srow"><div class="si">⚠️</div><div class="sinfo"><div class="stitle">Cambia utente</div><div class="sval">Azzera profilo e progressi</div></div><button onclick="changeUser()" style="background:#FFEBEE;color:#C62828;border:none;border-radius:100px;padding:7px 12px;font-size:var(--fs-xs);font-weight:bold;cursor:pointer">Reset</button></div>
     </div>
-    <div style="height:20px"></div>
+
+    <!-- GUIDA RAPIDA -->
+    <div class="acc-card">
+      <button class="acc-hdr" onclick="toggleAcc('acc-guida')"><span>❓ Guida rapida</span><span class="acc-arr" id="arr-guida">▼</span></button>
+      <div class="acc-body" id="acc-guida">
+        <div style="padding:16px;font-size:13px;color:var(--tmid);line-height:1.8">
+          <!-- INTRO -->
+          <div style="background:var(--g4);border-radius:12px;padding:14px;margin-bottom:16px;border-left:4px solid var(--g1)">
+            <div style="font-weight:bold;color:var(--g1);margin-bottom:6px">🐢 TurboTartaruga — la tartaruga che vince!</div>
+            <p style="margin:0;line-height:1.6">Un coach tascabile per sessioni brevi (10-15 min), divertenti e accessibili a tutti. Lento ma costante vince la gara: bastano pochi minuti al giorno per sentirsi meglio. Personalizza il piano, scegli le categorie, guadagna badge e tieni lo streak — la tartaruga è con te!</p>
+          </div>
+          <!-- Q&A in ordine di utilizzo -->
+          <div style="font-weight:bold;color:var(--text);margin-bottom:4px">🚀 Come si inizia?</div>
+          <p>Al primo avvio completa il wizard (2 minuti). Inserisci nome, età, livello, categorie preferite e giorni di riposo. L'app genera subito un piano da 30 giorni personalizzato.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🏠 Cosa vedo nella Home?</div>
+          <p>In alto la tartaruga con la frase del giorno e il tuo streak. Al centro il piano di oggi con focus e durata. In basso i pulsanti per scegliere come allenarti.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">▶️ Come inizio una sessione?</div>
+          <p>Premi <b>Inizia sessione</b>. Puoi scegliere la durata (5-30 min) nella schermata di preparazione, poi parte il conto alla rovescia con foto e istruzioni per ogni esercizio.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">❓ Non vedo il tasto "Inizia sessione"</div>
+          <p>Controlla il feeling selezionato: se hai premuto <b>Stanco</b>, il tasto è nascosto finché non scegli l'intensità. Se oggi è riposo, usa <b>Segui piano</b> o scegli una categoria per una sessione bonus.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🎯 Cosa sono i feeling?</div>
+          <p><b>Segui piano</b>: segue il piano del giorno. <b>Scelgo io</b>: scegli tu la categoria. <b>Stanco</b>: sessione più leggera con opzioni dedicate.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🔄 Cosa significa "Cambio lato"?</div>
+          <p>Per esercizi asimmetrici (es. stretching gamba destra), a metà timer compare un overlay blu con "CAMBIA LATO!". Il timer si ferma 5 secondi poi riprende automaticamente.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🪑🎽 Avvisi sedia/elastico</div>
+          <p>Se la sessione include esercizi da seduto o con elastici, nella schermata di preparazione comparirà un avviso arancione per prepararti l'attrezzatura necessaria.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">⭐ Come funzionano XP e Badge?</div>
+          <p>Ogni sessione guadagni XP in base alla durata e al boost. Accumula XP per salire di livello (Tartarughina → Tartaruga → TurboTartaruga). I badge si sbloccano automaticamente quando raggiungi i traguardi.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🔥 Cos'è lo Streak?</div>
+          <p>Lo streak conta i giorni consecutivi in cui hai completato almeno una sessione. Non si azzera nei giorni di riposo pianificati. Importando un backup il tuo streak viene preservato.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">☀️🌙 Le routine quotidiane</div>
+          <p><b>Mattutina</b> (4 min nel letto): attiva il corpo prima di alzarti. <b>Pre-sonno</b> (8-10 min): stretching e respirazione per dormire meglio. Attivale in Impostazioni → Routine quotidiane.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">📅 Come funziona il calendario?</div>
+          <p>Mostra il tuo piano mensile con icone per ogni giorno: colori per il tipo di allenamento, grigio per i riposi. Tocca un giorno per vedere i dettagli della sessione.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">📊 Cosa trovo nei Progressi?</div>
+          <p>In ordine: obiettivo, numeri chiave, heatmap 90 giorni, mappa muscolare tartaruga, radar categorie, miglioramento, record, distribuzione e ultime sessioni.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🐢 Mappa muscolare</div>
+          <p>La tartaruga colora le zone del corpo allenate negli ultimi 14 giorni. 🟢 Verde = allenata di recente, 🟡 Giallo = questa settimana, ⬜ Grigio = non allenata.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🕸️ Radar categorie</div>
+          <p>Ragnatela con 8 assi (Gambe, Braccia, Core, ecc.). L'area colorata mostra il bilanciamento delle ultime 4 settimane. Più grande = più allenato in quella categoria.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">💾 Come faccio il backup?</div>
+          <p>Impostazioni → 💾 Dati e backup → <b>Esporta JSON</b>. Salva il file in un posto sicuro. Per importare usa "Importa JSON" nello stesso menu o nella schermata di benvenuto.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🎉 Modalità Party</div>
+          <p>Fino a 4 persone insieme! Vai in Party dalla home. Aggiungi i nomi dei partecipanti, poi usa le sfide di gruppo o la sessione sincronizzata. Ogni partecipante può rimuoversi toccando ✕.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🔔 Notifiche su iPhone</div>
+          <p>Prima aggiungi l'app alla schermata Home: Safari → 📤 Condividi → "Aggiungi a schermata Home". Poi vai in Impostazioni → 🔔 Notifiche e attivale.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">📴 Funziona offline?</div>
+          <p>Sì! Dopo il primo caricamento funziona completamente offline. Il Service Worker salva tutto in cache. Aggiungi alla schermata Home per la migliore esperienza.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🔄 Come rigenero il piano?</div>
+          <p>Impostazioni → 🏋️ Allenamento → <b>Rigenera piano 30 giorni</b>. Il tuo storico sessioni non viene toccato, viene solo rigenerato il piano futuro.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">⚙️ Cosa posso personalizzare?</div>
+          <p>Profilo (nome, età, peso, altezza, livello), categorie attive, giorni di riposo, giorni target, routine quotidiane, notifiche, tema (chiaro/scuro/auto), audio, conto vocale e pausa tra esercizi.</p>
+        </div>
+      </div>
+    </div>
+
+
+    <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
+      <div id="app-version-display">Versione v1.008</div>
+      <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
+      <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
+      </div>
+      <button onclick="checkForUpdate()" id="btn-update" style="background:var(--b1);color:#fff;border:none;border-radius:100px;padding:7px 12px;font-size:var(--fs-xs);font-weight:bold;cursor:pointer;white-space:nowrap;margin-top:6px">🔄 Verifica aggiornamenti</button>
+      <div style="margin-top:8px;font-size:9px;opacity:.6">Ideato e fatto da Alby con l'aiuto della tartarughina Claude 🐢❤️</div>
+    </div>
   </div>
 </div>
+<!-- Backup reminder modal -->
+<div id="backup-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9500;align-items:center;justify-content:center;padding:20px" onclick="closeBackupModal()">
+  <div style="background:var(--card);border-radius:20px;max-width:340px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.4)" onclick="event.stopPropagation()">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:48px;margin-bottom:8px">💾</div>
+      <div style="font-family:var(--ft);font-size:18px;font-weight:bold;color:var(--text)">Fai il backup dei tuoi dati!</div>
+    </div>
+    <div style="font-size:14px;color:var(--tmid);line-height:1.6;margin-bottom:18px" id="backup-modal-msg">
+      Hai completato tante sessioni — i tuoi progressi sono salvati solo su questo dispositivo.<br><br>
+      Se pulisci la memoria del browser potresti perderli. Esporta ora il file JSON di backup!
+    </div>
+    <button onclick="exportJSON();markBackupDone();closeBackupModal()" style="width:100%;padding:13px;background:var(--g1);color:#fff;border:none;border-radius:100px;font-weight:bold;font-size:14px;cursor:pointer;margin-bottom:10px">
+      📥 Esporta backup JSON
+    </button>
+    <button onclick="closeBackupModal()" style="width:100%;padding:10px;background:var(--bg2);color:var(--tmid);border:none;border-radius:100px;font-size:13px;cursor:pointer">
+      Dopo — ricordamelo tra 5 sessioni
+    </button>
+  </div>
+</div>
+<!-- CAMBIO LATO overlay — shows during switch exercises at halfway -->
+<div id="switch-overlay" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,50,.82);align-items:center;justify-content:center;flex-direction:column">
+  <div style="text-align:center;color:#fff;padding:30px">
+    <div style="font-size:64px;margin-bottom:8px;animation:spin .6s ease infinite alternate">🔄</div>
+    <div style="font-family:var(--ft);font-size:30px;font-weight:bold;letter-spacing:1px;margin-bottom:6px">CAMBIA LATO!</div>
+    <div style="font-size:80px;font-weight:bold;font-family:var(--fm);color:var(--lime);line-height:1" id="switch-timer">5</div>
+    <div style="font-size:14px;opacity:.75;margin-top:8px">L'esercizio continua tra...</div>
+  </div>
+</div>
+<!-- Exercise image modal -->
+<div id="ex-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;align-items:center;justify-content:center;padding:20px" onclick="closeExModal()">
+  <div style="background:var(--card);border-radius:20px;max-width:360px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)" onclick="event.stopPropagation()">
+    <div style="position:relative">
+      <img id="ex-modal-img" src="" alt="" style="width:100%;max-height:260px;object-fit:contain;background:var(--bg2);display:block">
+      <div id="ex-modal-placeholder" style="display:none;height:180px;background:var(--bg2);align-items:center;justify-content:center;flex-direction:column;gap:8px">
+        <span style="font-size:48px">📷</span>
+        <span style="font-size:12px;color:var(--tlt)">Immagine non disponibile</span>
+      </div>
+      <button onclick="closeExModal()" style="position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
+    </div>
+    <div style="padding:16px 18px 20px">
+      <div style="font-family:var(--ft);font-size:18px;font-weight:bold;margin-bottom:6px" id="ex-modal-name"></div>
+      <div style="font-size:12px;color:var(--tlt);margin-bottom:8px" id="ex-modal-cat"></div>
+      <div style="font-size:14px;color:var(--tmid);line-height:1.6" id="ex-modal-desc"></div>
+      <div style="margin-top:10px;font-size:12px;color:var(--g1);font-weight:bold" id="ex-modal-zona"></div>
+    </div>
+  </div>
+</div>
+
 <script>
-// ═══ EXERCISE DATABASE (70) ═══
-// Image path: images/exercises/[id].png (optional — loaded if present)
-const DB=[
+var DB=[
   // RISCALDAMENTO (8)
   {id:'w1',n:'Rotazione collo',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'🦴 Collo · 🤸 Mobilità',desc:'In piedi, ruota lentamente la testa a destra poi a sinistra. Movimenti lenti e fluidi.',floor:false},
   {id:'w2',n:'Rotazione spalle',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'💪 Spalle · 🦴 Articolazioni',desc:'Piedi larghi, ruota entrambe le spalle in avanti con cerchi ampi, poi all\'indietro.',floor:false},
@@ -1390,7 +1432,7 @@ const DB=[
   {id:'po6', n:'Stretching polsi da tastiera',cat:'postura',t:'🪑+ Postura',zona:'🦴 Polsi · 💪 Avambracci',desc:'Braccio teso, piega il polso verso di te poi verso il basso. 15 sec per direzione per braccio. Anti-tunnel carpale.',floor:false},
   {id:'po7', n:'Rilascio tensione mandibola',cat:'postura',t:'🪑+ Postura',zona:'🦷 Mandibola · 🧠 Tensione',desc:'Labbra chiuse, denti distanti. Massaggia le guance con le mani in cerchi. Apri la bocca lentamente 5 volte.',floor:false},
   {id:'po8', n:'Stretching flessori anca',cat:'postura',t:'🪑+ Postura',zona:'🦵 Flessori anca · 🔄 Lombare',desc:'Affondo lungo: ginocchio posteriore a terra, spingi i fianchi in avanti. 30 sec per lato. Combatte lo star seduti.',switch:true,floor:true},
-  {id:'po9', n:'Esercizio respiro desk',cat:'postura',t:'🪑+ Postura',zona:'🫁 Respiro · 🎯 Concentrazione',desc:'Seduto: inspira 4 sec, espira 6 sec. 5 cicli. Reidrata il cervello, riduce lo stress da schermo.',floor:false},
+  {id:'po9',n:'Allungamento cervicale seduto',cat:'postura',t:'🪑+ Postura',zona:'💆 Collo · 💪 Trapezio · 💆 Postura',desc:'Seduto dritto, porta il mento verso il petto lentamente. Poi inclina l\'orecchio verso la spalla. Tieni 5 sec per lato. Scioglie la tensione del collo da scrivania.',floor:false},
   // ── MATTINO (am1-am8) ─────────────────────────────────────────────
   {id:'am1',n:'Stiramento farfalla nel letto',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Schiena · 💪 Spalle',desc:'Sdraiato, apri le braccia come ali e porta i gomiti indietro. Senti lo stiramento nel petto. 5 respiri profondi.',floor:true},
   {id:'am2',n:'Ginocchia al petto lente',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Lombari · 🎯 Core',desc:'Sdraiato, porta entrambe le ginocchia al petto abbracciandole. Tieni 5 respiri, poi rilascia lentamente.',floor:true},
@@ -1401,30 +1443,25 @@ const DB=[
   {id:'am7',n:'Stiramento laterale in piedi',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Dorsali · 💪 Intercostali',desc:'In piedi accanto al letto. Un braccio sopra la testa, piegati lentamente di lato. Respira. Poi alterna.',floor:false},
   {id:'am8',n:'Respirazione profonda attivante',cat:'mattino',t:'☀️ Mattino',zona:'🫁 Respiro · 🧠 Attivazione',desc:'In piedi. Inspira 4 sec portando le braccia in alto, espira 4 sec abbassandole. Ripeti 5 volte. Sveglia il corpo.',floor:false},
   {id:'po10',n:'Cammino consapevole pausa',cat:'postura',t:'🪑+ Postura',zona:'🦵 Gambe · ❤️ Circolazione',desc:'Alzati e cammina 2 minuti. Anche solo in casa. Necessario ogni ora per la salute metabolica. Niente scuse!',floor:false},
+  // ── PARTY ─────────────────────────────────────────────────────────────
+  {id:'p1',n:'Squat sincronizzato',cat:'party',t:'🎉 Party',zona:'🦵 Gambe · 🍑 Glutei',desc:'Tutti insieme! 3-2-1 e squat. Chi si alza prima perde un punto. Sincronizzazione perfetta!',floor:false},
+  {id:'p2',n:'Sfida equilibrio',cat:'party',t:'🎉 Party',zona:'🔄 Equilibrio',desc:'Tutti su un piede. Chi tiene la posizione più a lungo vince! Via!',floor:false},
+  {id:'p3',n:'Gara affondi',cat:'party',t:'🎉 Party',zona:'🦵 Gambe',desc:'Chi fa più affondi in 30 secondi? Conta ad alta voce! Niente imbrogliare!',floor:false},
+  {id:'p4',n:'Catena di movimenti',cat:'party',t:'🎉 Party',zona:'🎯 Coordinazione',desc:'Il primo fa un movimento, il secondo lo ripete e ne aggiunge uno. Chi sbaglia la sequenza perde!',floor:false},
+  {id:'p5',n:'Marcia sul posto – ritmo!',cat:'party',t:'🎉 Party',zona:'🦵 Gambe · ❤️ Cardio',desc:'Tutti marciano insieme sullo stesso ritmo. Il leader cambia ritmo di tanto in tanto!',floor:false},
+  {id:'p6',n:'Freeze pose',cat:'party',t:'🎉 Party',zona:'🔄 Coordinazione · 🧠 Concentrazione',desc:'Tutti si muovono liberamente. Quando il leader dice FREEZE, tutti si bloccano. Chi si muove paga pegno!',floor:false},
+  {id:'p7',n:'Respirazione profonda gara',cat:'party',t:'🎉 Party',zona:'🫁 Respiro',desc:'Tutti inspirano insieme per 4 sec, espirano per 8 sec. Chi rompe il ritmo è fuori!',floor:false},
+  {id:'p8',n:'Tocca il pavimento più volte',cat:'party',t:'🎉 Party',zona:'🦵 Gambe · ❤️ Cardio',desc:'In piedi, tocca il pavimento e torna su. Chi fa più ripetizioni vince!',floor:false},
+  {id:'p9',n:'Braccio di ferro umano',cat:'party',t:'🎉 Party',zona:'💪 Braccia',desc:'A coppie: uno spinge le mani dell\'altro, l\'altro resiste. 10 secondi poi si cambia. Chi regge meglio?',floor:false},
+  {id:'p10',n:'Plank sfida',cat:'party',t:'🎉 Party',zona:'🎯 Core · 💪 Braccia',desc:'Tutti in plank sulle ginocchia. Chi tiene più a lungo vince! Conto ad alta voce.',floor:true},
+  {id:'p11',n:'Gara stretching',cat:'party',t:'🎉 Party',zona:'🤸 Flessibilità',desc:'Tutti cercano di toccare le punte dei piedi. Chi arriva più in basso vince! Niente rimbalzi.',floor:false},
+  {id:'p12',n:'Respirazione a turni',cat:'party',t:'🎉 Party',zona:'🫁 Respiro · 🧠 Concentrazione',desc:'Uno inizia a inspirare, quando finisce parte il prossimo. Catena di respiri! Chi rompe la catena?',floor:false},
+  {id:'p13',n:'Step touch in sincronia',cat:'party',t:'🎉 Party',zona:'🦵 Gambe · 🔄 Coordinazione',desc:'Tutti insieme: passo destra, passo sinistra. Il leader accelera di tanto in tanto!',floor:false},
+  {id:'p14',n:'Cerchio di energia',cat:'party',t:'🎉 Party',zona:'💪 Braccia · 🧠 Concentrazione',desc:'In cerchio, ognuno mette le mani sulle spalle del vicino e massaggia. Poi si gira al contrario!',floor:false},
+  {id:'p15',n:'Finale esplosivo',cat:'party',t:'🎉 Party',zona:'🎯 Tutto il corpo · ❤️ Cardio',desc:'30 secondi di movimento libero al massimo! Salta, corri sul posto, braccia, tutto! GO!',floor:false},
 ];
 
-// ═══ CONSTANTS ═══
-const CAT_INFO={
-  riscaldamento:{label:'Riscaldamento',icon:'🔥',cls:'workout'},
-  gambe:{label:'Gambe',icon:'🦵',cls:'workout'},
-  braccia:{label:'Braccia',icon:'💪',cls:'workout'},
-  core:{label:'Core',icon:'🎯',cls:'core'},
-  stretching:{label:'Stretching',icon:'🤸',cls:'stretching'},
-  seduto:{label:'Da Seduto',icon:'🪑',cls:'workout'},
-  orientale:{label:'Orientale',icon:'🧘',cls:'oriental'},
-  elastici:{label:'Elastici',icon:'🎽',cls:'workout'},
-  cardio:{label:'Cardio/Box',icon:'🥊',cls:'workout'},
-  presonno:{label:'Pre-sonno',icon:'😴',cls:'stretching'},
-  postura:{label:'Postura',icon:'🖥️',cls:'workout'},
-  mattino:{label:'Mattino',icon:'☀️',cls:'stretching'},
-  misto:{label:'Misto',icon:'🌈',cls:'workout'},
-  misto_plus:{label:'Misto+',icon:'🪑💪',cls:'workout'},
-  riposo:{label:'Riposo',icon:'😴',cls:'rest'},
-  riposo_vol:{label:'Riposo vol.',icon:'🛋️',cls:'vol_rest'},
-  stanco_mini:{label:'Mini sessione',icon:'🤸',cls:'stretching'},
-};
-const DUR_CFG={10:{cnt:8,a:45,r:30},12:{cnt:10,a:45,r:27},15:{cnt:12,a:50,r:25}};
-const PHRASES=[
+var PHRASES=[
   "Lento ma costante vince la gara! 🐢",
   "Ogni passo conta! 💪",
   "Sei più forte di ieri! 🌟",
@@ -1448,7 +1485,7 @@ const PHRASES=[
   "Ogni sessione completata è una vittoria. 🏆",
   "Inizia dove sei, usa quello che hai. 🌱",
 ];
-const PARTY_EX=[
+var PARTY_EX=[
   {id:'p1',n:'Plank di gruppo',desc:'Tutti in posizione plank sulle ginocchia. Chi tiene più a lungo vince! Schiena dritta.',img:'p1.png',dur:60},
   {id:'p2',n:'Squat sincronizzati',desc:'Tutti scendono e salgono insieme. Chi perde il ritmo è eliminato! Contiamo insieme.',img:'p2.png',dur:45},
   {id:'p3',n:'Equilibrio su un piede',desc:'Tutti su un piede solo. Chi cade per ultimo è il campione! Occhi fissi su un punto.',img:'p3.png',dur:60},
@@ -1465,144 +1502,23 @@ const PARTY_EX=[
   {id:'p14',n:'Sollevamento gambe seduto – gara',desc:'Seduti sul bordo, gambe tese sollevate. Chi tiene più a lungo le gambe alzate?',img:'p14.png',dur:45},
   {id:'p15',n:'Torsioni sincronizzate',desc:'Tutti ruotano il busto destra e sinistra insieme. Chi perde il ritmo è fuori!',img:'p15.png',dur:45},
 ];
-// Add party exercises to DB for settings list
-PARTY_EX.forEach(p=>{if(!DB.find(e=>e.id===p.id))DB.push({...p,cat:'party',t:'🎉 Party',zona:'🎉 Sfida di gruppo',floor:false})});
-const CHALLENGES=PARTY_EX;
-const BADGES=[
-  // ── Livello 1: Tartarughina ──────────────────────────────────────
-  {id:'first',   icon:'🐣',name:'Primo passo',      lv:1,hint:'1ª sessione',       fn:s=>s.tot>=1},
-  {id:'in_moto', icon:'🚶',name:'In moto!',          lv:1,hint:'3 sessioni',        fn:s=>s.tot>=3},
-  {id:'abitud',  icon:'🌱',name:'Abitudine',         lv:1,hint:'5 sessioni',        fn:s=>s.tot>=5},
-  {id:'tris',    icon:'3️⃣',name:'Tris!',             lv:1,hint:'3 gg di fila',     fn:s=>s.str>=3},
-  {id:'zen0',    icon:'🌬️',name:'Zen beginner',      lv:1,hint:'1 orientale',      fn:s=>s.ori>=1},
-  {id:'party0',  icon:'🎊',name:'Party starter',     lv:1,hint:'1 party',          fn:s=>s.party>=1},
-  {id:'sedia0',  icon:'🪑',name:'Comodamente!',      lv:1,hint:'1 sessione seduto', fn:s=>(s.sed||0)>=1},
-  {id:'flex0',   icon:'🤸',name:'Primo stretch',     lv:1,hint:'1 sessione stretch',fn:s=>(s.stretch_ct||0)>=1},
-  {id:'xp100',   icon:'⭐',name:'Cento XP!',         lv:1,hint:'100 XP totali',     fn:s=>(s.xp||0)>=100},
-  // ── Livello 2: Tartaruga ─────────────────────────────────────────
-  {id:'sett',    icon:'🔥',name:'Una settimana!',    lv:2,hint:'7 gg di fila',     fn:s=>s.str>=7},
-  {id:'vet',     icon:'💪',name:'Veterano',           lv:2,hint:'10 sessioni',      fn:s=>s.tot>=10},
-  {id:'venti',   icon:'2️⃣0️⃣',name:'Venti!',          lv:2,hint:'20 sessioni',      fn:s=>s.tot>=20},
-  {id:'zen1',    icon:'🧘',name:'Zen intermedio',     lv:2,hint:'5 orientali',      fn:s=>s.ori>=5},
-  {id:'party1',  icon:'🎉',name:'Party animal',       lv:2,hint:'3 party',          fn:s=>s.party>=3},
-  {id:'goal25',  icon:'🎯',name:'Primo quarto',       lv:2,hint:'25% goal',         fn:(s,p)=>p.goal>0&&s.tot>=(p.goal*.25)},
-  {id:'mix1',    icon:'🔀',name:'Multi-sport',        lv:2,hint:'5 cat. diverse',   fn:s=>(s.catSet||[]).length>=5},
-  {id:'sedia1',  icon:'🪑✨',name:'Campione seduto', lv:2,hint:'5 sessioni seduto', fn:s=>(s.sed||0)>=5},
-  {id:'flex1',   icon:'🤸🌟',name:'Elastico',         lv:2,hint:'5 sessioni stretch',fn:s=>(s.stretch_ct||0)>=5},
-  {id:'xp500',   icon:'⚡',name:'Cinque centinaia',  lv:2,hint:'500 XP totali',     fn:s=>(s.xp||0)>=500},
-  {id:'habitual',icon:'📅',name:'Habitué',            lv:2,hint:'5 preferiti',       fn:s=>(s.favorites||[]).length>=5||(P.favorites||[]).length>=5},
-  // ── Livello 3: TurboTartaruga ────────────────────────────────────
-  {id:'fuoco',   icon:'🌋',name:'Mese di fuoco',     lv:3,hint:'30 gg di fila',    fn:s=>s.str>=30},
-  {id:'cinq',    icon:'5️⃣0️⃣',name:'Cinquanta!',      lv:3,hint:'50 sessioni',      fn:s=>s.tot>=50},
-  {id:'zen2',    icon:'🎋',name:'Maestro Zen',        lv:3,hint:'10 orientali',     fn:s=>s.ori>=10},
-  {id:'goal50',  icon:'🏹',name:'A metà strada',      lv:3,hint:'50% goal',         fn:(s,p)=>p.goal>0&&s.tot>=(p.goal*.5)},
-  {id:'goal100', icon:'👑',name:'Obiettivo!',         lv:3,hint:'Goal completato',  fn:(s,p)=>p.goal>0&&s.tot>=p.goal},
-  {id:'sedia2',  icon:'🪑🏆',name:'Maestro seduto',  lv:3,hint:'15 sessioni seduto',fn:s=>(s.sed||0)>=15},
-  {id:'flex2',   icon:'🤸🏆',name:'Contorsionista',  lv:3,hint:'15 sessioni stretch',fn:s=>(s.stretch_ct||0)>=15},
-  {id:'xp2000',  icon:'💎',name:'Diamante XP',        lv:3,hint:'2000 XP totali',   fn:s=>(s.xp||0)>=2000},
-  {id:'legend',  icon:'🌟',name:'Leggenda',           lv:3,hint:'30 badge sbloccati',fn:(s,_,b)=>b.length>=29},
-  // ── Badge nuove categorie ──────────────────────────────────────────
-  {id:'box1',    icon:'🥊',name:'Primo round!',      lv:1,hint:'1 sessione Cardio',  fn:s=>(s.catSet||[]).includes('cardio')},
-  {id:'elastic1',icon:'🎽',name:'Elastico novizio',  lv:1,hint:'1 sessione elastici',fn:s=>(s.catSet||[]).includes('elastici')},
-  {id:'sleep1',  icon:'😴',name:'Buona notte!',      lv:1,hint:'1 sessione pre-sonno',fn:s=>(s.catSet||[]).includes('presonno')},
-  {id:'office1', icon:'🪑+',name:'Pausa attiva',     lv:1,hint:'1 sessione postura', fn:s=>(s.catSet||[]).includes('postura')},
-  {id:'box5',    icon:'🥊⭐',name:'Pugile amatoriale',lv:2,hint:'5 sessioni Cardio',  fn:s=>(s.history||[]).filter(h=>h.type==='cardio').length>=5},
-  {id:'party5',  icon:'🎊🌟',name:'Re del Party',    lv:2,hint:'5 party completati', fn:s=>s.party>=5},
-  {id:'party10', icon:'🎉🏆',name:'Party leggenda',  lv:3,hint:'10 party completati',fn:s=>s.party>=10},
-  {id:'allcat',  icon:'🌈',name:'Collezionista',     lv:3,hint:'Tutte le categorie', fn:s=>['gambe','braccia','core','stretching','seduto','orientale','elastici','cardio','presonno','postura'].every(c=>(s.catSet||[]).includes(c))},
-  // ── Badge Riserva Turbo (boost) ─────────────────────────────────────
-  {id:'boost1',  icon:'💥',name:'Prima Riserva!',   lv:1,hint:'1° Riserva Turbo',  fn:s=>(s.boosts||0)>=1},
-  {id:'boost5',  icon:'🚀',name:'Turbo x5',         lv:2,hint:'5 Riserve Turbo',   fn:s=>(s.boosts||0)>=5},
-  {id:'boost15', icon:'⚡',name:'Turbo maniac',      lv:2,hint:'15 Riserve Turbo',  fn:s=>(s.boosts||0)>=15},
-  {id:'boost50', icon:'🔥',name:'TurboTartaruga pro',lv:3,hint:'50 Riserve Turbo',  fn:s=>(s.boosts||0)>=50},
-  // ── Badge routine mattino/pre-sonno ─────────────────────────────────
-  {id:'am_start', icon:'☀️',name:'Buongiorno!',   lv:1,hint:'1 routine mattutina',   fn:s=>(s.morningTotal||0)>=1},
-  {id:'am_10',    icon:'🌅',name:'Mattiniero!',    lv:2,hint:'10 routine mattutine',   fn:s=>(s.morningTotal||0)>=10},
-  {id:'am_30',    icon:'🌄',name:'Alba di fuoco',   lv:3,hint:'30 routine mattutine',  fn:s=>(s.morningTotal||0)>=30},
-  {id:'sl_start', icon:'🌙',name:'Buona notte!',   lv:1,hint:'1 routine pre-sonno',   fn:s=>(s.sleepTotal||0)>=1},
-  {id:'sl_10',    icon:'💤',name:'Dormi bene!',     lv:2,hint:'10 routine pre-sonno',  fn:s=>(s.sleepTotal||0)>=10},
-  {id:'sl_30',    icon:'🌛',name:'Notti tranquille',lv:3,hint:'30 routine pre-sonno',  fn:s=>(s.sleepTotal||0)>=30},
-  // ── Badge saltati (per invogliare a non saltare) ─────────────────
-  {id:'skip3',   icon:'🛋️',name:'Divano lover',      lv:1,hint:'3 sessioni saltate',  fn:s=>(s.skippedTotal||0)>=3},
-  {id:'skip10',  icon:'💤',name:'Campione del riposo',lv:1,hint:'10 sess. saltate',    fn:s=>(s.skippedTotal||0)>=10},
-  {id:'skip25',  icon:'😴',name:'Sfaticato doc',      lv:2,hint:'25 sess. saltate',    fn:s=>(s.skippedTotal||0)>=25},
-  {id:'skip50',  icon:'🐌',name:'Ultra pigro',        lv:2,hint:'50 sess. saltate',    fn:s=>(s.skippedTotal||0)>=50},
-  {id:'skip100', icon:'🪨',name:'Il couch potato',    lv:3,hint:'100 sess. saltate',   fn:s=>(s.skippedTotal||0)>=100},
-];
-
-// ═══ APP STATE ═══
-var P={},S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0};
-// P.favorites = [] of exercise ids starred
-// P.avoided   = [] of exercise ids avoided
-// P.favCount  = number of favorites to include per session (0-5, default 3)
-var SET={theme:'light',audio:true,voice:true,viewScale:'1x',pauseSec:20};
-var T={exs:[],idx:0,phase:'act',left:0,iv:null,paused:false,t0:null,sesType:'',dur:12,feeling:'piano'};
-var restIv=null,transIv=null,grIv=null,audioCtx=null,riservaDone=false,calYear=0,calMonth=0;
-
-// ═══ STORAGE ═══
-function save(){localStorage.setItem('tt4_p',JSON.stringify(P));localStorage.setItem('tt4_s',JSON.stringify(S));localStorage.setItem('tt4_set',JSON.stringify(SET))}
-function load(){
-  try{const x=localStorage.getItem('tt4_p');if(x)P=JSON.parse(x)}catch(e){}
-  try{const x=localStorage.getItem('tt4_s');if(x)S=JSON.parse(x)}catch(e){}
-  try{const x=localStorage.getItem('tt4_set');if(x)SET=JSON.parse(x)}catch(e){}
-  
-  if(typeof SET.onlyWithPhoto==='undefined')SET.onlyWithPhoto=true;if(!S.history)S.history=[];if(!S.plan)S.plan=[];if(!S.catSet)S.catSet=[];if(!S.sed)S.sed=0;if(!S.stretch_ct)S.stretch_ct=0;if(!S.skipped)S.skipped=0;if(!S.skippedTotal)S.skippedTotal=0;if(!S.boosts)S.boosts=0;if(!S.morningDone)S.morningDone=null;if(!S.sleepDone)S.sleepDone=null;if(!S.morningTotal)S.morningTotal=0;if(!S.sleepTotal)S.sleepTotal=0;
-}
-function bkData(){return{v:'0.4',dt:new Date().toISOString(),profile:P,stats:S,settings:SET}}
-function restore(d){if(d.profile)P=d.profile;if(d.stats)S=d.stats;if(d.settings)SET=d.settings;if(!S.history)S.history=[];if(!S.plan)S.plan=[];save();applyTheme();applyView();toast('✅ Dati ripristinati!');go('home')}
 </script>
-
-
-<!-- Backup reminder modal -->
-<div id="backup-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9500;align-items:center;justify-content:center;padding:20px" onclick="closeBackupModal()">
-  <div style="background:var(--card);border-radius:20px;max-width:340px;width:100%;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.4)" onclick="event.stopPropagation()">
-    <div style="text-align:center;margin-bottom:16px">
-      <div style="font-size:48px;margin-bottom:8px">💾</div>
-      <div style="font-family:var(--ft);font-size:18px;font-weight:bold;color:var(--text)">Fai il backup dei tuoi dati!</div>
-    </div>
-    <div style="font-size:14px;color:var(--tmid);line-height:1.6;margin-bottom:18px" id="backup-modal-msg">
-      Hai completato tante sessioni — i tuoi progressi sono salvati solo su questo dispositivo.<br><br>
-      Se pulisci la memoria del browser potresti perderli. Esporta ora il file JSON di backup!
-    </div>
-    <button onclick="exportJSON();markBackupDone();closeBackupModal()" style="width:100%;padding:13px;background:var(--g1);color:#fff;border:none;border-radius:100px;font-weight:bold;font-size:14px;cursor:pointer;margin-bottom:10px">
-      📥 Esporta backup JSON
-    </button>
-    <button onclick="closeBackupModal()" style="width:100%;padding:10px;background:var(--bg2);color:var(--tmid);border:none;border-radius:100px;font-size:13px;cursor:pointer">
-      Dopo — ricordamelo tra 5 sessioni
-    </button>
-  </div>
-</div>
-<!-- CAMBIO LATO overlay — shows during switch exercises at halfway -->
-<div id="switch-overlay" style="display:none;position:fixed;inset:0;z-index:8000;background:rgba(0,0,50,.82);align-items:center;justify-content:center;flex-direction:column">
-  <div style="text-align:center;color:#fff;padding:30px">
-    <div style="font-size:64px;margin-bottom:8px;animation:spin .6s ease infinite alternate">🔄</div>
-    <div style="font-family:var(--ft);font-size:30px;font-weight:bold;letter-spacing:1px;margin-bottom:6px">CAMBIA LATO!</div>
-    <div style="font-size:80px;font-weight:bold;font-family:var(--fm);color:var(--lime);line-height:1" id="switch-timer">5</div>
-    <div style="font-size:14px;opacity:.75;margin-top:8px">L'esercizio continua tra...</div>
-  </div>
-</div>
-<!-- Exercise image modal -->
-<div id="ex-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:9000;align-items:center;justify-content:center;padding:20px" onclick="closeExModal()">
-  <div style="background:var(--card);border-radius:20px;max-width:360px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)" onclick="event.stopPropagation()">
-    <div style="position:relative">
-      <img id="ex-modal-img" src="" alt="" style="width:100%;max-height:260px;object-fit:contain;background:var(--bg2);display:block">
-      <div id="ex-modal-placeholder" style="display:none;height:180px;background:var(--bg2);align-items:center;justify-content:center;flex-direction:column;gap:8px">
-        <span style="font-size:48px">📷</span>
-        <span style="font-size:12px;color:var(--tlt)">Immagine non disponibile</span>
-      </div>
-      <button onclick="closeExModal()" style="position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.5);border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
-    </div>
-    <div style="padding:16px 18px 20px">
-      <div style="font-family:var(--ft);font-size:18px;font-weight:bold;margin-bottom:6px" id="ex-modal-name"></div>
-      <div style="font-size:12px;color:var(--tlt);margin-bottom:8px" id="ex-modal-cat"></div>
-      <div style="font-size:14px;color:var(--tmid);line-height:1.6" id="ex-modal-desc"></div>
-      <div style="margin-top:10px;font-size:12px;color:var(--g1);font-weight:bold" id="ex-modal-zona"></div>
-    </div>
-  </div>
-</div>
-
 <script>
-// ── Global state variables (hoisted to avoid TDZ) ──────────────────────
+
+// Configurazione durata sessione (minuti → {cnt esercizi, a secondi attivi, r secondi riposo})
+var DUR_CFG={
+  5: {cnt:4,  a:40, r:20},
+  7: {cnt:5,  a:40, r:20},
+  10:{cnt:7,  a:40, r:20},
+  12:{cnt:8,  a:45, r:20},
+  15:{cnt:10, a:45, r:20},
+  20:{cnt:13, a:45, r:20},
+  25:{cnt:16, a:50, r:18},
+  30:{cnt:18, a:50, r:18},
+};
+// ════════════════════════════════════════════════════════════════
+// GLOBAL STATE — all vars declared here to prevent TDZ issues
+// ════════════════════════════════════════════════════════════════
 var exListVisible=false;
 var togetherGuests=[];
 var _qrStream=null;
@@ -1611,9 +1527,77 @@ var _qrScanTarget=null;
 var _lastGuestCode='';
 var _lastResultCode='';
 var players=[],scores={},chalIdx=0,partyIv=null,partyLeft=60;
+// Timer/interval globals
+var restIv=null,transIv=null,grIv=null,audioCtx=null;
+var riservaDone=false,calYear=0,calMonth=0;
+var _switchIv=null,_photoCheckRunning=false;
+var _wizStep=0,_wizData={};
+var _wxCache=null,_wxCacheTime=0;
+var _calTipTimer=null;
+var _prevScreen='home';
+
+function bkData(){return{profile:P,stats:S,settings:SET,version:'0.99',exported:new Date().toISOString()}}
+function save(){
+  try{
+    localStorage.setItem('tt4_p',JSON.stringify(P));
+    localStorage.setItem('tt4_s',JSON.stringify(S));
+    localStorage.setItem('tt4_set',JSON.stringify(SET));
+  }catch(e){console.warn('Save failed:',e);}
+}
+function load(){
+  try{
+    // Try all possible key variants
+    const p=localStorage.getItem('tt4_p')||localStorage.getItem('tt4_profile')||localStorage.getItem('tt4profile');
+    const s=localStorage.getItem('tt4_s')||localStorage.getItem('tt4_stats')||localStorage.getItem('tt4stats');
+    const st=localStorage.getItem('tt4_set')||localStorage.getItem('tt4set')||localStorage.getItem('tt4settings');
+    if(p){const pd=JSON.parse(p);Object.assign(P,pd);}
+    if(s){const sd=JSON.parse(s);Object.assign(S,sd);}
+    if(st){const setd=JSON.parse(st);Object.assign(SET,setd);}
+  }catch(e){console.warn('Load failed:',e);}
+  // Defaults for new fields
+  if(typeof SET.onlyWithPhoto==='undefined')SET.onlyWithPhoto=true;
+  if(!S.history)S.history=[];if(!S.plan)S.plan=[];if(!S.catSet)S.catSet=[];
+  if(!S.sed)S.sed=0;if(!S.stretch_ct)S.stretch_ct=0;
+  if(!S.skipped)S.skipped=0;if(!S.skippedTotal)S.skippedTotal=0;
+  if(!S.boosts)S.boosts=0;if(!S.morningDone)S.morningDone=null;
+  if(!S.sleepDone)S.sleepDone=null;if(!S.morningTotal)S.morningTotal=0;
+  if(!S.sleepTotal)S.sleepTotal=0;
+  if(!S.badges)S.badges=[];
+  if(!S.days)S.days=[];
+  if(typeof S.str!=='number')S.str=0;
+  if(typeof S.xp!=='number')S.xp=0;
+}
+function importJSON(evt){
+  const file=evt.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      const prof=d.profile||d.P;
+      const stats=d.stats||d.S;
+      const sett=d.settings||d.SET;
+      if(!prof||!prof.name){toast('⚠️ File non riconosciuto!');return;}
+      if(prof)Object.assign(P,prof);
+      if(stats)Object.assign(S,stats);
+      if(sett)Object.assign(SET,sett);
+      save();
+      toast('✅ Dati importati! Ricarico...',1500);
+      setTimeout(()=>location.reload(),1500);
+    }catch(err){toast('⚠️ File non valido: '+err.message);}
+  };
+  reader.readAsText(file);
+}
+function resetAll(){
+  localStorage.removeItem('tt4_profile');
+  localStorage.removeItem('tt4_stats');
+  localStorage.removeItem('tt4_set');
+  localStorage.removeItem('tt4_photos');
+  localStorage.removeItem('tt4_photoCheck');
+  location.reload();
+}
+
 // ═══ NAVIGATION & THEME ═══
 // Screen navigation with back-stack tracking
-var _prevScreen='home';
 function go(scr){
   const curActive=document.querySelector('.screen.active');
   _prevScreen=curActive?curActive.id.replace('screen-',''):'home';
@@ -1623,6 +1607,8 @@ function go(scr){
   if(scr==='home')buildHome();else if(scr==='presession')buildPresession();
   else if(scr==='calendar'){const n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();buildCal();}
   else if(scr==='progress')buildProgress();else if(scr==='profile')buildProfile();
+  else if(scr==='onboarding')initWizard();
+  else if(scr==='complete')buildComplete();
   else if(scr==='onboarding'){setTimeout(initWizard,50);}
   else if(scr==='party')initParty();else if(scr==='settings')buildSettings();
   // Keep back-button history in sync
@@ -1663,7 +1649,22 @@ function beep(f=440,d=0.15,v=0.25){if(!SET.audio)return;try{const c=getACtx();if
 function speak(t){if(!SET.voice||!window.speechSynthesis)return;try{window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='it-IT';u.rate=1.1;window.speechSynthesis.speak(u);}catch(e){}}
 function toggleAudio(){SET.audio=!SET.audio;save();syncToggles()}
 function toggleVoice(){SET.voice=!SET.voice;save();syncToggles()}
-function syncToggles(){const a=document.getElementById('st-audio'),v=document.getElementById('st-voice');if(a)a.classList.toggle('on',SET.audio);if(v)v.classList.toggle('on',SET.voice);const pf=document.getElementById('st-photo-filter');if(pf)pf.classList.toggle('on',SET.onlyWithPhoto!==false);}
+function syncToggles(){
+  const a=document.getElementById('st-audio'),v=document.getElementById('st-voice');
+  if(a)a.classList.toggle('on',SET.audio);
+  if(v)v.classList.toggle('on',SET.voice);
+  const pf=document.getElementById('st-photo-filter');
+  if(pf)pf.classList.toggle('on',SET.onlyWithPhoto!==false);
+  // Routine toggles
+  const morTog=document.getElementById('st-morning');
+  if(morTog)morTog.classList.toggle('on',!!P.morningRoutine);
+  const slpTog=document.getElementById('st-sleep');
+  if(slpTog)slpTog.classList.toggle('on',!!P.sleepRoutine);
+  // View scale buttons
+  document.querySelectorAll('.vw-opt').forEach(e=>e.classList.toggle('sel',e.dataset.vs===(SET.viewScale||'1x')));
+  // Routine time pickers
+  syncMorningTimeBtn();syncSleepTimeBtn();
+}
 
 // ═══ POSE ANIMATION ═══
 // ═══ EXERCISE IMAGE LOADER ═══
@@ -1679,11 +1680,7 @@ function loadExImage(ex){
 }
 
 // ═══ ONBOARDING ═══
-function selOpt(el){const g=el.dataset.g;document.querySelectorAll(`[data-g="${g}"]`).forEach(e=>e.classList.remove('sel'));el.classList.add('sel')}
 function getOpt(g){const s=document.querySelector(`[data-g="${g}"].sel`);return s?s.dataset.v:null}
-function toggleCat(el){el.classList.toggle('sel');const ck=el.querySelector('.mchk-check');if(ck)ck.textContent=el.classList.contains('sel')?'✓':''}
-function toggleDay(el){el.classList.toggle('sel')}
-function updateGoalLbl(v){const el=document.getElementById('goal-lbl');if(el)el.textContent=v;const r=document.getElementById('ob-goal');if(r)r.style.setProperty('--pct',((v-10)/355*100).toFixed(1)+'%')}
 function saveProfile(){
   // Collect final wizard step data before saving
   wizValidate(_wizStep);
@@ -1973,7 +1970,6 @@ var WIZ_STEPS = [
   },
 ];
 
-var _wizStep = 0;
 var _wizData = { sex:'M', level:'principiante', cats:['gambe','braccia','core','stretching','orientale'], notifTime:'evening', wantNotif:true };
 
 function initWizard(){
@@ -2263,7 +2259,7 @@ function refreshPlan(){
     else{const focus=cats[focusIdx%cats.length];plan.push({date:ds,type:'workout',focus,icon:CAT_INFO[focus]?.icon||'🏋️'});focusIdx++;consec++;}
   }
   S.plan=plan;
-  save();
+  save();buildHome();const _cn=new Date();calYear=_cn.getFullYear();calMonth=_cn.getMonth();if(document.getElementById('screen-calendar')?.classList.contains('active'))buildCal();
   // Refresh calendar if currently open
   const calEl=document.getElementById('screen-calendar');
   if(calEl&&calEl.classList.contains('active'))buildCal();
@@ -2304,7 +2300,7 @@ function buildHome(){
   // Weather chip — async, non-blocking
   if(SET.gpsLat&&SET.gpsLon){fetchWeather().then(wx=>{if(!wx)updateWeatherChip(null);}).catch(()=>updateWeatherChip(null));}
   else updateWeatherChip(null);
-  document.getElementById('home-streak').textContent=S.str;
+  const hsEl=document.getElementById('home-streak');if(hsEl)hsEl.textContent=typeof S.str==='number'?S.str:0;
   const userLv=getUserLevel(S.xp||0);document.getElementById('home-level').textContent=userLv;
   const xpToNext=getXpToNextLevel(S.xp||0);if(document.getElementById('home-level-chip'))document.getElementById('home-level-chip').title='Livello '+userLv+' — ancora '+xpToNext+' XP per il prossimo livello';
   const done=S.tot,goal=P.goal||90,pct=Math.min(100,Math.round(done/goal*100));
@@ -2339,42 +2335,29 @@ function buildHome(){
   const mainScelgo=document.querySelector('.fbtn[data-f="__scelgo__"]');if(mainScelgo)mainScelgo.innerHTML='<span class="fi">🕹️</span>Scelgo io!';
   T.feeling='piano';
 }
-function selSex(btn){
-  document.querySelectorAll('.sex-btn').forEach(b=>{
-    b.classList.remove('sel');
-    b.style.borderColor='var(--bdr)';b.style.background='var(--card)';b.style.color='var(--text)';
-  });
-  btn.classList.add('sel');
-  btn.style.borderColor='var(--g1)';btn.style.background='var(--g4)';btn.style.color='var(--g1)';
-}
-function setSexSetting(s){
-  P.sex=s;calcProfileBias();save();refreshPlan();
-  const vm=document.getElementById('val-sex');if(vm)vm.textContent=s==='M'?'👨 Uomo':'👩 Donna';
-  const bm=document.getElementById('sex-btn-m');const bf=document.getElementById('sex-btn-f');
-  if(bm){bm.style.borderColor=s==='M'?'var(--g1)':'var(--bdr)';bm.style.background=s==='M'?'var(--g4)':'var(--card)';}
-  if(bf){bf.style.borderColor=s==='F'?'var(--g1)':'var(--bdr)';bf.style.background=s==='F'?'var(--g4)':'var(--card)';}
-  toast('✅ Sesso aggiornato — piano ricalcolato!');
-}
 function toggleScelgo(btn){
   document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('sel'));
   const grid=document.getElementById('scelgo-grid');
+  const stancoOpts=document.getElementById('stanco-opts');
   const isOpen=grid.style.display==='grid';
+  // ALWAYS hide stanco-opts when entering scelgo mode
+  if(stancoOpts)stancoOpts.style.display='none';
   if(isOpen){
     grid.style.display='none';
-    // Revert to piano
     const piano=document.querySelector('.fbtn[data-f="piano"]');
     if(piano){piano.classList.add('sel');T.feeling='piano';}
+    // On non-rest days, show start btn when reverting to piano
+    const tp=getTodayPlan();
+    const btnStart=document.getElementById('btn-start');
+    if(btnStart)btnStart.style.display=tp.type!=='rest'?'flex':'none';
   } else {
     btn.classList.add('sel');
     grid.style.display='grid';
-    T.feeling='gambe'; // default first sub-option
-    // Highlight first sub-button
+    T.feeling='gambe';
     const first=document.querySelector('.fbtn-sub');
     if(first)first.classList.add('sel');
-    // Show start button
     const btnStart=document.getElementById('btn-start');
-    const tp=getTodayPlan();
-    if(btnStart&&tp.type!=='rest')btnStart.style.display='flex';
+    if(btnStart)btnStart.style.display='flex';
   }
 }
 function setScelgoFeeling(el){
@@ -2402,22 +2385,17 @@ function setFeeling(el){
   if(T.feeling==='stanco'){
     stancoOpts.style.display='block';
     if(btnStart)btnStart.style.display='none';
-  } else if(T.feeling==='piano'&&isRest){
-    // Rest day + "segui piano" → keep button hidden
-    stancoOpts.style.display='none';
-    if(btnStart)btnStart.style.display='none';
   } else {
-    // Any specific category chosen (even on rest day) → allow session
+    // 'piano' or specific category chosen — always show start btn
     stancoOpts.style.display='none';
     if(btnStart){
       btnStart.style.display='flex';
-      // Show bonus note on rest days
-      btnStart.textContent=isRest?'▶️ Sessione bonus (giorno di riposo)':'▶️ Inizia sessione';
+      btnStart.textContent=isRest?'▶️ Sessione bonus (oggi è riposo)':'▶️ Inizia sessione';
     }
   }
 }
 function doVolRest(type){
-  const today=new Date().toISOString().slice(0,10);
+  const today=localDate(); // use local date, not UTC
   if(type==='riposo'){
     // Record voluntary rest, preserve streak
     addHistory({date:today,type:'riposo_vol',focus:'riposo_vol',icon:'🛋️',dur:0,exCount:0,xp:0,feeling:'stanco',streakPreserved:true});
@@ -2447,8 +2425,10 @@ function buildPresession(){
   document.getElementById('ps-focus-info').innerHTML=`${fLabel.icon} <strong>${fLabel.label}</strong> — sessione di oggi`;
   // Equipment warning: detect chair or elastic need
   const focus=T.feeling&&T.feeling!=='piano'?T.feeling:tp.focus;
-  const needsChair=['seduto','misto_plus'].includes(focus);
-  const needsElastic=focus==='elastici';
+  const needsChair=['seduto','misto_plus'].includes(focus)||
+    (T.exs&&T.exs.some(e=>e.cat==='seduto'));
+  const needsElastic=focus==='elastici'||
+    (T.exs&&T.exs.some(e=>e.cat==='elastici'));
   const warnEl=document.getElementById('ps-equipment-warn');
   const titleEl=document.getElementById('ps-equip-title');
   const descEl=document.getElementById('ps-equip-desc');
@@ -2766,21 +2746,6 @@ function updateWeatherChip(wx){
 }
 
 // ── SMART TIMING ANALYSIS ─────────────────────────────────────────
-function analyzeSessionTiming(){
-  // Use sessions that have the 'hour' field (stored from now on)
-  const withHour=(S.history||[]).filter(h=>h.hour!=null&&h.type!=='riposo_vol');
-  if(withHour.length>=3){
-    // Take last 14 sessions with hour data
-    const recent=withHour.slice(-14);
-    const avgHour=Math.round(recent.reduce((s,h)=>s+h.hour,0)/recent.length);
-    if(avgHour>=5&&avgHour<12) return 'morning';
-    if(avgHour>=12&&avgHour<17) return 'afternoon';
-    return 'evening';
-  }
-  // Not enough data yet — return user preference or default
-  return SET.notifTime||'evening';
-}
-
 function getSuggestedTiming(){
   // Returns {slot, confident, avgHour} 
   const withHour=(S.history||[]).filter(h=>h.hour!=null&&h.type!=='riposo_vol');
@@ -2958,7 +2923,7 @@ async function scheduleNotifications(){
   if(!('Notification' in window))return;
   if(Notification.permission!=='granted')return;
 
-  const today=new Date().toISOString().slice(0,10);
+  const today=localDate(); // use local date, not UTC
 
   // ── KEY CHECK: has the user already trained today? ─────────────
   const trainedToday=(S.history||[]).some(h=>
@@ -3035,43 +3000,24 @@ async function scheduleNotifications(){
   }
 }
 
-async 
 async function sendTestNotification(){
   const res=document.getElementById('notif-test-result');
-  if(!('Notification' in window)){if(res)res.textContent='⚠️ Notifiche non supportate.';return;}
-  if(Notification.permission!=='granted'){
-    if(res)res.textContent='⚠️ Permesso non concesso. Attiva le notifiche prima.';return;
+  if(!('serviceWorker' in navigator)){if(res)res.textContent='⚠️ Browser non supportato.';return;}
+  if(!('Notification' in window)||Notification.permission!=='granted'){
+    if(res)res.textContent='⚠️ Permesso notifiche non concesso. Attiva le notifiche prima.';return;
   }
-  if(!('serviceWorker' in navigator)||!navigator.serviceWorker.controller){
-    // SW not ready yet - wait for it
-    if(res)res.textContent='⏳ Service Worker in avvio, riprova tra 2 secondi...';
-    navigator.serviceWorker.ready.then(reg=>{
-      reg.showNotification('🐢 TurboTartaruga — Test',{
-        body:'Le notifiche funzionano! 🎉',icon:'./icon-192.png',tag:'test'
-      });
-      if(res)res.textContent='✅ Notifica inviata!';
-    }).catch(e=>{if(res)res.textContent='❌ Errore SW: '+e.message;});
-    return;
+  if(res)res.textContent='⏳ Invio in corso...';
+  try{
+    const reg=await navigator.serviceWorker.ready;
+    await reg.showNotification('🐢 TurboTartaruga',{
+      body:'Notifiche attive! La tartaruga ti raggiungerà ogni giorno 🎉',
+      icon:'./icon-192.png',badge:'./icon-192.png',
+      tag:'turbotartaruga-test',renotify:true,vibrate:[200,100,200]
+    });
+    if(res)res.textContent='✅ Notifica inviata! Abbassa la tendina delle notifiche.';
+  }catch(e){
+    if(res)res.textContent='❌ '+e.message+' — Su iPhone: aggiungi prima l\'app alla schermata Home.';
   }
-  // Via SW — schedule for 5 seconds from now
-  const at=Date.now()+5000;
-  navigator.serviceWorker.controller.postMessage({
-    type:'SCHEDULE_NOTIF',
-    payload:{
-      at,
-      title:'🐢 TurboTartaruga — Test notifica',
-      body:'Se vedi questo messaggio tra 5 secondi, le notifiche funzionano perfettamente! 🎉',
-      tag:'turbotartaruga-test'
-    }
-  });
-  // Also ask SW to check immediately
-  navigator.serviceWorker.controller.postMessage({type:'CHECK_NOTIFS'});
-  if(res)res.textContent='⏳ Notifica programmata... arriva tra ~5 secondi!';
-  setTimeout(()=>{
-    navigator.serviceWorker.controller.postMessage({type:'CHECK_NOTIFS'});
-  },5100);
-  // Update result after 8 seconds
-  setTimeout(()=>{if(res&&res.textContent.includes('⏳'))res.textContent='✅ La notifica dovrebbe essere arrivata. Non l\'hai vista? Controlla le impostazioni notifiche del telefono per questa app.';},8000);
 }
 
 async function requestNotifPermission(){
@@ -3095,29 +3041,46 @@ async function requestNotifPermission(){
   }
 }
 
+
+function syncMorningTimeBtn(){
+  const h=P.morningRoutineHour||7;
+  document.querySelectorAll('.wiz-wake-btn').forEach(b=>{
+    const active=parseInt(b.dataset.h)===h;
+    b.style.borderColor=active?'var(--g1)':'var(--bdr)';
+    b.style.background=active?'var(--g4)':'var(--card)';
+  });
+  const wrap=document.getElementById('morning-time-wrap');
+  if(wrap)wrap.style.display=P.morningRoutine?'block':'none';
+}
+function syncSleepTimeBtn(){
+  const h=P.sleepRoutineHour||22;
+  document.querySelectorAll('.wiz-sleep-btn').forEach(b=>{
+    const active=parseInt(b.dataset.h)===h;
+    b.style.borderColor=active?'var(--g1)':'var(--bdr)';
+    b.style.background=active?'var(--g4)':'var(--card)';
+  });
+  const wrap=document.getElementById('sleep-time-wrap');
+  if(wrap)wrap.style.display=P.sleepRoutine?'block':'none';
+}
+
 function toggleMorningRoutine(){
   P.morningRoutine=!P.morningRoutine;save();
   const t=document.getElementById('st-morning');if(t)t.classList.toggle('on',P.morningRoutine);
+  const wrap=document.getElementById('morning-time-wrap');
+  if(wrap)wrap.style.display=P.morningRoutine?'block':'none';
+  syncMorningTimeBtn();
   buildRoutineBanners();scheduleRoutineNotifications();
   toast(P.morningRoutine?'☀️ Routine mattutina attivata!':'Routine mattutina disattivata.');
 }
 function toggleSleepRoutine(){
   P.sleepRoutine=!P.sleepRoutine;save();
   const t=document.getElementById('st-sleep');if(t)t.classList.toggle('on',P.sleepRoutine);
+  const wrap=document.getElementById('sleep-time-wrap');
+  if(wrap)wrap.style.display=P.sleepRoutine?'block':'none';
+  syncSleepTimeBtn();
   buildRoutineBanners();scheduleRoutineNotifications();
   toast(P.sleepRoutine?'🌙 Routine pre-sonno attivata!':'Routine pre-sonno disattivata.');
 }
-function toggleNotifications(){
-  if(!SET.notifEnabled){requestNotifPermission();}
-  else{
-    SET.notifEnabled=false;save();
-    document.getElementById('notif-settings').style.display='none';
-    const tog=document.getElementById('st-notif');if(tog)tog.classList.remove('on');
-    toast('🔕 Notifiche disattivate.');
-  }
-}
-
-
 function setEnergy(btn){
   document.querySelectorAll('.nrg-btn').forEach(b=>{
     b.classList.remove('sel');
@@ -3206,7 +3169,7 @@ function wizSelSleep(btn){
 
 // ── Start routine ─────────────────────────────────────────────────
 function startRoutine(type){
-  const today=new Date().toISOString().slice(0,10);
+  const today=localDate(); // use local date, not UTC
   const h=new Date().getHours();
   // Warn if pre-sonno attempted outside evening
   if(type==='presonno'&&(h<17||h>=24)){
@@ -3228,7 +3191,7 @@ function startRoutine(type){
 
 // ── Complete routine (called from completeSession) ─────────────────
 function completeRoutine(){
-  const today=new Date().toISOString().slice(0,10);
+  const today=localDate(); // use local date, not UTC
   const isMorning=T.sesType==='mattino';
   const xpBonus=isMorning?5:10;
   S.xp=(S.xp||0)+xpBonus;
@@ -3273,7 +3236,7 @@ function buildRoutineBanners(){
 // ── Routine-specific notifications ────────────────────────────────
 async function scheduleRoutineNotifications(){
   if(!SET.notifEnabled||Notification.permission!=='granted')return;
-  const today=new Date().toISOString().slice(0,10);
+  const today=localDate(); // use local date, not UTC
   const wx=await fetchWeather().catch(()=>null);
   const wxG=wx?wxGroup(wx.code):null;
   const temp=wx?wx.temp:null;
@@ -3537,7 +3500,7 @@ function doShowEx(idx){
   T.idx=idx;T.phase='act';T.left=ex.a;
   document.getElementById('tr-cat').textContent=ex.t;
   document.getElementById('tr-name').textContent=ex._fav?ex.n+' ⭐':ex.n;
-  document.getElementById('tr-desc').textContent=ex.desc||'';
+  document.getElementById('tr-desc').textContent=ex.desc||(ex.steps?ex.steps.join(' → '):'');
   document.getElementById('tr-zona').textContent=ex.zona;
   loadExImage(ex);
   updateFavButtons(ex.id);
@@ -3638,7 +3601,7 @@ function showRestPreview(targetIdx, onDone){
       else if((nx.desc||'').match(/tieni \d|mantieni|isometric/i)){typeEl.textContent='🧘 Mantieni posizione';typeEl.style.display='block';typeEl.style.background='#F3E5F5';typeEl.style.color='#6A1B9A';typeEl.style.borderColor='#AB47BC';}
       else{typeEl.textContent='';typeEl.style.display='none';}
     }
-    document.getElementById('rst-next-desc').textContent=nx.desc||'';
+    document.getElementById('rst-next-desc').textContent=nx.desc||(nx.steps?nx.steps.join(' → '):'');
     const nxImg=document.getElementById('rst-next-img');
     const nxPh=document.getElementById('rst-next-placeholder');
     if(nxImg&&nxPh){
@@ -3656,7 +3619,8 @@ function showRestPreview(targetIdx, onDone){
   // Show Riserva Turbo during rest screen if 2 real exercises remain (= before terzultimo)
   const remAfterRest=T.exs.slice(targetIdx).filter(e=>!e._transition&&!e._bonus).length;
   const rb2=document.getElementById('riserva-banner');
-  if(rb2)rb2.style.display=(remAfterRest===3&&!riservaDone&&(T.dur||12)!==5)?'block':'none';
+  const _notRoutine=T.sesType!=='mattino'&&T.sesType!=='presonno';
+  if(rb2)rb2.style.display=(_notRoutine&&remAfterRest===3&&!riservaDone&&(T.dur||12)!==5)?'block':'none';
   // Set header text based on context
   const rstHdr=document.getElementById('rst-header');
   const rstEmoji=document.getElementById('rst-emoji');
@@ -3748,6 +3712,7 @@ function skipRest(){
 function togglePause(){T.paused=!T.paused;document.getElementById('btn-pause').textContent=T.paused?'▶️ Riprendi':'⏸️ Pausa'}
 function confirmQuit(){if(confirm("Vuoi uscire dall'allenamento?")){clearInterval(T.iv);clearInterval(restIv);clearInterval(transIv);clearInterval(grIv);go("home")}}
 function activateRiserva(){
+  if(T.sesType==='mattino'||T.sesType==='presonno'){return;}
   riservaDone=true;document.getElementById('riserva-banner').style.display='none';
   S.boosts=(S.boosts||0)+1;save();
   const bonus=genBonusExs();
@@ -3864,7 +3829,7 @@ function completeSession(){
     date:today,type:T.sesType,focus:T.sesType,
     icon:CAT_INFO[T.sesType]?.icon||'💪',
     dur:min,exCount:exCnt,xp:xpGain,
-    feeling:T.feeling,boost:riservaDone,planned:tp.focus,
+    feeling:T.feeling,boost:riservaDone&&T.sesType!=='mattino'&&T.sesType!=='presonno',planned:tp.focus,
     hour:new Date().getHours(), // ← store hour for timing analysis
     cats,tags,
     exercises:doneExs.map(e=>({id:e.id,n:e.n,cat:e.cat}))
@@ -3913,13 +3878,13 @@ function completeSession(){
     el.innerHTML=`<span style="font-size:28px">${b.icon}</span><span style="font-size:11px;font-weight:bold;color:#fff">${b.name}</span>`;
     wrap.appendChild(el);beep(880,.25,.3);
   });
-  go_scr('complete');
+  go('complete');
   // Session done — cancel today's notification if pending
   scheduleNotifications();
 }
 function calcSkippedSessions(){
   // Count planned workout days in the past that have no history entry
-  const today=new Date().toISOString().slice(0,10);
+  const today=localDate(); // use local date, not UTC
   let consecutive=0;
   let totalSkipped=0;
   const sorted=[...(S.plan||[])].filter(p=>p.type!=='rest'&&p.date<today).sort((a,b)=>b.date.localeCompare(a.date));
@@ -3973,9 +3938,26 @@ function updateStreak(){
     // S.last NOT updated — preserve it for when session is done
   }
 }
+
+function buildComplete(){
+  const el=document.getElementById('screen-complete');
+  if(!el)return;
+  // Update stats display
+  const totEl=document.getElementById('cmp-tot');if(totEl)totEl.textContent=S.tot;
+  const strEl=document.getElementById('cmp-str');if(strEl)strEl.textContent=S.str;
+  const xpEl=document.getElementById('cmp-xp');if(xpEl)xpEl.textContent=S.xp||0;
+}
+
 function checkBadges(){
   const nb=[];
-  BADGES.forEach(b=>{if(!S.badges.includes(b.id)&&b.fn(S,P,S.badges)){S.badges.push(b.id);S.xp=(S.xp||0)+25;nb.push(b)}});
+  if(!S.badges)S.badges=[];
+  BADGES.forEach(b=>{
+    const checkFn=b.check||b.fn;
+    if(checkFn&&!S.badges.includes(b.id)){
+      try{if(checkFn(S,P,S.badges)){S.badges.push(b.id);S.xp=(S.xp||0)+25;nb.push(b);}}
+      catch(e){}
+    }
+  });
   return nb;
 }
 
@@ -4149,13 +4131,13 @@ function buildBodyMap(){
     const d=daysSince[cat];if(d===undefined)return;
     (zoneMap[cat]||[]).forEach(z=>{if(d<zA[z])zA[z]=d;});
   });
-  function zc(z){const d=zA[z]||99;return d<=3?'#43A047':d<=7?'#81C784':d<=14?'#FFF9C4':'#ECEFF1';}
-  function zs(z){return'stroke="'+((zA[z]||99)<14?'#388E3C':'#CFD8DC')+'" stroke-width="1.5"';}
+  function zc(z){const d=(zA[z]===undefined?99:zA[z]);return d<=3?'#43A047':d<=7?'#81C784':d<=14?'#FFF9C4':'#ECEFF1';}
+  function zs(z){const _d=(zA[z]===undefined?99:zA[z]);return'stroke="'+(_d<14?'#388E3C':'#CFD8DC')+'" stroke-width="1.5"';}
   // Turtle silhouette SVG
   const html=
     // Shell (corpo)
     '<ellipse cx="55" cy="95" rx="38" ry="50" fill="'+zc('corpo')+'" '+zs('corpo')+'/>'+
-    '<ellipse cx="55" cy="95" rx="28" ry="38" fill="none" stroke="'+((zA.corpo||99)<14?'#2E7D32':'#B0BEC5')+'" stroke-width="1" stroke-dasharray="4 3" opacity=".6"/>'+
+    '<ellipse cx="55" cy="95" rx="28" ry="38" fill="none" stroke="'+((zA.corpo!==undefined&&zA.corpo<14)?'#2E7D32':'#B0BEC5')+'" stroke-width="1" stroke-dasharray="4 3" opacity=".6"/>'+
     // Testa
     '<ellipse cx="55" cy="32" rx="18" ry="16" fill="'+zc('testa')+'" '+zs('testa')+'/>'+
     '<text x="55" y="37" text-anchor="middle" font-size="14">🐢</text>'+
@@ -4175,7 +4157,7 @@ function buildBodyMap(){
   if(legend){
     const zones=[{key:'testa',label:'Collo/Testa'},{key:'corpo',label:'Busto/Core'},{key:'zampe',label:'Braccia/Gambe'}];
     legend.innerHTML=zones.map(z=>{
-      const d=zA[z.key]||99;
+      const d=(zA[z.key]===undefined?99:zA[z.key]);
       const lbl=d>=99?'⬜ Non allenata':d===0?'🟢 Oggi':d<=3?'🟢 '+d+'g fa':d<=7?'🟡 '+d+'g fa':'⬜ '+d+'g fa';
       return'<div style="margin-bottom:8px"><span style="width:12px;height:12px;background:'+zc(z.key)+';border-radius:3px;border:1px solid var(--bdr);display:inline-block;vertical-align:middle;margin-right:5px"></span><b>'+z.label+'</b><br><span style="font-size:10px;color:var(--tlt);margin-left:17px">'+lbl+'</span></div>';
     }).join('');
@@ -4224,7 +4206,7 @@ function buildCal(){
   document.getElementById('cal-hdr-row').innerHTML=days.map(d=>`<div class="cal-dh">${d}</div>`).join('');
   const dim=new Date(calYear,calMonth+1,0).getDate();
   const fd=(new Date(calYear,calMonth,1).getDay()+6)%7;
-  const today=new Date().toISOString().slice(0,10);
+  const today=localDate(); // use local date, not UTC
   let h='';for(let i=0;i<fd;i++)h+='<div class="cd empty"></div>';
   let done=0,planned=0;
   for(let d=1;d<=dim;d++){
@@ -4558,6 +4540,9 @@ function buildProfile(){
   const pct=lv>=3?100:Math.round((xp-lvXP[lv-1])/(nxt-lvXP[lv-1])*100);
   document.getElementById('prf-xp-lbl').textContent=`${xp} XP${lv<3?' · '+(nxt-xp)+' al prossimo':''}`;
   document.getElementById('prf-xp-fill').style.width=pct+'%';
+  // Set totals display (XP + badge count)
+  const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=xp;
+  const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const unlocked=new Set(S.badges);
   [1,2,3].forEach(lv=>{
     const bs=BADGES.filter(b=>b.lv===lv);const done=bs.filter(b=>unlocked.has(b.id)).length;
@@ -4575,7 +4560,7 @@ function initParty(){
 }
 function updatePartyUI(){
   const av=['🐢','🦊','🐧','🦁'];
-  document.getElementById('party-players').innerHTML=players.map((p,i)=>`<div style="background:rgba(255,255,255,.14);border-radius:11px;padding:8px 12px;display:flex;align-items:center;gap:6px;color:#fff"><span style="font-size:16px">${av[i%4]}</span><span style="font-weight:bold;font-size:12px">${p}</span></div>`).join('');
+  document.getElementById('party-players').innerHTML=players.map((p,i)=>`<div style="background:rgba(255,255,255,.14);border-radius:11px;padding:8px 12px;display:flex;align-items:center;gap:6px;color:#fff"><span style="font-size:16px">${av[i%4]}</span><span style="font-weight:bold;font-size:12px;flex:1">${p}</span><button onclick="removePlayer(${i})" style="background:rgba(255,255,255,.25);border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;color:#fff;font-size:11px;padding:0;line-height:1">✕</button></div>`).join('');
   document.getElementById('party-scores').innerHTML=players.map(p=>`<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.1)"><span>${p}</span><span style="color:var(--lime);font-weight:bold">${scores[p]||0} pt</span></div>`).join('');
 }
 function showPartyChal(ch){
@@ -4608,18 +4593,25 @@ function partyStart(){
   btn.textContent='⏹️ Stop';S.party++;checkBadges();save();beep(660,.15);
   partyIv=setInterval(()=>{partyLeft--;document.getElementById('party-timer-disp').textContent=partyLeft;if(partyLeft<=0){clearInterval(partyIv);partyIv=null;btn.textContent='▶️ Inizia!';partyLeft=60;toast('🎉 Tempo! Assegna i punti!');players.forEach(p=>{scores[p]=(scores[p]||0)+1});updatePartyUI();beep(880,.3,.4)}},1000);
 }
+
+function removePlayer(idx){
+  players.splice(idx,1);
+  updatePartyUI();
+  toast('Partecipante rimosso');
+}
+
 function addPlayer(){
   if(players.length>=4){toast('⚠️ Massimo 4 partecipanti!');return}
   // Custom modal instead of browser prompt (better UI)
   const overlay=document.createElement('div');
-  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:900;display:flex;align-items:center;justify-content:center;padding:20px';
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:900;display:flex;align-items:center;justify-content:center;padding:20px';overlay.dataset.partyOverlay='1';
   overlay.innerHTML=`<div style="background:#fff;border-radius:20px;padding:24px;width:100%;max-width:320px;text-align:center">
     <div style="font-size:28px;margin-bottom:8px">🤝</div>
     <h3 style="font-family:var(--ft);color:#1B5E20;margin-bottom:16px;font-size:18px">Aggiungi un tuo amico/a</h3>
     <input id="party-name-inp" type="text" placeholder="Es. Marco, Sara..." maxlength="20" autocomplete="off"
       style="width:100%;padding:12px 14px;border:2px solid var(--bdr);border-radius:12px;font-size:16px;font-family:var(--ft);outline:none;box-sizing:border-box;margin-bottom:14px">
     <div style="display:flex;gap:8px">
-      <button onclick="this.closest('div').parentElement.remove()" style="flex:1;padding:11px;background:#f0f0f0;border:none;border-radius:100px;font-weight:bold;cursor:pointer;font-size:14px">Annulla</button>
+      <button onclick="document.body.querySelectorAll('[data-party-overlay]').forEach(el=>el.remove())" style="flex:1;padding:11px;background:#f0f0f0;border:none;border-radius:100px;font-weight:bold;cursor:pointer;font-size:14px">Annulla</button>
       <button id="party-name-ok" style="flex:1;padding:11px;background:#43A047;color:#fff;border:none;border-radius:100px;font-weight:bold;cursor:pointer;font-size:14px">➕ Aggiungi</button>
     </div>
   </div>`;
@@ -4655,14 +4647,22 @@ function buildSettings(){
   if(rdWrap){const dn=['Do','Lu','Ma','Me','Gi','Ve','Sa'];
     rdWrap.innerHTML=[1,2,3,4,5,6,0].map(d=>`<button class="day-btn${(P.restDays||[]).includes(d)?' sel':''}" data-dow="${d}" onclick="this.classList.toggle('sel')">${dn[d]}</button>`).join('');}
   // Goal
-  const gl=P.goal||90;document.getElementById('st-goal-disp').textContent=gl;document.getElementById('st-goal-range').value=gl;document.getElementById('st-goal-range').style.setProperty('--pct',((gl-10)/355*100).toFixed(1)+'%');
+  const gl=P.goal||90;document.getElementById('st-goal-disp').textContent=gl;document.getElementById('st-goal-range').value=gl;const gd2=document.getElementById('st-goal-disp2');if(gd2)gd2.textContent=gl+'g';const gr2=document.getElementById('st-goal-range2');if(gr2)gr2.value=gl;document.getElementById('st-goal-range').style.setProperty('--pct',((gl-10)/355*100).toFixed(1)+'%');
   // Pause
   const ps=SET.pauseSec||20;
   const psr=document.getElementById('st-pause-range');const psd=document.getElementById('st-pause-disp');
   if(psr){psr.value=ps;psr.style.setProperty('--pct',((ps-5)/55*100).toFixed(1)+'%')}
   if(psd)psd.textContent=ps+'s';
   // Notification toggle state
+  // Sync routine toggles and time pickers
+  const morTog=document.getElementById('st-morning');if(morTog)morTog.classList.toggle('on',!!P.morningRoutine);
+  const slpTog=document.getElementById('st-sleep');if(slpTog)slpTog.classList.toggle('on',!!P.sleepRoutine);
+  syncMorningTimeBtn();
+  syncSleepTimeBtn();
+  // Notif toggle: usa SET.notifEnabled — il permesso browser non va ricontrollato ad ogni apertura
   const notifTog=document.getElementById('st-notif');if(notifTog)notifTog.classList.toggle('on',!!SET.notifEnabled);
+  const notifPanel=document.getElementById('notif-settings');
+  if(notifPanel)notifPanel.style.display=SET.notifEnabled?'block':'none';
   const notifSettings=document.getElementById('notif-settings');
   if(notifSettings)notifSettings.style.display=(SET.notifEnabled&&Notification.permission==='granted')?'block':'none';
   // Re-check browser permission state (user might have revoked it)
@@ -4706,15 +4706,17 @@ function buildSettings(){
   if(fcr){fcr.value=fc;fcr.style.setProperty('--pct',(fc/5*100).toFixed(1)+'%')}
   if(fcd)fcd.textContent=fc;
   // Appearance
-  document.querySelectorAll('.vw-opt').forEach(e=>e.classList.toggle('sel',e.dataset.vs===SET.viewScale));
+  document.querySelectorAll('.vw-opt').forEach(e=>e.classList.toggle('sel',e.dataset.vs===(SET.viewScale||'1x')));
   document.querySelectorAll('.th-opt').forEach(e=>e.classList.toggle('sel',e.dataset.th===SET.theme));
+  // Sync view scale buttons
+  document.querySelectorAll('.vw-opt').forEach(e=>e.classList.toggle('sel',e.dataset.vs===(SET.viewScale||'1x')));
   syncToggles();
   // Update version display
   // Update XP total and badge count in profile
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v0.99 · 15/04/2026 21:01';
+  if(vdisp)vdisp.textContent='Versione v1.008 · 17/04/2026 11:46 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4738,6 +4740,32 @@ function saveField(f){
 
 // ═══ BACKUP ═══
 // ═══ EXERCISE LIST IN SETTINGS ═══
+
+
+
+
+function toggleAcc(id){
+  const body=document.getElementById(id);
+  const key=id.replace('acc-','');
+  const arr=document.getElementById('arr-'+key);
+  if(!body)return;
+  const open=body.classList.toggle('open');
+  if(arr)arr.classList.toggle('open',open);
+}
+function setMorningHour(btn){
+  document.querySelectorAll('.wiz-wake-btn').forEach(b=>{b.style.borderColor='var(--bdr)';b.style.background='var(--card)';});
+  btn.style.borderColor='var(--g1)';btn.style.background='var(--g4)';
+  P.morningRoutineHour=parseInt(btn.dataset.h)||7;save();
+  if(typeof scheduleRoutineNotifications==='function')scheduleRoutineNotifications();
+  toast('✅ Orario sveglia aggiornato!');
+}
+function setSleepHour(btn){
+  document.querySelectorAll('.wiz-sleep-btn').forEach(b=>{b.style.borderColor='var(--bdr)';b.style.background='var(--card)';});
+  btn.style.borderColor='var(--g1)';btn.style.background='var(--g4)';
+  P.sleepRoutineHour=parseInt(btn.dataset.h)||22;save();
+  if(typeof scheduleRoutineNotifications==='function')scheduleRoutineNotifications();
+  toast('✅ Orario pre-sonno aggiornato!');
+}
 
 function toggleExList(){
   exListVisible=!exListVisible;
@@ -4828,64 +4856,89 @@ function buildExList(){
     wrap.appendChild(sec);
   });
 }
-function toggleFavList(id,btn){
-  if(!P.favorites)P.favorites=[];
-  const i=P.favorites.indexOf(id);
-  if(i>=0){P.favorites.splice(i,1);btn.style.opacity='0.3';toast('⭐ Rimosso dai preferiti');}
-  else{P.avoided=(P.avoided||[]).filter(x=>x!==id);P.favorites.push(id);btn.style.opacity='1';toast('⭐ Aggiunto ai preferiti!');}
-  save();
-}
-function toggleAvoidList(id,btn){
-  if(!P.avoided)P.avoided=[];
-  const i=P.avoided.indexOf(id);
-  if(i>=0){P.avoided.splice(i,1);btn.style.opacity='0.3';toast('🚫 Rimosso da "non mi piace"');}
-  else{P.favorites=(P.favorites||[]).filter(x=>x!==id);P.avoided.push(id);btn.style.opacity='1';toast('🚫 Esercizio escluso!');}
-  save();
-}
 function toggleStCat(el){el.classList.toggle('sel');const ck=el.querySelector('.mchk-check');if(ck)ck.textContent=el.classList.contains('sel')?'✓':'';const cats=[...document.querySelectorAll('#st-cats .mchk.sel')].map(e=>e.dataset.cat);P.categories=cats;save();refreshPlan();}
-function saveRestDays(){const rd=[...document.querySelectorAll('#st-restdays .day-btn.sel')].map(e=>parseInt(e.dataset.dow));P.restDays=rd;save();refreshPlan();toast('✅ Giorni di riposo salvati — piano aggiornato!');}
+function saveRestDays(){const rd=[...document.querySelectorAll('#st-restdays .day-btn.sel')].map(e=>parseInt(e.dataset.dow));P.restDays=rd;save();refreshPlan();buildHome();const n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();if(document.getElementById('screen-calendar')?.classList.contains('active'))buildCal();toast('✅ Giorni di riposo salvati — piano aggiornato!');}
 function toggleNoFloor(){const el=document.getElementById('st-nofloor');if(el)el.classList.toggle('on');P.noFloor=document.getElementById('st-nofloor').classList.contains('on');save();refreshPlan();toast('✅ Impostazione salvata — piano aggiornato!');}
-function updPauseSt(v){document.getElementById('st-pause-disp').textContent=v+'s';document.getElementById('st-pause-range').style.setProperty('--pct',((v-5)/55*100).toFixed(1)+'%')}
-function updGoalSt(v){document.getElementById('st-goal-disp').textContent=v;document.getElementById('st-goal-range').style.setProperty('--pct',((v-10)/355*100).toFixed(1)+'%')}
-function savePause(){SET.pauseSec=parseInt(document.getElementById('st-pause-range').value)||20;save();toast('✅ Pausa salvata: '+SET.pauseSec+' secondi')}
+function setGoal(v){
+  P.goal=parseInt(v)||90;save();
+  const d=document.getElementById('st-goal-disp');if(d)d.textContent=v;
+  const d2=document.getElementById('st-goal-disp2');if(d2)d2.textContent=v+'g';
+  const r=document.getElementById('st-goal-range');if(r)r.value=v;
+  const r2=document.getElementById('st-goal-range2');if(r2)r2.value=v;
+  const pct=((parseInt(v)-10)/355*100).toFixed(1)+'%';
+  if(r)r.style.setProperty('--pct',pct);
+}
+function setLevel(btn){
+  document.querySelectorAll('[data-g="ps-type"] .btn-s').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  P.level=btn.dataset.v||'principiante';
+  save();
+  calcProfileBias();
+  toast('✅ Livello: '+btn.textContent.trim());
+}
+
+function setGoal2(v){P.goal=parseInt(v)||90;save();const d=document.getElementById('st-goal-disp');if(d)d.textContent=v;const d2=document.getElementById('st-goal-disp2');if(d2)d2.textContent=v+'g';const r=document.getElementById('st-goal-range');if(r)r.value=v;toast('✅ Obiettivo: '+v+' giorni');}
 function saveGoal(){P.goal=parseInt(document.getElementById('st-goal-range').value)||90;save();toast('✅ Obiettivo salvato!')}
 function selTheme(el){document.querySelectorAll('.th-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');SET.theme=el.dataset.th;save();applyTheme()}
 function selView(el){document.querySelectorAll('.vw-opt').forEach(e=>e.classList.remove('sel'));el.classList.add('sel');SET.viewScale=el.dataset.vs;save();applyView()}
-function changeUser(){
-  if(!confirm('Vuoi davvero azzerare tutto?\nProfilo, progressi e badge verranno eliminati.'))return;
-  P={};
-  S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,sed:0,stretch_ct:0};
-  SET={theme:SET.theme||'light',audio:SET.audio!==false,voice:SET.voice!==false,viewScale:SET.viewScale||'1x',pauseSec:20};
-  _wizData={sex:'M',level:'principiante',cats:['gambe','braccia','core','stretching','orientale'],notifTime:'evening',wantNotif:true};
-  _wizStep=0;
-  localStorage.removeItem('tt4_p');localStorage.removeItem('tt4_s');
-  save();
-  go('onboarding');
-}
 function startEdit(f){['val-','inp-','ebt-'].forEach((pfx,i)=>{const el=document.getElementById(pfx+f);if(el)el.style.display=i===1?'block':i===2?'none':'none'});const fld=document.getElementById('fld-'+f);if(fld){fld.value=P[f]||'';fld.focus()}}
 function cancelEdit(f){['val-','inp-','ebt-'].forEach((pfx,i)=>{const el=document.getElementById(pfx+f);if(el)el.style.display=i===1?'none':'block'})}
 function toggleFavList(id,btn){if(!P.favorites)P.favorites=[];const i=P.favorites.indexOf(id);if(i>=0){P.favorites.splice(i,1);btn.style.opacity='0.3';toast('⭐ Rimosso dai preferiti');}else{P.avoided=(P.avoided||[]).filter(x=>x!==id);P.favorites.push(id);btn.style.opacity='1';toast('⭐ Aggiunto ai preferiti!');}save()}
 function toggleAvoidList(id,btn){if(!P.avoided)P.avoided=[];const i=P.avoided.indexOf(id);if(i>=0){P.avoided.splice(i,1);btn.style.opacity='0.3';toast('🚫 Rimosso da "non mi piace"');}else{P.favorites=(P.favorites||[]).filter(x=>x!==id);P.avoided.push(id);btn.style.opacity='1';toast('🚫 Esercizio escluso!');}save()}
-function updFavSt(v){document.getElementById('st-fav-disp').textContent=v}
-function saveFavCount(){P.favCount=parseInt(document.getElementById('st-fav-range').value);save();const msg=P.favCount===0?'Preferiti disattivati nelle sessioni':'Fino a '+P.favCount+' preferiti per sessione';toast('✅ '+msg)}
 function exportJSON(){const d=bkData();const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`turbotartaruga-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);toast('✅ File JSON esportato!')}
-function importJSON(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!d.v||!d.profile){toast('⚠️ File non valido!');return}restore(d)}catch{toast('⚠️ Errore lettura file!')}};r.readAsText(f)}
+// importJSON defined above
 function importJSONWelcome(ev){
   const f=ev.target.files[0];if(!f)return;
   const r=new FileReader();
   r.onload=e=>{
     try{
-      const d=JSON.parse(e.target.result);
-      if(!d.v||!d.profile){toast('⚠️ File non valido! Assicurati di usare il backup di TurboTartaruga.');return}
-      restore(d);
-      // restore() calls go('home') automatically
-      toast('🐢 Bentornato/a '+d.profile.name+'! Profilo caricato con successo!',4000);
-    }catch{toast('⚠️ Errore lettura file! Il file potrebbe essere corrotto.');}
+      const raw=e.target.result;
+      const d=JSON.parse(raw);
+      // Accept both old format (profile/stats/settings) and any TurboTartaruga backup
+      const prof=d.profile||d.P;
+      const stats=d.stats||d.S;
+      const sett=d.settings||d.SET;
+      if(!prof||!prof.name){
+        toast('⚠️ File non riconosciuto. Assicurati di usare un backup TurboTartaruga.');
+        return;
+      }
+      // Save to localStorage directly
+      try{
+        localStorage.setItem('tt4_p',JSON.stringify(prof));
+        if(stats)localStorage.setItem('tt4_s',JSON.stringify(stats));
+        if(sett)localStorage.setItem('tt4_set',JSON.stringify(sett));
+      }catch(se){toast('⚠️ Errore nel salvataggio: '+se.message);return;}
+      toast('🐢 Bentornato/a '+prof.name+'! Caricamento...',2000);
+      setTimeout(()=>location.reload(),1500);
+    }catch(err){
+      toast('⚠️ File non valido o corrotto. Dettaglio: '+err.message);
+    }
   };
   r.readAsText(f);
 }
 function genCode(){const d=bkData();const code='TT-'+btoa(unescape(encodeURIComponent(JSON.stringify(d))));const el=document.getElementById('bk-code');el.style.display='block';el.textContent=code;if(navigator.clipboard){navigator.clipboard.writeText(code).then(()=>toast('📋 Codice copiato!')).catch(()=>toast('📋 Codice generato!'))}else toast('📋 Codice generato!')}
 function showPaste(){const a=document.getElementById('paste-area');a.style.display=a.style.display==='none'?'block':'none'}
+
+function restore(d){
+  const prof=d.profile||d.P;
+  const stats=d.stats||d.S;
+  const sett=d.settings||d.SET;
+  if(!prof||!prof.name){toast('⚠️ Dati non validi!');return;}
+  // Preserve streak: keep higher of current or imported
+  if(stats&&S.str&&S.str>(stats.str||0)){
+    stats.str=S.str;
+    stats.last=S.last;
+    stats.days=S.days||stats.days;
+  }
+  try{
+    localStorage.setItem('tt4_p',JSON.stringify(prof));
+    if(stats)localStorage.setItem('tt4_s',JSON.stringify(stats));
+    if(sett)localStorage.setItem('tt4_set',JSON.stringify(sett));
+  }catch(e){toast('⚠️ Errore: '+e.message);return;}
+  toast('🐢 Bentornato/a '+prof.name+'! Caricamento...',2000);
+  setTimeout(()=>location.reload(),1500);
+}
+
 function restoreCode(){const code=document.getElementById('paste-input').value.trim();if(!code.startsWith('TT-')){toast('⚠️ Codice non valido!');return}try{const d=JSON.parse(decodeURIComponent(escape(atob(code.slice(3)))));restore(d);document.getElementById('paste-area').style.display='none'}catch{toast('⚠️ Codice corrotto!')}}
 
 // ═══ TOAST ═══
@@ -4895,9 +4948,6 @@ function toast(msg,dur=3200){const t=document.getElementById('toast');t.textCont
 document.addEventListener('input',e=>{if(e.target.type==='range'){const pct=((e.target.value-e.target.min)/(e.target.max-e.target.min)*100).toFixed(1);e.target.style.setProperty('--pct',pct+'%')}});
 
 // ═══ GUIDE ═══
-function toggleGuide(el){el.classList.toggle('open')}
-
-// ═══ PARTY TABS ═══
 function partyTab(tab){
   document.getElementById('party-pane-sfide').style.display=tab==='sfide'?'block':'none';
   document.getElementById('party-pane-insieme').style.display=tab==='insieme'?'block':'none';
@@ -4914,7 +4964,7 @@ function partyTab(tab){
     ti.style.borderColor=tab==='insieme'?'rgba(255,255,255,.6)':'rgba(255,255,255,.3)';
   }
   // Show result card if guests and last session today
-  const today=new Date().toISOString().slice(0,10);
+  const today=localDate(); // use local date, not UTC
   const lastH=S.history&&S.history[0];
   const rc=document.getElementById('result-card');
   if(rc)rc.style.display=(tab==='insieme'&&togetherGuests.length>0&&lastH&&lastH.date===today)?'block':'none';
@@ -5102,6 +5152,74 @@ function updateTogetherUI(){
 }
 
 var _sessionCode='';
+
+
+// ═══ PARTY CHALLENGES ═══
+var CHALLENGES=[
+  {n:'Plank di gruppo',d:'Chi tiene di più in plank! Partenza sincronizzata.',t:60,ico:'🏋️'},
+  {n:'Squat sfida',d:'30 squat tutti insieme. Chi finisce primo?',t:45,ico:'🦵'},
+  {n:'Equilibrio su un piede',d:'Chi resta in piedi più a lungo su una gamba sola!',t:30,ico:'🦩'},
+  {n:'Gara affondi',d:'Chi fa più affondi in 30 secondi? Via!',t:30,ico:'💪'},
+  {n:'Respirazione sincronizzata',d:'Tutti insieme: inspira 4 sec, espira 8 sec. Chi rompe la catena?',t:40,ico:'🫁'},
+  {n:'Freeze pose',d:'Muovetevi liberamente, quando si grida FREEZE tutti fermi! Chi si muove paga pegno!',t:0,ico:'🎭'},
+  {n:'Salti coordinati',d:'Tutti saltano insieme al ritmo del leader. Chi sbaglia l\'ordine è fuori!',t:30,ico:'🎵'},
+  {n:'Tocca il pavimento',d:'Chi fa più tocchi pavimento in 30 secondi vince!',t:30,ico:'🏆'},
+  {n:'Battaglia di push-up',d:'A coppie: chi fa più push-up al muro in 30 secondi?',t:30,ico:'🥊'},
+  {n:'Catena di energie',d:'Tutti in cerchio: uno fa un movimento, il prossimo lo copia e aggiunge un altro!',t:0,ico:'🔄'},
+  {n:'Step touch mania',d:'Step touch a ritmo crescente. Il leader accelera ogni 10 secondi!',t:40,ico:'🕺'},
+  {n:'Chi tiene il muro',d:'Schiena al muro, angolo 90°. Chi regge più a lungo?',t:60,ico:'🧱'},
+];
+
+var BADGES=[
+  // ── LIVELLO 1: Tartarughina (lv:1) ──────────────────────────
+  {id:'b_prima',lv:1,icon:'🥚',name:'Prima sessione',hint:'Hai completato la tua prima sessione!',check:s=>s.tot>=1},
+  {id:'b_3days',lv:1,icon:'🌱',name:'3 giorni di fila',hint:'Streak di 3 giorni consecutivi',check:s=>s.str>=3},
+  {id:'b_matin',lv:1,icon:'☀️',name:'Mattiniero',hint:'Prima routine mattutina completata',check:s=>s.morningTotal>=1},
+  {id:'b_sleep',lv:1,icon:'🌙',name:'Buonanotte',hint:'Prima routine pre-sonno completata',check:s=>s.sleepTotal>=1},
+  {id:'b_10tot',lv:1,icon:'💪',name:'10 sessioni',hint:'Hai completato 10 sessioni totali',check:s=>s.tot>=10},
+  {id:'b_5str',lv:1,icon:'🔥',name:'Settimana di fuoco',hint:'5 giorni consecutivi di allenamento',check:s=>s.str>=5},
+  {id:'b_ori',lv:1,icon:'🧘',name:'Spirito orientale',hint:'5 sessioni orientali completate',check:s=>s.ori>=5},
+  {id:'b_200xp',lv:1,icon:'⭐',name:'200 XP',hint:'Guadagnati 200 XP totali',check:s=>(s.xp||0)>=200},
+  {id:'b_nofloor',lv:1,icon:'🪑',name:'Senza tappetino',hint:'5 sessioni da seduto completate',check:s=>s.sed>=5},
+  // ── LIVELLO 2: Tartaruga (lv:2) ──────────────────────────────
+  {id:'b_30tot',lv:2,icon:'🐢',name:'30 sessioni',hint:'Traguardo intermedio: 30 sessioni!',check:s=>s.tot>=30},
+  {id:'b_14str',lv:2,icon:'🗓️',name:'2 settimane filate',hint:'14 giorni consecutivi',check:s=>s.str>=14},
+  {id:'b_boost',lv:2,icon:'💥',name:'Boost king',hint:'5 sessioni con boost completate',check:s=>(s.boosts||0)>=5},
+  {id:'b_party',lv:2,icon:'🎉',name:'Party animal',hint:'Prima sessione Party completata',check:s=>(s.party||0)>=1},
+  {id:'b_1000xp',lv:2,icon:'🌟',name:'1000 XP',hint:'Guadagnati 1000 XP totali',check:s=>(s.xp||0)>=1000},
+  {id:'b_stretch',lv:2,icon:'🤸',name:'Flessibile',hint:'10 sessioni di stretching completate',check:s=>s.stretch_ct>=10},
+  {id:'b_50tot',lv:2,icon:'🏅',name:'50 sessioni',hint:'Mezzo centinaio — grandioso!',check:s=>s.tot>=50},
+  {id:'b_21str',lv:2,icon:'📅',name:'3 settimane filate',hint:'21 giorni consecutivi — straordinario!',check:s=>s.str>=21},
+  {id:'b_morning10',lv:2,icon:'🌄',name:'Amore per il mattino',hint:'10 routine mattutine completate',check:s=>s.morningTotal>=10},
+  {id:'b_sleep10',lv:2,icon:'💤',name:'Sogni d\'oro',hint:'10 routine pre-sonno completate',check:s=>s.sleepTotal>=10},
+  {id:'b_3000xp',lv:2,icon:'💫',name:'3000 XP',hint:'3000 XP — stai diventando leggenda!',check:s=>(s.xp||0)>=3000},
+  {id:'b_allcat',lv:2,icon:'🌈',name:'Allenamento completo',hint:'Tutte le categorie allenate almeno una volta',check:s=>(s.catSet||[]).length>=7},
+  // ── LIVELLO 3: TurboTartaruga (lv:3) ─────────────────────────
+  {id:'b_100tot',lv:3,icon:'💯',name:'Centenario',hint:'100 sessioni completate — sei una leggenda!',check:s=>s.tot>=100},
+  {id:'b_30str',lv:3,icon:'🚀',name:'Un mese di fila',hint:'30 giorni consecutivi — stratosferico!',check:s=>s.str>=30},
+  {id:'b_5000xp',lv:3,icon:'👑',name:'5000 XP',hint:'5000 XP — sei il re/la regina della tartaruga!',check:s=>(s.xp||0)>=5000},
+  {id:'b_norest',lv:3,icon:'🐉',name:'Drago instancabile',hint:'365 sessioni totali nella vita',check:s=>s.tot>=365},
+  {id:'b_ultraflex',lv:3,icon:'🏆',name:'TurboTartaruga definitivo',hint:'Raggiungi il Livello 10 di XP',check:s=>getUserLevel(s.xp||0)>=10},
+  {id:'b_partyking',lv:3,icon:'🎊',name:'Party king',hint:'10 sessioni Party completate',check:s=>(s.party||0)>=10},
+  {id:'b_iron',lv:3,icon:'🦾',name:'Tartaruga d\'acciaio',hint:'50 sessioni con boost completate',check:s=>(s.boosts||0)>=50},
+  {id:'b_zen',lv:3,icon:'☯️',name:'Maestro Zen',hint:'50 sessioni orientali completate',check:s=>(s.ori||0)>=50},
+  {id:'b_10000xp',lv:3,icon:'🌠',name:'Oltre le stelle',hint:'10.000 XP — sei nell\'Olimpo!',check:s=>(s.xp||0)>=10000},
+];
+var CAT_INFO={
+  riscaldamento:{label:'Riscaldamento',icon:'🔥'},gambe:{label:'Gambe',icon:'🦵'},
+  braccia:{label:'Braccia',icon:'💪'},core:{label:'Core',icon:'🎯'},
+  stretching:{label:'Stretching',icon:'🤸'},seduto:{label:'Seduto',icon:'🪑'},
+  orientale:{label:'Orientale',icon:'🧘'},elastici:{label:'Elastici',icon:'🎽'},
+  cardio:{label:'Cardio',icon:'🥊'},presonno:{label:'Pre-sonno',icon:'😴'},
+  postura:{label:'Postura',icon:'🖥️'},mattino:{label:'Mattino',icon:'☀️'},
+  misto:{label:'Misto',icon:'🌈'},misto_plus:{label:'Misto+',icon:'🌈'},
+  party:{label:'Party',icon:'🎉'},riposo:{label:'Riposo',icon:'😴'}
+};
+// ── Core state objects ──────────────────────────────────────────────────
+var P={};  // Profile
+var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0};  // Stats
+var SET={audio:true,voice:false,pauseSec:20,notifEnabled:false,notifTime:'evening',preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light'};  // Settings
+var T={exs:[],idx:0,phase:'act',left:0,paused:false,t0:0,iv:null,dur:12,feeling:'piano',sesType:'misto',_halfSpoken:false,_restDone:null,_isRoutine:false};  // Timer state
 
 function generateShareSession(){
   if(!togetherGuests||!togetherGuests.length){toast('⚠️ Nessun amico nella sessione!');return;}
@@ -5507,11 +5625,56 @@ function showSwitchSide(){
   },1000);
 }
 
+
+// ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
+var CHANGELOG=[
+  {v:'1.006',date:'17/04/2026',changes:['15 funzioni zombie rimosse','CSS utility classes aggiunte','Changelog UI aggiunto','Integration test 32/32']},
+  {v:'1.005',date:'17/04/2026',changes:['po9 sostituito con allungamento cervicale','No boost per routine mattino/sera','Slider orario routine funzionanti','Notifiche: toggle sincronizzato al rientro in impostazioni']},
+  {v:'1.004',date:'17/04/2026',changes:['DB ripristinato dalla versione originale','PHRASES e PARTY_EX ripristinati','Calendario aggiornato a mezzanotte','Giorni riposo aggiornano home e calendario','Streak: init sicuro senza reset errati']},
+  {v:'1.003',date:'16/04/2026',changes:['Fix div settings (Allenamento non conteneva altri box)','Obiettivo spostato in Allenamento','SW skipWaiting per aggiornamenti immediati','load() più robusto per str/badges/days']},
+  {v:'1.002',date:'16/04/2026',changes:['go_scr → go per schermata complete','checkBadges usa check/fn correttamente','Steps[] → desc fallback negli esercizi','Stanco-opts nascosto in Scelgo io']},
+  {v:'1.001',date:'16/04/2026',changes:['Badge 30 totali ripristinati','Challenges party aggiunte','Streak preservato su import JSON','Dark mode badge screen']},
+  {v:'1.000',date:'16/04/2026',changes:['DUR_CFG dichiarato','btn-start sempre visibile','buildComplete collegato','Impostazioni accordion 7 sezioni','Progressi riordinati']},
+];
+
+
+function toggleChangelog(){
+  const panel=document.getElementById('changelog-panel');
+  if(!panel)return;
+  if(panel.style.display==='none'){
+    panel.style.display='block';
+    if(!panel.innerHTML.trim()){
+      panel.innerHTML=(typeof CHANGELOG!=='undefined'?CHANGELOG:[]).slice(0,4).map(v=>
+        '<div style="margin-bottom:8px"><b style="color:var(--g1)">v'+v.v+'</b> <span style="color:var(--tlt)">'+v.date+'</span><ul style="margin:2px 0 0 12px;padding:0">'+
+        v.changes.map(ch=>'<li>'+ch+'</li>').join('')+'</ul></div>'
+      ).join('');
+    }
+  }else{panel.style.display='none';}
+}
+
 // ═══ INIT ═══
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 if(P.name){
+  console.log('✅ TurboTartaruga: profilo caricato per',P.name,'streak:',S.str,'xp:',S.xp,'badges:',S.badges.length,'last:',S.last);
   if(!S.plan||S.plan.length===0)generatePlan();
-  updateStreak();
+  // NOTE: updateStreak() is only called when completing sessions
+  // (calling it at startup risks incorrectly resetting streaks)
+  // But we DO check if streak should be broken (gap > 2 days):
+  (function(){
+    var today=localDate();
+    if(S.last&&S.str>0){
+      var d1=new Date(today),d2=new Date(S.last);
+      var diff=Math.round((d1-d2)/86400000);
+      if(diff>2){
+        var yest=new Date(d1);yest.setDate(d1.getDate()-1);
+        var yStr=yest.toISOString().slice(0,10);
+        if(!S.days.includes(yStr+'_volrest'))S.str=0;
+      }
+    }
+    save();
+  })();
+  // Re-check badges to unlock any that were earned (handles imported JSON)
+  try{const nb=checkBadges();if(nb.length>0)save();}catch(e){}
   // Settings button is now in home hero — no FAB needed
   // For existing users without sex field, prompt once
   if(!P.sex){
@@ -5530,8 +5693,30 @@ if(P.name){
   go('home');
 }else go('welcome');
 
+
+// ═══ MIDNIGHT DATE REFRESH ═══
+(function(){
+  var _lastDay=localDate();
+  setInterval(function(){
+    var today=localDate();
+    if(today!==_lastDay){
+      _lastDay=today;
+      // Day changed: rebuild home if visible
+      var homeEl=document.getElementById('screen-home');
+      var calEl=document.getElementById('screen-calendar');
+      if(homeEl&&homeEl.classList.contains('active')){
+        buildHome();
+        toast('🌅 Nuovo giorno! Il piano è aggiornato.',3000);
+      } else if(calEl&&calEl.classList.contains('active')){
+        var n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();
+        buildCal();
+      }
+    }
+  },60000); // check every 60 seconds
+})();
+
 // ═══ BACK BUTTON (Android + Browser) ═══
-const BACK_MSGS=[
+var BACK_MSGS=[
   'Vuoi davvero lasciare la tartaruga da sola? 🐢',
   'Sicuro? La tartaruga stava proprio per partire! 🏃',
   'Ehi, stai scappando? La tartaruga è più veloce! 😄',
@@ -5588,7 +5773,7 @@ window.addEventListener('beforeunload',(e)=>{
 
 
 // ═══ WAKE LOCK (keep screen on during workout) ═══
-let wakeLock=null;
+var wakeLock=null;
 async function requestWakeLock(){
   if('wakeLock' in navigator){
     try{wakeLock=await navigator.wakeLock.request('screen');}catch(e){}
@@ -5607,7 +5792,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604152101'; // auto-set on each release
+const APP_BUILD='202604171146'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
