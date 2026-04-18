@@ -340,8 +340,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
     <img src="logo-turtle.png" alt="" style="width:min(65vw,240px);max-height:130px;object-fit:contain;object-position:center bottom;margin-bottom:4px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.25));display:block;margin-left:auto;margin-right:auto">
     <h2 id="home-greeting">Ciao!</h2>
-    <div id="coach-bubble" style="background:rgba(255,255,255,.18);backdrop-filter:blur(8px);border-radius:18px;border:1.5px solid rgba(255,255,255,.35);padding:11px 16px;margin:6px 12px 0">
-      <p id="home-phrase" style="font-size:14px;font-weight:600;line-height:1.5;font-style:italic;margin:0">Pronto per il tuo allenamento?</p>
+    <div id="coach-bubble" style="background:rgba(255,255,255,.18);backdrop-filter:blur(8px);border-radius:18px;border:1.5px solid rgba(255,255,255,.35);padding:11px 16px;margin:6px 12px 0;min-height:52px;transition:min-height .3s ease">
+      <p id="home-phrase" style="font-size:14px;font-weight:600;line-height:1.5;font-style:italic;margin:0;min-height:42px;display:flex;align-items:center;transition:opacity .4s ease">Pronto per il tuo allenamento?</p>
       <div id="home-no-session-banner" style="display:none;margin-top:8px;padding:7px 10px;background:rgba(255,152,0,.25);border-radius:10px;border:1px solid rgba(255,152,0,.4);font-size:12px;font-weight:600">
         ⏰ Oggi nessuna sessione ancora — ci sei?
       </div>
@@ -1093,6 +1093,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div class="acc-body" id="acc-aspetto">
         <div class="sblk" style="margin:0">
           <div class="srow"><div class="si">🔍</div><div class="sinfo"><div class="stitle">Dimensione testo</div><div class="sval">1X normale · 2X più grande</div></div><div class="view-opts"><div class="vw-opt sel" data-vs="1x" onclick="selView(this)">1X</div><div class="vw-opt" data-vs="2x" onclick="selView(this)">2X</div></div></div>
+          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
+            <div style="display:flex;width:100%;align-items:center;justify-content:space-between">
+              <div><div class="si" style="display:inline;margin-right:6px">📍</div><span class="stitle">Posizione per meteo</span></div>
+            </div>
+            <div class="sval">Attiva per ricevere frasi meteo nel coach bubble 🌤️</div>
+            <button id="settings-gps-btn" onclick="requestGPS('settings')" style="padding:9px 16px;border-radius:100px;border:2px solid var(--bdr);background:var(--card);color:var(--text);font-size:13px;font-weight:bold;cursor:pointer;font-family:var(--ft)">📍 Usa posizione</button>
+            <div id="settings-gps-status" style="font-size:11px;color:var(--tlt)"></div>
+          </div>
           <div class="srow"><div class="si">🌙</div><div class="sinfo"><div class="stitle">Tema</div></div><div class="theme-opts"><div class="th-opt sel" data-th="light" onclick="selTheme(this)">☀️</div><div class="th-opt" data-th="dark" onclick="selTheme(this)">🌙</div><div class="th-opt" data-th="auto" onclick="selTheme(this)">🔄</div></div></div>
           <div class="srow"><div class="si">🔔</div><div class="sinfo"><div class="stitle">Suoni esercizio</div><div class="sval">Beep cambio esercizio</div></div><button class="toggle" id="st-audio" onclick="toggleAudio()"></button></div>
           <div class="srow"><div class="si">🗣️</div><div class="sinfo"><div class="stitle">Conto vocale</div><div class="sval">3… 2… 1… prima del cambio</div></div><button class="toggle" id="st-voice" onclick="toggleVoice()"></button></div>
@@ -1170,7 +1178,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.013</div>
+      <div id="app-version-display">Versione v1.015</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1566,11 +1574,15 @@ function importJSON(evt){
   reader.readAsText(file);
 }
 function resetAll(){
-  localStorage.removeItem('tt4_profile');
-  localStorage.removeItem('tt4_stats');
-  localStorage.removeItem('tt4_set');
-  localStorage.removeItem('tt4_photos');
-  localStorage.removeItem('tt4_photoCheck');
+  if(!confirm('⚠️ Sei sicuro? Tutti i dati (profilo, progressi, badge) verranno eliminati definitivamente.'))return;
+  // Clear all tt4_ keys from localStorage
+  const keys=[];
+  for(let i=0;i<localStorage.length;i++){
+    if(localStorage.key(i)&&localStorage.key(i).startsWith('tt4_'))keys.push(localStorage.key(i));
+  }
+  keys.forEach(k=>localStorage.removeItem(k));
+  // Also clear level suggestion cooldown
+  try{localStorage.removeItem('tt4_lvl_suggest');}catch(e){}
   location.reload();
 }
 
@@ -1684,6 +1696,8 @@ function saveProfile(){
   P.morningRoutineHour=_wizData.morningHour||7;
   P.sleepRoutine=_wizData.sleepRoutine||false;
   P.sleepRoutineHour=_wizData.sleepHour||21;
+  // GPS from wizard
+  if(_wizData.gpsLat){SET.gpsLat=_wizData.gpsLat;SET.gpsLon=_wizData.gpsLon;}
   calcProfileBias();
   S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[]};
   generatePlan();updateStreak();save();
@@ -1894,7 +1908,34 @@ var WIZ_STEPS = [
       </div>
     </div>`
   },
-  // 10: Fine
+  // 10: Coach Tartaruga — GPS + futuro AI
+  {id:'wiz-coach', bg:'linear-gradient(155deg,#004D40,#00695C,#26A69A)', render:()=>`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:36px 24px;text-align:center;color:#fff">
+      <div style="font-size:64px;margin-bottom:12px;animation:bnc .9s ease infinite alternate">🐢</div>
+      <div style="font-family:var(--ft);font-size:24px;font-weight:bold;margin-bottom:10px">Il tuo coach personale!</div>
+      <div style="opacity:.88;font-size:14px;line-height:1.7;margin-bottom:24px;max-width:300px">
+        La tartaruga ti conosce — ogni giorno ti darà una <b>frase su misura</b> basata sui tuoi progressi,
+        il tuo streak e, se vuoi, anche <b>sul tempo che fa fuori</b>.
+        <br><br>
+        Vuoi che sappia anche il meteo della tua zona? 🌤️<br>
+        <span style="opacity:.7;font-size:12px">La posizione non viene mai condivisa — serve solo per il meteo 🔒</span>
+      </div>
+      <div style="width:100%;max-width:300px;display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+        <button id="wiz-gps-btn" onclick="wizRequestGPS()" style="padding:14px;border-radius:14px;border:3px solid rgba(255,255,255,.5);background:rgba(255,255,255,.2);color:#fff;font-family:var(--ft);font-size:15px;font-weight:bold;cursor:pointer">
+          📍 Attiva posizione
+        </button>
+        <div id="wiz-gps-status" style="font-size:12px;opacity:.8;min-height:18px"></div>
+        <button onclick="wizNav(1)" style="padding:11px;border-radius:14px;border:1.5px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.75);font-family:var(--ft);font-size:14px;cursor:pointer">
+          Salta per ora →
+        </button>
+      </div>
+      <div style="width:100%;max-width:300px;background:rgba(255,255,255,.08);border-radius:12px;padding:12px 14px;border:1px dashed rgba(255,255,255,.25)">
+        <div style="font-size:12px;opacity:.6;margin-bottom:4px">PROSSIMAMENTE</div>
+        <div style="font-size:13px;opacity:.5">🤖 AI Coach avanzato — risposte personalizzate, analisi del tuo stile e molto altro</div>
+      </div>
+    </div>`
+  },
+  // 11: Fine
   {id:'wiz-fine', bg:'linear-gradient(155deg,#1B5E20,#2E7D32,#43A047)', render:()=>`
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 120px);padding:32px 24px;text-align:center;color:#fff">
       <img src="logo-turtle.png" style="width:min(55vw,180px);margin-bottom:16px;filter:drop-shadow(0 3px 12px rgba(0,0,0,.3));animation:bnc 1s ease infinite alternate">
@@ -2202,7 +2243,7 @@ function buildHome(){
   try{const defNrg=document.querySelector('.nrg-btn[data-nrg="3"]');if(defNrg)setEnergy(defNrg);}catch(e){}
   const h=new Date().getHours();
   document.getElementById('home-greeting').textContent=`${h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera'}, ${P.name}! 👋`;
-  document.getElementById('home-phrase').textContent=PHRASES[Math.floor(Math.random()*PHRASES.length)];
+  buildCoachBubble(); // multi-phrase rotating system
   // Routine banners — show based on time and completion status
   const _morningBanner = document.getElementById('home-morning-banner');
   const _sleepBanner   = document.getElementById('home-sleep-banner');
@@ -4368,6 +4409,13 @@ function buildSettings(){
   // Appearance
   document.querySelectorAll('.vw-opt').forEach(e=>e.classList.toggle('sel',e.dataset.vs===(SET.viewScale||'1x')));
   document.querySelectorAll('.th-opt').forEach(e=>e.classList.toggle('sel',e.dataset.th===SET.theme));
+  // Sync GPS status
+  const gpsStatusEl=document.getElementById('settings-gps-status');
+  const gpsBtnEl=document.getElementById('settings-gps-btn');
+  if(SET.gpsLat&&SET.gpsLon){
+    if(gpsStatusEl)gpsStatusEl.textContent='📍 Posizione attiva — coach bubble include il meteo';
+    if(gpsBtnEl)gpsBtnEl.textContent='✅ Posizione attiva';
+  }
   // Sync view scale buttons
   document.querySelectorAll('.vw-opt').forEach(e=>e.classList.toggle('sel',e.dataset.vs===(SET.viewScale||'1x')));
   syncToggles();
@@ -4376,7 +4424,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.013 · 17/04/2026 23:13 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.015 · 18/04/2026 09:48 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4885,7 +4933,7 @@ var CAT_INFO={
 // ── Core state objects ──────────────────────────────────────────────────
 var P={};  // Profile
 var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0};  // Stats
-var SET={audio:true,voice:false,pauseSec:20,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light'};  // Settings
+var SET={audio:true,voice:true,pauseSec:20,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light'};  // Settings
 var T={exs:[],idx:0,phase:'act',left:0,paused:false,t0:0,iv:null,dur:12,feeling:'piano',sesType:'misto',_halfSpoken:false,_restDone:null,_isRoutine:false};  // Timer state
 
 function generateShareSession(){
@@ -5295,6 +5343,8 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.015',date:'18/04/2026',changes:['Fix: conto vocale attivo di default','Fix grafico: coach bubble altezza stabile (min-height + transizione)','Nuovo step wizard Coach Tartaruga con GPS e placeholder AI Coach','GPS salvato da wizard in saveProfile']},
+  {v:'1.014',date:'18/04/2026',changes:['Fix Reimposta app (chiavi localStorage corrette)','Meteo reinserito via coach bubble con Open-Meteo API','GPS: rilevamento posizione in Impostazioni > Aspetto','Coach bubble: frasi multiple rotanti ogni 6 sec (meteo + recap + motivazione)','Recap 15 giorni nel coach bubble','Fix: banner routine mattutina/pre-sonno tornati funzionanti']},
   {v:'1.009',date:'17/04/2026',changes:['Notifiche rimosse (sostituite con coach bubble)','Link-nell-hash per Party: condivisione via WhatsApp senza QR','Coach bubble tartaruga in home','Banner motivazionale se nessuna sessione oggi','Pulizia codice -19KB']},
   {v:'1.008',date:'17/04/2026',changes:['syncToggles include routine mattina/sera','Funzione notifiche async corretta','viewScale nei default di SET','go(settings) chiama buildSettings']},
   {v:'1.007',date:'17/04/2026',changes:['Boost escluso nelle routine mattina/sera','riserva-banner non appare in routine','viewScale sincronizzato in impostazioni','Notif toggle usa solo SET.notifEnabled']},
@@ -5554,10 +5604,192 @@ function dismissLevelSuggestion(){
   if(existing) existing.remove();
   // Save cooldown timestamp — 15 giorni
   _setLevelSuggestTime();
-  // Restore random phrase
-  const msg = document.getElementById('home-phrase');
-  if(msg && typeof PHRASES !== 'undefined')
-    msg.textContent = PHRASES[Math.floor(Math.random()*PHRASES.length)];
+  // Restore coach bubble rotation
+  buildCoachBubble();
+}
+
+
+
+// ═══ COACH BUBBLE — frasi multiple, rotazione, meteo, recap ═════════════════
+var _coachPhrases = [];  // queue of phrases to show
+var _coachIdx = 0;
+var _coachIv = null;
+
+function buildCoachBubble(){
+  _coachPhrases = [];
+
+  // 1. Frase motivazionale base (sempre presente)
+  if(typeof PHRASES!=='undefined'&&PHRASES.length)
+    _coachPhrases.push(PHRASES[Math.floor(Math.random()*PHRASES.length)]);
+
+  // 2. Frase meteo (se GPS attivo)
+  if(_wxCache){
+    const desc=WX_DESCS[_wxCache.emoji]||'tempo variabile';
+    const t=_wxCache.temp;
+    let wxPhrase='';
+    if(t<=5)       wxPhrase='🥶 Fa freddo ('+t+'°)! Perfetto per scaldarsi con qualche esercizio.';
+    else if(t<=15) wxPhrase=_wxCache.emoji+' '+t+'° e '+desc+'. Un po\' fresco — ideale per muoversi!';
+    else if(t<=25) wxPhrase=_wxCache.emoji+' '+t+'° e '+desc+'. Condizioni perfette per allenarti!';
+    else           wxPhrase='🌡️ '+t+'° e '+desc+'. Idratati bene e muoviti con calma.';
+    _coachPhrases.push(wxPhrase);
+  } else if(SET.gpsLat&&SET.gpsLon){
+    // GPS attivo ma cache non ancora disponibile — fetch asincrono
+    fetchWeather().then(wx=>{
+      if(wx&&document.getElementById('home-phrase')){
+        const desc=WX_DESCS[wx.emoji]||'tempo variabile';
+        const t=wx.temp;
+        let wxPhrase='';
+        if(t<=5)       wxPhrase='🥶 Fa freddo ('+t+'°)! Perfetto per scaldarsi.';
+        else if(t<=15) wxPhrase=wx.emoji+' '+t+'° e '+desc+'. Ideale per muoversi!';
+        else if(t<=25) wxPhrase=wx.emoji+' '+t+'° e '+desc+'. Allena!';
+        else           wxPhrase='🌡️ '+t+'° — idratati bene!';
+        if(!_coachPhrases.includes(wxPhrase))_coachPhrases.push(wxPhrase);
+        _coachIdx=0; // restart rotation with new phrase
+      }
+    }).catch(()=>{});
+  }
+
+  // 3. Recap 15 giorni (ogni 15gg circa)
+  const recap=buildRecapText();
+  if(recap){
+    const lastR=parseInt(localStorage.getItem('tt4_lastRecap')||'0');
+    if(Date.now()-lastR>14*24*3600*1000){
+      _coachPhrases.push('📊 Ultimi 15 giorni: '+recap.body.split(':')[1]?.trim()||recap.body);
+      localStorage.setItem('tt4_lastRecap',String(Date.now()));
+    }
+  }
+
+  // 4. Suggerimento livello (se attivo)
+  // checkLevelSuggestion() gestisce già il proprio banner — non duplicare qui
+
+  // Start rotation
+  _showCoachPhrase();
+  if(_coachIv)clearInterval(_coachIv);
+  if(_coachPhrases.length>1){
+    _coachIv=setInterval(_showCoachPhrase, 6000); // cambia frase ogni 6 secondi
+  }
+}
+
+function _showCoachPhrase(){
+  const el=document.getElementById('home-phrase');
+  if(!el||!_coachPhrases.length)return;
+  el.style.opacity='0';
+  setTimeout(()=>{
+    const txt=_coachPhrases[_coachIdx%_coachPhrases.length];
+    _coachIdx++;
+    el.textContent=txt;
+    el.style.opacity='1';
+    // Adjust min-height to avoid layout shift: lock to current height or 2-line min
+    const bubble=document.getElementById('coach-bubble');
+    if(bubble){
+      const newH=Math.max(52, el.scrollHeight+22);
+      bubble.style.minHeight=newH+'px';
+    }
+  },400);
+}
+
+// ═══ GPS + METEO (per frasi coach bubble) ════════════════════════════════════
+var _wxCache=null, _wxCacheTime=0;
+var WX_CODES={
+  200:'⛈️',201:'⛈️',202:'⛈️',210:'🌩️',211:'🌩️',212:'🌩️',221:'🌩️',230:'⛈️',231:'⛈️',232:'⛈️',
+  300:'🌦️',301:'🌦️',302:'🌧️',310:'🌦️',311:'🌧️',312:'🌧️',313:'🌦️',314:'🌧️',321:'🌦️',
+  500:'🌧️',501:'🌧️',502:'🌧️',503:'🌧️',504:'🌧️',511:'🌨️',520:'🌦️',521:'🌦️',522:'🌧️',531:'🌦️',
+  600:'❄️',601:'❄️',602:'❄️',611:'🌨️',612:'🌨️',613:'🌨️',615:'🌨️',616:'🌨️',620:'❄️',621:'❄️',622:'❄️',
+  701:'🌫️',711:'🌫️',721:'🌫️',731:'🌫️',741:'🌫️',751:'🌫️',761:'🌫️',762:'🌋',771:'💨',781:'🌪️',
+  800:'☀️',801:'🌤️',802:'⛅',803:'🌥️',804:'☁️'
+};
+var WX_DESCS={
+  '☀️':'sole splendente','🌤️':'poco nuvoloso','⛅':'parzialmente nuvoloso','🌥️':'nuvoloso','☁️':'coperto',
+  '🌧️':'pioggia','🌦️':'pioggerella','⛈️':'temporale','🌩️':'temporale elettrico','❄️':'nevica',
+  '🌨️':'pioggia mista neve','🌫️':'nebbia','💨':'vento forte','🌪️':'tromba d\'aria','🌋':'cenere vulcanica'
+};
+
+async function fetchWeather(){
+  if(!SET.gpsLat||!SET.gpsLon)return null;
+  const now=Date.now();
+  if(_wxCache&&now-_wxCacheTime<1800000)return _wxCache; // 30min cache
+  try{
+    const url='https://api.open-meteo.com/v1/forecast?latitude='+SET.gpsLat+'&longitude='+SET.gpsLon+'&current=temperature_2m,weathercode,windspeed_10m&timezone=auto';
+    const r=await fetch(url);
+    if(!r.ok)return null;
+    const d=await r.json();
+    const code=d.current?.weathercode||800;
+    const temp=Math.round(d.current?.temperature_2m||15);
+    // Map open-meteo code to WMO → emoji
+    const emoji=_openMeteoEmoji(code);
+    _wxCache={emoji,temp,code};
+    _wxCacheTime=now;
+    return _wxCache;
+  }catch(e){return null;}
+}
+
+function _openMeteoEmoji(code){
+  // Open-Meteo WMO codes
+  if(code===0)return'☀️';
+  if(code<=2)return'🌤️';
+  if(code===3)return'☁️';
+  if(code<=49)return'🌫️';
+  if(code<=57)return'🌧️';
+  if(code<=65)return'🌧️';
+  if(code<=77)return'❄️';
+  if(code<=82)return'🌦️';
+  if(code<=99)return'⛈️';
+  return'🌤️';
+}
+
+
+function wizRequestGPS(){
+  const btn=document.getElementById('wiz-gps-btn');
+  const status=document.getElementById('wiz-gps-status');
+  if(!navigator.geolocation){
+    if(status)status.textContent='⚠️ Geolocalizzazione non supportata su questo dispositivo';
+    return;
+  }
+  if(btn)btn.textContent='📡 Rilevamento in corso...';
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      SET.gpsLat=pos.coords.latitude;
+      SET.gpsLon=pos.coords.longitude;
+      _wizData.gpsLat=pos.coords.latitude;
+      _wizData.gpsLon=pos.coords.longitude;
+      if(btn){btn.textContent='✅ Posizione salvata!';btn.style.background='rgba(255,255,255,.35)';}
+      if(status)status.textContent='📍 Il coach saprà anche del meteo — ottimo! 🌤️';
+      setTimeout(()=>wizNav(1), 1200); // auto-advance
+    },
+    err=>{
+      if(btn)btn.textContent='📍 Attiva posizione';
+      if(status)status.textContent='Non è stato possibile rilevare la posizione. Puoi attivarla in Impostazioni.';
+    },
+    {timeout:10000}
+  );
+}
+
+function requestGPS(context){
+  if(!navigator.geolocation){toast('⚠️ Geolocalizzazione non supportata');return;}
+  const btnId = context==='settings' ? 'settings-gps-btn' : 'ob-gps-btn';
+  const statusId = context==='settings' ? 'settings-gps-status' : 'ob-gps-status';
+  const btn=document.getElementById(btnId);
+  const status=document.getElementById(statusId);
+  if(btn)btn.textContent='📡 Rilevamento...';
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      SET.gpsLat=pos.coords.latitude;
+      SET.gpsLon=pos.coords.longitude;
+      save();
+      _wxCache=null; // reset cache
+      if(btn)btn.textContent='✅ Posizione salvata!';
+      if(status)status.textContent='📍 Posizione attiva — il meteo influenzerà le frasi del coach';
+      toast('✅ Posizione salvata! Il coach parlerà anche del meteo 🌤️');
+      // Refresh coach bubble immediately
+      buildCoachBubble();
+    },
+    err=>{
+      if(btn)btn.textContent='📍 Usa posizione';
+      if(status)status.textContent='';
+      toast('⚠️ Impossibile rilevare la posizione: '+err.message);
+    },
+    {timeout:10000}
+  );
 }
 
 // ═══ INIT ═══
@@ -5705,7 +5937,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604172313'; // auto-set on each release
+const APP_BUILD='202604180948'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
