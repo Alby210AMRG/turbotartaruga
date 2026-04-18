@@ -364,7 +364,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px">
       <div class="streak-chip">🔥 <span id="home-streak">0</span> giorni di fila!</div>
       <div class="streak-chip" id="home-level-chip" style="background:rgba(255,215,0,.25)">⭐ Lv.<span id="home-level">1</span></div>
-      <div class="streak-chip" id="home-gps-chip" style="display:none;background:rgba(255,255,255,.15)">📍 <span id="home-gps-txt">Meteo attivo</span></div>
+      <div class="streak-chip" id="home-gps-chip" style="display:none;background:rgba(255,255,255,.15)"><span id="home-gps-ico">🌤️</span> <span id="home-gps-txt">--°</span></div>
     </div>
   
   <!-- Routine mattutina banner -->
@@ -614,8 +614,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div id="cmp-badges" style="display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-bottom:18px;max-width:290px"></div>
     <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px;align-items:center">
       <button class="btn btn-a btn-lg" onclick="go('feedback')" style="font-size:17px;width:100%">🐢 Per oggi è fatta!</button>
-      <button onclick="shareResultLink()" style="background:var(--g1);color:#fff;border:none;border-radius:100px;padding:11px 20px;font-family:var(--ft);font-size:14px;font-weight:bold;cursor:pointer;margin-bottom:8px;width:100%">🔗 Condividi risultato</button>
-      <button onclick="shareResultCard()" style="background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.5);border-radius:100px;padding:12px 24px;font-family:var(--ft);font-size:14px;font-weight:bold;cursor:pointer;width:100%">📤 Condividi risultato</button>
+      <button onclick="shareResultCard()" style="background:var(--g1);color:#fff;border:none;border-radius:100px;padding:11px 20px;font-family:var(--ft);font-size:14px;font-weight:bold;cursor:pointer;margin-bottom:8px;width:100%">📤 Condividi il mio risultato</button>
+
     </div>
   </div>
 </div>
@@ -818,12 +818,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div class="card"><div class="card-title">🚀 Pro <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv7-prog"></span></div><div class="badges-grid" id="badges-lv7"></div></div>
     <div class="card"><div class="card-title">🏆 Leggenda <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv8-prog"></span></div><div class="badges-grid" id="badges-lv8"></div></div>
     <div class="card"><div class="card-title">🎭 Segreti</div><div class="badges-grid" id="badges-lv-secret"></div></div>
- 
-    <!-- Condividi progressi — DENTRO screen-profile -->
-    <button id="share-widget-btn-profile" onclick="shareProgressWidget()" style="display:none;margin:8px 12px 20px;width:calc(100% - 24px);padding:16px;background:linear-gradient(135deg,#1B5E20,#43A047);color:#fff;border:none;border-radius:16px;font-family:var(--ft);font-size:15px;font-weight:bold;cursor:pointer;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(27,94,32,.3)">
-      📤 Condividi i tuoi progressi
-    </button>
- </div>
+  </div>
 </div>
 <!-- PARTY -->
 <div id="screen-party" class="screen">
@@ -883,7 +878,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         </p>
         <button onclick="generateGuestCode()" class="btn btn-full"
           style="background:var(--lime);color:#1B5E20;font-size:14px;padding:13px">
-          🎫 Genera il mio QR Code
+          🎫 Genera il mio QR Code o Link
         </button>
         <div id="guest-code-out" style="display:none;margin-top:14px;text-align:center">
           <!-- QR Code display -->
@@ -948,37 +943,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       </div>
 
       <!-- Card: Genera e condividi risultati (sempre visibile se ci sono ospiti) -->
-      <div class="p-card" id="share-session-card" style="display:none">
-        <div class="p-tag">📤 Condividi sessione con gli amici</div>
-        <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:10px">
-          Genera il QR con i dati della sessione corrente da mandare ai tuoi amici.
-        </p>
-        <button onclick="generateShareSession()"
-          style="width:100%;padding:13px;background:var(--lime);color:#1B5E20;border:none;border-radius:100px;font-weight:bold;font-size:14px;cursor:pointer;margin-bottom:10px">
-          📱 Genera QR sessione
-        </button>
-        <div id="share-session-out" style="display:none;text-align:center">
-          <div style="background:#fff;border-radius:14px;padding:14px;display:inline-block;margin-bottom:8px">
-            <div id="share-session-qr"></div>
-          </div>
-          <div style="font-size:11px;opacity:.7;margin-bottom:10px">Fai inquadrare ai tuoi amici 📷</div>
-          <div style="display:flex;gap:8px;margin-bottom:10px">
-            <button onclick="shareSessionCode()"
-              style="flex:1;padding:11px;background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.4);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
-              📤 Condividi
-            </button>
-            <button onclick="copySessionCode()"
-              style="flex:1;padding:11px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
-              📋 Copia
-            </button>
-          </div>
-          <button onclick="releaseAllGuests()"
-            style="width:100%;padding:10px;background:rgba(255,0,0,.15);color:rgba(255,255,255,.8);border:1px dashed rgba(255,0,0,.4);border-radius:100px;font-size:12px;cursor:pointer">
-            🔓 Termina sessione e libera tutti gli amici
-          </button>
-        </div>
-      </div>
-
+      
       <!-- Card: Genera risultato per gli ospiti (visibile dopo sessione) -->
       <div class="p-card" id="result-card" style="display:none">
         <div class="p-tag">🎉 Sessione completata! Manda i risultati ai tuoi amici</div>
@@ -994,9 +959,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
             <div style="font-size:11px;opacity:.7;margin-top:6px">Fai inquadrare questo QR agli ospiti 📷</div>
           </div>
           <div style="display:flex;gap:8px;margin-top:8px">
-            <button onclick="shareResultCode()" id="btn-share-result"
+            <button onclick="shareResultLink()" id="btn-share-result"
               style="flex:1;padding:11px;background:rgba(255,255,255,.2);color:#fff;border:2px solid rgba(255,255,255,.4);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
-              📤 Condividi
+              🔗 Condividi link
             </button>
             <button onclick="copyResultCodeSingle()"
               style="flex:1;padding:11px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25);border-radius:100px;font-weight:bold;font-size:13px;cursor:pointer">
@@ -1242,7 +1207,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.021</div>
+      <div id="app-version-display">Versione v1.022</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1312,14 +1277,14 @@ var DB=[
   {id:'w8',n:'Respiro attivante',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'🫁 Respiro · ❤️ Attivazione',desc:'Inspira 4 sec aprendo le braccia, espira 4 sec abbassandole. Ripeti lentamente.',floor:false},
   // GAMBE (12)
   {id:'g1',n:'Squat base',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Quadricipiti · 🍑 Glutei',desc:'Piedi larghi, punte fuori. Scendi come su una sedia mantenendo la schiena dritta, poi risali sui talloni.',floor:false},
-  {id:'g2',n:'Squat sumo',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Adduttori · 🍑 Glutei',desc:'Piedi molto larghi, punte verso fuori. Scendi con busto eretto, ginocchia verso l\'esterno.',switch:true,floor:false},
-  {id:'g3',n:'Affondo frontale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Quadricipiti · 🍑 Glutei',desc:'Passo avanti, piega entrambe le ginocchia a 90°. Risali spingendo sul piede davanti. Alterna.',floor:false},
+  {id:'g2',n:'Squat sumo',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Adduttori · 🍑 Glutei',desc:'Piedi molto larghi, punte verso fuori. Scendi con busto eretto, ginocchia verso l\'esterno.',floor:false},
+  {id:'g3',n:'Affondo frontale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Quadricipiti · 🍑 Glutei',desc:'Passo avanti, piega entrambe le ginocchia a 90°. Risali spingendo sul piede davanti.',switch:false,floor:false},
   {id:'g4',n:'Affondo laterale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Adduttori · 🦵 Quadricipiti',desc:'Passo laterale ampio, piega il ginocchio tenendo l\'altro dritto. Torna al centro e alterna.',floor:false},
   {id:'g5',n:'Sollevamento talloni',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Polpacci · 🦴 Caviglie',desc:'Alzati sulle punte dei piedi, tieni 2 sec, scendi piano. Appoggiati al muro se serve.',floor:false},
   {id:'g6',n:'Marcia ginocchio alto',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Flessori anca · ❤️ Cardio',desc:'Porta ogni ginocchio verso il petto alternando. Busto eretto, braccia che pompano.',floor:false},
   {id:'g7',n:'Step touch laterale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Abduttori · 🎯 Equilibrio',desc:'Passo laterale a destra poi porta il piede sinistro. Stesso movimento a sinistra. Continua.',floor:false},
   {id:'g8',n:'Sollevamento gamba laterale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Abduttori · 🍑 Glutei',desc:'Appoggiato al muro, solleva una gamba di lato con piede a flex. Abbassa lento. Alterna.',floor:false},
-  {id:'g9',n:'Sollevamento gamba posteriore',cat:'gambe',t:'🦵 Gambe',zona:'🍑 Glutei · 🦵 Femorali',desc:'Appoggiato a un supporto, spingi una gamba indietro contraendo il gluteo. Abbassa lento. Alterna.',floor:false},
+  {id:'g9',n:'Sollevamento gamba posteriore',cat:'gambe',t:'🦵 Gambe',zona:'🍑 Glutei · 🦵 Femorali',desc:'Appoggiato a un supporto, spingi una gamba indietro contraendo il gluteo. Abbassa lento.',switch:false,floor:false},
   {id:'g10',n:'Mini-squat isometrico',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Quadricipiti · 🎯 Resistenza',desc:'Scendi a metà squat e tieni la posizione respirando regolarmente. Risali lento quando senti la fatica.',floor:false},
   {id:'g11',n:'Passo avanti e dietro',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Gambe completo · ❤️ Cardio',desc:'Un passo avanti, torna al centro, un passo indietro con lo stesso piede. Alterna lato.',floor:false},
   {id:'g12',n:'Abduzione in piedi',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Abduttori · 🍑 Glutei',desc:'Appoggiato al muro, porta la gamba di lato mantenendola dritta. Movimenti lenti. Alterna.',floor:false},
@@ -2353,9 +2318,20 @@ function buildHome(){
   const h=new Date().getHours();
   document.getElementById('home-greeting').textContent=`${h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera'}, ${P.name}! 👋`;
   buildCoachBubble(); // multi-phrase rotating system
-  // GPS chip: mostra se posizione attiva
+  // GPS chip: mostra meteo se posizione attiva
   const _gpsChip=document.getElementById('home-gps-chip');
-  if(_gpsChip)_gpsChip.style.display=(P.gpsLat&&P.gpsLon)?'flex':'none';
+  if(_gpsChip&&P.gpsLat&&P.gpsLon){
+    _gpsChip.style.display='flex';
+    // Aggiorna con meteo reale (async, non bloccante)
+    fetchWeather().then(wx=>{
+      if(wx){
+        const ico=document.getElementById('home-gps-ico');
+        const txt=document.getElementById('home-gps-txt');
+        if(ico)ico.textContent=wx.emoji;
+        if(txt)txt.textContent=wx.temp+'°';
+      }
+    }).catch(()=>{});
+  } else if(_gpsChip){_gpsChip.style.display='none';}
   // Routine banners — show based on time and completion status
   const _morningBanner = document.getElementById('home-morning-banner');
   const _sleepBanner   = document.getElementById('home-sleep-banner');
@@ -4449,8 +4425,7 @@ function buildProfile(){
   if(!P.name)return;
   T.energyLevel=3;
   try{const defNrg=document.querySelector('.nrg-btn[data-nrg="3"]');if(defNrg)setEnergy(defNrg);}catch(e){}
-  const _swBtnPrf=document.getElementById('share-widget-btn-profile');
-  if(_swBtnPrf)_swBtnPrf.style.display='flex';
+
   // prf-name/prf-sub removed from new design - skip safely
   const _prfName=document.getElementById('prf-name');
   if(_prfName)_prfName.textContent=P.name;
@@ -4643,7 +4618,7 @@ function buildSettings(){
   const gpsStatusEl=document.getElementById('settings-gps-status');
   const gpsBtnEl=document.getElementById('settings-gps-btn');
   if(P.gpsLat&&P.gpsLon){
-    if(gpsStatusEl)gpsStatusEl.textContent='📍 Posizione attiva — il coach conosce il tuo meteo!';
+    if(gpsStatusEl)gpsStatusEl.textContent='📍 Posizione attiva ('+P.gpsLat.toFixed(3)+', '+P.gpsLon.toFixed(3)+') — meteo nel coach bubble';
     if(gpsBtnEl)gpsBtnEl.textContent='✅ Posizione attiva';
   } else {
     if(gpsBtnEl)gpsBtnEl.textContent='📍 Usa posizione';
@@ -4657,7 +4632,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.021 · 18/04/2026 18:07 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.022 · 18/04/2026 20:30 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -5608,6 +5583,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.022',date:'18/04/2026',changes:['Fix GPS chip home: icona meteo reale con temperatura','Fix GPS impostazioni: mostra coordinate per conferma','Fix DB: Squat Sumo senza cambio lato','Fix DB: Sollevamento gamba posteriore e Affondo frontale senza cambio lato','Rimosse card duplicate in Party Insieme','Tasto Condividi progressi solo in Progressi','Schermata fine sessione: un solo tasto Condividi','Party: pulsante ospite rinominato con link']},
   {v:'1.021',date:'18/04/2026',changes:['GPS: chip visibile in home quando attivo','GPS: lettura da 3 sorgenti (tt4_gps + tt4_p + legacy SET)','Widget: nomi badge sotto le icone']},
   {v:'1.020',date:'18/04/2026',changes:['Fix GPS definitivo: letto prima di Object.assign + ripristinato dopo + scritto in ogni save()','Fix pulsante Condividi: ora dentro screen-profile (era fuori)','Fix barra XP e testo titolo (già in v1.019)']},
   {v:'1.019',date:'18/04/2026',changes:['Fix GPS: chiave dedicata tt4_gps sempre ripristinata','Fix pulsante Condividi ora in schermata Badge & XP','Fix titolo XP: testo sempre bianco su sfondo colorato','Fix barra XP: getXpNextTitle corretto (ritornava titolo corrente invece del prossimo)']},
@@ -6527,7 +6503,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604181807'; // auto-set on each release
+const APP_BUILD='202604182030'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
