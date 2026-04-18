@@ -245,6 +245,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   .hero-turtle { max-height: 160px !important; }
   #coach-bubble { margin: 8px 20px 0 !important; }
 }
+
+.sex-btn{padding:8px 18px;font-size:13px;border-radius:100px;border:2px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;font-family:var(--ft);font-weight:bold;transition:all .2s}
+.sex-btn.active{border-color:var(--g1);background:var(--g4);color:var(--g1)}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
@@ -1027,7 +1030,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           <div class="srow"><div class="si">📏</div><div class="sinfo"><div class="stitle">Altezza</div><div class="sval" id="val-height">-</div><div id="inp-height" style="display:none"><input type="number" class="sinp" id="fld-height" min="100" max="220"><div style="display:flex;gap:6px;margin-top:6px"><button class="btn btn-p" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="saveField('height')">✅</button><button class="btn btn-o" style="flex:1;padding:8px;font-size:var(--fs-xs)" onclick="cancelEdit('height')">✕</button></div></div></div><button class="sedit" id="ebt-height" onclick="startEdit('height')">✏️</button></div>
           <div class="srow" id="st-bmi-row" style="display:none"><div class="si">📊</div><div class="sinfo"><div class="stitle">Il tuo profilo</div><div class="sval" id="st-bmi-val">-</div></div></div>
           <div class="srow"><div class="si">🧬</div><div class="sinfo"><div class="stitle">Sesso biologico</div><div class="sval" id="val-sex">-</div></div>
-            <div style="display:flex;gap:6px"><button id="btn-sex-m" class="btn" style="padding:6px 14px;font-size:12px;border-radius:100px;border:2px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;font-family:var(--ft);font-weight:bold;transition:all .2s" onclick="setSex('M')">♂ Uomo</button><button id="btn-sex-f" class="btn" style="padding:6px 14px;font-size:12px;border-radius:100px;border:2px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;font-family:var(--ft);font-weight:bold;transition:all .2s" onclick="setSex('F')">♀ Donna</button></div></div>
+            <div style="display:flex;gap:6px">
+<button id="btn-sex-m" class="sex-btn" onclick="setSex('M')">♂ Uomo</button>
+<button id="btn-sex-f" class="sex-btn" onclick="setSex('F')">♀ Donna</button>
+</div></div>
           <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
             <div style="display:flex;align-items:center;gap:8px"><div class="si">⚡</div><div class="stitle">Livello</div></div>
             <div style="display:flex;gap:6px;width:100%" data-g="ps-type">
@@ -4603,9 +4609,7 @@ function buildSettings(){
     if(bmiVal)bmiVal.textContent=`BMI ${P.bmi} (${bmiCls}) · Bias profilo: ${P.profileBias>=0?'+':''}${P.profileBias||0}`;
   }
   const vsex=document.getElementById('val-sex');if(vsex)vsex.textContent=(P.sex==='F')?'👩 Donna':'👨 Uomo';
-  const bm=document.getElementById('btn-sex-m');const bf=document.getElementById('btn-sex-f');
-  if(bm){bm.style.borderColor=(P.sex!=='F')?'var(--g1)':'var(--bdr)';bm.style.background=(P.sex!=='F')?'var(--g4)':'var(--card)';bm.style.color=(P.sex!=='F')?'var(--g1)':'var(--text)';}
-  if(bf){bf.style.borderColor=(P.sex==='F')?'var(--g1)':'var(--bdr)';bf.style.background=(P.sex==='F')?'var(--g4)':'var(--card)';bf.style.color=(P.sex==='F')?'var(--g1)':'var(--text)';}
+  _syncSexButtons(); // sync sex buttons via CSS class
   // Favorites per session
   const fc=P.favCount!=null?P.favCount:3;
   const fcr=document.getElementById('st-fav-range');const fcd=document.getElementById('st-fav-disp');
@@ -4615,15 +4619,7 @@ function buildSettings(){
   document.querySelectorAll('.vw-opt').forEach(e=>e.classList.toggle('sel',e.dataset.vs===(SET.viewScale||'1x')));
   document.querySelectorAll('.th-opt').forEach(e=>e.classList.toggle('sel',e.dataset.th===SET.theme));
   // Sync GPS status
-  const gpsStatusEl=document.getElementById('settings-gps-status');
-  const gpsBtnEl=document.getElementById('settings-gps-btn');
-  if(P.gpsLat&&P.gpsLon){
-    if(gpsStatusEl)gpsStatusEl.textContent='📍 Posizione attiva ('+P.gpsLat.toFixed(3)+', '+P.gpsLon.toFixed(3)+') — meteo nel coach bubble';
-    if(gpsBtnEl)gpsBtnEl.textContent='✅ Posizione attiva';
-  } else {
-    if(gpsBtnEl)gpsBtnEl.textContent='📍 Usa posizione';
-    if(gpsStatusEl)gpsStatusEl.textContent='';
-  }
+  _syncGpsStatus(); // sync GPS status
   // Sync view scale buttons
   document.querySelectorAll('.vw-opt').forEach(e=>e.classList.toggle('sel',e.dataset.vs===(SET.viewScale||'1x')));
   syncToggles();
@@ -4632,7 +4628,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.022 · 18/04/2026 20:30 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.022 · 18/04/2026 23:03 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4667,6 +4663,14 @@ function toggleAcc(id){
   if(!body)return;
   const open=body.classList.toggle('open');
   if(arr)arr.classList.toggle('open',open);
+  // Risincronizza i controlli sensibili quando si apre l'accordion
+  if(open){
+    if(id==='acc-profilo')_syncSexButtons();
+    if(id==='acc-aspetto')_syncGpsStatus();
+  }
+}
+function _syncGpsStatus(){
+  _syncGpsStatus(); // sync GPS status
 }
 function setMorningHour(btn){
   document.querySelectorAll('.wiz-wake-btn').forEach(b=>{b.style.borderColor='var(--bdr)';b.style.background='var(--card)';});
@@ -4786,14 +4790,18 @@ function setGoal(v){
 
 function setSex(sex){
   P.sex=sex;save();
-  const bm=document.getElementById('btn-sex-m');
-  const bf=document.getElementById('btn-sex-f');
-  if(bm){bm.style.borderColor=(sex!=='F')?'var(--g1)':'var(--bdr)';bm.style.background=(sex!=='F')?'var(--g4)':'var(--card)';bm.style.color=(sex!=='F')?'var(--g1)':'var(--text)';}
-  if(bf){bf.style.borderColor=(sex==='F')?'var(--g1)':'var(--bdr)';bf.style.background=(sex==='F')?'var(--g4)':'var(--card)';bf.style.color=(sex==='F')?'var(--g1)':'var(--text)';}
+  _syncSexButtons();
   const vsex=document.getElementById('val-sex');
   if(vsex)vsex.textContent=(sex==='F')?'👩 Donna':'👨 Uomo';
   calcProfileBias();
   toast('✅ Sesso aggiornato');
+}
+function _syncSexButtons(){
+  const sex=P.sex||'M';
+  const bm=document.getElementById('btn-sex-m');
+  const bf=document.getElementById('btn-sex-f');
+  if(bm)bm.classList.toggle('active', sex!=='F');
+  if(bf)bf.classList.toggle('active', sex==='F');
 }
 
 function setLevel(btn){
@@ -5583,6 +5591,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.022',date:'18/04/2026',changes:['Fix sesso biologico: bottoni usano CSS class invece di inline styles (no conflitto con .btn !important)','Fix GPS impostazioni: _syncGpsStatus() chiamata anche all apertura accordion']},
   {v:'1.022',date:'18/04/2026',changes:['Fix GPS chip home: icona meteo reale con temperatura','Fix GPS impostazioni: mostra coordinate per conferma','Fix DB: Squat Sumo senza cambio lato','Fix DB: Sollevamento gamba posteriore e Affondo frontale senza cambio lato','Rimosse card duplicate in Party Insieme','Tasto Condividi progressi solo in Progressi','Schermata fine sessione: un solo tasto Condividi','Party: pulsante ospite rinominato con link']},
   {v:'1.021',date:'18/04/2026',changes:['GPS: chip visibile in home quando attivo','GPS: lettura da 3 sorgenti (tt4_gps + tt4_p + legacy SET)','Widget: nomi badge sotto le icone']},
   {v:'1.020',date:'18/04/2026',changes:['Fix GPS definitivo: letto prima di Object.assign + ripristinato dopo + scritto in ogni save()','Fix pulsante Condividi: ora dentro screen-profile (era fuori)','Fix barra XP e testo titolo (già in v1.019)']},
@@ -6503,7 +6512,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604182030'; // auto-set on each release
+const APP_BUILD='202604182303'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
