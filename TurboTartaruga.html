@@ -364,6 +364,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:8px">
       <div class="streak-chip">🔥 <span id="home-streak">0</span> giorni di fila!</div>
       <div class="streak-chip" id="home-level-chip" style="background:rgba(255,215,0,.25)">⭐ Lv.<span id="home-level">1</span></div>
+      <div class="streak-chip" id="home-gps-chip" style="display:none;background:rgba(255,255,255,.15)">📍 <span id="home-gps-txt">Meteo attivo</span></div>
     </div>
   
   <!-- Routine mattutina banner -->
@@ -748,6 +749,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div class="card" id="prg-weight-card" style="display:none"><div class="card-title">⚖️ Il tuo percorso fisico</div><div id="prg-weight-content" style="font-size:var(--fs-sm);color:var(--tmid);line-height:1.8"></div></div>
     <!-- 11. ULTIME SESSIONI -->
     <div class="card"><div class="card-title">📋 Ultime sessioni</div><div id="hist-list"></div></div>
+
+    <!-- Share Widget Button — bottom of progress -->
+    <button id="share-widget-btn" onclick="shareProgressWidget()" style="display:none;margin:8px 12px 16px;width:calc(100% - 24px);padding:16px;background:linear-gradient(135deg,#1B5E20,#43A047);color:#fff;border:none;border-radius:16px;font-family:var(--ft);font-size:15px;font-weight:bold;cursor:pointer;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(27,94,32,.3)">
+      📤 Condividi i tuoi progressi
+    </button>
   </div>
 </div>
 
@@ -755,27 +761,70 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <div id="screen-profile" class="screen">
   <div class="hdr"><button class="hdr-back" onclick="go('home')">←</button><h1>🏅 Badge & XP</h1></div>
   <div class="scrollable">
-    <div style="background:var(--bg2);border-bottom:2px solid var(--bdr);padding:18px;text-align:center;margin-bottom:12px">
-      <img src="logo-turtle.png" alt="" style="height:clamp(60px,18vw,90px);margin-bottom:6px;display:block;margin-left:auto;margin-right:auto">
-      <div style="font-family:var(--ft);font-size:19px;font-weight:bold" id="prf-name">-</div>
-      <div style="font-size:var(--fs-xs);color:var(--tmid);margin-top:3px" id="prf-sub">-</div>
-      <div class="level-badge mt10" id="prf-level">🥚 Tartarughina</div>
-      <div style="font-size:13px;font-weight:bold;color:var(--g1);margin:4px 0" id="prf-num-level">Livello 1</div>
-      <div style="display:flex;gap:12px;justify-content:center;margin-bottom:6px">
-        <div style="text-align:center"><div style="font-size:20px;font-weight:bold;font-family:var(--fm);color:var(--g1)" id="prf-xp-total">0</div><div style="font-size:10px;color:var(--tlt)">XP Totali</div></div>
-        <div style="width:1px;background:var(--bdr)"></div>
-        <div style="text-align:center"><div style="font-size:20px;font-weight:bold;font-family:var(--fm);color:var(--g1)" id="prf-badges-count">0</div><div style="font-size:10px;color:var(--tlt)">Badge</div></div>
+
+    <!-- ══ SEZIONE 1: PERCORSO XP ══ -->
+    <div id="xp-journey-card" style="margin:12px 12px 0;border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.12)">
+      <!-- Header colorato con titolo XP corrente -->
+      <div id="xp-title-header" style="padding:20px 20px 14px;text-align:center;background:linear-gradient(135deg,#1B5E20,#43A047)">
+        <div style="font-size:11px;font-weight:bold;color:rgba(255,255,255,.7);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">IL TUO TITOLO XP</div>
+        <div id="prf-level" style="font-size:28px;font-weight:bold;color:#fff;font-family:var(--ft)">🥚 Uovo in procinto di schiudersi</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.65);margin-top:4px">Il titolo sale con gli XP guadagnati</div>
       </div>
-      <div style="font-size:var(--fs-xs);color:var(--tmid);margin-bottom:5px" id="prf-xp-lbl">0 XP</div>
-      <div class="xp-bar"><div id="prf-xp-fill" class="xp-fill" style="width:0%"></div></div>
+      <!-- Stats XP -->
+      <div style="background:var(--card);padding:16px 20px">
+        <div style="display:flex;gap:0;justify-content:space-around;margin-bottom:14px">
+          <div style="text-align:center">
+            <div style="font-size:26px;font-weight:bold;font-family:var(--fm);color:var(--g1)" id="prf-xp-total">0</div>
+            <div style="font-size:10px;color:var(--tlt)">XP Totali</div>
+          </div>
+          <div style="width:1px;background:var(--bdr)"></div>
+          <div style="text-align:center">
+            <div style="font-size:26px;font-weight:bold;font-family:var(--fm);color:var(--g1)" id="prf-num-level">Lv.1</div>
+            <div style="font-size:10px;color:var(--tlt)">Livello</div>
+          </div>
+          <div style="width:1px;background:var(--bdr)"></div>
+          <div style="text-align:center">
+            <div style="font-size:26px;font-weight:bold;font-family:var(--fm);color:var(--g1)" id="prf-badges-count">0</div>
+            <div style="font-size:10px;color:var(--tlt)">Badge</div>
+          </div>
+        </div>
+        <!-- XP progress bar -->
+        <div style="font-size:11px;color:var(--tmid);margin-bottom:4px" id="prf-xp-lbl">0 XP — verso il prossimo titolo</div>
+        <div class="xp-bar"><div id="prf-xp-fill" class="xp-fill" style="width:0%"></div></div>
+        <div style="font-size:10px;color:var(--tlt);margin-top:4px" id="prf-next-title">Prossimo titolo: 🐣 Tartarughina curiosa</div>
+      </div>
     </div>
 
-    <div class="card"><div class="card-title">🥚 Tartarughina <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv1-prog">(0/9)</span></div><div class="badges-grid" id="badges-lv1"></div></div>
-    <div class="card"><div class="card-title">🐢 Tartaruga <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv2-prog">(0/11)</span></div><div class="badges-grid" id="badges-lv2"></div></div>
-    <div class="card"><div class="card-title">🚀 TurboTartaruga <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv3-prog">(0/9)</span></div><div class="badges-grid" id="badges-lv3"></div></div>
-  </div>
-</div>
+    <!-- Come si guadagnano XP -->
+    <div style="margin:10px 12px;padding:10px 14px;background:var(--g4);border-radius:12px;border-left:3px solid var(--g1)">
+      <div style="font-size:11px;font-weight:bold;color:var(--g1);margin-bottom:3px">💡 Come guadagni XP</div>
+      <div style="font-size:11px;color:var(--tmid);line-height:1.6">Ogni sessione +25 · Routine +5/10 · Badge +25 · Boost +5 · Party +15</div>
+    </div>
 
+    <!-- ══ SEZIONE 2: BADGE ══ -->
+    <div style="margin:16px 12px 6px;display:flex;align-items:center;gap:8px">
+      <div style="flex:1;height:1px;background:var(--bdr)"></div>
+      <div style="font-size:12px;font-weight:bold;color:var(--tmid);white-space:nowrap">🏆 BADGE — OBIETTIVI SBLOCCATI</div>
+      <div style="flex:1;height:1px;background:var(--bdr)"></div>
+    </div>
+    <div style="margin:0 12px 8px;font-size:11px;color:var(--tlt)">I badge si sbloccano completando obiettivi specifici — sono indipendenti dagli XP</div>
+
+    <div class="card"><div class="card-title">🌱 Primi passi <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv1-prog">(0/4)</span></div><div class="badges-grid" id="badges-lv1"></div></div>
+    <div class="card"><div class="card-title">💪 In movimento <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv2-prog">(0/4)</span></div><div class="badges-grid" id="badges-lv2"></div></div>
+    <div class="card"><div class="card-title">🐢 Tartaruga solida <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv3-prog">(0/6)</span></div><div class="badges-grid" id="badges-lv3"></div></div>
+    <div class="card"><div class="card-title">💎 Determinato <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv4-prog"></span></div><div class="badges-grid" id="badges-lv4"></div></div>
+    <div class="card"><div class="card-title">🔥 Costante <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv5-prog"></span></div><div class="badges-grid" id="badges-lv5"></div></div>
+    <div class="card"><div class="card-title">⚡ TurboTartaruga <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv6-prog"></span></div><div class="badges-grid" id="badges-lv6"></div></div>
+    <div class="card"><div class="card-title">🚀 Pro <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv7-prog"></span></div><div class="badges-grid" id="badges-lv7"></div></div>
+    <div class="card"><div class="card-title">🏆 Leggenda <span style="font-size:var(--fs-xs);color:var(--tlt)" id="lv8-prog"></span></div><div class="badges-grid" id="badges-lv8"></div></div>
+    <div class="card"><div class="card-title">🎭 Segreti</div><div class="badges-grid" id="badges-lv-secret"></div></div>
+ 
+    <!-- Condividi progressi — DENTRO screen-profile -->
+    <button id="share-widget-btn-profile" onclick="shareProgressWidget()" style="display:none;margin:8px 12px 20px;width:calc(100% - 24px);padding:16px;background:linear-gradient(135deg,#1B5E20,#43A047);color:#fff;border:none;border-radius:16px;font-family:var(--ft);font-size:15px;font-weight:bold;cursor:pointer;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(27,94,32,.3)">
+      📤 Condividi i tuoi progressi
+    </button>
+ </div>
+</div>
 <!-- PARTY -->
 <div id="screen-party" class="screen">
   <div class="party-bg" style="min-height:100vh">
@@ -1193,7 +1242,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.016</div>
+      <div id="app-version-display">Versione v1.021</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1464,29 +1513,58 @@ var DB=[
 ];
 
 var PHRASES=[
-  "Lento ma costante vince la gara! 🐢",
-  "Ogni passo conta! 💪",
-  "Sei più forte di ieri! 🌟",
-  "Il movimento è vita! 🎉",
-  "La tua salute ti ringrazia! 🌿",
-  "Un piccolo passo, grande cambiamento! 🚀",
+  // Motivazionali classiche
+  "Lento ma costante vince la gara! 🐢","Ogni passo conta! 💪",
+  "Sei più forte di ieri! 🌟","Il movimento è vita! 🎉",
+  "La tua salute ti ringrazia! 🌿","Un piccolo passo, grande cambiamento! 🚀",
   "Non fermarti — la tartaruga non si arrende! 🐢",
-  "Oggi è il giorno giusto! ✨",
-  "Il corpo raggiunge ciò che la mente crede. 🧠",
-  "Ogni allenamento ti avvicina alla versione migliore di te. ⚡",
-  "Il dolore di oggi è la forza di domani. 💥",
-  "Non è necessario essere veloci — basta non fermarsi. 🏃",
-  "Prenditi cura del tuo corpo: è l'unico posto dove devi vivere. 🏠",
-  "La disciplina è il ponte tra obiettivi e risultati. 🌉",
-  "Chi si allena oggi dorme meglio stanotte. 😴",
-  "Il segreto? Iniziare. 🔑",
-  "Muoviti un po' ogni giorno — il tuo futuro sé ti ringrazierà. 🙏",
-  "L'esercizio fisico è la medicina più economica al mondo. 💊",
-  "Non contare i giorni — fai contare i giorni. 📅",
-  "La costanza batte il talento quando il talento non si allena. 🔁",
-  "Ogni sessione completata è una vittoria. 🏆",
-  "Inizia dove sei, usa quello che hai. 🌱",
-];
+  "Oggi è il giorno giusto! ✨","Il corpo ricorda ogni sessione! 🧠",
+  "5 minuti per iniziare, poi ti pentirai di non averlo fatto prima! ⏱️",
+  "La costanza batte il talento! 📈","Ogni sessione è un investimento su di te! 💰",
+  "Il tuo futuro te ne sarà grato! 🙏","Muoversi è la medicina più economica! 💊",
+  "Non serve la palestra — basta la voglia! 🏠","Il corpo è la tua casa: prendine cura! 🏡",
+  "Anche 10 minuti cambiano la giornata! ⏰","La tartaruga non salta — fa un passo alla volta 🐢",
+  "Respira, muoviti, sorridi! 😊","Sei già qui — è il passo più difficile! 👏",
+  "Il miglior momento era ieri, il secondo migliore è adesso! ⚡",
+  "Non confrontarti con gli altri — solo con ieri! 🪞",
+  "Un'abitudine inizia con una decisione! 💡","Pochi minuti al giorno, vita diversa! 🌅",
+  "Il corpo che hai vuole muoversi! 🦾","Ogni esercizio è un 'grazie' al tuo futuro! 🎁",
+  "La disciplina è libertà! 🗝️","Non aspettare l'umore giusto — inizia! 🚀",
+  "Sei più vicino al traguardo di quanto pensi! 🏁",
+  "La tartaruga lenta arriva sempre! 🐢",
+  // Frasi mattutine
+  "Buongiorno campione! Il corpo è già pronto — e tu? ☀️",
+  "Inizia la giornata con il piede giusto... e anche l'altro! 🦶",
+  "Il mattino ha l'oro in bocca — e tu hai la tartaruga! 🌅",
+  "Sveglio e già vincente! 💪",
+  // Frasi serali
+  "Fine giornata = momento perfetto per staccare la testa e muoversi! 🌙",
+  "La sessione serale è il regalo che fai al tuo sonno! 😴",
+  "Chiudi la giornata in modo attivo — domani ti sveglierai meglio! 🌟",
+  // Frasi weekend
+  "Il weekend è il momento migliore per fare quel passo in più! 🏃",
+  "Niente lavoro, qualche minuto per te — perfetto! 🎉",
+  // Frasi filosofiche
+  "Il corpo parla — stai imparando ad ascoltarlo! 👂",
+  "Non serve essere veloci. Serve non fermarsi! ♾️",
+  "La costanza è silenziosamente potente! 🌊",
+  "Piccoli progressi ogni giorno = grandi risultati nel tempo! 📊",
+  "Il movimento è meditazione in movimento! 🧘",
+  "Stai costruendo la versione migliore di te! 🏗️",
+  "Il tuo corpo è il progetto più importante! 📐",
+  "Ogni sessione aggiunge un mattoncino! 🧱",
+  "La forza non viene dalla palestra — viene dalla testa! 🧠",
+  "Non esiste 'non ho tempo' — esiste 'non ho priorità'! ⏳",
+  // Frasi simpatiche/leggere
+  "Il divano ti aspetta dopo! Prima i 10 minuti! 🛋️",
+  "La tartaruga non ha scuse! 🐢💨",
+  "Anche Superman si allenava! (E aveva una tartaruga preferita!) 🦸",
+  "Il tuo futuro te ringrazierà. Il tuo presente si stia alzando! ⬆️",
+  "Un esercizio alla volta — anche una tartaruga scala le montagne! ⛰️",
+  "Beep beep! È ora di muoversi! 🔔",
+  "Se non ora, quando? Se non tu, chi? 🤔",
+  "Sai cosa non ti fa sentire stanchi? Muoversi! Paradosso tartaruga! 🔄",
+]
 var PARTY_EX=[
   {id:'p1',n:'Plank di gruppo',desc:'Tutti in posizione plank sulle ginocchia. Chi tiene più a lungo vince! Schiena dritta.',img:'p1.png',dur:60},
   {id:'p2',n:'Squat sincronizzati',desc:'Tutti scendono e salgono insieme. Chi perde il ritmo è eliminato! Contiamo insieme.',img:'p2.png',dur:45},
@@ -1543,19 +1621,35 @@ function save(){
     localStorage.setItem('tt4_p',JSON.stringify(P));
     localStorage.setItem('tt4_s',JSON.stringify(S));
     localStorage.setItem('tt4_set',JSON.stringify(SET));
+    if(P.gpsLat&&P.gpsLon)localStorage.setItem('tt4_gps',JSON.stringify({lat:P.gpsLat,lon:P.gpsLon}));
   }catch(e){console.warn('Save failed:',e);}
 }
 function load(){
+  // ── STEP 1: Leggi GPS PRIMA di tutto ──────────────────────────────────────
+  var _gpsLat=null,_gpsLon=null;
   try{
-    // Try all possible key variants
-    const p=localStorage.getItem('tt4_p')||localStorage.getItem('tt4_profile')||localStorage.getItem('tt4profile');
-    const s=localStorage.getItem('tt4_s')||localStorage.getItem('tt4_stats')||localStorage.getItem('tt4stats');
-    const st=localStorage.getItem('tt4_set')||localStorage.getItem('tt4set')||localStorage.getItem('tt4settings');
-    if(p){const pd=JSON.parse(p);Object.assign(P,pd);}
-    if(s){const sd=JSON.parse(s);Object.assign(S,sd);}
-    if(st){const setd=JSON.parse(st);Object.assign(SET,setd);}
+    var _gr=localStorage.getItem('tt4_gps');
+    if(_gr){var _gobj=JSON.parse(_gr);if(_gobj&&_gobj.lat&&_gobj.lon){_gpsLat=_gobj.lat;_gpsLon=_gobj.lon;}}
+  }catch(_e){}
+  // ── STEP 2: Carica tutto il resto ─────────────────────────────────────────
+  try{
+    var p=localStorage.getItem('tt4_p')||localStorage.getItem('tt4_profile')||localStorage.getItem('tt4profile');
+    var s=localStorage.getItem('tt4_s')||localStorage.getItem('tt4_stats')||localStorage.getItem('tt4stats');
+    var st=localStorage.getItem('tt4_set')||localStorage.getItem('tt4set')||localStorage.getItem('tt4settings');
+    if(p){var pd=JSON.parse(p);Object.assign(P,pd);}
+    if(s){var sd=JSON.parse(s);Object.assign(S,sd);}
+    if(st){var setd=JSON.parse(st);Object.assign(SET,setd);}
   }catch(e){console.warn('Load failed:',e);}
-  // Defaults for new fields
+  // ── STEP 3: Ripristina GPS da tutte le sorgenti possibili ───────────────────
+  // Sorgente A: tt4_gps (dedicato, già letto in step 1)
+  if(_gpsLat&&_gpsLon){P.gpsLat=_gpsLat;P.gpsLon=_gpsLon;}
+  // Sorgente B: legacy SET.gpsLat (vecchie versioni del codice)
+  if((!P.gpsLat||!P.gpsLon)&&SET.gpsLat&&SET.gpsLon){P.gpsLat=SET.gpsLat;P.gpsLon=SET.gpsLon;}
+  // Sorgente C: se trovato, scrivi subito tt4_gps per versioni future
+  if(P.gpsLat&&P.gpsLon&&!_gpsLat){
+    try{localStorage.setItem('tt4_gps',JSON.stringify({lat:P.gpsLat,lon:P.gpsLon}));}catch(_e){}
+  }
+  // ── STEP 4: Defaults per campi nuovi ──────────────────────────────────────
   if(typeof SET.onlyWithPhoto==='undefined')SET.onlyWithPhoto=true;
   if(!S.history)S.history=[];if(!S.plan)S.plan=[];if(!S.catSet)S.catSet=[];
   if(!S.sed)S.sed=0;if(!S.stretch_ct)S.stretch_ct=0;
@@ -1712,7 +1806,7 @@ function saveProfile(){
   P.sleepRoutine=_wizData.sleepRoutine||false;
   P.sleepRoutineHour=_wizData.sleepHour||21;
   // GPS from wizard
-  if(_wizData.gpsLat){SET.gpsLat=_wizData.gpsLat;SET.gpsLon=_wizData.gpsLon;}
+  if(_wizData.gpsLat){P.gpsLat=_wizData.gpsLat;P.gpsLon=_wizData.gpsLon;}
   calcProfileBias();
   S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[]};
   generatePlan();updateStreak();save();
@@ -2259,6 +2353,9 @@ function buildHome(){
   const h=new Date().getHours();
   document.getElementById('home-greeting').textContent=`${h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera'}, ${P.name}! 👋`;
   buildCoachBubble(); // multi-phrase rotating system
+  // GPS chip: mostra se posizione attiva
+  const _gpsChip=document.getElementById('home-gps-chip');
+  if(_gpsChip)_gpsChip.style.display=(P.gpsLat&&P.gpsLon)?'flex':'none';
   // Routine banners — show based on time and completion status
   const _morningBanner = document.getElementById('home-morning-banner');
   const _sleepBanner   = document.getElementById('home-sleep-banner');
@@ -2629,10 +2726,39 @@ function downloadCard(canvas){
 
 
 // ═══ USER LEVEL SYSTEM ═══
+// XP-based numeric level (for home chip)
 function getUserLevel(xp){
   let lv=1,needed=0;
   while(lv<50){const toNext=60+lv*10;if(xp<needed+toNext)break;needed+=toNext;lv++;}
   return lv;
+}
+// XP title system — 8 tiers shown in Badge & XP screen
+var XP_TITLES=[
+  {min:0,    max:99,   icon:'🥚', title:'Uovo in procinto di schiudersi', color:'#8D6E63'},
+  {min:100,  max:299,  icon:'🐣', title:'Tartarughina curiosa',           color:'#66BB6A'},
+  {min:300,  max:599,  icon:'🐢', title:'Tartaruga in forma',             color:'#26A69A'},
+  {min:600,  max:999,  icon:'💪', title:'Tartaruga Tenace',               color:'#42A5F5'},
+  {min:1000, max:1999, icon:'🔥', title:'Tartaruga Costante',             color:'#FF7043'},
+  {min:2000, max:3499, icon:'⚡', title:'TurboTartaruga',                 color:'#FFA726'},
+  {min:3500, max:5999, icon:'🚀', title:'TurboTartaruga Pro',             color:'#AB47BC'},
+  {min:6000, max:Infinity, icon:'🏆', title:'Leggenda della Corazza',    color:'#FFD700'},
+];
+function getXpTitle(xp){
+  for(let i=XP_TITLES.length-1;i>=0;i--){
+    if(xp>=XP_TITLES[i].min)return XP_TITLES[i];
+  }
+  return XP_TITLES[0];
+}
+function getXpNextTitle(xp){
+  // Find current title tier, return the NEXT one
+  for(let i=0;i<XP_TITLES.length;i++){
+    if(xp>=XP_TITLES[i].min&&xp<=XP_TITLES[i].max){
+      if(i+1<XP_TITLES.length)
+        return{next:XP_TITLES[i+1],xpNeeded:XP_TITLES[i+1].min-xp};
+      return null; // already at max title
+    }
+  }
+  return null;
 }
 function getXpForLevel(lv){let n=0;for(let i=1;i<lv;i++)n+=60+i*10;return n;}
 function getXpToNextLevel(xp){
@@ -3026,7 +3152,8 @@ function completeRoutine(){
   });
   save();
   const newBadges=checkBadges();
-  launchConfetti();
+  playCompletionSound('routine');
+  launchConfetti(['#F9A825','#FF8F00','#FFE082','#4CAF50']);
   if(isMorning){
     toast('☀️ Routine mattutina completata! +'+xpBonus+' XP bonus',3500);
   } else {
@@ -3034,7 +3161,14 @@ function completeRoutine(){
   }
   // Show badges if any
   if(newBadges.length){
-    setTimeout(()=>{newBadges.forEach((b,i)=>{setTimeout(()=>toast('🏅 Badge sbloccato: '+b.name+'! +25 XP',3500),i*3600);});},1000);
+    setTimeout(()=>{
+      newBadges.forEach((b,i)=>{
+        setTimeout(()=>{
+          toast('🏅 Badge sbloccato: '+b.name+'! +25 XP',3500);
+          launchConfetti(getBadgeConfettiColors(b.id));
+        },i*3600);
+      });
+    },800);
   }
   T._isRoutine=false;
   go('home');
@@ -3532,27 +3666,51 @@ var DONE_PHRASES=[
   'La tartaruga ha corso oggi — e ha vinto! 🐢💨',
   'Grande! Il tuo futuro-te ti sta già ringraziando! ⭐',
 ];
-function launchConfetti(){
-  const colors=['#FFD700','#43A047','#2196F3','#E91E63','#FF9800','#9C27B0','#00BCD4'];
-  for(let i=0;i<28;i++){
+function launchConfetti(customColors){
+  // customColors: optional array for badge-specific confetti
+  const defaultColors=['#FFD700','#43A047','#2196F3','#E91E63','#FF9800','#9C27B0','#00BCD4'];
+  const colors=customColors&&customColors.length?customColors:defaultColors;
+  for(let i=0;i<32;i++){
     const el=document.createElement('div');
     el.className='confetti-piece';
     el.style.left=Math.random()*100+'vw';
     el.style.background=colors[Math.floor(Math.random()*colors.length)];
     el.style.width=(6+Math.random()*10)+'px';
-    el.style.height=(6+Math.random()*10)+'px';
-    el.style.animationDelay=(Math.random()*1.2)+'s';
-    el.style.animationDuration=(1.8+Math.random()*1.5)+'s';
+    el.style.height=(8+Math.random()*14)+'px';
+    el.style.animationDuration=(1.5+Math.random()*2)+'s';
+    el.style.animationDelay=Math.random()*0.8+'s';
     document.body.appendChild(el);
     setTimeout(()=>el.remove(),3500);
   }
+}
+function getBadgeConfettiColors(badgeId){
+  // Returns themed colors based on badge category
+  if(!badgeId)return null;
+  if(badgeId.includes('str')||badgeId.includes('days')||badgeId==='b_norest')
+    return['#FF5722','#FF9800','#FFCC02','#FF6F00']; // fire — streak
+  if(badgeId.includes('xp')||badgeId.includes('10000')||badgeId.includes('5000')||badgeId.includes('3000')||badgeId.includes('1000')||badgeId.includes('200'))
+    return['#FFD700','#FFC107','#FFEB3B','#FF8F00']; // gold — XP
+  if(badgeId.includes('ori')||badgeId.includes('zen')||badgeId.includes('matin'))
+    return['#4CAF50','#81C784','#26A69A','#80CBC4']; // green — orientale/mattina
+  if(badgeId.includes('stretch')||badgeId.includes('flex'))
+    return['#2196F3','#64B5F6','#00BCD4','#80DEEA']; // blue — stretching
+  if(badgeId.includes('party')||badgeId.includes('king'))
+    return['#E91E63','#F48FB1','#FF5722','#FFD700']; // rainbow — party
+  if(badgeId.includes('secret'))
+    return['#9C27B0','#E040FB','#FFD700','#00BCD4','#FF5722','#4CAF50']; // rainbow — segreto
+  if(badgeId.includes('legend')||badgeId.includes('iron')||badgeId==='b_10000xp')
+    return['#FFD700','#FFC107','#E5C100','#FFEE58','#fff']; // bright gold — legendary
+  return null; // default
 }
 function completeSession(){
   // If this is a routine session, handle separately
   if(T._isRoutine){completeRoutine();return;}
   releaseWakeLock();checkOver65Challenge();checkProfileUpdateNeeded();
   SET._sessionEnergyBias=0; // reset session energy bias
-  launchConfetti();
+  // Check if this is a record (new max streak or milestone)
+  const _isRecord=(S.str>0&&(S.str===7||S.str===14||S.str===21||S.str===30||S.str===60||S.str===100))||S.tot===10||S.tot===50||S.tot===100;
+  playCompletionSound(_isRecord?'record':'normal');
+  launchConfetti(_isRecord?['#FFD700','#FFC107','#FF5722','#fff']:null);
   clearInterval(T.iv);clearInterval(restIv);clearInterval(transIv);
   const today=localDate();
   const xpGain=10+(S.str>0?Math.min(S.str,5):0)+(riservaDone?5:0);
@@ -4090,6 +4248,9 @@ function buildProgress(){
   const goal=P.goal||90;const pct=Math.min(100,Math.round(S.tot/goal*100));
   document.getElementById('prg-goal-lbl').textContent=`${S.tot} / ${goal}`;
   document.getElementById('prg-goal-pct').textContent=pct+'%';
+  // Share widget button
+  const _swBtnPrg=document.getElementById('share-widget-btn');
+  if(_swBtnPrg)_swBtnPrg.style.display='flex';
   document.getElementById('prg-goal-fill').style.width=pct+'%';
   document.getElementById('prg-goal-msg').textContent=S.tot>=goal?`🏆 Obiettivo raggiunto! ${S.tot} sessioni completate!`:`Mancano ${goal-S.tot} sessioni al tuo obiettivo. Dai che ce la fai! 🐢`;
   document.getElementById('prg-tot').textContent=S.tot;
@@ -4286,28 +4447,58 @@ function toggleExDetail(id){const el=document.getElementById(id);if(el){const v=
 // ═══ PROFILE ═══
 function buildProfile(){
   if(!P.name)return;
-  T.energyLevel=3; // reset energy to normal each day
+  T.energyLevel=3;
   try{const defNrg=document.querySelector('.nrg-btn[data-nrg="3"]');if(defNrg)setEnergy(defNrg);}catch(e){}
-  document.getElementById('prf-name').textContent=P.name;
-  const wh=P.weight&&P.height?` · ${P.weight}kg · ${P.height}cm`:'';
-  document.getElementById('prf-sub').textContent=`${P.level==='intermedio'?'🔥 Intermedio':'🌱 Principiante'} · ${P.age} anni${wh}`;
+  const _swBtnPrf=document.getElementById('share-widget-btn-profile');
+  if(_swBtnPrf)_swBtnPrf.style.display='flex';
+  // prf-name/prf-sub removed from new design - skip safely
+  const _prfName=document.getElementById('prf-name');
+  if(_prfName)_prfName.textContent=P.name;
+  const _prfSub=document.getElementById('prf-sub');
+  if(_prfSub){const wh=P.weight&&P.height?` · ${P.weight}kg · ${P.height}cm`:'';_prfSub.textContent=`${P.level==='intermedio'?'🔥 Intermedio':'🌱 Principiante'} · ${P.age} anni${wh}`;}
   const xp=S.xp||0;const numLv=getUserLevel(xp);const xpNext=getXpToNextLevel(xp);
   // Update numeric level display
-  const lvDisp=document.getElementById('prf-num-level');if(lvDisp)lvDisp.textContent='Livello '+numLv+(numLv<50?' — ancora '+xpNext+' XP':' — MASSIMO!');
+  const lvDisp=document.getElementById('prf-num-level');if(lvDisp)lvDisp.textContent='Lv. '+numLv;
   const lv=xp<150?1:xp<400?2:3;
-  document.getElementById('prf-level').textContent=['','🥚 Tartarughina','🐢 Tartaruga','🚀 TurboTartaruga'][lv];
-  const lvXP=[0,150,400];const nxt=lv<3?[150,400,Infinity][lv]:Infinity;
-  const pct=lv>=3?100:Math.round((xp-lvXP[lv-1])/(nxt-lvXP[lv-1])*100);
-  document.getElementById('prf-xp-lbl').textContent=`${xp} XP${lv<3?' · '+(nxt-xp)+' al prossimo':''}`;
+  const xpTitleObj=getXpTitle(S.xp||0);
+  document.getElementById('prf-level').textContent=xpTitleObj.icon+' '+xpTitleObj.title;
+  document.getElementById('prf-level').style.color='#fff'; // sempre bianco sul header colorato
+  const xpT=getXpTitle(xp);const nextT=getXpNextTitle(xp);
+  const pct=nextT?Math.round((xp-xpT.min)/(nextT.next.min-xpT.min)*100):100;
+  document.getElementById('prf-xp-lbl').textContent=xp+' XP'+(nextT?' — ancora '+nextT.xpNeeded+' XP':'');
+  const nextTitleEl=document.getElementById('prf-next-title');
+  if(nextTitleEl)nextTitleEl.textContent=nextT?'Prossimo: '+nextT.next.icon+' '+nextT.next.title:'🏆 Titolo massimo raggiunto!';
+  // Color the XP header based on current title
+  const xpHdr=document.getElementById('xp-title-header');
+  if(xpHdr)xpHdr.style.background='linear-gradient(135deg,'+( xpT.color||'#1B5E20')+','+( xpT.color||'#43A047')+')';
   document.getElementById('prf-xp-fill').style.width=pct+'%';
   // Set totals display (XP + badge count)
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=xp;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const unlocked=new Set(S.badges);
-  [1,2,3].forEach(lv=>{
-    const bs=BADGES.filter(b=>b.lv===lv);const done=bs.filter(b=>unlocked.has(b.id)).length;
+  [1,2,3,4,5,6,7,8].forEach(lv=>{
+    const bs=BADGES.filter(b=>b.lv===lv&&!b.secret);
+    const el=document.getElementById('badges-lv'+lv);
+    if(!el||!bs.length)return;const done=bs.filter(b=>unlocked.has(b.id)).length;
     document.getElementById(`lv${lv}-prog`).textContent=`(${done}/${bs.length})`;
-    document.getElementById(`badges-lv${lv}`).innerHTML=bs.map(b=>`<div class="bdg${unlocked.has(b.id)?'':' locked'}" data-bid="${b.id}" onclick="openBadgeModal(this)" style="cursor:pointer"><span class="bi">${b.icon}</span><span class="bn">${b.name}</span><span class="bv bv${lv}">${b.hint}</span></div>`).join('');
+    el.innerHTML=bs.map(b=>`<div class="bdg${unlocked.has(b.id)?'':' locked'}" data-bid="${b.id}" onclick="openBadgeModal(this)" style="cursor:pointer"><span class="bi">${b.icon}</span><span class="bn">${b.name}</span><span class="bv bv${lv}">${b.hint}</span></div>`).join('');
+  });
+  // Display unlocked secret badges
+  const secretBadges=BADGES.filter(b=>b.secret&&unlocked.has(b.id));
+  const secretEl=document.getElementById('badges-lv-secret');
+  if(secretEl){
+    if(secretBadges.length===0){
+      secretEl.innerHTML='<div style="font-size:12px;color:var(--tlt);padding:8px">🔒 Nessun badge segreto sbloccato ancora... continua ad allenarti!</div>';
+    } else {
+      secretEl.innerHTML=secretBadges.map(b=>`<div class="bdg" data-bid="${b.id}" onclick="openBadgeModal(this)" style="cursor:pointer"><span class="bdg-icon">${b.icon}</span><span class="bdg-name">${b.name}</span></div>`).join('');
+    }
+  }
+  // Update progress labels for each level
+  [1,2,3,4,5,6,7,8].forEach(lv=>{
+    const lvBadges=BADGES.filter(b=>b.lv===lv&&!b.secret);
+    const lvUnlocked=lvBadges.filter(b=>unlocked.has(b.id)).length;
+    const progEl=document.getElementById('lv'+lv+'-prog');
+    if(progEl)progEl.textContent='('+lvUnlocked+'/'+lvBadges.length+')';
   });
 }
 
@@ -4451,9 +4642,12 @@ function buildSettings(){
   // Sync GPS status
   const gpsStatusEl=document.getElementById('settings-gps-status');
   const gpsBtnEl=document.getElementById('settings-gps-btn');
-  if(SET.gpsLat&&SET.gpsLon){
-    if(gpsStatusEl)gpsStatusEl.textContent='📍 Posizione attiva — coach bubble include il meteo';
+  if(P.gpsLat&&P.gpsLon){
+    if(gpsStatusEl)gpsStatusEl.textContent='📍 Posizione attiva — il coach conosce il tuo meteo!';
     if(gpsBtnEl)gpsBtnEl.textContent='✅ Posizione attiva';
+  } else {
+    if(gpsBtnEl)gpsBtnEl.textContent='📍 Usa posizione';
+    if(gpsStatusEl)gpsStatusEl.textContent='';
   }
   // Sync view scale buttons
   document.querySelectorAll('.vw-opt').forEach(e=>e.classList.toggle('sel',e.dataset.vs===(SET.viewScale||'1x')));
@@ -4463,7 +4657,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.016 · 18/04/2026 14:03 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.021 · 18/04/2026 18:07 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4938,40 +5132,52 @@ var CHALLENGES=[
 ];
 
 var BADGES=[
-  // ── LIVELLO 1: Tartarughina (lv:1) ──────────────────────────
+  // ── LIVELLO 1: Uovo (0-99 XP) ──────────────────────────────────
   {id:'b_prima',lv:1,icon:'🥚',name:'Prima sessione',hint:'Hai completato la tua prima sessione!',check:s=>s.tot>=1},
   {id:'b_3days',lv:1,icon:'🌱',name:'3 giorni di fila',hint:'Streak di 3 giorni consecutivi',check:s=>s.str>=3},
   {id:'b_matin',lv:1,icon:'☀️',name:'Mattiniero',hint:'Prima routine mattutina completata',check:s=>s.morningTotal>=1},
   {id:'b_sleep',lv:1,icon:'🌙',name:'Buonanotte',hint:'Prima routine pre-sonno completata',check:s=>s.sleepTotal>=1},
-  {id:'b_10tot',lv:1,icon:'💪',name:'10 sessioni',hint:'Hai completato 10 sessioni totali',check:s=>s.tot>=10},
-  {id:'b_5str',lv:1,icon:'🔥',name:'Settimana di fuoco',hint:'5 giorni consecutivi di allenamento',check:s=>s.str>=5},
-  {id:'b_ori',lv:1,icon:'🧘',name:'Spirito orientale',hint:'5 sessioni orientali completate',check:s=>s.ori>=5},
-  {id:'b_200xp',lv:1,icon:'⭐',name:'200 XP',hint:'Guadagnati 200 XP totali',check:s=>(s.xp||0)>=200},
-  {id:'b_nofloor',lv:1,icon:'🪑',name:'Senza tappetino',hint:'5 sessioni da seduto completate',check:s=>s.sed>=5},
-  // ── LIVELLO 2: Tartaruga (lv:2) ──────────────────────────────
-  {id:'b_30tot',lv:2,icon:'🐢',name:'30 sessioni',hint:'Traguardo intermedio: 30 sessioni!',check:s=>s.tot>=30},
-  {id:'b_14str',lv:2,icon:'🗓️',name:'2 settimane filate',hint:'14 giorni consecutivi',check:s=>s.str>=14},
-  {id:'b_boost',lv:2,icon:'💥',name:'Boost king',hint:'5 sessioni con boost completate',check:s=>(s.boosts||0)>=5},
-  {id:'b_party',lv:2,icon:'🎉',name:'Party animal',hint:'Prima sessione Party completata',check:s=>(s.party||0)>=1},
-  {id:'b_1000xp',lv:2,icon:'🌟',name:'1000 XP',hint:'Guadagnati 1000 XP totali',check:s=>(s.xp||0)>=1000},
-  {id:'b_stretch',lv:2,icon:'🤸',name:'Flessibile',hint:'10 sessioni di stretching completate',check:s=>s.stretch_ct>=10},
-  {id:'b_50tot',lv:2,icon:'🏅',name:'50 sessioni',hint:'Mezzo centinaio — grandioso!',check:s=>s.tot>=50},
-  {id:'b_21str',lv:2,icon:'📅',name:'3 settimane filate',hint:'21 giorni consecutivi — straordinario!',check:s=>s.str>=21},
-  {id:'b_morning10',lv:2,icon:'🌄',name:'Amore per il mattino',hint:'10 routine mattutine completate',check:s=>s.morningTotal>=10},
-  {id:'b_sleep10',lv:2,icon:'💤',name:'Sogni d\'oro',hint:'10 routine pre-sonno completate',check:s=>s.sleepTotal>=10},
-  {id:'b_3000xp',lv:2,icon:'💫',name:'3000 XP',hint:'3000 XP — stai diventando leggenda!',check:s=>(s.xp||0)>=3000},
-  {id:'b_allcat',lv:2,icon:'🌈',name:'Allenamento completo',hint:'Tutte le categorie allenate almeno una volta',check:s=>(s.catSet||[]).length>=7},
-  // ── LIVELLO 3: TurboTartaruga (lv:3) ─────────────────────────
-  {id:'b_100tot',lv:3,icon:'💯',name:'Centenario',hint:'100 sessioni completate — sei una leggenda!',check:s=>s.tot>=100},
-  {id:'b_30str',lv:3,icon:'🚀',name:'Un mese di fila',hint:'30 giorni consecutivi — stratosferico!',check:s=>s.str>=30},
-  {id:'b_5000xp',lv:3,icon:'👑',name:'5000 XP',hint:'5000 XP — sei il re/la regina della tartaruga!',check:s=>(s.xp||0)>=5000},
-  {id:'b_norest',lv:3,icon:'🐉',name:'Drago instancabile',hint:'365 sessioni totali nella vita',check:s=>s.tot>=365},
-  {id:'b_ultraflex',lv:3,icon:'🏆',name:'TurboTartaruga definitivo',hint:'Raggiungi il Livello 10 di XP',check:s=>getUserLevel(s.xp||0)>=10},
-  {id:'b_partyking',lv:3,icon:'🎊',name:'Party king',hint:'10 sessioni Party completate',check:s=>(s.party||0)>=10},
-  {id:'b_iron',lv:3,icon:'🦾',name:'Tartaruga d\'acciaio',hint:'50 sessioni con boost completate',check:s=>(s.boosts||0)>=50},
-  {id:'b_zen',lv:3,icon:'☯️',name:'Maestro Zen',hint:'50 sessioni orientali completate',check:s=>(s.ori||0)>=50},
-  {id:'b_10000xp',lv:3,icon:'🌠',name:'Oltre le stelle',hint:'10.000 XP — sei nell\'Olimpo!',check:s=>(s.xp||0)>=10000},
-];
+  // ── LIVELLO 2: Tartarughina (100-299 XP) ────────────────────────
+  {id:'b_10tot',lv:2,icon:'💪',name:'10 sessioni',hint:'Hai completato 10 sessioni totali',check:s=>s.tot>=10},
+  {id:'b_5str',lv:2,icon:'🔥',name:'Settimana di fuoco',hint:'5 giorni consecutivi di allenamento',check:s=>s.str>=5},
+  {id:'b_ori',lv:2,icon:'🧘',name:'Spirito orientale',hint:'5 sessioni di esercizi orientali',check:s=>s.ori>=5},
+  {id:'b_200xp',lv:2,icon:'⭐',name:'100 XP',hint:'Hai guadagnato 100 XP',check:s=>s.xp>=100},
+  // ── LIVELLO 3: Tartaruga in forma (300-599 XP) ──────────────────
+  {id:'b_nofloor',lv:3,icon:'🪑',name:'Senza tappetino',hint:'Hai attivato la modalità senza pavimento',check:s=>!!s.noFloor||false},
+  {id:'b_30tot',lv:3,icon:'🏃',name:'30 sessioni',hint:'Hai completato 30 sessioni totali',check:s=>s.tot>=30},
+  {id:'b_14str',lv:3,icon:'📅',name:'Due settimane',hint:'14 giorni consecutivi di allenamento',check:s=>s.str>=14},
+  {id:'b_boost',lv:3,icon:'🚀',name:'Energia extra',hint:'Hai usato il boost 3 volte',check:s=>s.boosts>=3},
+  {id:'b_1000xp',lv:3,icon:'💎',name:'500 XP',hint:'Hai guadagnato 500 XP',check:s=>s.xp>=500},
+  {id:'b_stretch',lv:3,icon:'🤸',name:'Flessibilità',hint:'10 sessioni di stretching',check:s=>s.stretch_ct>=10},
+  // ── LIVELLO 4: Tartaruga Tenace (600-999 XP) ────────────────────
+  {id:'b_50tot',lv:4,icon:'🏅',name:'50 sessioni',hint:'Hai completato 50 sessioni totali',check:s=>s.tot>=50},
+  {id:'b_21str',lv:4,icon:'🌟',name:'21 giorni',hint:'21 giorni consecutivi — nuova abitudine!',check:s=>s.str>=21},
+  {id:'b_morning10',lv:4,icon:'🌅',name:'Mattiniero pro',hint:'10 routine mattutine completate',check:s=>s.morningTotal>=10},
+  {id:'b_sleep10',lv:4,icon:'😴',name:'Dormire bene x10',hint:'10 routine pre-sonno completate',check:s=>s.sleepTotal>=10},
+  {id:'b_party',lv:4,icon:'🎉',name:'Party animal',hint:'Prima sessione party completata',check:s=>s.party>=1},
+  // ── LIVELLO 5: Tartaruga Costante (1000-1999 XP) ────────────────
+  {id:'b_3000xp',lv:5,icon:'🔮',name:'1000 XP',hint:'Hai guadagnato 1000 XP',check:s=>s.xp>=1000},
+  {id:'b_allcat',lv:5,icon:'🌈',name:'Tuttologo',hint:'Hai allenato tutte le categorie principali',check:s=>(s.catSet||[]).length>=5},
+  {id:'b_100tot',lv:5,icon:'💯',name:'100 sessioni',hint:'Hai completato 100 sessioni totali!',check:s=>s.tot>=100},
+  {id:'b_30str',lv:5,icon:'⚡',name:'Un mese di fila',hint:'30 giorni consecutivi — sei inarrestabile!',check:s=>s.str>=30},
+  {id:'b_norest',lv:5,icon:'🦾',name:'Niente pause',hint:'7 sessioni consecutive senza riposo volontario',check:s=>s.noRestStreak>=7},
+  // ── LIVELLO 6: TurboTartaruga (2000-3499 XP) ────────────────────
+  {id:'b_5000xp',lv:6,icon:'🏆',name:'2000 XP',hint:'Hai guadagnato 2000 XP — TurboTartaruga!',check:s=>s.xp>=2000},
+  {id:'b_60str',lv:6,icon:'🌊',name:'Due mesi di fila',hint:'60 giorni consecutivi — un\'abitudine per la vita!',check:s=>s.str>=60},
+  {id:'b_ultraflex',lv:6,icon:'🤸',name:'Ultra flessibile',hint:'30 sessioni di stretching totali',check:s=>s.stretch_ct>=30},
+  {id:'b_partyking',lv:6,icon:'👑',name:'Party King',hint:'5 sessioni party completate',check:s=>s.party>=5},
+  // ── LIVELLO 7: TurboTartaruga Pro (3500-5999 XP) ────────────────
+  {id:'b_iron',lv:7,icon:'🦅',name:'Tartaruga d\'acciaio',hint:'200 sessioni totali',check:s=>s.tot>=200},
+  {id:'b_zen',lv:7,icon:'☯️',name:'Maestro zen',hint:'50 sessioni orientali completate',check:s=>s.ori>=50},
+  {id:'b_100str',lv:7,icon:'🔱',name:'100 giorni',hint:'100 giorni consecutivi — leggendario!',check:s=>s.str>=100},
+  // ── LIVELLO 8: Leggenda (6000+ XP) ─────────────────────────────
+  {id:'b_10000xp',lv:8,icon:'💫',name:'Leggenda',hint:'Hai guadagnato 6000 XP — sei una leggenda!',check:s=>s.xp>=6000},
+  {id:'b_legend',lv:8,icon:'🌟',name:'500 sessioni',hint:'500 sessioni totali — fenomenale!',check:s=>s.tot>=500},
+  // ── BADGE SEGRETI (nascosti finché non sbloccati) ────────────────
+  {id:'b_secret1',lv:1,icon:'🎭',name:'???',hint:'Segreto',secret:true,check:s=>s.morningTotal>=1&&s.sleepTotal>=1},
+  {id:'b_secret2',lv:3,icon:'🌍',name:'???',hint:'Segreto',secret:true,check:s=>s.boosts>=10},
+  {id:'b_secret3',lv:5,icon:'🦋',name:'???',hint:'Segreto',secret:true,check:s=>s.tot>=50&&s.str>=21},
+]
 var CAT_INFO={
   riscaldamento:{label:'Riscaldamento',icon:'🔥'},gambe:{label:'Gambe',icon:'🦵'},
   braccia:{label:'Braccia',icon:'💪'},core:{label:'Core',icon:'🎯'},
@@ -5135,7 +5341,14 @@ function importResultCode(){
     beep(660,.15);
     // Show new badges
     if(newBadges.length){
-      setTimeout(()=>{newBadges.forEach((b,i)=>{setTimeout(()=>toast('🏅 Badge sbloccato: '+b.name+'! +25 XP',3500),i*3600);});},1000);
+      setTimeout(()=>{
+      newBadges.forEach((b,i)=>{
+        setTimeout(()=>{
+          toast('🏅 Badge sbloccato: '+b.name+'! +25 XP',3500);
+          launchConfetti(getBadgeConfettiColors(b.id));
+        },i*3600);
+      });
+    },800);
     }
   }catch(e){toast('⚠️ Codice non valido o corrotto!')}
 }
@@ -5395,6 +5608,13 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.021',date:'18/04/2026',changes:['GPS: chip visibile in home quando attivo','GPS: lettura da 3 sorgenti (tt4_gps + tt4_p + legacy SET)','Widget: nomi badge sotto le icone']},
+  {v:'1.020',date:'18/04/2026',changes:['Fix GPS definitivo: letto prima di Object.assign + ripristinato dopo + scritto in ogni save()','Fix pulsante Condividi: ora dentro screen-profile (era fuori)','Fix barra XP e testo titolo (già in v1.019)']},
+  {v:'1.019',date:'18/04/2026',changes:['Fix GPS: chiave dedicata tt4_gps sempre ripristinata','Fix pulsante Condividi ora in schermata Badge & XP','Fix titolo XP: testo sempre bianco su sfondo colorato','Fix barra XP: getXpNextTitle corretto (ritornava titolo corrente invece del prossimo)']},
+  {v:'1.019',date:'18/04/2026',changes:['Fix crash buildProfile (null safe)','Fix badge non visibili','Fix pulsante Condividi in Badge & XP','Fix GPS: tt4_gps sempre ripristinato al caricamento']},
+  {v:'1.019',date:'18/04/2026',changes:['Fix crash buildProfile (getElementById null su prf-name/prf-sub rimossi)','Fix badge non visibili (causa: crash prima del rendering)','Fix pulsante Condividi visibile in Badge & XP','Fix GPS definitivo: salva in tt4_gps dedicato + ripristino garantito al caricamento']},
+  {v:'1.018',date:'18/04/2026',changes:['Fix GPS definitivo (stored in P/profilo)','Schermata Badge & XP ridisegnata: titolo XP separato dai badge','Spiegazione differenza XP vs Badge','Pulsante condividi progressi spostato in fondo','Widget progressi ridisegnato: streak hero, 3 card, ultimi 5 badge, frase motivazionale']},
+  {v:'1.017',date:'18/04/2026',changes:['Fix GPS persistenza (chiave separata tt4_gps)','Titoli XP 8 livelli (da Uovo a Leggenda della Corazza)','36 badge + 3 segreti + streak 60 e 100 giorni','Coach bubble: frasi personali statistiche','57 motivazionali + 30 frasi meteo x6 condizioni','Confetti colorati per categoria badge','Sonetti di completamento (normale/routine/record)','Widget progressi 1080x1080 esportabile']},
   {v:'1.016',date:'18/04/2026',changes:['Fix grafico: pulsanti sesso biologico (IDs errati + stile neutro/attivo)','Fix: banner nessuna sessione nascosto nei giorni di riposo','Fix: banner tempificato sulla fascia oraria media dell\'utente','Fix grafico: hero compatta su mobile (media query)','Fix: routine mattutina/presonno ora appaiono nei progressi 90 giorni']},
   {v:'1.015',date:'18/04/2026',changes:['Fix: conto vocale attivo di default','Fix grafico: coach bubble altezza stabile (min-height + transizione)','Nuovo step wizard Coach Tartaruga con GPS e placeholder AI Coach','GPS salvato da wizard in saveProfile']},
   {v:'1.014',date:'18/04/2026',changes:['Fix Reimposta app (chiavi localStorage corrette)','Meteo reinserito via coach bubble con Open-Meteo API','GPS: rilevamento posizione in Impostazioni > Aspetto','Coach bubble: frasi multiple rotanti ogni 6 sec (meteo + recap + motivazione)','Recap 15 giorni nel coach bubble','Fix: banner routine mattutina/pre-sonno tornati funzionanti']},
@@ -5559,6 +5779,221 @@ function _showResultModal(result){
 }
 
 
+
+// ═══ FRASI PERSONALI — insights statistici per coach bubble ═══════════════
+function buildPersonalInsights(){
+  const phrases=[];
+  const xp=S.xp||0;
+  const str=S.str||0;
+  const tot=S.tot||0;
+  const badges=(S.badges||[]).length;
+  const hist=S.history||[];
+  
+  // Streak insights
+  if(str>=30) phrases.push('🔥 '+str+' giorni di fila — sei una macchina da guerra, '+( P.name||'campione')+'!');
+  else if(str>=14) phrases.push('📅 '+str+' giorni consecutivi — la costanza è il tuo superpotere!');
+  else if(str>=7)  phrases.push('🌟 Una settimana di fila! Lo streak da '+str+' giorni parla chiaro: ci sei.');
+  else if(str>=3)  phrases.push('💪 '+str+' giorni di fila — il ritmo sta arrivando!');
+  
+  // Sessioni totali
+  if(tot>=100) phrases.push('💯 '+tot+' sessioni totali — '+( P.name||'campione')+', sei entrato nella storia di TurboTartaruga!');
+  else if(tot>=50) phrases.push('🏅 Quota '+tot+' sessioni raggiunta! La metà del cammino verso il badge 100.');
+  else if(tot>=20) phrases.push('📈 '+tot+' sessioni completate — più di una ogni 2-3 giorni in media. Costante!');
+  
+  // XP
+  const xpT=getXpTitle(xp);
+  phrases.push('⭐ '+xp+' XP guadagnati — titolo: '+xpT.icon+' '+xpT.title+'!');
+  
+  // Categoria preferita
+  const last30=hist.filter(h=>h.type&&!['riposo_vol','mattino','presonno'].includes(h.type)).slice(-30);
+  if(last30.length>=5){
+    const catCount={};
+    last30.forEach(h=>{const t=h.type||h.focus;if(t)catCount[t]=(catCount[t]||0)+1;});
+    const topCat=Object.entries(catCount).sort((a,b)=>b[1]-a[1])[0];
+    if(topCat){
+      const CAT_NAMES={'gambe':'Gambe','braccia':'Braccia','core':'Core','stretching':'Stretching',
+        'orientale':'Orientale','seduto':'Da Seduto','cardio':'Cardio','elastici':'Elastici','misto':'Misto'};
+      phrases.push('🎯 La tua categoria preferita? '+( CAT_NAMES[topCat[0]]||topCat[0])+' ('+topCat[1]+' sessioni recenti).');
+    }
+  }
+  
+  // Record streak
+  if(S.maxStr&&S.maxStr>str&&S.maxStr>=7)
+    phrases.push('🏆 Il tuo record streak è '+S.maxStr+' giorni — '+(str>=S.maxStr*0.8?'ci sei quasi!':'puoi batterlo!'));
+  
+  // Confronto mese scorso
+  const thisMonth=localDate().slice(0,7);
+  const lastMonth=new Date();lastMonth.setMonth(lastMonth.getMonth()-1);
+  const lastMonthStr=lastMonth.toISOString().slice(0,7);
+  const sessThisMonth=hist.filter(h=>h.date&&h.date.startsWith(thisMonth)&&h.type!=='riposo_vol').length;
+  const sessLastMonth=hist.filter(h=>h.date&&h.date.startsWith(lastMonthStr)&&h.type!=='riposo_vol').length;
+  if(sessLastMonth>0&&sessThisMonth>0){
+    const diff=sessThisMonth-sessLastMonth;
+    if(diff>0) phrases.push('📈 Questo mese hai fatto '+sessThisMonth+' sessioni — '+diff+' in più del mese scorso!');
+    else if(diff<0) phrases.push('💡 Il mese scorso hai fatto '+sessLastMonth+' sessioni — questo mese puoi fare meglio!');
+  }
+  
+  // Badge
+  if(badges>=10) phrases.push('🏅 '+badges+' badge sbloccati su '+BADGES.length+'! Sei a '+(BADGES.length-badges)+' dal completamento.');
+  
+  // Routine
+  if((S.morningTotal||0)+(S.sleepTotal||0)>=20)
+    phrases.push('🌅 '+(S.morningTotal||0)+' routine mattutine e '+(S.sleepTotal||0)+' pre-sonno — la tartaruga conosce i tuoi ritmi!');
+  
+  return phrases;
+}
+
+
+// ═══ WIDGET PROGRESSI ESPORTABILE ════════════════════════════════════════════
+function shareProgressWidget(){
+  const canvas=document.createElement('canvas');
+  canvas.width=1080; canvas.height=1080;
+  const ctx=canvas.getContext('2d');
+  
+  const xp=S.xp||0, str=S.str||0, tot=S.tot||0;
+  const badges=(S.badges||[]).length;
+  const totalEx=(S.history||[]).reduce((a,h)=>a+(h.exCount||0),0);
+  const xpTitle=getXpTitle(xp);
+  const name=P.name||'Tartaruga';
+  const lv=getUserLevel(xp);
+  
+  // Random motivational phrase for the widget
+  const widgetPhrases=[
+    'Lento ma costante vince la gara! 🐢',
+    'Ogni sessione è un investimento su di te! 💪',
+    'La costanza è il tuo superpotere! ⚡',
+    'Il corpo che hai vuole muoversi! 🦾',
+    'Non serve la palestra — basta la voglia! 🏠',
+    'Piccoli passi, grande cambiamento! 🚀',
+    'Il movimento è la medicina più economica! 💊',
+    'La tartaruga non si arrende! 🐢',
+  ];
+  const motivPhrase=widgetPhrases[Math.floor(Math.random()*widgetPhrases.length)];
+  
+  // Last 5 unlocked badges
+  const unlockedBadges=(S.badges||[]).slice(-5).map(id=>BADGES.find(b=>b.id===id)).filter(Boolean);
+  
+  // ── Draw background ──────────────────────────────────────────────
+  const bg=ctx.createLinearGradient(0,0,1080,1080);
+  bg.addColorStop(0,'#0D3B1A'); bg.addColorStop(0.6,'#1B5E20'); bg.addColorStop(1,'#0A2E10');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,1080,1080);
+  
+  // Subtle texture circles
+  [[1080,0,380],[0,1080,300],[540,540,200]].forEach(([x,y,r])=>{
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle='rgba(255,255,255,.03)'; ctx.fill();
+  });
+  
+  // ── Rounded card helper ──────────────────────────────────────────
+  const roundRect=(x,y,w,h,r,fill,stroke)=>{
+    ctx.beginPath(); ctx.roundRect(x,y,w,h,r);
+    if(fill){ctx.fillStyle=fill; ctx.fill();}
+    if(stroke){ctx.strokeStyle=stroke; ctx.lineWidth=1.5; ctx.stroke();}
+  };
+  
+  // Shadow helper
+  const withShadow=(fn,blur,color)=>{
+    ctx.shadowBlur=blur||0; ctx.shadowColor=color||'rgba(0,0,0,.4)';
+    fn(); ctx.shadowBlur=0; ctx.shadowColor='transparent';
+  };
+  
+  const txt=(text,x,y,size,color,align,weight,font)=>{
+    ctx.font=(weight||'bold')+' '+size+'px '+(font||'Arial,sans-serif');
+    ctx.fillStyle=color||'#fff'; ctx.textAlign=align||'center';
+    ctx.fillText(String(text),x,y);
+  };
+  
+  const renderWidget=()=>{
+    // ── TOP: Motivational title ──────────────────────────────────
+    roundRect(40,40,1000,100,20,'rgba(255,255,255,.06)','rgba(255,255,255,.12)');
+    txt('🐢 '+motivPhrase,540,105,22,'rgba(255,255,255,.9)','center','bold');
+    
+    // ── Name + Title ─────────────────────────────────────────────
+    txt(name,540,195,52,'#fff','center','bold');
+    ctx.font='bold 28px Arial'; ctx.fillStyle=xpTitle.color||'#FFD700'; ctx.textAlign='center';
+    ctx.fillText(xpTitle.icon+' '+xpTitle.title,540,238);
+    txt('Lv. '+lv+' · '+xp+' XP',540,270,18,'rgba(255,255,255,.55)','center','normal');
+    
+    // ── STREAK — hero stat (very large) ──────────────────────────
+    withShadow(()=>{
+      roundRect(40,295,1000,220,24,'rgba(255,255,255,.09)','rgba(255,255,255,.18)');
+    },20,'rgba(0,0,0,.3)');
+    txt('🔥',80,450,80,'#fff','left');
+    txt(str,540,430,120,'#fff','center','900');
+    txt('giorni di streak',540,478,24,'rgba(255,255,255,.65)','center','normal');
+    
+    // ── 3 CARDS: Sessioni · XP · Esercizi ────────────────────────
+    const cards=[
+      {icon:'💪',val:tot,lbl:'Sessioni'},
+      {icon:'⭐',val:xp,lbl:'XP totali'},
+      {icon:'🏋️',val:totalEx,lbl:'Esercizi'},
+    ];
+    const cw=310, gap=25, cx=40;
+    cards.forEach((card,i)=>{
+      const bx=cx+i*(cw+gap), by=535;
+      withShadow(()=>{
+        roundRect(bx,by,cw,180,20,'rgba(255,255,255,.08)','rgba(255,255,255,.15)');
+      },12,'rgba(0,0,0,.25)');
+      txt(card.icon,bx+cw/2,by+60,40,'#fff','center');
+      txt(card.val,bx+cw/2,by+125,52,'#fff','center','bold','Arial');
+      txt(card.lbl,bx+cw/2,by+155,16,'rgba(255,255,255,.6)','center','normal');
+    });
+    
+    // ── Last 5 badges ─────────────────────────────────────────────
+    const badgeY=740;
+    roundRect(40,badgeY,1000,130,20,'rgba(255,255,255,.06)','rgba(255,255,255,.1)');
+    txt('Ultimi badge sbloccati',540,badgeY+35,18,'rgba(255,255,255,.6)','center','normal');
+    if(unlockedBadges.length>0){
+      const bsW=1000/unlockedBadges.length;
+      unlockedBadges.forEach((b,i)=>{
+        const bx=40+i*bsW+bsW/2;
+        txt(b.icon||'🏅',bx,badgeY+72,36,'#fff','center');
+        // Nome badge sotto l'icona
+        ctx.font='normal 14px Arial,sans-serif';
+        ctx.fillStyle='rgba(255,255,255,.75)';ctx.textAlign='center';
+        const badgeName=(b.name||'').slice(0,12);
+        ctx.fillText(badgeName,bx,badgeY+102);
+      });
+    } else {
+      txt('Continua ad allenarti per sbloccare badge! 🐢',540,badgeY+90,18,'rgba(255,255,255,.5)','center','normal');
+    }
+    
+    // ── Footer with logo area ─────────────────────────────────────
+    roundRect(40,895,1000,70,16,'rgba(255,255,255,.05)','rgba(255,255,255,.1)');
+    txt('TurboTartaruga',540,928,22,'rgba(255,255,255,.8)','center','bold');
+    txt('Il tuo coach fitness amichevole · turbotartaruga.app',540,955,14,'rgba(255,255,255,.4)','center','normal');
+    
+    // ── Export ───────────────────────────────────────────────────
+    canvas.toBlob(blob=>{
+      const file=new File([blob],'turbotartaruga-progressi.png',{type:'image/png'});
+      if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+        navigator.share({
+          title:'TurboTartaruga — I miei progressi',
+          text:name+' è '+xpTitle.icon+' '+xpTitle.title+' con '+str+' giorni di streak! 🐢',
+          files:[file]
+        }).catch(()=>_downloadWidget(canvas));
+      } else _downloadWidget(canvas);
+    },'image/png');
+  };
+  
+  // Load logo
+  const img=new Image(); img.crossOrigin='anonymous';
+  img.onload=()=>{
+    // Logo in bottom-right corner, subtle
+    ctx.save(); ctx.globalAlpha=0.12;
+    ctx.drawImage(img,820,860,200,200);
+    ctx.restore();
+    renderWidget();
+  };
+  img.onerror=renderWidget;
+  img.src='logo-turtle.png';
+}
+function _downloadWidget(canvas){
+  const a=document.createElement('a');
+  a.download='turbotartaruga-progressi.png';
+  a.href=canvas.toDataURL('image/png'); a.click();
+}
+
 // ═══ SUGGERIMENTO CAMBIO LIVELLO ═══════════════════════════════════════════
 // Cooldown key in localStorage — 15 giorni dopo "Non ancora"
 var LEVEL_SUGGEST_KEY = 'tt4_lvl_suggest';
@@ -5679,13 +6114,16 @@ function buildCoachBubble(){
   if(_wxCache){
     const desc=WX_DESCS[_wxCache.emoji]||'tempo variabile';
     const t=_wxCache.temp;
-    let wxPhrase='';
-    if(t<=5)       wxPhrase='🥶 Fa freddo ('+t+'°)! Perfetto per scaldarsi con qualche esercizio.';
-    else if(t<=15) wxPhrase=_wxCache.emoji+' '+t+'° e '+desc+'. Un po\' fresco — ideale per muoversi!';
-    else if(t<=25) wxPhrase=_wxCache.emoji+' '+t+'° e '+desc+'. Condizioni perfette per allenarti!';
-    else           wxPhrase='🌡️ '+t+'° e '+desc+'. Idratati bene e muoviti con calma.';
-    _coachPhrases.push(wxPhrase);
-  } else if(SET.gpsLat&&SET.gpsLon){
+    // Use WEATHER_PHRASES for richer weather messages
+    let wxArr=WEATHER_PHRASES.cloud;
+    if(t<=5)wxArr=WEATHER_PHRASES.cold;
+    else if(t>=30)wxArr=WEATHER_PHRASES.hot;
+    else if(['🌧️','🌦️','⛈️'].includes(_wxCache.emoji))wxArr=WEATHER_PHRASES.rain;
+    else if(['☀️','🌤️'].includes(_wxCache.emoji))wxArr=WEATHER_PHRASES.sun;
+    else if(['🌫️','💨'].includes(_wxCache.emoji))wxArr=WEATHER_PHRASES.fog;
+    const wxPhrase=wxArr[Math.floor(Math.random()*wxArr.length)];
+    _coachPhrases.push(wxPhrase+' ('+t+'°)');
+  } else if(P.gpsLat&&P.gpsLon){
     // GPS attivo ma cache non ancora disponibile — fetch asincrono
     fetchWeather().then(wx=>{
       if(wx&&document.getElementById('home-phrase')){
@@ -5714,6 +6152,14 @@ function buildCoachBubble(){
 
   // 4. Suggerimento livello (se attivo)
   // checkLevelSuggestion() gestisce già il proprio banner — non duplicare qui
+  
+  // 5. Frasi personali statistiche (1 casuale ogni apertura)
+  const personalPhrases=buildPersonalInsights();
+  if(personalPhrases.length>0){
+    // Aggiungi 1-2 frasi personali alla rotazione
+    const shuffled=personalPhrases.sort(()=>Math.random()-.5);
+    shuffled.slice(0,Math.min(2,shuffled.length)).forEach(p=>_coachPhrases.push(p));
+  }
 
   // Start rotation
   _showCoachPhrase();
@@ -5758,11 +6204,11 @@ var WX_DESCS={
 };
 
 async function fetchWeather(){
-  if(!SET.gpsLat||!SET.gpsLon)return null;
+  if(!P.gpsLat||!P.gpsLon)return null;
   const now=Date.now();
   if(_wxCache&&now-_wxCacheTime<1800000)return _wxCache; // 30min cache
   try{
-    const url='https://api.open-meteo.com/v1/forecast?latitude='+SET.gpsLat+'&longitude='+SET.gpsLon+'&current=temperature_2m,weathercode,windspeed_10m&timezone=auto';
+    const url='https://api.open-meteo.com/v1/forecast?latitude='+P.gpsLat+'&longitude='+P.gpsLon+'&current=temperature_2m,weathercode,windspeed_10m&timezone=auto';
     const r=await fetch(url);
     if(!r.ok)return null;
     const d=await r.json();
@@ -5801,10 +6247,12 @@ function wizRequestGPS(){
   if(btn)btn.textContent='📡 Rilevamento in corso...';
   navigator.geolocation.getCurrentPosition(
     pos=>{
-      SET.gpsLat=pos.coords.latitude;
-      SET.gpsLon=pos.coords.longitude;
+      P.gpsLat=pos.coords.latitude;
+      P.gpsLon=pos.coords.longitude;
       _wizData.gpsLat=pos.coords.latitude;
       _wizData.gpsLon=pos.coords.longitude;
+      save(); // persist immediately
+      localStorage.setItem('tt4_gps',JSON.stringify({lat:P.gpsLat,lon:P.gpsLon}));
       if(btn){btn.textContent='✅ Posizione salvata!';btn.style.background='rgba(255,255,255,.35)';}
       if(status)status.textContent='📍 Il coach saprà anche del meteo — ottimo! 🌤️';
       setTimeout(()=>wizNav(1), 1200); // auto-advance
@@ -5826,13 +6274,17 @@ function requestGPS(context){
   if(btn)btn.textContent='📡 Rilevamento...';
   navigator.geolocation.getCurrentPosition(
     pos=>{
-      SET.gpsLat=pos.coords.latitude;
-      SET.gpsLon=pos.coords.longitude;
+      P.gpsLat=pos.coords.latitude;
+      P.gpsLon=pos.coords.longitude;
       save();
+      localStorage.setItem('tt4_gps',JSON.stringify({lat:P.gpsLat,lon:P.gpsLon}));
       _wxCache=null; // reset cache
       if(btn)btn.textContent='✅ Posizione salvata!';
       if(status)status.textContent='📍 Posizione attiva — il meteo influenzerà le frasi del coach';
       toast('✅ Posizione salvata! Il coach parlerà anche del meteo 🌤️');
+      // Aggiorna chip GPS in home
+      const _ghc=document.getElementById('home-gps-chip');
+      if(_ghc)_ghc.style.display='flex';
       // Refresh coach bubble immediately
       buildCoachBubble();
     },
@@ -5845,6 +6297,91 @@ function requestGPS(context){
   );
 }
 
+
+
+// ═══ SONETTI DI COMPLETAMENTO ════════════════════════════════════════════════
+function playCompletionSound(type){
+  // type: 'normal' | 'routine' | 'record'
+  if(!SET.audio)return;
+  try{
+    const ctx=getACtx();
+    if(!ctx)return;
+    const t=ctx.currentTime;
+    if(type==='routine'){
+      // Campanellino dolce — 2 note
+      _playNote(ctx,880,t,0.3,0.15,'sine');
+      _playNote(ctx,1108,t+0.25,0.4,0.15,'sine');
+    } else if(type==='record'){
+      // Fanfara trionfale — 6 note ascendenti
+      const notes=[523,659,784,880,1047,1319];
+      notes.forEach((f,i)=>_playNote(ctx,f,t+i*0.12,0.35-i*0.02,0.18,'sawtooth'));
+      // Finale con chord
+      [1047,1319,1568].forEach((f,i)=>_playNote(ctx,f,t+0.9,0.4,0.5,'sine'));
+    } else {
+      // Normal — fanfara allegra 3 note
+      _playNote(ctx,523,t,0.3,0.12,'sine');
+      _playNote(ctx,659,t+0.15,0.3,0.12,'sine');
+      _playNote(ctx,784,t+0.30,0.4,0.25,'sine');
+    }
+  }catch(e){}
+}
+function _playNote(ctx,freq,startTime,volume,duration,type){
+  const o=ctx.createOscillator();
+  const g=ctx.createGain();
+  o.connect(g);g.connect(ctx.destination);
+  o.type=type||'sine';
+  o.frequency.value=freq;
+  g.gain.setValueAtTime(volume,startTime);
+  g.gain.exponentialRampToValueAtTime(0.001,startTime+duration);
+  o.start(startTime);
+  o.stop(startTime+duration+0.05);
+}
+
+// ═══ FRASI METEO ════════════════════════════════════════════════════════════
+var WEATHER_PHRASES={
+  sun:[ // ☀️ sole/caldo moderato
+    "☀️ Sole splendente! Perfetto per aprire la finestra e muoversi con l'aria fresca!",
+    "🌞 Con questo sole è quasi un peccato non fare qualcosa di bello per il corpo!",
+    "☀️ Giornata luminosa — anche l'umore è al top. Momento perfetto per allenarti!",
+    "🌤️ Bella giornata! Il sole dà energia — usala bene! 💪",
+    "🌻 Con questa luce muoversi è più bello. La tartaruga lo sa! 🐢",
+  ],
+  rain:[ // 🌧️ pioggia
+    "🌧️ Fuori piove — dentro si suda meglio! Niente scuse! 🏠",
+    "☔ La pioggia è la colonna sonora perfetta per la sessione di oggi!",
+    "🌦️ Pioverellina? Perfetto — ancora più ragione per restare in casa e allenarti!",
+    "🌧️ Il cattivo tempo fuori = ottimo momento per fare qualcosa di bello per te!",
+    "☔ Fuori diluvia — dentro la tartaruga corre! 🐢💨",
+  ],
+  cold:[ // ❄️ freddo/neve
+    "🥶 Fa freddo! Allena un po' — ti scalderai subito, promesso!",
+    "❄️ Il freddo è il miglior riscaldamento involontario — e poi si scala! 🔥",
+    "🌨️ Temperatura bassa? Perfetto per un esercizio che scalda bene le gambe!",
+    "🥶 Con questo freddo il corpo vuole restare fermo — non dargliela vinta!",
+    "❄️ Neve o freddo: la tartaruga si allena con ogni meteo! 🐢",
+  ],
+  cloud:[ // ☁️ nuvoloso/coperto
+    "☁️ Niente sole oggi — lo crei tu con il movimento! 💡",
+    "🌥️ Cielo coperto = vibe perfetto per una sessione tranquilla ma costante.",
+    "☁️ Giornata grigia? Il tuo allenamento la colora! 🌈",
+    "🌫️ Tempo cupo fuori — dentro ci pensa la tartaruga a tirarti su! 🐢",
+    "☁️ Nuvole tante, scuse zero! 💪",
+  ],
+  hot:[ // 🌡️ caldo intenso
+    "🌡️ Caldo! Idratati bene e scegli esercizi lenti oggi. La tartaruga è saggia! 💧",
+    "🥵 Caldo intenso — allenamento leggero, acqua tanta! 💦",
+    "🌡️ Con questo caldo la sessione va fatta piano. Ma va fatta! 🐢",
+    "🔆 Sole forte — se ti alleni, fallo al fresco! Finestra aperta o ventilatore on! 🌬️",
+    "🥵 Caldo da record — anche solo 10 minuti leggeri fanno la differenza!",
+  ],
+  fog:[ // 🌫️ nebbia/vento
+    "🌫️ Tempo da lupi — allenamento da TurboTartaruga! 🐢⚡",
+    "💨 Vento forte fuori? Dentro si allena senza scuse! 🏠",
+    "🌫️ La nebbia non ferma la tartaruga! 🐢",
+    "💨 Con questo vento meglio restare in casa — e fare qualcosa di utile! 💪",
+    "🌫️ Giornata nebbiosa: forse l'universo ti sta dicendo di allenarti al chiuso! 😄",
+  ],
+};
 // ═══ INIT ═══
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
@@ -5990,7 +6527,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604181403'; // auto-set on each release
+const APP_BUILD='202604181807'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
