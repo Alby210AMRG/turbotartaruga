@@ -1,6 +1,6 @@
 {
-  "version": "1.024",
-  "build": "202604191341",
-  "date": "19/04/2026 13:41",
-  "notes": "sleep wrap fix, accordion spacing, music variants, CSV dynamic cols, level banner visible"
+  "version": "1.025",
+  "build": "202604192031",
+  "date": "19/04/2026 20:31",
+  "notes": "slider fix, cardio/elastici rock music"
 }
