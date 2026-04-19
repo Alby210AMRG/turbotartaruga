@@ -703,9 +703,28 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
     <!-- 2. NUMERI CHIAVE -->
     <div class="card"><div class="card-title">📈 I miei numeri</div>
-      <div class="stat-grid"><div><div class="sv" id="prg-str">0</div><div class="sl">🔥 Streak</div></div><div><div class="sv" id="prg-tot">0</div><div class="sl">Sessioni</div></div><div><div class="sv" id="prg-level-num">1</div><div class="sl">⭐ Livello</div></div></div>
-      <div class="stat-grid" style="margin-top:10px"><div><div class="sv" id="prg-xp">0</div><div class="sl">XP totali</div></div><div><div class="sv" id="prg-morning">0</div><div class="sl">☀️ Mattino</div></div><div><div class="sv" id="prg-sleep">0</div><div class="sl">🌙 Sera</div></div></div>
-      <div class="stat-grid" style="margin-top:10px"><div><div class="sv" id="prg-badges">0</div><div class="sl">🏅 Badge</div></div><div><div class="sv" id="prg-boosts">0</div><div class="sl">💥 Boost</div></div><div><div class="sv" id="prg-skipped">0</div><div class="sl">😴 Saltate</div></div></div>
+
+      <!-- Riga 1: Dati principali -->
+      <div style="font-size:10px;font-weight:bold;color:var(--tlt);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">Allenamento</div>
+      <div class="stat-grid"><div><div class="sv" id="prg-str">0</div><div class="sl">🔥 Streak</div></div><div><div class="sv" id="prg-tot">0</div><div class="sl">💪 Sessioni</div></div><div><div class="sv" id="prg-level-num">1</div><div class="sl">⭐ Livello</div></div></div>
+
+      <!-- Riga 2: XP e routine -->
+      <div style="font-size:10px;font-weight:bold;color:var(--tlt);letter-spacing:1px;text-transform:uppercase;margin:12px 0 6px">XP e routine</div>
+      <div class="stat-grid"><div><div class="sv" id="prg-xp">0</div><div class="sl">⭐ XP totali</div></div><div><div class="sv" id="prg-morning">0</div><div class="sl">☀️ Mattino</div></div><div><div class="sv" id="prg-sleep">0</div><div class="sl">🌙 Sera</div></div></div>
+
+      <!-- Riga 3: Esercizi -->
+      <div style="font-size:10px;font-weight:bold;color:var(--tlt);letter-spacing:1px;text-transform:uppercase;margin:12px 0 6px">Esercizi</div>
+      <div class="stat-grid"><div><div class="sv" id="prg-total-ex">0</div><div class="sl">💪 Totali</div></div><div><div class="sv" id="prg-avg-ex">0</div><div class="sl">📊 Media/sessione</div></div><div><div class="sv" id="prg-badges">0</div><div class="sl">🏅 Badge</div></div></div>
+      <!-- Esercizio più frequente (full width) -->
+      <div style="margin-top:8px;padding:8px 10px;background:var(--bg2);border-radius:10px;font-size:12px;color:var(--tmid)">
+        🏋️ Più frequente: <b id="prg-top-ex">—</b>
+      </div>
+
+      <!-- Riga 4: Extra -->
+      <div style="font-size:10px;font-weight:bold;color:var(--tlt);letter-spacing:1px;text-transform:uppercase;margin:12px 0 6px">Extra</div>
+      <div class="stat-grid"><div><div class="sv" id="prg-boosts">0</div><div class="sl">💥 Boost</div></div><div><div class="sv" id="prg-skipped">0</div><div class="sl">😴 Saltate</div></div><div><div class="sv" id="prg-skip-warn" style="font-size:11px;color:var(--coral)"></div><div class="sl"></div></div></div>
+      <div id="prg-skip-txt" style="display:none;font-size:11px;color:var(--coral);margin-top:4px"></div>
+
     </div>
     <!-- 3. HEATMAP -->
     <div class="card">
@@ -1148,10 +1167,36 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div class="acc-card">
       <button class="acc-hdr" onclick="toggleAcc('acc-dati')"><span>💾 Dati e backup</span><span class="acc-arr" id="arr-dati">▼</span></button>
       <div class="acc-body" id="acc-dati">
-        <div class="sblk" style="margin:0">
-          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px"><div class="stitle">💾 Esporta dati</div><div class="sval">Salva tutti i tuoi progressi in un file JSON.</div><button class="btn btn-s btn-full" style="padding:10px" onclick="exportJSON()">📥 Esporta JSON</button></div>
-          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px"><div class="stitle">📤 Importa dati</div><div class="sval">Ripristina i progressi da un file JSON esportato.</div><label class="btn btn-s btn-full" style="padding:10px;text-align:center;cursor:pointer">📂 Seleziona file JSON<input type="file" accept=".json" style="display:none" onchange="importJSON(event)"></label></div>
-          <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px"><div class="stitle" style="color:#E53935">⚠️ Reimposta app</div><div class="sval">Cancella tutti i dati. Non recuperabile!</div><button class="btn btn-s btn-full" style="padding:10px;background:#FFEBEE;color:#E53935;border-color:#E53935" onclick="if(confirm('Sei sicuro? Tutti i dati verranno cancellati!'))resetAll()">🗑️ Reimposta app</button></div>
+        <div class="sblk" style="margin:0;gap:0">
+
+          <!-- Esporta JSON -->
+          <div style="padding:12px 0;border-bottom:1px solid var(--bdr)">
+            <div style="font-weight:bold;font-size:14px;margin-bottom:3px">💾 Esporta dati (JSON)</div>
+            <div style="font-size:12px;color:var(--tmid);margin-bottom:8px">Salva <b>tutti</b> i tuoi progressi (profilo, sessioni, badge, piano) in un file JSON. Usalo per fare un backup completo o per trasferire l'app su un altro dispositivo.</div>
+            <button class="btn btn-s btn-full" style="padding:10px" onclick="exportJSON()">📥 Esporta JSON</button>
+          </div>
+
+          <!-- Esporta CSV -->
+          <div style="padding:12px 0;border-bottom:1px solid var(--bdr)">
+            <div style="font-weight:bold;font-size:14px;margin-bottom:3px">📊 Esporta sessioni (CSV)</div>
+            <div style="font-size:12px;color:var(--tmid);margin-bottom:8px">Scarica la lista di tutte le tue sessioni in formato CSV (foglio di calcolo). Apribile con Excel, Google Sheets o Numbers. Contiene: data, categoria, durata, XP, esercizi e altro.</div>
+            <button class="btn btn-s btn-full" style="padding:10px;background:var(--g4);color:var(--g1);border:2px solid var(--g1)" onclick="exportCSV()">📊 Esporta CSV</button>
+          </div>
+
+          <!-- Importa JSON -->
+          <div style="padding:12px 0;border-bottom:1px solid var(--bdr)">
+            <div style="font-weight:bold;font-size:14px;margin-bottom:3px">📤 Importa dati (JSON)</div>
+            <div style="font-size:12px;color:var(--tmid);margin-bottom:8px">Ripristina i progressi da un file JSON esportato in precedenza. <b>Attenzione:</b> sovrascrive i dati attuali. Utile per ripristinare un backup o cambiare dispositivo.</div>
+            <label class="btn btn-s btn-full" style="padding:10px;text-align:center;cursor:pointer;display:block">📂 Seleziona file JSON<input type="file" accept=".json" style="display:none" onchange="importJSON(event)"></label>
+          </div>
+
+          <!-- Reimposta -->
+          <div style="padding:12px 0">
+            <div style="font-weight:bold;font-size:14px;margin-bottom:3px;color:#E53935">⚠️ Reimposta app</div>
+            <div style="font-size:12px;color:var(--tmid);margin-bottom:8px">Cancella <b>tutti</b> i dati: profilo, sessioni, badge, progressi. Operazione <b>irreversibile</b> — assicurati di aver esportato il JSON prima!</div>
+            <button class="btn btn-s btn-full" style="padding:10px;background:#FFEBEE;color:#E53935;border-color:#E53935" onclick="if(confirm('Sei sicuro? Tutti i dati verranno cancellati definitivamente!'))resetAll()">🗑️ Reimposta app</button>
+          </div>
+
         </div>
       </div>
     </div>
@@ -2546,7 +2591,7 @@ function doVolRest(type){
 function addHistory(entry){
   if(!S.history)S.history=[];
   S.history.unshift(entry);
-  if(S.history.length>60)S.history=S.history.slice(0,60);
+  if(S.history.length>365)S.history=S.history.slice(0,365);
 }
 
 // ═══ PRE-SESSION ═══
@@ -4275,6 +4320,18 @@ function buildProgress(){
   document.getElementById('prg-str').textContent=S.str;
   document.getElementById('prg-xp').textContent=S.xp||0;
   const boostEl=document.getElementById('prg-boosts');if(boostEl)boostEl.textContent=S.boosts||0;
+  // Totale esercizi e media
+  const _allWo=(S.history||[]).filter(h=>h.type!=='riposo_vol'&&h.type!=='mattino'&&h.type!=='presonno');
+  const _totEx=_allWo.reduce((s,h)=>s+(h.exCount||0),0);
+  const _avgEx=_allWo.length?(_totEx/_allWo.length).toFixed(1):0;
+  const _exElTot=document.getElementById('prg-total-ex');if(_exElTot)_exElTot.textContent=_totEx;
+  const _exElAvg=document.getElementById('prg-avg-ex');if(_exElAvg)_exElAvg.textContent=_avgEx;
+  // Esercizio più frequente
+  const _exFreq={};
+  _allWo.filter(h=>h.exercises&&h.exercises.length).forEach(h=>{h.exercises.forEach(e=>{if(e.n)_exFreq[e.n]=(_exFreq[e.n]||0)+1;});});
+  const _topEx=Object.entries(_exFreq).sort((a,b)=>b[1]-a[1])[0];
+  const _topExEl=document.getElementById('prg-top-ex');
+  if(_topExEl&&_topEx)_topExEl.textContent=_topEx[0]+' (×'+_topEx[1]+')';
   const skEl=document.getElementById('prg-skipped');if(skEl)skEl.textContent=S.skippedTotal||0;
   const bgEl=document.getElementById('prg-badges');if(bgEl)bgEl.textContent=(S.badges||[]).length;
   const morEl=document.getElementById('prg-morning');if(morEl)morEl.textContent=S.morningTotal||0;
@@ -4664,7 +4721,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.023 · 19/04/2026 10:19 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.023 · 19/04/2026 12:38 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -4867,6 +4924,39 @@ function toggleFavList(id,btn){if(!P.favorites)P.favorites=[];const i=P.favorite
 function toggleAvoidList(id,btn){if(!P.avoided)P.avoided=[];const i=P.avoided.indexOf(id);if(i>=0){P.avoided.splice(i,1);btn.style.opacity='0.3';toast('🚫 Rimosso da "non mi piace"');}else{P.favorites=(P.favorites||[]).filter(x=>x!==id);P.avoided.push(id);btn.style.opacity='1';toast('🚫 Esercizio escluso!');}save()}
 function exportJSON(){const d=bkData();const blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=`turbotartaruga-${new Date().toISOString().slice(0,10)}.json`;document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);toast('✅ File JSON esportato!')}
 // importJSON defined above
+// ═══ EXPORT CSV ══════════════════════════════════════════════════════════════
+function exportCSV(){
+  const hist=(S.history||[]).filter(h=>h.type!=='riposo_vol');
+  if(!hist.length){toast('⚠️ Nessuna sessione da esportare');return;}
+  
+  const headers=['Data','Tipo','Categoria','Durata (min)','Esercizi','XP','Streak giorno','Umore','Boost','Ora'];
+  const rows=hist.map(h=>[
+    h.date||'',
+    h.type||'',
+    h.focus||h.type||'',
+    h.dur||0,
+    h.exCount||0,
+    h.xp||0,
+    h.streakDay||S.str||0,  // streak snapshot se salvato, altrimenti attuale
+    h.feeling||'',
+    h.boost?'sì':'no',
+    h.hour!=null?h.hour:''
+  ]);
+  
+  const csv=[headers,...rows].map(r=>
+    r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')
+  ).join('\r\n');
+  
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='turbotartaruga-sessioni-'+new Date().toISOString().slice(0,10)+'.csv';
+  document.body.appendChild(a);a.click();
+  document.body.removeChild(a);URL.revokeObjectURL(url);
+  toast('✅ CSV esportato — '+hist.length+' sessioni!');
+}
+
 function importJSONWelcome(ev){
   const f=ev.target.files[0];if(!f)return;
   const r=new FileReader();
@@ -5187,6 +5277,12 @@ var BADGES=[
   {id:'b_partyking',lv:6,icon:'👑',name:'Party King',hint:'5 sessioni party completate',check:s=>s.party>=5},
   // ── LIVELLO 7: TurboTartaruga Pro (3500-5999 XP) ────────────────
   {id:'b_iron',lv:7,icon:'🦅',name:'Tartaruga d\'acciaio',hint:'200 sessioni totali',check:s=>s.tot>=200},
+  // ── BADGE ESERCIZI TOTALI ───────────────────────────────────────────────────
+  {id:'b_ex50',lv:2,icon:'🤸',name:'Primo allenatore',hint:'50 esercizi completati',check:s=>(s.history||[]).reduce((a,h)=>a+(h.exCount||0),0)>=50},
+  {id:'b_ex200',lv:3,icon:'💪',name:'Corpo in moto',hint:'200 esercizi completati',check:s=>(s.history||[]).reduce((a,h)=>a+(h.exCount||0),0)>=200},
+  {id:'b_ex500',lv:5,icon:'🏋️',name:'Atleta TurboTartaruga',hint:'500 esercizi completati',check:s=>(s.history||[]).reduce((a,h)=>a+(h.exCount||0),0)>=500},
+  {id:'b_ex1000',lv:6,icon:'🦾',name:'Macchina da guerra',hint:'1000 esercizi completati — fenomenale!',check:s=>(s.history||[]).reduce((a,h)=>a+(h.exCount||0),0)>=1000},
+  {id:'b_ex2000',lv:8,icon:'🌟',name:'Leggenda in movimento',hint:'2000 esercizi completati — sei una leggenda!',check:s=>(s.history||[]).reduce((a,h)=>a+(h.exCount||0),0)>=2000},
   {id:'b_zen',lv:7,icon:'☯️',name:'Maestro zen',hint:'50 sessioni orientali completate',check:s=>s.ori>=50},
   {id:'b_100str',lv:7,icon:'🔱',name:'100 giorni',hint:'100 giorni consecutivi — leggendario!',check:s=>s.str>=100},
   // ── LIVELLO 8: Leggenda (6000+ XP) ─────────────────────────────
@@ -5405,7 +5501,8 @@ function openBadgeModal(el){
   const desc=document.getElementById('ex-modal-desc');
   const zona=document.getElementById('ex-modal-zona');
   if(nm)nm.textContent=b.icon+' '+b.name;
-  if(cat)cat.textContent=['','🥚 Tartarughina','🐢 Tartaruga','🚀 TurboTartaruga'][b.lv]+(unlocked?' — Sbloccato! ✅':' — Bloccato 🔒');
+  const lvLabels={1:'🌱 Livello 1',2:'💪 Livello 2',3:'🐢 Livello 3',4:'💎 Livello 4',5:'🔥 Livello 5',6:'⚡ Livello 6',7:'🚀 Livello 7',8:'🏆 Livello 8'};
+  if(cat)cat.textContent=(lvLabels[b.lv]||('Lv.'+b.lv))+(unlocked?' — Sbloccato ✅':' — Bloccato 🔒');
   if(desc)desc.textContent=unlocked?'Badge sbloccato! Ottimo lavoro 🐢':'Come sbloccarlo: '+b.hint;
   if(zona)zona.textContent=unlocked?'+25 XP guadagnati':'Requisito: '+b.hint;
   if(img)img.style.display='none';
@@ -5627,6 +5724,8 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.023',date:'19/04/2026',changes:['Fix Impostazioni Dati e backup: layout pulito + descrizioni','Fix I miei numeri: sezioni separate con label','Fix badge modal: livelli 1-8 corretti','Fix prg-skip-txt mancante']},
+  {v:'1.023',date:'19/04/2026',changes:['History cap 60→365','Export CSV sessioni in Impostazioni','Progressi: totale esercizi + media/sessione + più frequente','Coach bubble: esercizio preferito, totali periodo, questo giorno X mesi fa','5 nuovi badge esercizi (50→2000 esercizi)']},
   {v:'1.023',date:'19/04/2026',changes:['Fix banner nessuna sessione: nascosto al primo giorno','Fix generatePlan: utente esistente delega a refreshPlan','Fix refreshPlan: preserva giorni passati e continua rotazione categorie','Test suite: +14 test (GPS, XP titles, badge segreti, piano)']},
   {v:'1.022',date:'18/04/2026',changes:['Fix sesso biologico: bottoni usano CSS class invece di inline styles (no conflitto con .btn !important)','Fix GPS impostazioni: _syncGpsStatus() chiamata anche all apertura accordion']},
   {v:'1.022',date:'18/04/2026',changes:['Fix GPS chip home: icona meteo reale con temperatura','Fix GPS impostazioni: mostra coordinate per conferma','Fix DB: Squat Sumo senza cambio lato','Fix DB: Sollevamento gamba posteriore e Affondo frontale senza cambio lato','Rimosse card duplicate in Party Insieme','Tasto Condividi progressi solo in Progressi','Schermata fine sessione: un solo tasto Condividi','Party: pulsante ospite rinominato con link']},
@@ -5861,6 +5960,43 @@ function buildPersonalInsights(){
   // Routine
   if((S.morningTotal||0)+(S.sleepTotal||0)>=20)
     phrases.push('🌅 '+(S.morningTotal||0)+' routine mattutine e '+(S.sleepTotal||0)+' pre-sonno — la tartaruga conosce i tuoi ritmi!');
+  
+  // Esercizio più fatto
+  const exFreq={};
+  (hist||[]).filter(h=>h.exercises&&h.exercises.length).forEach(h=>{
+    h.exercises.forEach(e=>{if(e.n)exFreq[e.n]=(exFreq[e.n]||0)+1;});
+  });
+  const topEx=Object.entries(exFreq).sort((a,b)=>b[1]-a[1])[0];
+  if(topEx&&topEx[1]>=5)
+    phrases.push('🏋️ Il tuo esercizio preferito? '+topEx[0]+' — fatto '+topEx[1]+' volte!');
+  
+  // Totale esercizi
+  const totalExs=(hist||[]).reduce((s,h)=>s+(h.exCount||0),0);
+  if(totalExs>=100) phrases.push('💪 '+totalExs+' esercizi totali — sei un atleta TurboTartaruga!');
+  else if(totalExs>=50) phrases.push('💪 Hai completato '+totalExs+' esercizi — sempre più forte!');
+  else if(totalExs>=10) phrases.push('💪 '+totalExs+' esercizi completati finora — ottimo inizio!');
+  
+  // Esercizi per periodo
+  const _d7=new Date();_d7.setDate(_d7.getDate()-7);const _w7=_d7.toISOString().slice(0,10);
+  const _d14=new Date();_d14.setDate(_d14.getDate()-14);const _w14=_d14.toISOString().slice(0,10);
+  const _d30=new Date();_d30.setDate(_d30.getDate()-30);const _w30=_d30.toISOString().slice(0,10);
+  const exW7=(hist||[]).filter(h=>h.date>=_w7).reduce((s,h)=>s+(h.exCount||0),0);
+  const exW14=(hist||[]).filter(h=>h.date>=_w14&&h.date<_w7).reduce((s,h)=>s+(h.exCount||0),0);
+  const exW30=(hist||[]).filter(h=>h.date>=_w30).reduce((s,h)=>s+(h.exCount||0),0);
+  if(exW7>0) phrases.push('📅 Questa settimana: '+exW7+' esercizi'+(exW14>0?', la scorsa: '+exW14:'')+'!');
+  if(exW30>=30) phrases.push('🗓️ Ultimo mese: '+exW30+' esercizi — che ritmo!');
+  
+  // Questo giorno X mesi fa
+  const todayMD=localDate().slice(5);
+  const pastSameDay=(hist||[]).filter(h=>h.date&&h.date.slice(5)===todayMD&&h.date<localDate());
+  if(pastSameDay.length>0){
+    const oldest=pastSameDay[pastSameDay.length-1];
+    const monthsAgo=Math.round((new Date()-new Date(oldest.date))/2629800000);
+    if(monthsAgo>=1){
+      const lbl=monthsAgo===1?'1 mese fa':monthsAgo+' mesi fa';
+      phrases.push('📆 '+lbl+', in questo stesso giorno, hai fatto '+(oldest.focus||oldest.type||'una sessione')+'!');
+    }
+  }
   
   return phrases;
 }
@@ -6549,7 +6685,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604191019'; // auto-set on each release
+const APP_BUILD='202604191238'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
