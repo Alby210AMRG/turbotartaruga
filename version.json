@@ -1,6 +1,6 @@
 {
-  "version": "1.023",
-  "build": "202604191238",
-  "date": "19/04/2026 12:38",
-  "notes": "settings dati backup redesign, I miei numeri sections, badge modal 8 levels"
+  "version": "1.024",
+  "build": "202604191341",
+  "date": "19/04/2026 13:41",
+  "notes": "sleep wrap fix, accordion spacing, music variants, CSV dynamic cols, level banner visible"
 }
