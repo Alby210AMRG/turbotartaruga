@@ -1213,7 +1213,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.022</div>
+      <div id="app-version-display">Versione v1.023</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -2253,6 +2253,13 @@ function wizBuildSummary(){
 
 // ═══ PLAN GENERATION ═══
 function generatePlan(){
+  // Per nuovo utente: genera da zero. Per utente esistente: delega a refreshPlan
+  // che preserva lo storico e continua la rotazione da dove si era
+  if(S.tot>0||(S.plan&&S.plan.length>0)){
+    refreshPlan();
+    return;
+  }
+  // Primo avvio: genera piano pulito da zero
   const cats=(P.categories||['gambe','braccia','core','stretching','orientale']).filter(c=>c!=='riscaldamento');
   const restDays=P.restDays||[0,6];
   const plan=[];let focusIdx=0,consec=0;
@@ -2285,10 +2292,36 @@ function refreshPlan(){
   const cats=(P.categories||['gambe','braccia','core','stretching','orientale']).filter(c=>c!=='riscaldamento');
   const restDays=P.restDays||[0,6];
   const maxConsec=P.level==='principiante'?2:P.level==='esperto'?5:3;
-  const plan=[];let focusIdx=0,consec=0;
+  const today=localDate();
+  
+  // ── Preserva i giorni già passati dal piano esistente ────────────────────
+  const pastEntries=(S.plan||[]).filter(p=>p.date<today);
+  
+  // ── Calcola da dove continuare la rotazione delle categorie ──────────────
+  // Conta le sessioni di allenamento reali già fatte (storia + piano passato)
+  // Prima: sessioni reali nella history
+  const realSessions=(S.history||[]).filter(h=>
+    h.type!=='riposo_vol'&&h.type!=='mattino'&&h.type!=='presonno'&&h.type!=='rest'
+  ).length;
+  // Poi: sessioni di workout nel piano passato (se non già in history)
+  const planWorkouts=pastEntries.filter(p=>p.type==='workout').length;
+  // Usa il massimo tra i due come base per la rotazione
+  let focusIdx=Math.max(realSessions, planWorkouts);
+  
+  // ── Genera solo i giorni da oggi in poi ──────────────────────────────────
+  // Mantieni consec corretto guardando gli ultimi giorni del piano passato
+  let consec=0;
+  const lastPastEntries=pastEntries.slice(-5);
+  for(let i=lastPastEntries.length-1;i>=0;i--){
+    if(lastPastEntries[i].type==='rest'){break;}
+    consec++;
+  }
+  
+  const plan=[...pastEntries];
   for(let i=0;i<30;i++){
     const d=new Date();d.setDate(d.getDate()+i);
     const dow=d.getDay();const ds=d.toISOString().slice(0,10);
+    if(ds<today)continue; // già gestito con pastEntries
     const isRest=restDays.includes(dow)||(consec>=maxConsec);
     if(isRest){
       const isUserRest=restDays.includes(dow);
@@ -2299,7 +2332,8 @@ function refreshPlan(){
     }
     else{const focus=cats[focusIdx%cats.length];plan.push({date:ds,type:'workout',focus,icon:CAT_INFO[focus]?.icon||'🏋️'});focusIdx++;consec++;}
   }
-  S.plan=plan;
+  // Mantieni solo 30 giorni dal oggi a ritroso, senza tagliare lo storico utile
+  S.plan=plan.slice(-60); // max 60 per non appesantire
   save();buildHome();const _cn=new Date();calYear=_cn.getFullYear();calMonth=_cn.getMonth();if(document.getElementById('screen-calendar')?.classList.contains('active'))buildCal();
   // Refresh calendar if currently open
   const calEl=document.getElementById('screen-calendar');
@@ -2367,6 +2401,8 @@ function buildHome(){
     if(_isRestDay){
       _noSessBanner.style.display='none';
     } else {
+      // Non mostrare al primo giorno (utente senza storia)
+      if(!S.last&&!S.tot){_noSessBanner.style.display='none';return;}
       // Solo sessioni reali (non routine/riposo volontario)
       const _hasRealSession=S.history&&S.history.some(h=>h.date===_todayStr&&
         h.type!=='riposo_vol'&&h.type!=='mattino'&&h.type!=='presonno');
@@ -4628,7 +4664,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.022 · 18/04/2026 23:03 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.023 · 19/04/2026 10:19 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
@@ -5591,6 +5627,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.023',date:'19/04/2026',changes:['Fix banner nessuna sessione: nascosto al primo giorno','Fix generatePlan: utente esistente delega a refreshPlan','Fix refreshPlan: preserva giorni passati e continua rotazione categorie','Test suite: +14 test (GPS, XP titles, badge segreti, piano)']},
   {v:'1.022',date:'18/04/2026',changes:['Fix sesso biologico: bottoni usano CSS class invece di inline styles (no conflitto con .btn !important)','Fix GPS impostazioni: _syncGpsStatus() chiamata anche all apertura accordion']},
   {v:'1.022',date:'18/04/2026',changes:['Fix GPS chip home: icona meteo reale con temperatura','Fix GPS impostazioni: mostra coordinate per conferma','Fix DB: Squat Sumo senza cambio lato','Fix DB: Sollevamento gamba posteriore e Affondo frontale senza cambio lato','Rimosse card duplicate in Party Insieme','Tasto Condividi progressi solo in Progressi','Schermata fine sessione: un solo tasto Condividi','Party: pulsante ospite rinominato con link']},
   {v:'1.021',date:'18/04/2026',changes:['GPS: chip visibile in home quando attivo','GPS: lettura da 3 sorgenti (tt4_gps + tt4_p + legacy SET)','Widget: nomi badge sotto le icone']},
@@ -6512,7 +6549,7 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604182303'; // auto-set on each release
+const APP_BUILD='202604191019'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');

@@ -1,6 +1,6 @@
 {
-  "version": "1.022",
-  "build": "202604182303",
-  "date": "18/04/2026 23:03",
-  "notes": "sex btn CSS fix, GPS settings sync on accordion open"
+  "version": "1.023",
+  "build": "202604191019",
+  "date": "19/04/2026 10:19",
+  "notes": "no-session banner, plan continuity, 14 new tests"
 }
