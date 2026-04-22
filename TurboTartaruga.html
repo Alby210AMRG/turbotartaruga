@@ -264,20 +264,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       onmousedown="this.style.transform='scale(.96)'" onmouseup="this.style.transform=''" ontouchstart="this.style.transform='scale(.96)'" ontouchend="this.style.transform=''">
       🚀 Dai, cominciamo!
     </button>
-    <div style="margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:280px">
-      <div style="font-size:12px;opacity:.6;font-weight:bold;letter-spacing:.5px">— oppure —</div>
-      <label style="width:100%;background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.4);border-radius:100px;padding:13px 20px;font-family:var(--ft);font-size:15px;font-weight:bold;cursor:pointer;text-align:center;transition:transform .15s;display:block"
-        onmousedown="this.style.transform='scale(.96)'" onmouseup="this.style.transform=''" ontouchstart="this.style.transform='scale(.96)'" ontouchend="this.style.transform=''">
-        📥 Ho già un profilo — importa JSON
-        <input type="file" accept=".json" style="display:none" onchange="importJSONWelcome(event)">
+    <div style="margin-top:20px;width:100%;max-width:280px">
+      <div style="font-size:12px;opacity:.6;margin-bottom:8px">Hai già un account?</div>
+      <label style="display:block;width:100%;background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.4);border-radius:100px;padding:13px 20px;font-family:var(--ft);font-size:15px;font-weight:bold;cursor:pointer;text-align:center;box-sizing:border-box">
+        📥 Importa backup JSON
+        <input type="file" accept=".json" style="display:none" onchange="importJSON(event)">
       </label>
     </div>
     <p style="font-size:11px;opacity:.55;margin-top:16px">Ci vogliono 2 minuti · Dati salvati solo sul tuo dispositivo 🔒</p>
     <button onclick="showInstallGuide()" style="margin-top:12px;background:none;border:1px solid rgba(255,255,255,.35);color:rgba(255,255,255,.7);border-radius:100px;padding:8px 18px;font-size:12px;cursor:pointer">
       📲 Come installare l'app
     </button>
-
-    <!-- Install guide modal -->
+<!-- Install guide modal -->
     <div id="install-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:999;overflow-y:auto;padding:20px">
       <div style="background:#fff;border-radius:20px;padding:24px;max-width:360px;margin:auto;position:relative">
         <button onclick="document.getElementById('install-modal').style.display='none'"
@@ -432,6 +430,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       </div>
       <!-- Sub-menu "Scelgo io!" (hidden by default) -->
       <div id="scelgo-grid" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;animation:fadeIn .2s">
+        <!-- Categorie normali -->
         <button class="fbtn fbtn-sub" data-f="gambe" onclick="setScelgoFeeling(this)"><span class="fi">🦵</span>Gambe</button>
         <button class="fbtn fbtn-sub" data-f="braccia" onclick="setScelgoFeeling(this)"><span class="fi">💪</span>Braccia</button>
         <button class="fbtn fbtn-sub" data-f="core" onclick="setScelgoFeeling(this)"><span class="fi">🎯</span>Core</button>
@@ -440,12 +439,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <button class="fbtn fbtn-sub" data-f="seduto" onclick="setScelgoFeeling(this)"><span class="fi">🪑</span>Seduto</button>
         <button class="fbtn fbtn-sub" data-f="elastici" onclick="setScelgoFeeling(this)"><span class="fi">🎽</span>Elastici</button>
         <button class="fbtn fbtn-sub" data-f="cardio" onclick="setScelgoFeeling(this)"><span class="fi">🥊</span>Cardio</button>
-        <button class="fbtn fbtn-sub" data-f="presonno" onclick="setScelgoFeeling(this)"><span class="fi">😴</span>Pre-sonno</button>
         <button class="fbtn fbtn-sub" data-f="postura" onclick="setScelgoFeeling(this)"><span class="fi">🖥️</span>Postura</button>
-        <button class="fbtn fbtn-sub" data-f="misto" onclick="setScelgoFeeling(this)"><span class="fi">🌈</span>Misto</button>
-        <button class="fbtn fbtn-sub" data-f="misto_plus" onclick="setScelgoFeeling(this)"><span class="fi">🪑💪</span>Misto+</button>
-        <button class="fbtn fbtn-sub" data-f="mattino" onclick="setScelgoFeeling(this)"><span class="fi">☀️</span>Risveglio</button>
-        <button class="fbtn fbtn-sub" data-f="presonno" onclick="setScelgoFeeling(this)"><span class="fi">🌙</span>Pre-sonno</button>
+        <button class="fbtn fbtn-sub" data-f="mobilita" onclick="setScelgoFeeling(this)"><span class="fi">🦴</span>Mobilità</button>
+        <!-- Misto — colore tenue blu/viola -->
+        <button class="fbtn fbtn-sub fbtn-misto" data-f="misto" onclick="setScelgoFeeling(this)" style="background:#EDE7F6;border-color:#B39DDB;color:#4527A0"><span class="fi">🌈</span>Misto</button>
+        <button class="fbtn fbtn-sub fbtn-misto" data-f="misto_plus" onclick="setScelgoFeeling(this)" style="background:#EDE7F6;border-color:#B39DDB;color:#4527A0"><span class="fi">🪑💪</span>Misto+</button>
+        <!-- Routine — colore tenue ambra/sera -->
+        <button class="fbtn fbtn-sub fbtn-routine" data-f="mattino" onclick="setScelgoFeeling(this)" style="background:#FFF8E1;border-color:#FFD54F;color:#E65100"><span class="fi">☀️</span>Risveglio</button>
+        <button class="fbtn fbtn-sub fbtn-routine" data-f="presonno" onclick="setScelgoFeeling(this)" style="background:#E8EAF6;border-color:#9FA8DA;color:#1A237E"><span class="fi">🌙</span>Pre-sonno</button>
       </div>
       <div id="stanco-opts" style="display:none;margin-top:9px">
         <div style="font-size:var(--fs-xs);color:var(--tmid);margin-bottom:8px">💬 Va benissimo! Come preferisci?</div>
@@ -1081,6 +1082,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           <div class="srow"><div class="si">📷</div><div class="sinfo"><div class="stitle">Solo esercizi con foto</div><div class="sval">Proponi solo esercizi con foto dimostrativa</div><div class="sval" id="photo-filter-status" style="margin-top:2px;font-size:11px;color:var(--tlt)">In attesa di verifica...</div></div><button class="toggle" id="st-photo-filter" onclick="togglePhotoFilter()"></button></div>
           <div class="srow" style="padding-top:4px">
             <button class="btn btn-s btn-full" style="padding:10px;font-size:var(--fs-xs)" onclick="recheckPhotos()">🔄 Ricontrolla foto disponibili</button>
+          <button class="btn btn-s btn-full" style="padding:10px;font-size:var(--fs-xs);background:#FF7043;color:#fff;margin-top:6px" onclick="forceAppUpdate()">🔄 Forza aggiornamento app (risolve cache)</button>
           </div>
           <div class="srow" style="flex-direction:column;align-items:flex-start;gap:9px"><div class="stitle">Categorie attive</div><div id="st-cats" style="width:100%"></div></div>
           <div class="srow" style="flex-direction:column;align-items:flex-start;gap:9px"><div class="stitle">Giorni di riposo</div><div class="day-sel" id="st-restdays" style="width:100%;margin-top:4px"></div><button class="btn btn-s" style="padding:8px 16px;font-size:var(--fs-xs);margin-top:8px" onclick="saveRestDays()">✅ Salva giorni riposo</button></div>
@@ -1103,13 +1105,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
             <div style="display:flex;justify-content:space-between;width:100%;font-size:10px;color:var(--tlt)"><span>5s veloce</span><span>60s lento</span></div>
           </div>
           <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
-            <div style="display:flex;width:100%;align-items:center;justify-content:space-between"><div><div class="stitle">📋 Tutti gli esercizi</div><div class="sval" id="ex-count-lbl">187 esercizi in 12 categorie</div></div><button class="sedit" id="ex-toggle-btn" onclick="toggleExList()">▼ Mostra</button></div>
+            <div style="display:flex;width:100%;align-items:center;justify-content:space-between"><div><div class="stitle">📋 Tutti gli esercizi</div><div class="sval" id="ex-count-lbl">— esercizi</div></div><button class="sedit" id="ex-toggle-btn" onclick="toggleExList()">▼ Mostra</button></div>
             <div id="ex-list-wrap" style="display:none;width:100%"></div>
           </div>
           <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
             <div class="stitle">🔄 Piano 30 giorni</div>
             <div class="sval">Rigenera il piano tenendo conto di profilo, categorie e giorni di riposo.</div>
-            <button class="btn btn-s btn-full mt10" style="padding:10px" onclick="refreshPlan()">🔄 Rigenera piano 30 giorni</button>
+            <button class="btn btn-s btn-full mt10" style="padding:10px" onclick="refreshPlanFromSettings()">🔄 Rigenera piano 30 giorni</button>
           </div>
         </div>
       </div>
@@ -1295,7 +1297,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.025</div>
+      <div id="app-version-display">Versione v1.026</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1563,6 +1565,22 @@ var DB=[
   {id:'p13',n:'Step touch in sincronia',cat:'party',t:'🎉 Party',zona:'🦵 Gambe · 🔄 Coordinazione',desc:'Tutti insieme: passo destra, passo sinistra. Il leader accelera di tanto in tanto!',floor:false},
   {id:'p14',n:'Cerchio di energia',cat:'party',t:'🎉 Party',zona:'💪 Braccia · 🧠 Concentrazione',desc:'In cerchio, ognuno mette le mani sulle spalle del vicino e massaggia. Poi si gira al contrario!',floor:false},
   {id:'p15',n:'Finale esplosivo',cat:'party',t:'🎉 Party',zona:'🎯 Tutto il corpo · ❤️ Cardio',desc:'30 secondi di movimento libero al massimo! Salta, corri sul posto, braccia, tutto! GO!',floor:false},
+  // MOBILITÀ / ARTICOLAZIONI — 🦴
+  {id:'mob1',n:'Cerchi con le spalle',cat:'mobilita',t:'🦴 Mobilità',zona:'💪 Spalle · 🦴 Articolazione gleno-omerale',desc:'Braccia lungo i fianchi, ruota le spalle in grandi cerchi avanti 5 volte, poi indietro 5 volte. Lento e ampio.',floor:false,switch:false},
+  {id:'mob2',n:'Rotazione anca sul posto',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Anca · 🦵 Adduttori',desc:'In piedi, mani sui fianchi. Ruota le anche in grandi cerchi come se usassi un hula hoop. 8 cerchi per lato.',floor:false,switch:false},
+  {id:'mob3',n:'Flesso-estensione ginocchio',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Ginocchio · 🦵 Quadricipiti',desc:'Seduto su una sedia, stendi una gamba lentamente fino a sentire il ginocchio aprirsi, poi ripiega. Lento e controllato.',floor:false,switch:true},
+  {id:'mob4',n:'Cerchi con le caviglie',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Caviglia · 🦵 Polpacci',desc:'Seduto, solleva un piede da terra e disegna cerchi ampi con la caviglia. 8 in un senso, 8 nell altro.',floor:false,switch:true},
+  {id:'mob5',n:'Apertura petto - braccia a croce',cat:'mobilita',t:'🦴 Mobilità',zona:'💪 Pettorali · 🦴 Spalle posteriori',desc:'In piedi, apri le braccia a croce e porta le scapole insieme come se volessi stringere una matita tra di esse. Tieni 3 sec, poi rilascia.',floor:false,switch:false},
+  {id:'mob6',n:'Retrazione scapolare',cat:'mobilita',t:'🦴 Mobilità',zona:'💪 Dorsali · 🦴 Scapole',desc:'Seduto dritto, porta i gomiti indietro e schiaccia le scapole verso la colonna. Tieni 5 secondi, rilascia. Ripeti senza fretta.',floor:false,switch:false},
+  {id:'mob7',n:'Rotazione polsi',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Polso · 💪 Avambraccio',desc:'Tendi le braccia in avanti, ruota entrambi i polsi verso l esterno per 10 giri, poi verso l interno. Ideale dopo il mouse.',floor:false,switch:false},
+  {id:'mob8',n:'Scivolamento laterale testa',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Collo · 💪 Trapezio',desc:'Testa dritta, sposta il mento verso l orecchio destro senza inclinare la testa. 5 per lato. Lentissimo — non una rotazione.',floor:false,switch:false},
+  {id:'mob9',n:'Rotazione toracica seduto',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Colonna toracica · 💪 Obliqui',desc:'Seduto, mani dietro la testa, gomiti larghi. Ruota il busto a destra guardando oltre il gomito, poi a sinistra. Solo il torace — bacino fermo.',floor:false,switch:false},
+  {id:'mob10',n:'Pendolo braccio',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Spalla · 💪 Cuffia rotatori',desc:'Piegati leggermente in avanti con un braccio che pende libero. Lascia che il peso del braccio oscilli avanti-indietro e poi in cerchi. Nessuna forza.',floor:false,switch:true},
+  {id:'mob11',n:'Squat isometrico basso',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Anca · 🦵 Anca · 🦴 Ginocchio',desc:'Scendi in posizione di squat profondo e rimani fermo, usando le mani per spingere le ginocchia verso l esterno. Apre l anca. Tieni 20 secondi.',floor:false,switch:false},
+  {id:'mob12',n:'Rotazione busto in piedi',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Colonna lombare · 💪 Obliqui · 💪 Dorsali',desc:'Piedi larghi, braccia a croce. Ruota il busto a destra e a sinistra in modo fluido e continuo, come un pendolo. Respira a ogni rotazione.',floor:false,switch:false},
+  {id:'mob13',n:'Flessione laterale collo',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Collo · 💪 Trapezio laterale',desc:'Porta l orecchio destro verso la spalla destra senza alzare la spalla. Usa il peso della testa. Tieni 10 secondi per lato. Mai forzare.',floor:false,switch:false},
+  {id:'mob14',n:'Apertura anca a 4 zampe',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Anca · 🦵 Glutei · 🦴 Ginocchio',desc:'A quattro zampe, porta un ginocchio verso il fianco esterno descrivendo un semicerchio. Come un cane che alza la zampa. 10 per lato.',floor:true,switch:true},
+  {id:'mob15',n:'Stretch dinamico flessori anca',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Anca · 🦵 Flessori anca · 🦴 Schiena lombare',desc:'Affondo lungo: ginocchio posteriore a terra, spingi l anca in avanti lentamente poi torna. Movimento fluido, non un fermo. 10 per lato.',floor:true,switch:true},
 ];
 
 var PHRASES=[
@@ -1633,9 +1651,9 @@ var PARTY_EX=[
   {id:'p12',n:'Pose yoga: albero',desc:'Un piede sul polpaccio opposto, braccia su. Chi resta in equilibrio più a lungo vince!',img:'p12.png',dur:60},
   {id:'p13',n:'Step touch in sincronia',desc:'Tutti insieme: passo destra, passo sinistra. Il leader accelera di tanto in tanto!',img:'p13.png',dur:45},
   {id:'p14',n:'Sollevamento gambe seduto – gara',desc:'Seduti sul bordo, gambe tese sollevate. Chi tiene più a lungo le gambe alzate?',img:'p14.png',dur:45},
-  {id:'p15',n:'Torsioni sincronizzate',desc:'Tutti ruotano il busto destra e sinistra insieme. Chi perde il ritmo è fuori!',img:'p15.png',dur:45},
 ];
 </script>
+
 <script>
 
 // Configurazione durata sessione (minuti → {cnt esercizi, a secondi attivi, r secondi riposo})
@@ -1716,7 +1734,10 @@ function load(){
   if(typeof S.xp!=='number')S.xp=0;
 }
 function importJSON(evt){
-  const file=evt.target.files[0];if(!file)return;
+  // Supporta sia chiamata da event listener che da element diretto
+  const file=(evt&&evt.target&&evt.target.files)?evt.target.files[0]:
+             (evt&&evt.files)?evt.files[0]:null;
+  if(!file)return;
   const reader=new FileReader();
   reader.onload=e=>{
     try{
@@ -1800,6 +1821,26 @@ function getACtx(){if(!audioCtx)try{audioCtx=new(window.AudioContext||window.web
 function beep(f=440,d=0.15,v=0.25){if(!SET.audio)return;try{const c=getACtx();if(!c)return;const o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(v,c.currentTime);g.gain.exponentialRampToValueAtTime(.001,c.currentTime+d);o.start();o.stop(c.currentTime+d);}catch(e){}}
 function speak(t){if(!SET.voice||!window.speechSynthesis)return;try{window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='it-IT';u.rate=1.1;window.speechSynthesis.speak(u);}catch(e){}}
 function toggleAudio(){SET.audio=!SET.audio;save();syncToggles()}
+function forceAppUpdate(){
+  // Backup completo di tutti i dati utente PRIMA di qualsiasi operazione
+  const _bkpP=localStorage.getItem('tt4_p');
+  const _bkpS=localStorage.getItem('tt4_s');
+  const _bkpSet=localStorage.getItem('tt4_set');
+  toast('🔄 Aggiornamento in corso... dati al sicuro',2000);
+  setTimeout(async()=>{
+    try{
+      const keys=await caches.keys();
+      await Promise.all(keys.map(k=>caches.delete(k)));
+      const regs=await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r=>r.unregister()));
+    }catch(e){}
+    // RIPRISTINA dati utente se cancellati per errore
+    if(!localStorage.getItem('tt4_p')&&_bkpP) localStorage.setItem('tt4_p',_bkpP);
+    if(!localStorage.getItem('tt4_s')&&_bkpS) localStorage.setItem('tt4_s',_bkpS);
+    if(!localStorage.getItem('tt4_set')&&_bkpSet) localStorage.setItem('tt4_set',_bkpSet);
+    location.href=location.href.split('?')[0]+'?nocache='+Date.now();
+  },600);
+}
 function toggleMusic(){SET.music=!(SET.music!==false);const b=document.getElementById('st-music');if(b)b.classList.toggle('on',SET.music!==false);save();if(!SET.music&&_musicPlaying)stopSessionMusic();}
 function toggleVoiceDesc(){SET.voiceDesc=!SET.voiceDesc;const b=document.getElementById('st-voicedesc');if(b)b.classList.toggle('on',SET.voiceDesc===true);save();toast(SET.voiceDesc?'🗣️ Descrizione audio attivata!':'Descrizione audio disattivata.');}
 function toggleDynamicTheme(){SET.dynamicTheme=!(SET.dynamicTheme!==false);const b=document.getElementById('st-dynamictheme');if(b)b.classList.toggle('on',SET.dynamicTheme!==false);save();if(SET.dynamicTheme)applyDynamicTheme();else{const hero=document.querySelector('.home-hero');if(hero)hero.style.background='';}toast(SET.dynamicTheme?'🌈 Tema dinamico attivato!':'Tema dinamico disattivato.');}
@@ -2384,7 +2425,7 @@ function generatePlan(){
   const plan=[];let focusIdx=0,consec=0;
   for(let i=0;i<30;i++){
     const d=new Date();d.setDate(d.getDate()+i);
-    const dow=d.getDay();const ds=d.toISOString().slice(0,10);
+    const dow=d.getDay();const ds=localDate(d); // usa data locale
     const isRest=restDays.includes(dow)||(consec>=(P.level==='principiante'?2:P.level==='esperto'?5:3));
     if(isRest){
       const isUserRest=restDays.includes(dow);
@@ -2436,10 +2477,11 @@ function refreshPlan(){
     consec++;
   }
   
-  const plan=[...pastEntries];
+  // Dedup: rimuovi dal vecchio piano qualsiasi entry per date >= today (sarà rigenerate)
+  const plan=pastEntries.filter(p=>p.date<today);
   for(let i=0;i<30;i++){
     const d=new Date();d.setDate(d.getDate()+i);
-    const dow=d.getDay();const ds=d.toISOString().slice(0,10);
+    const dow=d.getDay();const ds=localDate(d); // usa data locale non UTC
     if(ds<today)continue; // già gestito con pastEntries
     const isRest=restDays.includes(dow)||(consec>=maxConsec);
     if(isRest){
@@ -2467,7 +2509,7 @@ function localDate(d){
   const dd=d||new Date();
   return dd.getFullYear()+'-'+String(dd.getMonth()+1).padStart(2,'0')+'-'+String(dd.getDate()).padStart(2,'0');
 }
-function getTodayPlan(){const today=localDate();return S.plan.find(p=>p.date===today)||{focus:'misto',icon:'🌈',type:'workout'}}
+function getTodayPlan(){const today=localDate();const all=S.plan.filter(p=>p.date===today);return all[all.length-1]||{focus:'misto',icon:'🌈',type:'workout'}}
 
 // ═══ HOME ═══
 function buildHome(){
@@ -2476,7 +2518,7 @@ function buildHome(){
   try{const defNrg=document.querySelector('.nrg-btn[data-nrg="3"]');if(defNrg)setEnergy(defNrg);}catch(e){}
   const h=new Date().getHours();
   document.getElementById('home-greeting').textContent=`${h<12?'Buongiorno':h<18?'Buon pomeriggio':'Buonasera'}, ${P.name}! 👋`;
-  buildCoachBubble(); // multi-phrase rotating system
+  try{buildCoachBubble();}catch(_bcbErr){console.warn('buildCoachBubble error:',_bcbErr);} // multi-phrase rotating system
   // GPS chip: mostra meteo se posizione attiva
   const _gpsChip=document.getElementById('home-gps-chip');
   if(_gpsChip&&P.gpsLat&&P.gpsLon){
@@ -2500,13 +2542,17 @@ function buildHome(){
     const wakeH = P.morningRoutineHour||7;
     const showMorning = P.morningRoutine &&
       S.morningDone !== _todayRoutine &&
-      _curHour >= (wakeH-1) && _curHour <= (wakeH+4);
+      _curHour >= wakeH && _curHour <= (wakeH+2);
     _morningBanner.style.display = showMorning ? 'block' : 'none';
   }
   if(_sleepBanner){
+    const sleepH = P.sleepRoutineHour!=null?P.sleepRoutineHour:22;
+    // Gestisci orari dopo mezzanotte (0-4)
+    const _sleepNorm = sleepH >= 20 ? sleepH : sleepH + 24;
+    const _hourNorm  = _curHour >= 20 ? _curHour : _curHour + 24;
     const showSleep = P.sleepRoutine &&
       S.sleepDone !== _todayRoutine &&
-      _curHour >= 19;
+      _hourNorm >= _sleepNorm && _hourNorm <= (_sleepNorm + 2);
     _sleepBanner.style.display = showSleep ? 'block' : 'none';
   }
   // Coach bubble: mostra banner "non hai allenato" se nessuna sessione reale oggi
@@ -2541,6 +2587,7 @@ function buildHome(){
   if(P.name)setTimeout(()=>checkPhotosAvailable(false),3000);
   updatePhotoStatus(getPhotoIds());
   // Ask SW to check & fire any due notifications
+
   if('serviceWorker' in navigator&&navigator.serviceWorker.controller){
     navigator.serviceWorker.controller.postMessage({type:'CHECK_NOTIFS'});
   }
@@ -2552,17 +2599,22 @@ function buildHome(){
   
   // Weather chip — async, non-blocking
 const hsEl=document.getElementById('home-streak');if(hsEl)hsEl.textContent=typeof S.str==='number'?S.str:0;
-  const userLv=getUserLevel(S.xp||0);document.getElementById('home-level').textContent=userLv;
+  const _safeXp=(typeof S.xp==='number'&&!isNaN(S.xp))?S.xp:0;if(_safeXp!==S.xp)S.xp=_safeXp;
+  const userLv=getUserLevel(_safeXp);document.getElementById('home-level').textContent=userLv;
   const xpToNext=getXpToNextLevel(S.xp||0);if(document.getElementById('home-level-chip'))document.getElementById('home-level-chip').title='Livello '+userLv+' — ancora '+xpToNext+' XP per il prossimo livello';
   const done=S.tot,goal=P.goal||90,pct=Math.min(100,Math.round(done/goal*100));
   document.getElementById('hg-done').textContent=done;document.getElementById('hg-tot').textContent=goal;document.getElementById('hg-pct').textContent=pct+'%';document.getElementById('hg-fill').style.width=pct+'%';
+  // Rigenera il piano se non esiste oppure se manca l'entry per oggi
+  if(!S.plan||S.plan.length===0||!S.plan.some(p=>p.date===localDate())){
+    refreshPlan();return;
+  }
   const tp=getTodayPlan();
   const isRest=tp.type==='rest';
   document.getElementById('rest-banner').style.display=isRest?'flex':'none';
   document.getElementById('today-icon').textContent=tp.icon||'🌈';
   const ci=CAT_INFO[tp.focus]||{label:'Allenamento',icon:'🌈'};
   document.getElementById('today-focus').textContent=(tp.type==='rest'?'Giorno di riposo':ci.label+' — '+tp.icon);
-  const subs={gambe:'Rafforza gambe e glutei! 🦵',braccia:'Potenzia braccia e spalle! 💪',core:'Rinforza il core! 🎯',stretching:'Allungati e rilassati! 🤸',orientale:'Respira e trova l\'equilibrio! 🧘',seduto:'Allenati comodamente seduto! 🪑',elastici:'Allenamento con elastici! 🎽',cardio:'Cardio e boxe leggera! 🥊',presonno:'Rilassati prima di dormire! 😴',postura:'Corregi la postura, stai meglio! 🪑+',misto:'Allenamento completo misto! 🌈',misto_plus:'Corpo libero + esercizi da seduto! 🪑💪',riposo:'Oggi riposi — ci vediamo domani! 😴'};
+  const subs={gambe:'Rafforza gambe e glutei! 🦵',braccia:'Potenzia braccia e spalle! 💪',core:'Rinforza il core! 🎯',stretching:'Allungati e rilassati! 🤸',orientale:'Respira e trova l\'equilibrio! 🧘',seduto:'Allenati comodamente seduto! 🪑',elastici:'Allenamento con elastici! 🎽',cardio:'Cardio e boxe leggera! 🥊',presonno:'Rilassati prima di dormire! 😴',postura:'Corregi la postura, stai meglio! 🪑+',mobilita:'Mobilità articolare — ginocchio, spalle, anca! 🦴',misto:'Allenamento completo misto! 🌈',misto_plus:'Corpo libero + esercizi da seduto! 🪑💪',riposo:'Oggi riposi — ci vediamo domani! 😴'};
   document.getElementById('today-sub').textContent=subs[tp.focus]||'Allenamento di oggi!';
   // Show start button — if plan is empty but profile exists, show it (plan will generate)
   const hasValidPlan=S.plan&&S.plan.length>0;
@@ -2631,6 +2683,10 @@ function setFeeling(el){
   if(mainScelgo)mainScelgo.innerHTML='<span class="fi">🕹️</span>Scelgo io!';
   const stancoOpts=document.getElementById('stanco-opts');
   const btnStart=document.getElementById('btn-start');
+  // Rigenera il piano se non esiste oppure se manca l'entry per oggi
+  if(!S.plan||S.plan.length===0||!S.plan.some(p=>p.date===localDate())){
+    refreshPlan();return;
+  }
   const tp=getTodayPlan();
   const isRest=tp.type==='rest';
   if(T.feeling==='stanco'){
@@ -3255,15 +3311,20 @@ function wizMorningSlider(val){
   const emojis={5:'🌙',6:'🌄',7:'☀️',8:'🌤️',9:'🌞',10:'🌻',11:'⛅'};
   const disp=document.getElementById('wiz-morning-hour-display');
   if(disp)disp.textContent=(emojis[h]||'☀️')+' '+h+':00';
+  const sl=document.getElementById('wiz-morning-hour-slider');
+  if(sl)sl.style.setProperty('--pct',((h-5)/6*100).toFixed(1)+'%');
   _wizData.morningHour=h;
 }
 function wizSleepSlider(val){
   const SLPH=[20,21,22,23,0,1,2,3,4];
-  const h=SLPH[parseInt(val)]??22;
+  const idx=parseInt(val);
+  const h=SLPH[idx]??22;
   const emojis={20:'🌅',21:'🌇',22:'🌙',23:'🌃',0:'🌃',1:'🌒',2:'🌒',3:'🌑',4:'🌑'};
   const label=h<10?'0'+h+':00':h+':00';
   const disp=document.getElementById('wiz-sleep-hour-display');
   if(disp)disp.textContent=(emojis[h]||'🌙')+' '+label;
+  const sl=document.getElementById('wiz-sleep-hour-slider');
+  if(sl)sl.style.setProperty('--pct',(idx/8*100).toFixed(1)+'%');
   _wizData.sleepHour=h;
 }
 
@@ -3446,16 +3507,26 @@ function genSession(focus){
   // Main pool — exclude avoided exercises
   const avoided=new Set(P.avoided||[]);
   let pool;
-  if(focus==='misto')pool=shuffleArr(DB.filter(e=>e.cat!=='riscaldamento'&&e.cat!=='party'));
+  if(focus==='misto'){
+    // Usa le categorie selezionate dall'utente (o tutte se non configurate)
+    const userCats=P.categories&&P.categories.length>0
+      ?P.categories.filter(cat=>!['riscaldamento','party','mattino','presonno'].includes(cat))
+      :['gambe','braccia','core','stretching','orientale','seduto','elastici','cardio','postura','mobilita'];
+    pool=shuffleArr(DB.filter(e=>userCats.includes(e.cat)));
+  }
   else if(['presonno','postura','mattino'].includes(focus)){
     // these categories only if explicitly chosen
     pool=shuffleArr(DB.filter(e=>e.cat===focus));
   }
   else if(focus==='misto_plus'){
-    // Half seduto, half from other categories
+    // Versione avanzata: 40% seduto + 60% altre categorie selezionate dall'utente
+    const userCatsPlus=P.categories&&P.categories.length>0
+      ?P.categories.filter(cat=>!['riscaldamento','party','mattino','presonno'].includes(cat))
+      :['gambe','braccia','core','stretching','orientale','seduto','elastici','cardio','postura','mobilita'];
     const sedPool=shuffleArr(DB.filter(e=>e.cat==='seduto'));
-    const normPool=shuffleArr(DB.filter(e=>!['riscaldamento','seduto','party'].includes(e.cat)));
-    pool=[...sedPool.slice(0,Math.ceil(sedPool.length/2)),...normPool].sort(()=>Math.random()-.5);
+    const normPool=shuffleArr(DB.filter(e=>userCatsPlus.includes(e.cat)&&e.cat!=='seduto'));
+    const sedCount=Math.round(normPool.length*0.4);
+    pool=[...sedPool.slice(0,sedCount),...normPool].sort(()=>Math.random()-.5);
   }
   else pool=shuffleArr(DB.filter(e=>e.cat===focus&&e.cat!=='party'));
   // Filter to only-with-photo if enabled
@@ -3499,7 +3570,25 @@ function genSession(focus){
     const vary=[-10,0,0,0,10][Math.floor(Math.random()*5)];
     mainExs.push({...ex,a:Math.max(20,a+vary),r});
   }
-  return[...warmExs,...shuffleArr(mainExs)];
+  // Raggruppa: esercizi a terra prima, in piedi dopo (più naturale)
+  // Mantieni random all'interno di ogni gruppo
+  const floorExs=mainExs.filter(e=>e.floor);
+  const standExs=mainExs.filter(e=>!e.floor);
+  const groupedMain=[...shuffleArr(floorExs),...shuffleArr(standExs)];
+  // Ultimo esercizio = stretching (sempre, se non già stretching/mobilita)
+  const lastEx=groupedMain[groupedMain.length-1];
+  if(groupedMain.length>1&&lastEx&&lastEx.cat!=='stretching'&&lastEx.cat!=='mobilita'){
+    // Cerca un esercizio di stretching non già presente
+    const usedInMain=new Set(groupedMain.map(e=>e.id));
+    const strPool=shuffleArr(DB.filter(e=>
+      e.cat==='stretching'&&!usedInMain.has(e.id)&&!(P.noFloor&&e.floor)
+    ));
+    if(strPool.length>0){
+      // Sostituisci l'ultimo esercizio con stretching
+      groupedMain[groupedMain.length-1]={...strPool[0],a:Math.max(30,r+5),r};
+    }
+  }
+  return[...warmExs,...groupedMain];
 }
 function shuffleArr(a){return[...a].sort(()=>Math.random()-.5)}
 
@@ -3807,7 +3896,17 @@ function genBonusExs(){
   pool=pool.filter(e=>!avoided.has(e.id));
   if(!pool.length)pool=shuffleArr(DB.filter(e=>e.cat==='stretching'));
   const cfg=DUR_CFG[T.dur||12]||DUR_CFG[12];
-  return pool.slice(0,2).map(e=>({...e,a:cfg.a,r:cfg.r,_bonus:true}));
+  // Primo bonus: casuale; secondo bonus: sempre stretching
+  const bonusExs=pool.slice(0,1).map(e=>({...e,a:cfg.a,r:cfg.r,_bonus:true}));
+  const strPoolB=shuffleArr(DB.filter(e=>
+    e.cat==='stretching'&&!used.has(e.id)&&!(P.noFloor&&e.floor)
+  ));
+  if(strPoolB.length>0){
+    bonusExs.push({...strPoolB[0],a:Math.max(30,cfg.r+5),r:cfg.r,_bonus:true});
+  } else if(pool.length>1){
+    bonusExs.push({...pool[1],a:cfg.a,r:cfg.r,_bonus:true});
+  }
+  return bonusExs;
 }
 function dismissRiserva(){riservaDone=true;document.getElementById('riserva-banner').style.display='none'}
 
@@ -3990,7 +4089,7 @@ function calcSkippedSessions(){
   // XP malus: each skipped day beyond 2 costs 10 XP (min 0)
   if(consecutive>2){
     const malus=(consecutive-2)*10;
-    if(S.xp>0){S.xp=Math.max(0,S.xp-malus);}
+    if(typeof S.xp==='number'&&!isNaN(S.xp)&&S.xp>0){S.xp=Math.max(0,S.xp-malus);}
   }
   save();
 }
@@ -4781,7 +4880,7 @@ function buildSettings(){
   // Categories
   const catWrap=document.getElementById('st-cats');
   // presonno and mattino are managed via dedicated routine settings, not here
-  if(catWrap){const cats=['riscaldamento','gambe','braccia','core','stretching','seduto','orientale','elastici','cardio','postura'];
+  if(catWrap){const cats=['riscaldamento','gambe','braccia','core','stretching','seduto','orientale','elastici','cardio','postura','mobilita'];
     catWrap.innerHTML=cats.map(c=>{const ci=CAT_INFO[c]||{icon:'💪',label:c};const sel=(P.categories||[]).includes(c);return`<div class="mchk${sel?' sel':''}" data-cat="${c}" onclick="toggleStCat(this)" style="margin-bottom:6px"><span class="mchk-icon">${ci.icon}</span><div class="mchk-label">${ci.label}</div><div class="mchk-check">${sel?'✓':''}</div></div>`}).join('');
   }
   // Rest days
@@ -4838,19 +4937,30 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.025 · 19/04/2026 20:31 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.026 · 22/04/2026 16:50 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
-  if(lbl)lbl.textContent=`${DB.length} esercizi in 12 categorie`;
+  const _numCats=[...new Set(DB.map(e=>e.cat))].length;
+  if(lbl)lbl.textContent=`${DB.length} esercizi in ${_numCats} categorie`;
   // Reset list to collapsed state each time settings opens
   exListVisible=false;
   const wrap=document.getElementById('ex-list-wrap');
   if(wrap)wrap.style.display='none';
   const btn=document.getElementById('ex-toggle-btn');
   if(btn)btn.textContent='▼ Mostra';
-  // Sincronizzo SEMPRE tutti gli slider (anche con accordion chiusi)
-  // Usa setTimeout(0) per garantire che gli elementi siano nel DOM prima del setProperty
+  // Sincronizzo SEMPRE tutti gli slider
   setTimeout(()=>{_syncAllenamentoSliders();_syncAspettoSliders();},0);
+  // Aggiorna SEMPRE il contatore esercizi appena buildSettings gira
+  const _exLblBS=document.getElementById('ex-count-lbl');
+  if(_exLblBS){
+    const _catCountBS=[...new Set(DB.map(e=>e.cat))].length;
+    _exLblBS.textContent=DB.length+' esercizi in '+_catCountBS+' categorie';
+  }
+  // Forza rescan foto se DB è cambiato dall'ultimo check
+  const _storedDbLen=parseInt(localStorage.getItem('tt4_photoDbLen')||'0');
+  if(_storedDbLen!==DB.length){
+    setTimeout(()=>checkPhotosAvailable(true),500); // rescan automatico
+  }
 }
 function saveField(f){
   const raw=(document.getElementById('fld-'+f).value||'').trim();
@@ -4879,7 +4989,15 @@ function toggleAcc(id){
   // Risincronizza i controlli sensibili quando si apre l'accordion
   if(open){
     if(id==='acc-profilo')_syncSexButtons();
-    if(id==='acc-allenamento')_syncAllenamentoSliders();
+    if(id==='acc-allenamento'){
+      _syncAllenamentoSliders();
+      // Aggiorna contatore esercizi immediatamente
+      const _lbl=document.getElementById('ex-count-lbl');
+      const _cats=['riscaldamento','gambe','braccia','core','stretching','seduto','orientale',
+        'elastici','cardio','presonno','postura','mobilita','party','mattino'];
+      const _nc=_cats.filter(cat=>DB.some(e=>e.cat===cat)).length;
+      if(_lbl)_lbl.textContent=DB.length+' esercizi in '+_nc+' categorie';
+    }
     if(id==='acc-aspetto'){_syncGpsStatus();_syncAspettoSliders();}
     if(id==='acc-routine')_syncRoutineSliders();
   }
@@ -4901,7 +5019,7 @@ function _syncAllenamentoSliders(){
 function _syncAspettoSliders(){
   const mv=SET.musicVol!=null?SET.musicVol:60;
   const mvr=document.getElementById('st-music-vol-range');
-  if(mvr){mvr.value=mv;mvr.style.setProperty('--pct',(mv).toFixed(1)+'%');}
+  if(mvr){mvr.value=mv;mvr.style.setProperty('--pct',((mv-0)/(100-0)*100).toFixed(1)+'%');}
   const mvd=document.getElementById('st-music-vol-disp');if(mvd)mvd.textContent=mv+'%';
 }
 function _syncRoutineSliders(){
@@ -4929,15 +5047,22 @@ function setMorningHourSlider(val){
   const emojis={5:'🌙',6:'🌄',7:'☀️',8:'🌤️',9:'🌞',10:'🌻',11:'⛅'};
   const disp=document.getElementById('morning-hour-display');
   if(disp)disp.textContent=(emojis[h]||'☀️')+' '+h+':00';
+  // Aggiorna il colore della traccia dello slider
+  const sl=document.getElementById('morning-hour-slider');
+  if(sl)sl.style.setProperty('--pct',((h-5)/6*100).toFixed(1)+'%');
   P.morningRoutineHour=h;save();
 }
 function setSleepHourSlider(val){
   const SLEEP_HOURS=[20,21,22,23,0,1,2,3,4];
-  const h=SLEEP_HOURS[parseInt(val)]??22;
+  const idx=parseInt(val);
+  const h=SLEEP_HOURS[idx]??22;
   const emojis={20:'🌅',21:'🌇',22:'🌙',23:'🌃',0:'🌃',1:'🌒',2:'🌒',3:'🌑',4:'🌑'};
   const label=h<10?'0'+h+':00':h+':00';
   const disp=document.getElementById('sleep-hour-display');
   if(disp)disp.textContent=(emojis[h]||'🌙')+' '+label;
+  // Aggiorna il colore della traccia dello slider
+  const sl=document.getElementById('sleep-hour-slider');
+  if(sl)sl.style.setProperty('--pct',(idx/8*100).toFixed(1)+'%');
   P.sleepRoutineHour=h;save();
 }
 
@@ -4957,6 +5082,12 @@ function toggleExList(){
   if(exListVisible)buildExList();
 }
 function buildExList(){
+  // Aggiorna contatore SEMPRE con valori live
+  const _belLbl=document.getElementById('ex-count-lbl');
+  if(_belLbl){
+    const _belCats=[...new Set(DB.filter(e=>e.cat!=='party').map(e=>e.cat))].length;
+    _belLbl.textContent=DB.filter(e=>e.cat!=='party').length+' esercizi in '+_belCats+' categorie (escluso Party)';
+  }
   const wrap=document.getElementById('ex-list-wrap');
   if(!wrap)return;
   const cats=[
@@ -4972,9 +5103,10 @@ function buildExList(){
     {key:'cardio',label:'🥊 Cardio/Box'},
     {key:'presonno',label:'😴 Pre-sonno'},
     {key:'postura',label:'🖥️ Postura'},
+    {key:'mobilita',label:'🦴 Mobilità / Articolazioni'},
     {key:'party',label:'🎉 Party / Sfide'},
   ];
-  const total=DB.length;
+  const total=DB.length; // sempre live da DB
   const lbl=document.getElementById('ex-count-lbl');
   const numCats=cats.filter(ct=>DB.some(e=>e.cat===ct.key)).length;
   if(lbl)lbl.textContent=total+' esercizi in '+numCats+' categorie';
@@ -5091,6 +5223,18 @@ function setGoal2(v){
   const r2=document.getElementById('st-goal-range2');if(r2)r2.style.setProperty('--pct',((parseInt(v)-10)/355*100).toFixed(1)+'%');
 }
 function saveGoal(){P.goal=parseInt(document.getElementById('st-goal-range').value)||90;save();toast('✅ Obiettivo salvato!')}
+function refreshPlanFromSettings(){
+  // Leggi categorie da UI se aperta, altrimenti da P
+  const catBtns=document.querySelectorAll('#st-cats .mchk.sel');
+  if(catBtns.length>0)P.categories=[...catBtns].map(e=>e.dataset.cat);
+  const rdBtns=document.querySelectorAll('#st-restdays .day-btn.sel');
+  if(rdBtns.length>0)P.restDays=[...rdBtns].map(e=>parseInt(e.dataset.dow));
+  save();
+  // Svuota il piano per forzare rigenerazione completa
+  S.plan=[];
+  refreshPlan();
+  toast('✅ Piano rigenerato con le impostazioni correnti!',3500);
+}
 function setPauseSec(v){
   const sec=parseInt(v)||20;
   SET.pauseSec=sec;save();
@@ -5418,7 +5562,7 @@ function addGuestFromRaw(raw){
 }
 
 function addGuestFromCode(){
-  const raw=(document.getElementById('guest-code-input').value||'').trim();
+  const raw=(document.getElementById('guest-code-input').value||'').trim().replace(/\s+/g,'');
   addGuestFromRaw(raw);
   document.getElementById('guest-code-input').value='';
 }
@@ -5517,7 +5661,8 @@ var CAT_INFO={
   cardio:{label:'Cardio',icon:'🥊'},presonno:{label:'Pre-sonno',icon:'😴'},
   postura:{label:'Postura',icon:'🖥️'},mattino:{label:'Mattino',icon:'☀️'},
   misto:{label:'Misto',icon:'🌈'},misto_plus:{label:'Misto+',icon:'🌈'},
-  party:{label:'Party',icon:'🎉'},riposo:{label:'Riposo',icon:'😴'}
+  party:{label:'Party',icon:'🎉'},riposo:{label:'Riposo',icon:'😴'},
+  mobilita:{label:'Mobilità',icon:'🦴'}
 };
 // ── Core state objects ──────────────────────────────────────────────────
 var P={};  // Profile
@@ -5631,8 +5776,8 @@ function shareResultCode(){
 
 // ── IMPORT result (backward compat with v0.4 single + v0.5 multi) ──
 function importResultCode(){
-  const raw=(document.getElementById('result-code-input').value||'').trim();
-  if(!raw.startsWith('TTR-')){toast('⚠️ Codice non valido! Deve iniziare con TTR-');return}
+  const raw=(document.getElementById('result-code-input').value||'').trim().replace(/\s+/g,'');
+  if(!raw.startsWith('TTR-')){toast('⚠️ Codice risultato non valido! Deve iniziare con TTR-');return}
   try{
     const r=JSON.parse(decodeURIComponent(escape(atob(raw.slice(4)))));
     if(r.type!=='TTR_result'){toast('⚠️ Questo non è un codice risultato!');return}
@@ -5811,7 +5956,10 @@ async function checkPhotosAvailable(force){
   const lastCheck=parseInt(localStorage.getItem('tt4_photoCheck')||'0');
   const photos=JSON.parse(localStorage.getItem('tt4_photos')||'null');
   const sevenDays=7*24*3600*1000;
-  if(!force&&photos&&(Date.now()-lastCheck)<sevenDays){
+  // Invalida cache se DB ha nuovi esercizi rispetto all'ultimo scan
+  const cachedDbLen=parseInt(localStorage.getItem('tt4_photoDbLen')||'0');
+  const cacheStale=!photos||cachedDbLen!==DB.length;
+  if(!force&&photos&&!cacheStale&&(Date.now()-lastCheck)<sevenDays){
     updatePhotoStatus(photos);return;
   }
   _photoCheckRunning=true;
@@ -5829,6 +5977,7 @@ async function checkPhotosAvailable(force){
     })));
   }
   localStorage.setItem('tt4_photos',JSON.stringify(found));
+  localStorage.setItem('tt4_photoDbLen',String(DB.length));
   localStorage.setItem('tt4_photoCheck',Date.now().toString());
   _photoCheckRunning=false;
   updatePhotoStatus(found);
@@ -5839,7 +5988,7 @@ function updatePhotoStatus(photos,msg){
   if(!el)return;
   if(msg){el.textContent=msg;return;}
   if(!photos){el.textContent='Non verificato ancora';return;}
-  const total=DB.length;
+  const total=DB.length; // sempre live da DB
   const date=new Date(parseInt(localStorage.getItem('tt4_photoCheck')||'0'));
   const dateStr=date>new Date(2020,0,1)?localDate(date):'mai';
   el.textContent=photos.length+'/'+total+' esercizi con foto — verificato il '+dateStr;
@@ -5940,6 +6089,10 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.026',date:'20/04/2026',changes:['FIX CRITICO: Ss===1 typo in buildCoachBubble causava crash ogni lunedì mattina → streak 0 e Lv.1 visibili','buildCoachBubble avvolta in try-catch (safety net)','Streak reset: controlla giorni di riposo nel piano prima di azzerare','XP NaN guard: se S.xp è NaN usa 0 anziché mostrare Lv.1','Photo cache: invalida automaticamente quando DB.length cambia']},
+  {v:'1.026',date:'20/04/2026',changes:['Fix foto: cache invalidata se DB aggiornato','Banner mattina: wakeH→wakeH+2h','Banner sera: usa orario utente non fisso 19:00','Fix contatore esercizi dinamico','Scelgo io: Misto/Misto+ in viola, Risveglio/Pre-sonno in ambra-notte, in fondo alla lista','Misto/Misto+: rispettano categorie utente + noFloor + solo con foto']},
+  {v:'1.026',date:'20/04/2026',changes:['Fix icona Mobilità 🔄→🦴 (🔄 era usata per recupero automatico)','Fix contatore esercizi: dinamico (202 esercizi, non 187 hardcoded)','Fix Tutti gli esercizi: aggiunta categoria Mobilità/Articolazioni','Fix Scelgo io: aggiunto Mobilità, rimosso duplicato Pre-sonno','Fix Rigenera piano: refreshPlanFromSettings() forza rigenerazione completa','Aggiunto Mobilità al piano giornaliero (sottotitolo home)']},
+  {v:'1.026',date:'20/04/2026',changes:['Nuova categoria Mobilità/Articolazioni 🔄 con 15 esercizi specifici (spalle, anca, ginocchio, caviglia, collo, polsi)','Sessione: esercizi a terra raggruppati prima, poi in piedi','Sessione: ultimo esercizio sempre stretching (anche col boost)','Musica completamente riscritta: crossfade morbido tra sezioni, pad e basso continui, drum loop mai interrotto, 8 sezioni orientale ~90s, struttura canzone rock ~80s']},
   {v:'1.025',date:'19/04/2026',changes:['Pausa default 20→25 secondi','Descrizione audio: limite 80→160 caratteri (copre tutte le descrizioni)','Volume musica: slider in impostazioni + persistenza in SET.musicVol + sync bidirezionale','skipRest cancella immediatamente la lettura vocale in corso']},
   {v:'1.025',date:'19/04/2026',changes:['Fix slider Pausa: ID corretto + setPauseSec() aggiunta','Fix slider Preferiti: ID corretto + setFavCount() aggiunta','Voice desc: pausa auto-estesa a min 12s se attiva + lettura a 300ms + guard','Wizard sliders ora routine + fix heatmap + 14 scale musicali (v1.025)']},
   {v:'1.025',date:'19/04/2026',changes:['Wizard: slider ora sveglia (5-11) e pre-sonno (20-4) — salvato nel profilo','Fix heatmap 90gg: riconosce alias mattino/morning + guard date','Descrizione audio prossimo esercizio durante pausa (toggle)','Tema dinamico on/off in impostazioni Aspetto e Audio','14 scale musicali: gambe/braccia/core/stretching/orientale/mattino/sonno × varianti']},
@@ -6052,21 +6205,11 @@ function handleHashLink(hash){
   const code=hash.startsWith('#')?hash.slice(1):hash;
   
   if(code.startsWith('TTS-')){
-    // Ospite vuole unirsi — decodifica e aggiungi
+    // Ospite vuole unirsi tramite link — usa addGuestFromRaw (togetherGuests)
     try{
-      const guest=JSON.parse(decodeURIComponent(escape(atob(code.slice(4)))));
-      if(!guest||!guest.name)return false;
-      // Naviga a Party e aggiungi l'ospite
       go('party');
       partyTab('insieme');
-      setTimeout(()=>{
-        // Aggiungi il guest alla sessione
-        if(!players.includes(guest.name)){
-          players.push(guest.name);
-          updatePartyUI();
-        }
-        toast('🎉 '+guest.name+' aggiunto/a al Party!',3000);
-      },400);
+      setTimeout(()=>addGuestFromRaw(code),400);
       return true;
     }catch(e){return false;}
   }
@@ -6503,7 +6646,7 @@ function buildCoachBubble(){
       const _wXp=_lastWeek.reduce((s,h)=>s+(h.xp||0),0);
       const _wEx=_lastWeek.reduce((s,h)=>s+(h.exCount||0),0);
       const _wCats=[...new Set(_lastWeek.map(h=>h.focus||h.type))].filter(Boolean);
-      let _recapMsg='📊 Settimana scorsa: '+_wSess+' session'+(Ss===1?'e':'i')+' · '+_wMin+' min';
+      let _recapMsg='📊 Settimana scorsa: '+_wSess+' session'+(_wSess===1?'e':'i')+' · '+_wMin+' min';
       // Build proper message
       const _wSessLabel=_wSess===1?'sessione':'sessioni';
       _recapMsg='📊 Settimana scorsa: '+_wSess+' '+_wSessLabel+' · '+_wMin+' min · +'+_wXp+' XP';
@@ -6795,155 +6938,406 @@ var WEATHER_PHRASES={
   ],
 };
 
-// ═══ MUSICA PROCEDURALE PER SESSIONE ═════════════════════════════════════════
-var _musicCtx=null,_musicNodes=[],_musicPlaying=false,_musicVol=0.5;
-var _musicType=null; // 'oriental'|'morning'|'sleep'|'workout'
+// ═══ MUSICA PROCEDURALE PER SESSIONE (v2 — crossfade morbido) ═══════════════
+var _musicCtx=null,_musicPlaying=false,_musicVol=0.5;
+var _swReloading=false;
+var _musicType=null;
+var _musicMaster=null,_musicPadOscs=[],_musicBassOsc=null,_musicSecTimer=null;
+var _musicSecIdx=0,_musicStartT=0;
 
-const MUSIC_SCALES={
-  oriental:[196,220.5,261.6,294,329.6,392,440,523.3,587.3,659.3], // pentatonica sol min
-  morning: [261.6,293.7,329.6,392,440,523.3,587.3,659.3,784,880], // pentatonica do mag
-  sleep:   [130.8,174.6,196,220.5,261.6,293.7,349.2,392,440],     // pentatonica fa mag grave
-  workout: [220,261.6,329.6,392,440,523.3,659.3,784,880,1046.5],  // pentatonica la min
-  // Varianti workout per diversificazione
-  workout2:[174.6,220,261.6,293.7,349.2,440,523.3,587.3,698.5,880], // pentatonica re min
-  workout3:[196,246.9,293.7,349.2,392,493.9,587.3,698.5,784,987.8], // pentatonica sol mag
-  workout4:[207.7,261.6,311.1,369.9,415.3,523.3,622.3,739.9,830.6,1046.5], // pentatonica lab min
-  oriental2:[184.9,220,277.2,329.6,369.9,440,554.4,659.3,739.9],   // pentatonica mi bemolle
-  // ── Scale tematiche per categoria ──────────────────────────────────────
-  gambe_a:  [155.6,196,220.5,261.6,311.1,392,440,523.3,622.3,784],   // Mi♭ min energica
-  gambe_b:  [174.6,196,261.6,293.7,392,440,523.3,587.3,784,880],     // Re min jazz 90BPM
-  braccia_a:[220,261.6,329.6,440,523.3,659.3,880,1046.5,1318.5,1568],// La min rock
-  core_a:   [196,220.5,294,392,440,587.3,784,880,1046.5,1174.7],     // Sol min funky
-  stretching_a:[130.8,174.6,196,261.6,349.2,392,523.3,698.5,784],    // Fa mag ampia
-  stretching_b:[138.6,185,220,293.7,369.9,440,587.3,739.9],          // Re♭ meditativa
-  oriental_b: [207.7,233.1,311.1,369.9,415.3,622.3,739.9],           // scala giapponese Yo
-  oriental_c: [220,261.6,311.1,392,440,523.3,622.3,784,880],         // scala cinese pentatonica
-  morning_b:  [293.7,329.6,392,440,587.3,659.3,784,880,1046.5,1174.7],// Do mag vivo
-  sleep_b:    [87.3,110,130.8,174.6,196,220,261.6,293.7],            // Si♭ drone profondo
-  // ── Scale Rock/Energiche per elastici e cardio ─────────────────────────
-  elastici_a: [164.8,196,220,246.9,293.7,329.6,392,440,493.9,659.3],  // Mi min pentatonica rock
-  elastici_b: [233.1,261.6,311.1,349.2,415.3,466.2,523.3,622.3,698.5,932.3], // Si♭ min aggressiva
-  cardio_a:   [196,220,261.6,293.7,329.6,392,440,523.3,587.3,659.3],  // Sol min punchy
-  cardio_b:   [146.8,174.6,196,220,261.6,293.7,349.2,392,440,587.3],  // Re min rock 110BPM
+// ── Hz fondamentali ──────────────────────────────────────────────────────────
+const _MHZ={ // Sol min pentatonica + modali
+  G2:196,Bb2:220.5,C3:261.6,D3:293.7,Eb3:311.1,F3:349.2,
+  G3:392,Ab3:415.3,Bb3:440,C4:523.3,D4:587.3,Eb4:622.3,F4:698.5,G4:784,
+  G1:98,Bb1:116.5,C2:130.8,D2:146.8,
+  // Mi min (rock)
+  E2:82.4,A2:110,B2:123.5,E3:164.8,A3:220,B3:246.9,D4r:293.7,
+  E4:329.6,G4r:392,A4:440,B4:493.9,D5:587.3
 };
-// Seleziona variante workout casuale ad ogni sessione
+
+// ── Scale (Hz arrays) per pad e melodia ─────────────────────────────────────
+const _MSC={
+  oriental:[_MHZ.G2,_MHZ.Bb2,_MHZ.C3,_MHZ.D3,_MHZ.Eb3,_MHZ.F3,_MHZ.G3,_MHZ.Ab3,_MHZ.Bb3,_MHZ.C4,_MHZ.D4,_MHZ.Eb4],
+  morning: [261.6,293.7,329.6,392,440,523.3,587.3,659.3,784,880,1046.5],
+  sleep:   [130.8,174.6,196,220.5,261.6,293.7,349.2,392,440],
+  workout: [220,261.6,329.6,392,440,523.3,659.3,784,880],
+  workout2:[174.6,220,261.6,293.7,349.2,440,523.3,587.3,698.5,880],
+  workout3:[196,246.9,293.7,349.2,392,493.9,587.3,698.5,784,987.8],
+  workout4:[207.7,261.6,311.1,369.9,415.3,523.3,622.3,739.9,830.6],
+  gambe_a: [155.6,196,220.5,261.6,311.1,392,440,523.3,622.3,784],
+  gambe_b: [174.6,196,261.6,293.7,392,440,523.3,587.3,784,880],
+  braccia_a:[220,261.6,329.6,440,523.3,659.3,880,1046.5,1318.5],
+  core_a:  [196,220.5,294,392,440,587.3,784,880,1046.5],
+  stretching_a:[130.8,174.6,196,261.6,349.2,392,523.3,698.5,784],
+  stretching_b:[138.6,185,220,293.7,369.9,440,587.3,739.9],
+  morning_b:[293.7,329.6,392,440,587.3,659.3,784,880,1046.5],
+  sleep_b: [87.3,110,130.8,174.6,196,220,261.6,293.7],
+  cardio_a:[_MHZ.E3,_MHZ.G3r||196,_MHZ.A3,_MHZ.B3,_MHZ.D4r,_MHZ.E4,_MHZ.G4r||392,_MHZ.A4],
+  cardio_b:[_MHZ.E2,_MHZ.A2,_MHZ.B2,_MHZ.E3,_MHZ.A3,_MHZ.B3,_MHZ.E4],
+  elastici_a:[164.8,196,220,246.9,293.7,329.6,392,440,493.9],
+  elastici_b:[233.1,261.6,311.1,349.2,415.3,523.3,622.3,739.9],
+};
 function _getWorkoutScale(){
-  const variants=['workout','workout2','workout3','workout4'];
-  return MUSIC_SCALES[variants[Math.floor(Math.random()*variants.length)]];
+  return _MSC[['workout','workout2','workout3','workout4'][Math.floor(Math.random()*4)]];
+}
+function _getScale(type){
+  return _MSC[type]||_getWorkoutScale();
 }
 
+// ── Frasi melodiche: [indice_scala, durata_beats] ────────────────────────────
+// ORIENTALE — 8 frasi ~90s
+const _OPH={
+  A:[[4,2],[3,1],[2,1],[1,1.5],[0,2.5],[2,1],[4,1.5],[3,1],[2,1],[0,3]],
+  B:[[0,1.5],[2,1],[4,1],[5,1.5],[6,2],[7,2],[6,1],[5,1],[4,1.5],[2,1],[0,2.5]],
+  C:[[6,1.5],[7,2],[8,1],[7,1.5],[6,2],[5,1],[4,1],[5,1.5],[6,1],[4,2]],
+  D:[[2,1],[4,1],[2,1],[4,1],[2,1.5],[0,2],[2,1],[4,1.5],[3,1],[2,2.5]],
+  E:[[0,2],[1,1.5],[2,1],[1,1],[0,2],[3,1.5],[4,2],[3,1],[2,1.5],[0,3]],
+  F:[[6,2.5],[7,2],[8,1.5],[7,1],[6,2],[5,1.5],[4,1.5],[5,2],[4,1],[3,1],[2,1.5],[0,3.5]],
+  G:[[4,1],[2,1],[4,1],[6,1.5],[4,1],[5,1.5],[3,1],[4,2],[2,1.5],[0,2]],
+  H:[[6,2],[4,1.5],[2,1],[0,2.5],[2,1],[3,1.5],[4,1.5],[5,2],[4,1],[3,1],[2,1.5],[0,3]],
+};
+const _ORI_SECTIONS=[
+  {p:_OPH.A,l:'🌅 A',bass:0},{p:_OPH.B,l:'🌿 B',bass:2},
+  {p:_OPH.C,l:'✨ C',bass:1},{p:_OPH.D,l:'🔄 D',bass:0},
+  {p:_OPH.E,l:'🌙 E',bass:3},{p:_OPH.F,l:'💫 F',bass:2},
+  {p:_OPH.G,l:'🍃 G',bass:1},{p:_OPH.H,l:'🌊 H',bass:0},
+];
+// MATTINO — 5 frasi vivaci ~60s
+const _MOR_SECTIONS=[
+  {p:[[2,1],[4,1],[6,1.5],[8,1],[6,1],[4,1.5],[2,1],[0,2]],l:'☀️ A',bass:0},
+  {p:[[0,1],[2,0.5],[4,0.5],[6,1],[8,1.5],[9,1],[8,0.5],[6,1],[4,1],[2,2]],l:'🌄 B',bass:2},
+  {p:[[4,1.5],[6,1],[8,1.5],[9,2],[8,1],[6,1.5],[4,1],[2,1],[0,2.5]],l:'🌻 C',bass:1},
+  {p:[[0,1],[2,1],[4,1],[2,1],[4,1.5],[6,1],[4,0.5],[2,1],[0,2.5]],l:'🌞 D',bass:0},
+  {p:[[6,2],[8,1.5],[9,1],[8,1.5],[6,1],[4,1.5],[6,1],[4,1],[2,2]],l:'⚡ E',bass:3},
+];
+// PRE-SONNO — 4 frasi lente ~70s
+const _SLP_SECTIONS=[
+  {p:[[0,3],[2,2],[0,3],[1,2],[0,4]],l:'🌙 A',bass:0},
+  {p:[[2,2.5],[3,2],[4,3],[3,1.5],[2,2],[0,4]],l:'🌒 B',bass:1},
+  {p:[[4,3],[3,2],[2,2.5],[1,2],[0,5]],l:'😴 C',bass:0},
+  {p:[[0,2],[2,2],[3,3],[2,2],[0,3],[1,2],[0,4]],l:'🌌 D',bass:2},
+];
+// WORKOUT GENERICO — 6 frasi ~65s
+const _WRK_SECTIONS=[
+  {p:[[0,1],[2,1],[4,1.5],[3,0.5],[2,1],[4,2],[3,1],[2,1],[0,2]],l:'💪 A',bass:0},
+  {p:[[4,1],[6,1.5],[5,0.5],[4,1],[3,1],[4,1.5],[6,1],[5,1],[4,2]],l:'🔥 B',bass:2},
+  {p:[[2,1],[4,0.5],[6,0.5],[7,1.5],[6,1],[4,1],[2,1.5],[0,2.5]],l:'⚡ C',bass:1},
+  {p:[[0,1.5],[2,1],[4,1],[6,2],[4,1],[2,1.5],[4,1],[3,1],[2,2.5]],l:'💥 D',bass:0},
+  {p:[[6,1.5],[7,1],[6,0.5],[4,1],[6,1.5],[7,2],[6,1],[4,1],[2,2]],l:'🚀 E',bass:3},
+  {p:[[0,1],[4,1],[3,1],[2,1.5],[4,1],[2,0.5],[0,1.5],[2,1],[0,3]],l:'🏆 F',bass:1},
+];
+// CARDIO/ROCK — riff patterns [freq_hz, durata_eighth_notes]
+const _E2=82.4,_G2=98,_A2=110,_B2=123.5,_D3=146.8,
+      _E3=164.8,_G3=196,_A3=220,_B3=246.9,_D4=293.7,
+      _E4=329.6,_G4=392,_A4=440,_B4=493.9,_D5=587.3;
+const _CRD_SECTIONS=[
+  {r:[[_E3,2],[_E3,2],[_G3,2],[_E3,2],[_E3,2],[_E3,2],[_A3,2],[_G3,1],[_E3,1]], reps:2,lead:null,          bass:_E2,l:'🎸 Intro',vol:0.19},
+  {r:[[_E3,2],[_E3,2],[_G3,2],[_E3,2],[_E3,2],[_E3,2],[_A3,2],[_G3,1],[_E3,1]], reps:2,lead:[_G4,_E4,_G4,_A4,_G4,_E4,_D4,_E4], bass:_E2,l:'🎵 Strofa',vol:0.19},
+  {r:[[_E3,1],[_G3,1],[_E3,2],[_A3,2],[_G3,1],[_E3,1],[_D3,2],[_E3,2],[_D3,1],[_E3,3]], reps:2,lead:null,  bass:_A2,l:'🎸 Variazione',vol:0.19},
+  {r:[[_A3,2],[_A3,2],[_B3,2],[_A3,2],[_G3,2],[_A3,2],[_G3,2],[_E3,2]],          reps:2,lead:null,          bass:_B2,l:'📈 Pre-Chorus',vol:0.21},
+  {r:[[_E4,2],[_E4,1],[_G4,1],[_E4,2],[_D4,2],[_B3,2],[_D4,2],[_E4,4]],          reps:3,lead:[_B4,_A4,_G4,_E4,_G4,_A4,_B4,_D5], bass:_E3,l:'💥 Chorus',vol:0.23},
+  {r:[[_E3,4],[0,2],[_E3,2],[_G3,4],[0,2],[_D3,2]],                               reps:2,lead:null,          bass:_E2,l:'🔇 Break',vol:0.17},
+  {r:[[_A3,2],[_B3,2],[_D4,4],[_B3,2],[_A3,2],[_G3,2],[_E3,2]],                   reps:2,lead:[_A4,_B4,_D5,_B4,_A4,_G4,_E4,_G4], bass:_A2,l:'🌉 Bridge',vol:0.19},
+  {r:[[_A3,2],[_A3,2],[_B3,2],[_A3,2],[_G3,2],[_A3,2],[_G3,2],[_E3,2]],          reps:1,lead:null,          bass:_B2,l:'📈 Build',vol:0.21},
+  {r:[[_E4,2],[_G4,1],[_E4,1],[_D4,2],[_B3,2],[_D4,2],[_E4,2],[_G4,4]],          reps:3,lead:[_B4,_A4,_G4,_E4,_G4,_A4,_B4,_D5], bass:_E3,l:'🔥 Finale',vol:0.23},
+];
+
+// ── Audio context ────────────────────────────────────────────────────────────
 function _getMusicCtx(){
-  if(!_musicCtx||_musicCtx.state==='closed'){
+  if(!_musicCtx||_musicCtx.state==='closed')
     _musicCtx=new(window.AudioContext||window.webkitAudioContext)();
-  }
   if(_musicCtx.state==='suspended')_musicCtx.resume();
   return _musicCtx;
 }
-function _musicNote(freq,start,dur,vol,type){
-  if(!_musicCtx)return;
+
+// ── Note helper ──────────────────────────────────────────────────────────────
+function _mn(freq,t,dur,vol,type,dest){
+  if(!freq||!dest)return;
   try{
-    const o=_musicCtx.createOscillator();
-    const g=_musicCtx.createGain();
-    const f=_musicCtx.createBiquadFilter();f.type='lowpass';f.frequency.value=freq*3.5;
-    o.connect(f);f.connect(g);g.connect(_musicMaster);
+    const o=_musicCtx.createOscillator(),g=_musicCtx.createGain();
+    const lp=_musicCtx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=Math.min(freq*3.5,3000);
+    const lfo=_musicCtx.createOscillator(),lg=_musicCtx.createGain();
+    lfo.frequency.value=4+Math.random()*1.5;lg.gain.value=freq*0.008;
+    lfo.connect(lg);lg.connect(o.frequency);
+    o.connect(lp);lp.connect(g);g.connect(dest);
     o.type=type||'sine';o.frequency.value=freq;
-    // Vibrato leggero
-    const lfo=_musicCtx.createOscillator();const lg=_musicCtx.createGain();
-    lfo.frequency.value=3+Math.random()*2;lg.gain.value=freq*0.006;
-    lfo.connect(lg);lg.connect(o.frequency);lfo.start(start);lfo.stop(start+dur+0.1);
-    g.gain.setValueAtTime(0,start);
-    g.gain.linearRampToValueAtTime(vol,start+Math.min(0.2,dur*0.3));
-    g.gain.setValueAtTime(vol*0.8,start+dur*0.6);
-    g.gain.exponentialRampToValueAtTime(0.001,start+dur);
-    o.start(start);o.stop(start+dur+0.1);
-    _musicNodes.push(o,lfo);
+    g.gain.setValueAtTime(0,t);
+    g.gain.linearRampToValueAtTime(vol,t+Math.min(dur*0.25,0.2));
+    g.gain.setValueAtTime(vol*0.75,t+dur*0.65);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.start(t);o.stop(t+dur+0.05);
+    lfo.start(t);lfo.stop(t+dur+0.05);
   }catch(e){}
 }
-var _musicMaster=null;
-function _musicScheduleMelody(){
-  if(!_musicPlaying||!_musicCtx)return;
-  const scale=(_musicType==='workout'||!_musicType)?_getWorkoutScale():MUSIC_SCALES[_musicType]||MUSIC_SCALES.workout;
-  const t=_musicCtx.currentTime;
-  const BPM=_musicType==='sleep'?56:_musicType==='oriental'?68:_musicType==='morning'?88:(_musicType==='cardio_a'||_musicType==='cardio_b')?112:(_musicType==='elastici_a'||_musicType==='elastici_b')?104:80;
-  const beat=60/BPM;
-  const patLen=_musicType==='sleep'?6:8;
-  let now=t;
-  for(let i=0;i<patLen;i++){
-    const idx=Math.floor(Math.random()*scale.length);
-    const freq=scale[idx];
-    const durs=[beat,beat*2,beat*0.5,beat*1.5];
-    const dur=durs[Math.floor(Math.random()*durs.length)];
-    const vol=_musicType==='sleep'?0.06:_musicType==='oriental'?0.1:(_otype==='sawtooth')?0.16:0.12;
-    const _otype=(_musicType==='elastici_a'||_musicType==='elastici_b'||_musicType==='cardio_a'||_musicType==='cardio_b')?'sawtooth':'sine';
-    _musicNote(freq,now,dur*0.85,vol,_otype);
-    // Nota armonica occasionale
-    if(Math.random()<0.25)_musicNote(freq*1.5,now+beat*0.25,dur*0.5,vol*0.3,'sine');
-    now+=dur;
-  }
-  const phraseMs=(now-t-0.2)*1000;
-  if(_musicPlaying&&phraseMs>0)setTimeout(_musicScheduleMelody,phraseMs);
-}
-function _musicSchedulePad(){
-  if(!_musicPlaying||!_musicCtx)return;
-  const scale=(_musicType==='workout'||!_musicType)?_getWorkoutScale():MUSIC_SCALES[_musicType]||MUSIC_SCALES.workout;
-  const t=_musicCtx.currentTime;
-  // Triade del primo, terzo, quinto grado
-  [scale[0],scale[2],scale[4]].forEach((f,i)=>{
-    const o=_musicCtx.createOscillator();const g=_musicCtx.createGain();
-    const flt=_musicCtx.createBiquadFilter();flt.type='lowpass';flt.frequency.value=600;
-    o.connect(flt);flt.connect(g);g.connect(_musicMaster);
-    const _isRockPad=['cardio_a','cardio_b','elastici_a','elastici_b','braccia_a'].includes(_musicType);
-    o.type=_isRockPad?'sawtooth':'triangle';o.frequency.value=f;o.detune.value=(i-1)*4+Math.random()*3;
-    const padVol=_musicType==='sleep'?0.04:0.055;
-    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(padVol/(i+1),t+1.5);
-    o.start(t);
-    _musicNodes.push(o);
-  });
-  const _isRockPadD=['cardio_a','cardio_b','elastici_a','elastici_b'].includes(_musicType);
-  const dur=_isRockPadD?3000+Math.random()*2000:8000+Math.random()*6000;
-  if(_musicPlaying)setTimeout(_musicSchedulePad,dur);
-}
-function _musicScheduleBell(){
-  if(!_musicPlaying||!_musicCtx||_musicType==='sleep')return;
-  const t=_musicCtx.currentTime;
-  const scale=(_musicType==='workout'||!_musicType)?_getWorkoutScale():MUSIC_SCALES[_musicType]||MUSIC_SCALES.workout;
-  const f=scale[scale.length-1-(Math.floor(Math.random()*3))];
-  _musicNote(f,t,1.4,0.07,'sine');
-  if(Math.random()<0.3)_musicNote(f*1.33,t+0.1,0.8,0.03,'sine');
-  const _isRockBell=['cardio_a','cardio_b','elastici_a','elastici_b'].includes(_musicType);
-  setTimeout(_musicScheduleBell,_isRockBell?800+Math.random()*1200:2500+Math.random()*4000);
+
+// ── Guitar (distorsione) ─────────────────────────────────────────────────────
+function _mg(freq,t,dur,vol,dest){
+  if(!freq||!dest)return;
+  try{
+    const o=_musicCtx.createOscillator(),g=_musicCtx.createGain();
+    const ws=_musicCtx.createWaveShaper();
+    const n=512,cv=new Float32Array(n),k=50;
+    for(let i=0;i<n;i++){const x=i*2/n-1;cv[i]=(3+k)*x*20*(Math.PI/180)/(Math.PI+k*Math.abs(x));}
+    ws.curve=cv;ws.oversample='4x';
+    const lp=_musicCtx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=2200;
+    o.connect(ws);ws.connect(lp);lp.connect(g);g.connect(dest);
+    o.type='sawtooth';o.frequency.value=freq;
+    const o2=_musicCtx.createOscillator();o2.type='sawtooth';o2.frequency.value=freq*1.5;o2.connect(ws);
+    g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+0.01);
+    g.gain.setValueAtTime(vol*0.65,t+dur*0.55);g.gain.exponentialRampToValueAtTime(0.0001,t+dur*0.9);
+    o.start(t);o.stop(t+dur+0.05);o2.start(t);o2.stop(t+dur+0.05);
+  }catch(e){}
 }
 
+// ── PAD CONTINUO ─────────────────────────────────────────────────────────────
+function _startPad(scale){
+  if(!_musicMaster)return;
+  const chord=[scale[0],scale[2]||scale[1],scale[4]||scale[3]];
+  _musicPadOscs=chord.map((f,i)=>{
+    const o=_musicCtx.createOscillator(),g=_musicCtx.createGain();
+    const lp=_musicCtx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=500;
+    o.connect(lp);lp.connect(g);g.connect(_musicMaster);
+    o.type='triangle';o.frequency.value=f;o.detune.value=(i-1)*6;
+    g.gain.setValueAtTime(0,_musicCtx.currentTime);
+    g.gain.linearRampToValueAtTime(0.055/(i+1),_musicCtx.currentTime+2);
+    o.start();return o;
+  });
+  // Ciclo accordo ogni 12 beat
+  let ci=0;
+  const chords=[chord,[scale[1]||scale[0],scale[3]||scale[2],scale[5]||scale[4]]];
+  function cycleChord(){
+    if(!_musicPlaying)return;
+    ci=(ci+1)%chords.length;
+    const t=_musicCtx.currentTime, ft=t+2;
+    _musicPadOscs.forEach((o,i)=>{o.frequency.linearRampToValueAtTime(chords[ci][i]||chord[i],ft);});
+    setTimeout(cycleChord,(_currentBPS||0.91)*12*1000);
+  }
+  setTimeout(cycleChord,(_currentBPS||0.91)*12*1000);
+}
+
+// ── BASSO CONTINUO ───────────────────────────────────────────────────────────
+var _currentBPS=60/66;
+function _startBass(freq,bps){
+  if(!_musicMaster)return;
+  _musicBassOsc=_musicCtx.createOscillator();
+  const g=_musicCtx.createGain();
+  const lp=_musicCtx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=280;
+  _musicBassOsc.connect(lp);lp.connect(g);g.connect(_musicMaster);
+  _musicBassOsc.type='sine';_musicBassOsc.frequency.value=freq||98;
+  g.gain.setValueAtTime(0,_musicCtx.currentTime);
+  g.gain.linearRampToValueAtTime(0.22,_musicCtx.currentTime+2);
+  _musicBassOsc.start();
+}
+function _setBass(freq){
+  if(!_musicBassOsc)return;
+  _musicBassOsc.frequency.linearRampToValueAtTime(freq,_musicCtx.currentTime+_currentBPS*2);
+}
+
+// ── GONG / CAMPANA ───────────────────────────────────────────────────────────
+var _gongTimer=null;
+function _scheduleGong(scale){
+  if(!_musicPlaying||!_musicMaster)return;
+  const t=_musicCtx.currentTime;
+  const f=scale[scale.length-1-(Math.floor(Math.random()*3))];
+  try{
+    const o=_musicCtx.createOscillator(),g=_musicCtx.createGain();
+    o.connect(g);g.connect(_musicMaster);o.type='sine';o.frequency.value=f;
+    g.gain.setValueAtTime(0.08,t);g.gain.exponentialRampToValueAtTime(0.0001,t+4.5);
+    o.start(t);o.stop(t+4.6);
+    const o2=_musicCtx.createOscillator(),g2=_musicCtx.createGain();
+    o2.connect(g2);g2.connect(_musicMaster);o2.type='sine';o2.frequency.value=f*2.01;
+    g2.gain.setValueAtTime(0.03,t);g2.gain.exponentialRampToValueAtTime(0.0001,t+2.5);
+    o2.start(t);o2.stop(t+2.6);
+  }catch(e){}
+  _gongTimer=setTimeout(()=>_scheduleGong(scale),4000+Math.random()*8000);
+}
+
+// ── DRUM LOOP (solo per tipi energici) ───────────────────────────────────────
+var _drumTimer=null;
+function _drumBar(bps,isHeavy){
+  if(!_musicPlaying||!_musicMaster)return;
+  const t=_musicCtx.currentTime,e8=bps/2;
+  // Kick
+  function kick(kt){try{const o=_musicCtx.createOscillator(),g=_musicCtx.createGain();o.connect(g);g.connect(_musicMaster);o.type='sine';o.frequency.setValueAtTime(160,kt);o.frequency.exponentialRampToValueAtTime(35,kt+0.1);g.gain.setValueAtTime(0.75,kt);g.gain.exponentialRampToValueAtTime(0.0001,kt+0.28);o.start(kt);o.stop(kt+0.3);}catch(e){}}
+  // Snare
+  function snare(st){try{const b=_musicCtx.createBuffer(1,_musicCtx.sampleRate*0.15,_musicCtx.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);const s=_musicCtx.createBufferSource();s.buffer=b;const g=_musicCtx.createGain();const bp=_musicCtx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=1200;s.connect(bp);bp.connect(g);g.connect(_musicMaster);g.gain.setValueAtTime(0.32,st);g.gain.exponentialRampToValueAtTime(0.0001,st+0.15);s.start(st);}catch(e){}}
+  // HH
+  function hh(ht,v){try{const b=_musicCtx.createBuffer(1,_musicCtx.sampleRate*0.04,_musicCtx.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1);const s=_musicCtx.createBufferSource();s.buffer=b;const g=_musicCtx.createGain();const hp=_musicCtx.createBiquadFilter();hp.type='highpass';hp.frequency.value=8000;s.connect(hp);hp.connect(g);g.connect(_musicMaster);g.gain.setValueAtTime(v||0.11,ht);g.gain.exponentialRampToValueAtTime(0.0001,ht+0.04);s.start(ht);}catch(e){}}
+  kick(t);hh(t,0.12);hh(t+e8,0.07);
+  snare(t+bps);hh(t+bps,0.12);hh(t+bps+e8,0.07);
+  kick(t+bps*2);hh(t+bps*2,0.12);hh(t+bps*2+e8,0.07);
+  snare(t+bps*3);hh(t+bps*3,0.12);hh(t+bps*3+e8,0.07);
+  _drumTimer=setTimeout(()=>_drumBar(bps,isHeavy),bps*4*1000-15);
+}
+
+// ── SEZIONE MELODICA CON CROSSFADE ───────────────────────────────────────────
+function _playMelSection(sections,scale,bps,fadeBeats){
+  if(!_musicPlaying||!_musicMaster)return;
+  const sec=sections[_musicSecIdx%sections.length];
+  const t=_musicCtx.currentTime;
+  const FADE=bps*(fadeBeats||2);
+
+  // Gain node per questa sezione
+  const sg=_musicCtx.createGain();sg.connect(_musicMaster);
+  let phraseDur=sec.p.reduce((s,[_,b])=>s+b,0)*bps;
+  sg.gain.setValueAtTime(0,t);
+  sg.gain.linearRampToValueAtTime(1,t+FADE);
+  sg.gain.setValueAtTime(1,t+phraseDur-FADE);
+  sg.gain.linearRampToValueAtTime(0,t+phraseDur+FADE*0.4);
+  setTimeout(()=>{try{sg.disconnect();}catch(e){}}, (phraseDur+FADE*0.5+0.3)*1000);
+
+  // Note
+  let now=t;
+  sec.p.forEach(([idx,beats])=>{
+    const freq=scale[Math.min(idx,scale.length-1)];
+    const dur=beats*bps;
+    _mn(freq,now,dur*0.88,0.11,'sine',sg);
+    now+=dur;
+  });
+
+  // Aggiorna basso
+  if(sec.bass!=null){
+    const bassScale=[scale[0],scale[2]||scale[1],scale[1]||scale[0],scale[3]||scale[0]];
+    _setBass(bassScale[sec.bass%bassScale.length]/2);
+  }
+
+  _musicSecIdx=(_musicSecIdx+1)%sections.length;
+  const nextAt=t+phraseDur-FADE*0.25;
+  _musicSecTimer=setTimeout(
+    ()=>_playMelSection(sections,scale,bps,fadeBeats),
+    Math.max(50,(nextAt-_musicCtx.currentTime)*1000)
+  );
+}
+
+// ── SEZIONE ROCK CON CROSSFADE ────────────────────────────────────────────────
+function _playRockSection(sections,bps){
+  if(!_musicPlaying||!_musicMaster)return;
+  const sec=sections[_musicSecIdx%sections.length];
+  const t=_musicCtx.currentTime;
+  const FADE=bps*1.5, e8=bps/2;
+
+  function riffDur(r){return r.reduce((s,[_,e])=>s+e,0)*e8;}
+  const secDur=riffDur(sec.r)*sec.reps;
+
+  const sg=_musicCtx.createGain();sg.connect(_musicMaster);
+  sg.gain.setValueAtTime(0,t);
+  sg.gain.linearRampToValueAtTime(1,t+FADE);
+  sg.gain.setValueAtTime(1,t+secDur-FADE);
+  sg.gain.linearRampToValueAtTime(0,t+secDur+FADE*0.35);
+  setTimeout(()=>{try{sg.disconnect();}catch(e){}}, (secDur+FADE*0.5+0.2)*1000);
+
+  for(let rep=0;rep<sec.reps;rep++){
+    const repT=t+rep*riffDur(sec.r);
+    let noteT=repT;
+    sec.r.forEach(([freq,e8s])=>{
+      if(freq)_mg(freq,noteT,e8s*e8*0.82,sec.vol,sg);
+      noteT+=e8s*e8;
+    });
+    // Basso (ottava sotto)
+    let bassT=repT;
+    sec.r.forEach(([freq,e8s])=>{
+      if(freq){
+        const o=_musicCtx.createOscillator(),g=_musicCtx.createGain();
+        const lp=_musicCtx.createBiquadFilter();lp.type='lowpass';lp.frequency.value=200;
+        o.connect(lp);lp.connect(g);g.connect(_musicMaster); // basso diretto, non in sg
+        o.type='sawtooth';o.frequency.value=freq*0.5;
+        g.gain.setValueAtTime(0,bassT);g.gain.linearRampToValueAtTime(0.25,bassT+0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001,bassT+e8s*e8*0.85);
+        o.start(bassT);o.stop(bassT+e8s*e8+0.05);
+      }
+      bassT+=e8s*e8;
+    });
+    // Lead
+    if(sec.lead&&rep%2===0){
+      sec.lead.forEach((f,i)=>{
+        const ls=bps*0.75;
+        try{const o=_musicCtx.createOscillator(),g=_musicCtx.createGain();
+          const bp=_musicCtx.createBiquadFilter();bp.type='bandpass';bp.frequency.value=f*1.5;bp.Q.value=1.2;
+          o.connect(bp);bp.connect(g);g.connect(sg);o.type='square';o.frequency.value=f;
+          g.gain.setValueAtTime(0,repT+i*ls);g.gain.linearRampToValueAtTime(0.07,repT+i*ls+0.015);
+          g.gain.exponentialRampToValueAtTime(0.0001,repT+i*ls+ls*0.8);
+          o.start(repT+i*ls);o.stop(repT+i*ls+ls+0.05);}catch(e){}
+      });
+    }
+  }
+
+  _musicSecIdx=(_musicSecIdx+1)%sections.length;
+  const nextAt=t+secDur-FADE*0.2;
+  _musicSecTimer=setTimeout(
+    ()=>_playRockSection(sections,bps),
+    Math.max(50,(nextAt-_musicCtx.currentTime)*1000)
+  );
+}
+
+// ── ENTRY POINT: startSessionMusic / stopSessionMusic ────────────────────────
 function startSessionMusic(type){
-  if(!SET.audio||!SET.music)return; // check both audio and music toggle
+  if(!SET.audio||!SET.music)return;
   if(_musicPlaying)stopSessionMusic();
   _musicType=type||'workout';
   try{
-    const ctx=_getMusicCtx();_musicCtx=ctx;
-    _musicMaster=ctx.createGain();
+    _getMusicCtx();
+    _musicMaster=_musicCtx.createGain();
     _musicMaster.gain.value=_musicVol;
-    _musicMaster.connect(ctx.destination);
+    _musicMaster.connect(_musicCtx.destination);
     _musicPlaying=true;
-    _musicSchedulePad();
-    _musicScheduleMelody();
-    _musicScheduleBell();
+    _musicSecIdx=0;
+
+    const isRock=['cardio_a','cardio_b','elastici_a','elastici_b'].includes(_musicType);
+    const isSlp=['sleep','sleep_b'].includes(_musicType);
+    const isMor=['morning','morning_b'].includes(_musicType);
+    const isOri=['oriental','oriental2','oriental_b','oriental_c'].includes(_musicType);
+
+    if(isRock){
+      _currentBPS=60/116;
+      // Basso continuo rock (sawtooth)
+      _musicBassOsc=_musicCtx.createOscillator();
+      const bg=_musicCtx.createGain();
+      const ws=_musicCtx.createWaveShaper();
+      const n=512,cv=new Float32Array(n),k=30;
+      for(let i=0;i<n;i++){const x=i*2/n-1;cv[i]=(3+k)*x*20*(Math.PI/180)/(Math.PI+k*Math.abs(x));}
+      ws.curve=cv;ws.oversample='4x';
+      const blp=_musicCtx.createBiquadFilter();blp.type='lowpass';blp.frequency.value=200;
+      _musicBassOsc.connect(ws);ws.connect(blp);blp.connect(bg);bg.connect(_musicMaster);
+      _musicBassOsc.type='sawtooth';_musicBassOsc.frequency.value=_E2;
+      bg.gain.setValueAtTime(0,_musicCtx.currentTime);bg.gain.linearRampToValueAtTime(0.3,_musicCtx.currentTime+1);
+      _musicBassOsc.start();
+      _drumBar(_currentBPS,true);
+      _playRockSection(_CRD_SECTIONS,_currentBPS);
+    } else {
+      const scale=isOri?_MSC.oriental:isMor?_MSC.morning:isSlp?_MSC.sleep:_getWorkoutScale();
+      const bpm=isSlp?52:isOri?66:isMor?90:80;
+      _currentBPS=60/bpm;
+      const sections=isOri?_ORI_SECTIONS:isMor?_MOR_SECTIONS:isSlp?_SLP_SECTIONS:_WRK_SECTIONS;
+
+      _startPad(scale);
+      _startBass(scale[0]/2,_currentBPS);
+      if(!isSlp)_scheduleGong(scale);
+      _playMelSection(sections,scale,_currentBPS);
+    }
   }catch(e){console.warn('Music error:',e);}
 }
+
 function stopSessionMusic(){
   _musicPlaying=false;
-  _musicNodes.forEach(n=>{try{n.stop&&n.stop();}catch(e){}});
-  _musicNodes=[];
+  clearTimeout(_musicSecTimer);clearTimeout(_gongTimer);clearTimeout(_drumTimer);
+  _musicPadOscs.forEach(o=>{try{o.stop();}catch(e){}});_musicPadOscs=[];
+  if(_musicBassOsc){try{_musicBassOsc.stop();}catch(e){}_musicBassOsc=null;}
   if(_musicMaster){try{_musicMaster.disconnect();}catch(e){}_musicMaster=null;}
   if(_musicCtx){try{_musicCtx.close();}catch(e){}_musicCtx=null;}
 }
+
 function setMusicVolume(v){
   const vol=parseInt(v)||0;
   _musicVol=vol/100;
-  SET.musicVol=vol; save(); // persiste per sessioni future
+  SET.musicVol=vol;save();
   if(_musicMaster)_musicMaster.gain.linearRampToValueAtTime(_musicVol,(_musicCtx?.currentTime||0)+0.1);
-  // Sync tutti gli slider volume presenti
-  document.querySelectorAll('.music-vol-slider').forEach(s=>{if(s!==document.activeElement)s.value=vol;});
+  const _pct=(vol).toFixed(1)+'%';
+  document.querySelectorAll('.music-vol-slider').forEach(s=>{
+    if(s!==document.activeElement)s.value=vol;
+    s.style.setProperty('--pct',_pct);
+  });
 }
+
 function getMusicType(sesType){
   if(sesType==='mattino')return Math.random()<.5?'morning':'morning_b';
   if(sesType==='presonno')return Math.random()<.5?'sleep':'sleep_b';
@@ -6951,17 +7345,30 @@ function getMusicType(sesType){
   if(sesType==='gambe')return Math.random()<.5?'gambe_a':'gambe_b';
   if(sesType==='braccia')return'braccia_a';
   if(sesType==='core')return'core_a';
-  if(sesType==='stretching')return Math.random()<.5?'stretching_a':'stretching_b';
+  if(sesType==='stretching'||sesType==='mobilita')return Math.random()<.5?'stretching_a':'stretching_b';
   if(sesType==='seduto')return Math.random()<.5?'stretching_a':'morning_b';
   if(sesType==='elastici')return Math.random()<.5?'elastici_a':'elastici_b';
   if(sesType==='cardio')return Math.random()<.5?'cardio_a':'cardio_b';
-  return'workout'; // _getWorkoutScale sceglierà tra 4 varianti
+  return'workout';
 }
 
 // ═══ INIT ═══
+const APP_BUILD='202604221650'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
-if(location.hash&&location.hash.length>4){handleHashLink(location.hash);}
+if(location.hash&&location.hash.length>4){
+  handleHashLink(location.hash);
+  // Se aperto nel browser (non nell'app installata), mostra banner
+  if(!window.matchMedia('(display-mode:standalone)').matches&&
+     !window.navigator.standalone){
+    const _hcode=location.hash.slice(1);
+    if(_hcode.startsWith('TTS-')||_hcode.startsWith('TTR-')){
+      setTimeout(()=>{
+        toast("📱 Apri questa pagina nell'app TurboTartaruga per esperienza migliore!",6000);
+      },1200);
+    }
+  }
+}
 if(P.name){
   console.log('✅ TurboTartaruga: profilo caricato per',P.name,'streak:',S.str,'xp:',S.xp,'badges:',S.badges.length,'last:',S.last);
   if(!S.plan||S.plan.length===0)generatePlan();
@@ -6973,10 +7380,22 @@ if(P.name){
     if(S.last&&S.str>0){
       var d1=new Date(today),d2=new Date(S.last);
       var diff=Math.round((d1-d2)/86400000);
-      if(diff>2){
-        var yest=new Date(d1);yest.setDate(d1.getDate()-1);
-        var yStr=yest.toISOString().slice(0,10);
-        if(!S.days.includes(yStr+'_volrest'))S.str=0;
+      if(diff>1){
+        // Resetta solo se c'era almeno 1 giorno di workout pianificato non fatto
+        var shouldReset=false;
+        for(var gi=1;gi<diff;gi++){
+          var gd=new Date(S.last);gd.setDate(gd.getDate()+gi);
+          var gds=localDate(gd); // usa data locale per confronto con plan
+          if(gds>=today)break;
+          var planEntry=(S.plan||[]).find(function(p){return p.date===gds;});
+          var isVolRest=S.days.includes(gds+'_volrest');
+          var isRestDay=planEntry&&(planEntry.type==='rest'||planEntry.focus==='riposo');
+          // Resetta solo se il giorno non era riposo e non era riposo volontario
+          // Controlla anche se la sessione è in S.history (backup importato)
+          var histEntry=(S.history||[]).some(function(h){return h.date===gds&&h.type!=='riposo_vol'&&h.type!=='rest';});
+          if(!isVolRest&&!isRestDay&&!histEntry){shouldReset=true;break;}
+        }
+        if(shouldReset)S.str=0;
       }
     }
     save();
@@ -6998,6 +7417,29 @@ if(P.name){
     },2000);
   }
   calcProfileBias();
+  // Svuota sempre oggi+futuro dal piano: garantisce che buildHome
+  // chiami refreshPlan e rigeneri il piano con focusIdx e categorie aggiornate
+  S.plan=(S.plan||[]).filter(function(p){return p.date<localDate();});
+  save();
+  // Registrazione Service Worker — eseguita UNA SOLA VOLTA in INIT
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js?v='+APP_BUILD)
+      .then(function(reg){
+        if(reg.waiting){reg.waiting.postMessage({type:'skipWaiting'});}
+        reg.addEventListener('updatefound',function(){
+          var newSW=reg.installing;
+          newSW.addEventListener('statechange',function(){
+            if(newSW.state==='installed'&&navigator.serviceWorker.controller){
+              navigator.serviceWorker.controller.postMessage({type:'skipWaiting'});
+              // Non forzare reload automatico — l'utente vedrà il banner di aggiornamento
+            }
+          });
+        });
+      })
+      .catch(function(e){console.warn('SW registration failed:',e);});
+    // controllerchange: NON ricaricare automaticamente — rischio di interrompere sessioni
+    // L'aggiornamento viene gestito dal sistema version.json dell'app
+  }
   go('home');
 }else go('welcome');
 
@@ -7103,7 +7545,6 @@ document.addEventListener('visibilitychange',async()=>{
 });
 
 // ═══ SERVICE WORKER + UPDATE ═══
-const APP_BUILD='202604192031'; // auto-set on each release
 
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
