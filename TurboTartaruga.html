@@ -1322,12 +1322,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           <div id="ai-instructions" style="margin:0 13px 12px;padding:11px 13px;background:var(--bg2);border-radius:12px;font-size:12px;line-height:1.6;color:var(--text)"></div>
 
           <!-- API Key input -->
+          <!-- Selettore modello (solo Gemini) -->
+          <div id="ai-model-selector" style="padding:0 13px 10px;display:none">
+            <div style="font-size:12px;font-weight:bold;color:var(--tlt);margin-bottom:6px">🧠 Modello Gemini</div>
+            <select id="ai-gemini-model" onchange="SET.aiGeminiModel=this.value;save();_syncAISettings()"
+              style="width:100%;padding:9px 12px;border-radius:10px;border:1.5px solid var(--bdr);background:var(--bg2);color:var(--text);font-size:13px">
+            </select>
+          </div>
           <div style="padding:0 13px 12px">
             <div style="font-size:12px;font-weight:bold;color:var(--tlt);margin-bottom:6px">🔑 API Key</div>
             <div style="display:flex;gap:7px">
               <input type="password" id="ai-key-input" placeholder="Incolla qui la tua API key..."
                 style="flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--bdr);background:var(--bg2);color:var(--text);font-size:13px;outline:none"
-                oninput="SET.aiKey=this.value;save()">
+                oninput="SET.aiKey=this.value;if(!SET.aiKeys)SET.aiKeys={gemini:'',claude:'',chatgpt:''};SET.aiKeys[SET.aiProvider||'gemini']=this.value;save()">
               <button onclick="toggleAIKeyVisibility()" style="padding:8px 12px;border-radius:10px;border:1.5px solid var(--bdr);background:var(--bg2);color:var(--text);cursor:pointer;font-size:16px" id="ai-key-eye">👁️</button>
             </div>
             <div style="font-size:10px;color:var(--tlt);margin-top:5px">🔒 La chiave è salvata solo su questo dispositivo, mai inviata a server esterni.</div>
@@ -1349,7 +1356,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.031</div>
+      <div id="app-version-display">Versione v1.034</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1969,13 +1976,21 @@ const AI_PROVIDERS = {
     name: 'Google Gemini',
     model: 'gemini-1.5-flash',
     free: true,
-    instructions: `<b>🟢 Gemini Flash — GRATUITO</b><br><br>
+    models: [
+      {id:'gemini-1.5-flash',        label:'Gemini 1.5 Flash',      tier:'🟢 Gratis'},
+      {id:'gemini-1.5-flash-latest', label:'Gemini 1.5 Flash Latest',tier:'🟢 Gratis'},
+      {id:'gemini-2.0-flash-lite',   label:'Gemini 2.0 Flash Lite',  tier:'🟢 Gratis'},
+      {id:'gemini-2.0-flash',        label:'Gemini 2.0 Flash',       tier:'🟡 Pagamento'},
+      {id:'gemini-1.5-pro-latest',   label:'Gemini 1.5 Pro',         tier:'🟡 Pagamento'},
+    ],
+    instructions: `<b>🟢 Gemini — GRATUITO</b><br><br>
 1. Vai su <b>aistudio.google.com</b><br>
 2. Accedi con il tuo account Google<br>
 3. Clicca <b>"Get API key"</b> → <b>"Create API key"</b><br>
 4. Copia la chiave e incollala qui sotto<br><br>
-<span style="color:var(--g1)">✅ Piano gratuito: 60 richieste/minuto, più che sufficienti!</span>`,
-    endpoint: (key) => `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+<span style="color:var(--g1)">✅ Modelli gratuiti: 1.5 Flash, 1.5 Flash Latest, 2.0 Flash Lite</span><br>
+<span style="color:#FF9800">⚠️ 2.0 Flash e Pro richiedono fatturazione attiva</span>`,
+    endpoint: (key,model) => 'https://generativelanguage.googleapis.com/v1/models/'+(model||'gemini-1.5-flash')+':generateContent?key='+key,
     buildBody: (msg) => ({contents:[{parts:[{text:msg}]}]}),
     parseResponse: (d) => d?.candidates?.[0]?.content?.parts?.[0]?.text || null,
   },
@@ -2032,9 +2047,22 @@ function _syncAISettings(){
     const prov = AI_PROVIDERS[SET.aiProvider||'gemini'];
     instr.innerHTML = prov ? prov.instructions : '';
   }
-  // API key
+  // API key — per-provider
+  if(!SET.aiKeys) SET.aiKeys={gemini:'',claude:'',chatgpt:''};
+  const _provKey = SET.aiKeys[SET.aiProvider||'gemini'] || SET.aiKey || '';
   const keyInput = document.getElementById('ai-key-input');
-  if(keyInput && !keyInput._dirty) keyInput.value = SET.aiKey||'';
+  if(keyInput && !keyInput._dirty) keyInput.value = _provKey;
+  // Selettore modello Gemini
+  const _modelSel = document.getElementById('ai-model-selector');
+  const _modelDd  = document.getElementById('ai-gemini-model');
+  if(_modelSel) _modelSel.style.display = (SET.aiProvider==='gemini'&&enabled) ? 'block' : 'none';
+  if(_modelDd && SET.aiProvider==='gemini'){
+    const _gModels = AI_PROVIDERS.gemini.models||[];
+    if(_modelDd.options.length !== _gModels.length){
+      _modelDd.innerHTML = _gModels.map(m=>`<option value="${m.id}">${m.tier} ${m.label}</option>`).join('');
+    }
+    _modelDd.value = SET.aiGeminiModel||'gemini-1.5-flash';
+  }
   // Feature toggles
   ['bubble','sessions','chat'].forEach(f=>{
     const b = document.getElementById('st-ai-'+f);
@@ -2051,12 +2079,19 @@ function toggleAICoach(){
 
 function selectAIProvider(p){
   const prev = SET.aiProvider||'gemini';
+  // Salva key del provider corrente prima di cambiare
+  const curKey = (document.getElementById('ai-key-input')?.value||'').trim();
+  if(!SET.aiKeys) SET.aiKeys={gemini:'',claude:'',chatgpt:''};
+  if(curKey) SET.aiKeys[prev] = curKey;
+  SET.aiKey = SET.aiKeys[prev] || SET.aiKey || '';
+  // Cambia provider e carica la sua key salvata
   SET.aiProvider = p;
-  SET.aiKey = ''; // reset key when changing provider
+  const newKey = SET.aiKeys[p] || '';
+  SET.aiKey = newKey;
   save();
   _syncAISettings();
   const keyInput = document.getElementById('ai-key-input');
-  if(keyInput){ keyInput.value=''; keyInput._dirty=false; }
+  if(keyInput){ keyInput.value = newKey; keyInput._dirty = false; }
   const res = document.getElementById('ai-test-result');
   if(res) res.style.display='none';
   // Track providers tried for badge
@@ -2080,9 +2115,12 @@ function toggleAIFeature(f){
 }
 
 async function testAIConnection(){
-  const key = (document.getElementById('ai-key-input')?.value||'').trim() || SET.aiKey||'';
+  const key = (document.getElementById('ai-key-input')?.value||'').trim() || (SET.aiKeys&&SET.aiKeys[SET.aiProvider||'gemini']) || SET.aiKey||'';
   if(!key){ toast('⚠️ Inserisci prima la tua API key!'); return; }
-  SET.aiKey = key; save();
+  SET.aiKey = key;
+  if(!SET.aiKeys) SET.aiKeys={gemini:'',claude:'',chatgpt:''};
+  SET.aiKeys[SET.aiProvider||'gemini'] = key;
+  save();
   const btn = document.getElementById('btn-ai-test');
   const res = document.getElementById('ai-test-result');
   if(btn){ btn.textContent='⏳ Connessione...'; btn.disabled=true; }
@@ -2094,7 +2132,11 @@ async function testAIConnection(){
     const headers = {'Content-Type':'application/json'};
     if(prov.headers) Object.assign(headers, prov.headers(key));
     else if(SET.aiProvider==='chatgpt') headers['Authorization']='Bearer '+key;
-    const r = await fetch(prov.endpoint(key), {
+    // Leggi il modello direttamente dal dropdown (evita cache stale di SET)
+    const _ddModel = document.getElementById('ai-gemini-model');
+    const _gmModel = (_ddModel&&_ddModel.value) || SET.aiGeminiModel || 'gemini-1.5-flash';
+    if(SET.aiProvider==='gemini') SET.aiGeminiModel = _gmModel; // sincronizza
+    const r = await fetch(prov.endpoint(key, _gmModel), {
       method:'POST',
       headers,
       body: JSON.stringify(prov.buildBody(testMsg))
@@ -4048,7 +4090,8 @@ function showRestPreview(targetIdx, onDone){
     document.getElementById('rst-next-name').textContent=nx.n;
     // Descrizione audio del prossimo esercizio (se attivata)
     if(SET.voice&&SET.voiceDesc&&left>=6){
-      const _vdTxt='Prossimo: '+nx.n+'. '+(nx.desc||'').slice(0,160);
+      // isFirst: leggi 'Preparati: nome' poi descrizione; altri: 'Prossimo: nome. desc'
+      const _vdTxt=(targetIdx===0)?'Preparati: '+nx.n+'. '+(nx.desc||'').slice(0,160):'Prossimo: '+nx.n+'. '+(nx.desc||'').slice(0,160);
       if(targetIdx===0&&window.speechSynthesis){
         // Primo esercizio: lancia la lettura DOPO il warmup (motore non ancora inizializzato)
         try{const _wu=new SpeechSynthesisUtterance('');_wu.volume=0;
@@ -4126,8 +4169,6 @@ function showRestPreview(targetIdx, onDone){
     if(rstEmoji)rstEmoji.textContent='😮‍💨';
   }
   go_scr('rest');beep(330,.18);
-  // Voice warmup (fixes first-exercise silence on mobile)
-  if(SET.voice&&window.speechSynthesis){try{const u=new SpeechSynthesisUtterance('');u.volume=0;window.speechSynthesis.speak(u);}catch(e){}}
   clearInterval(restIv);
   T._restDone=onDone;
   let _preparatiSpoken=false;
@@ -5264,7 +5305,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.031 · 25/04/2026 09:47 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.034 · 25/04/2026 12:50 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -6019,7 +6060,7 @@ var CAT_INFO={
 // ── Core state objects ──────────────────────────────────────────────────
 var P={};  // Profile
 var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0};  // Stats
-var SET={audio:true,voice:true,voiceDesc:true,music:true,musicVol:60,dynamicTheme:true,pauseSec:25,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light',aiEnabled:false,aiProvider:'gemini',aiKey:'',aiFeature_bubble:true,aiFeature_sessions:true,aiFeature_chat:true};  // Settings
+var SET={audio:true,voice:true,voiceDesc:true,music:true,musicVol:60,dynamicTheme:true,pauseSec:25,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light',aiEnabled:false,aiProvider:'gemini',aiKey:'',aiKeys:{gemini:'',claude:'',chatgpt:''},aiGeminiModel:'gemini-1.5-flash',aiFeature_bubble:true,aiFeature_sessions:true,aiFeature_chat:true};  // Settings
 var T={exs:[],idx:0,phase:'act',left:0,paused:false,t0:0,iv:null,dur:12,feeling:'piano',sesType:'misto',_halfSpoken:false,_restDone:null,_isRoutine:false};  // Timer state
 
 function generateShareSession(){
@@ -6454,6 +6495,26 @@ function showSwitchSide(){
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
   {v:'1.026',date:'20/04/2026',changes:['FIX CRITICO: Ss===1 typo in buildCoachBubble causava crash ogni lunedì mattina → streak 0 e Lv.1 visibili','buildCoachBubble avvolta in try-catch (safety net)','Streak reset: controlla giorni di riposo nel piano prima di azzerare','XP NaN guard: se S.xp è NaN usa 0 anziché mostrare Lv.1','Photo cache: invalida automaticamente quando DB.length cambia']},
+  {v:'1.034',date:'25/04/2026',changes:[
+    'Gemini endpoint: v1beta → v1 (modelli stabili)',
+    'Fix selettore modello: legge valore live dal dropdown',
+    'Lista modelli: rimosso 8B (non in v1), aggiunto -latest e 2.0-flash-lite',
+  ]},
+  {v:'1.033',date:'25/04/2026',changes:[
+    'Gemini: selettore modello (1.5-flash gratis, 2.0-flash lite, pro...)',
+    'Default Gemini → 1.5-flash (tier gratuito globale)',
+    '2.0-flash rimosso come default (richiede fatturazione in EU)',
+  ]},
+  {v:'1.032',date:'25/04/2026',changes:[
+    'FIX: Gemini usa gemini-2.0-flash (1.5-flash deprecato)',
+    'FIX: API key per-provider — cambio provider non azzera le chiavi',
+    'FIX: Pronti Iniziamo — voce legge nome e descrizione primo esercizio',
+    'Primo esercizio annunciato con Preparati invece di Prossimo',
+  ]},
+  {v:'1.031',date:'25/04/2026',changes:[
+    'FIX: primo esercizio non letto — warmup onend prima di speak()',
+    'Changelog aggiornato con versioni 1.027-1.030',
+  ]},
   {v:'1.030',date:'25/04/2026',changes:[
     'AI Coach BETA: sezione impostazioni con Gemini/Claude/ChatGPT',
     'Test connessione AI con risposta live',
@@ -7775,7 +7836,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604250947'; // auto-set on each release
+const APP_BUILD='202604251250'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
