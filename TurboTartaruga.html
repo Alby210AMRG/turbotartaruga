@@ -1297,7 +1297,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.027</div>
+      <div id="app-version-display">Versione v1.029</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1634,8 +1634,73 @@ var PHRASES=[
   "Un esercizio alla volta — anche una tartaruga scala le montagne! ⛰️",
   "Beep beep! È ora di muoversi! 🔔",
   "Se non ora, quando? Se non tu, chi? 🤔",
-  "Sai cosa non ti fa sentire stanchi? Muoversi! Paradosso tartaruga! 🔄",
+  ,
 ]
+// ─── FRASI ORARIE (giorno/notte) ─────────────────────────────────────────────
+const TIME_PHRASES={
+  mattino:[
+    "☀️ Buongiorno campione! Il corpo è pronto — e tu? 🌅",
+    "🌄 Inizia la giornata con il piede giusto... e anche l'altro!",
+    "☀️ Il mattino ha l'oro in bocca — e tu hai la tartaruga! 🐢",
+    "🌞 Sveglio e già vincente! La sessione mattutina è la più potente! 💪",
+    "🌤️ 10 minuti ora valgono doppio — il metabolismo è al top!",
+    "🐣 Inizia piano, finisci forte. Il mattino è tuo! 🚀",
+    "☕ Prima del caffè o dopo — l'importante è muoversi! 🐢",
+    "🌸 Che bella mattinata per fare qualcosa di buono per te!",
+  ],
+  pomeriggio:[
+    "⚡ Pomeriggio = energia di scorta. Usala bene! 💪",
+    "🔋 Il tuo corpo ha ancora carburante — non sprecarlo sul divano!",
+    "🌤️ Pausa perfetta: 10 minuti di movimento e torni al top!",
+    "🎯 Il pomeriggio è il momento d'oro per allenarti! 💡",
+    "🏃 Non aspettare la sera — il corpo ti ringrazierà adesso! 🐢",
+    "🌻 A metà giornata il corpo chiede movimento. Ascoltalo! 👂",
+  ],
+  sera:[
+    "🌙 Fine giornata = momento perfetto per staccare la testa e muoversi!",
+    "✨ La sessione serale è il regalo che fai al tuo sonno! 😴",
+    "🌟 Chiudi la giornata in modo attivo — domani ti sveglierai meglio!",
+    "🌆 La sera è silenziosa e perfetta per concentrarsi sul corpo! 🐢",
+    "🕯️ 10 minuti di movimento prima di rilassarti. Il divano aspetta dopo!",
+    "🦉 Anche la tartaruga fa la sua sessione serale! 🐢",
+    "🌙 Muoversi la sera abbassa lo stress e migliora il sonno. 🧠",
+  ],
+  notte:[
+    "🌃 Nottambulo attivo! Sessione leggera e poi riposo! 😴",
+    "🌒 Tardi ma convinto. La costanza non guarda l'orologio! 🐢",
+    "⭐ Anche di notte la tartaruga non molla. Però poi dorme! 😴",
+    "🌌 Sessione notturna: energia bassa, determinazione alta! 💪",
+  ],
+};
+// ─── FRASI STAGIONALI ────────────────────────────────────────────────────────
+const SEASON_PHRASES={
+  spring:[
+    "🌸 Primavera! Il corpo si sveglia con la natura — momento perfetto per ricominciare!",
+    "🌷 La primavera porta energia nuova. Costruisci un'abitudine solida!",
+    "🌱 Come i fiori a marzo, anche le tue abitudini stanno sbocciando! 🐢",
+    "🦋 Primavera = rinascita. Il tuo corpo è pronto per ripartire! ✨",
+    "🌿 Ore di luce in più, energie in più. Nessuna scusa! ☀️",
+  ],
+  summer:[
+    "☀️ Estate: il calore può stancare, ma il movimento aiuta la circolazione!",
+    "🏖️ Bastano 10 minuti freschi mattutini — la tartaruga lo sa! 🐢",
+    "🌞 Estate calda = sessioni brevi ma costanti. 💧",
+    "🍉 Idratati, muoviti, goditi l'estate in movimento! 🐢",
+  ],
+  autumn:[
+    "🍂 L'autunno è la stagione della costanza — niente distrazioni estive!",
+    "🍁 Ottobre: le foglie cadono, le abitudini restano. 🐢",
+    "🎃 Autunno = temperatura perfetta per muoversi! 💪",
+    "🌰 Come lo scoiattolo fa scorte, tu fai scorte di salute! 🐢",
+  ],
+  winter:[
+    "❄️ Inverno: il freddo fuori rende ogni sessione dentro ancora più preziosa!",
+    "🎄 La tartaruga si allena anche a dicembre! 💪",
+    "⛄ Il freddo rallenta tutto tranne la tua costanza! ❄️🐢",
+    "🧤 Inverno = la stagione in cui si costruisce la base per la primavera!",
+    "🌨️ Fuori fa freddo — perfetto per tenerti al caldo con 10 minuti! 🔥",
+  ],
+};
 var PARTY_EX=[
   {id:'p1',n:'Plank di gruppo',desc:'Tutti in posizione plank sulle ginocchia. Chi tiene più a lungo vince! Schiena dritta.',img:'p1.png',dur:60},
   {id:'p2',n:'Squat sincronizzati',desc:'Tutti scendono e salgono insieme. Chi perde il ritmo è eliminato! Contiamo insieme.',img:'p2.png',dur:45},
@@ -1786,7 +1851,6 @@ function go(scr){
   else if(scr==='party')initParty();else if(scr==='settings')buildSettings();
   // Keep back-button history in sync
   history.pushState({screen:scr},'',location.pathname+'#'+scr);
-  // Sincronizza --pct di tutti gli slider dopo ogni navigazione
   setTimeout(_syncAllSliderPct,30);
 }
 function goSettingsFromTraining(){
@@ -2007,7 +2071,7 @@ var WIZ_STEPS = [
           ['core','🎯','Core'],['stretching','🤸','Stretching'],
           ['seduto','🪑','Da Seduto'],['orientale','🧘','Orientale'],
           ['elastici','🎽','Elastici'],['cardio','🥊','Cardio/Box'],
-          ['postura','🖥️','Postura'],  // presonno managed in dedicated routine step
+          ['postura','🖥️','Postura'],['articolazioni','🦴','Articolazioni'],  // presonno managed in dedicated routine step
         ].map(([v,ico,lbl])=>{const sel=(_wizData.cats||[]).includes(v);return`<button class="wiz-cat-btn${sel?' sel':''}" data-cat="${v}" onclick="wizToggleCat(this)"
           style="padding:14px 10px;border-radius:14px;border:3px solid ${sel?'#fff':'rgba(255,255,255,.25)'};background:${sel?'rgba(255,255,255,.25)':'rgba(255,255,255,.1)'};color:#fff;cursor:pointer;text-align:center">
           <div style="font-size:28px;margin-bottom:4px">${ico}</div>
@@ -4014,6 +4078,11 @@ function completeSession(){
     if(!S.catSet.includes(T.sesType))S.catSet.push(T.sesType);
   }
   if(T.sesType==='stretching')S.stretch_ct=(S.stretch_ct||0)+1;
+  // Fase B: traccia sessioni per stagione
+  {const _m=new Date().getMonth();
+  const _seas=_m>=2&&_m<=4?'spring':_m>=5&&_m<=7?'summer':_m>=8&&_m<=10?'autumn':'winter';
+  if(!S.seasons)S.seasons={spring:0,summer:0,autumn:0,winter:0};
+  S.seasons[_seas]=(S.seasons[_seas]||0)+1;}
   if(!S.catSet)S.catSet=[];
   if(!S.catSet.includes(T.sesType))S.catSet.push(T.sesType);
   updateStreak();
@@ -4954,7 +5023,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.027 · 25/04/2026 07:58 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.029 · 25/04/2026 08:35 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -5017,7 +5086,6 @@ function toggleAcc(id){
     }
     if(id==='acc-aspetto'){_syncGpsStatus();_syncAspettoSliders();}
     if(id==='acc-routine')_syncRoutineSliders();
-    // Dopo qualsiasi apertura accordion, risincronizza --pct (es. slider musica)
     setTimeout(_syncAllSliderPct,20);
   }
 }
@@ -5398,10 +5466,8 @@ function restoreCode(){const code=document.getElementById('paste-input').value.t
 function toast(msg,dur=3200){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
 
 // ═══ SLIDER ═══
-// ─── SLIDER --pct UNIVERSALE ────────────────────────────────────────────────
 function _sP(sl){if(!sl||sl.type!=='range')return;const p=((sl.value-sl.min)/(sl.max-sl.min)*100).toFixed(1)+'%';sl.style.setProperty('--pct',p);}
 function _syncAllSliderPct(){document.querySelectorAll('input[type=range]').forEach(_sP);}
-// Aggiorna --pct su ogni interazione utente
 document.addEventListener('input',e=>{if(e.target.type==='range')_sP(e.target);});
 
 // ═══ GUIDE ═══
@@ -5497,21 +5563,10 @@ async function startQRScan(targetElId){
     toast('⚠️ Fotocamera non disponibile su questo dispositivo');return;
   }
   try{
-    // Constraints progressivi: exact → ideal → any (iOS compatibility)
-    let _qrConstraints=[
-      {video:{facingMode:{exact:'environment'}}},
-      {video:{facingMode:'environment'}},
-      {video:true}
-    ];
-    let _qrErr;
-    for(const ct of _qrConstraints){
-      try{_qrStream=await navigator.mediaDevices.getUserMedia(ct);break;}
-      catch(e){_qrErr=e;}
-    }
+    let _qrConstraints=[{video:{facingMode:{exact:'environment'}}},{video:{facingMode:'environment'}},{video:true}];
+    let _qrErr;for(const ct of _qrConstraints){try{_qrStream=await navigator.mediaDevices.getUserMedia(ct);break;}catch(e){_qrErr=e;}}
     if(!_qrStream)throw _qrErr;
-    video.srcObject=_qrStream;
-    video.setAttribute('playsinline','true');
-    await video.play();
+    video.srcObject=_qrStream;video.setAttribute('playsinline','true');await video.play();
     wrap.style.display='block';
     if(btn)btn.style.display='none';
     // Also hide result scan button if visible
@@ -5560,10 +5615,7 @@ async function startQRScan(targetElId){
     }
   }catch(e){
     const isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent);
-    const msg=isIOS
-      ? '📱 iOS: vai in Impostazioni → Safari → Fotocamera → Consenti. Poi riprova.'
-      : '⚠️ Fotocamera negata. Controlla i permessi del browser.';
-    toast(msg,6000);
+    toast(isIOS?'📱 iOS: Impostazioni → Safari → Fotocamera → Consenti. Poi riprova.':'⚠️ Fotocamera negata. Controlla i permessi del browser.',6000);
     stopQRScan();
   }
 }
@@ -5695,6 +5747,12 @@ var BADGES=[
   {id:'b_secret1',lv:1,icon:'🎭',name:'???',hint:'Segreto',secret:true,check:s=>s.morningTotal>=1&&s.sleepTotal>=1},
   {id:'b_secret2',lv:3,icon:'🌍',name:'???',hint:'Segreto',secret:true,check:s=>s.boosts>=10},
   {id:'b_secret3',lv:5,icon:'🦋',name:'???',hint:'Segreto',secret:true,check:s=>s.tot>=50&&s.str>=21},
+  // ── STAGIONI (Fase B) ─────────────────────────────────────────────────────
+  {id:'b_spring',lv:2,icon:'🌸',name:'Primavera attiva',hint:'10 sessioni in primavera (mar–mag)',check:(s)=>(s.seasons&&s.seasons.spring>=10)||false},
+  {id:'b_summer',lv:2,icon:'☀️',name:'Estate in movimento',hint:'10 sessioni in estate (giu–ago)',check:(s)=>(s.seasons&&s.seasons.summer>=10)||false},
+  {id:'b_autumn',lv:2,icon:'🍂',name:'Autunno costante',hint:'10 sessioni in autunno (set–nov)',check:(s)=>(s.seasons&&s.seasons.autumn>=10)||false},
+  {id:'b_winter',lv:2,icon:'❄️',name:'Guerriero invernale',hint:'10 sessioni in inverno (dic–feb)',check:(s)=>(s.seasons&&s.seasons.winter>=10)||false},
+  {id:'b_4seasons',lv:3,icon:'🌍',name:'Quattro Stagioni',hint:'Almeno 1 sessione in ciascuna stagione',check:(s)=>!!(s.seasons&&s.seasons.spring>=1&&s.seasons.summer>=1&&s.seasons.autumn>=1&&s.seasons.winter>=1)},
 ]
 var CAT_INFO={
   riscaldamento:{label:'Riscaldamento',icon:'🔥'},gambe:{label:'Gambe',icon:'🦵'},
@@ -5705,12 +5763,13 @@ var CAT_INFO={
   postura:{label:'Postura',icon:'🖥️'},mattino:{label:'Mattino',icon:'☀️'},
   misto:{label:'Misto',icon:'🌈'},misto_plus:{label:'Misto+',icon:'🌈'},
   party:{label:'Party',icon:'🎉'},riposo:{label:'Riposo',icon:'😴'},
-  mobilita:{label:'Mobilità',icon:'🦴'}
+  mobilita:{label:'Mobilità',icon:'🦴'},
+  articolazioni:{label:'Articolazioni',icon:'🦴'}
 };
 // ── Core state objects ──────────────────────────────────────────────────
 var P={};  // Profile
 var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0};  // Stats
-var SET={audio:true,voice:true,voiceDesc:false,music:true,musicVol:60,dynamicTheme:true,pauseSec:25,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light'};  // Settings
+var SET={audio:true,voice:true,voiceDesc:true,music:true,musicVol:60,dynamicTheme:true,pauseSec:25,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light'};  // Settings
 var T={exs:[],idx:0,phase:'act',left:0,paused:false,t0:0,iv:null,dur:12,feeling:'piano',sesType:'misto',_halfSpoken:false,_restDone:null,_isRoutine:false};  // Timer state
 
 function generateShareSession(){
@@ -6680,6 +6739,21 @@ var _coachPhrases = [];  // queue of phrases to show
 var _coachIdx = 0;
 var _coachIv = null;
 
+// ─── DIFFICOLTÀ DINAMICA (Fase B) ────────────────────────────────────────────
+function getDifficultyStatus(){
+  const f=SET.recentFeedbacks||[];if(f.length<3)return null;
+  const easy=f.filter(x=>x==='easy').length,hard=f.filter(x=>x==='hard').length;
+  if(easy>=2&&hard===0)return'underload';
+  if(hard>=2&&easy===0)return'overload';
+  return'optimal';
+}
+function getDifficultyPhrase(){
+  const s=getDifficultyStatus();
+  if(s==='overload')return'💪 Le ultime sessioni erano impegnative — vuoi abbassare la difficoltà? (Impostazioni → Allenamento)';
+  if(s==='underload')return'🚀 Ti sembra troppo facile? Aumenta la difficoltà in Impostazioni → Allenamento!';
+  return null;
+}
+
 function buildCoachBubble(){
   _coachPhrases = [];
   
@@ -6716,9 +6790,18 @@ function buildCoachBubble(){
     }
   }
 
-  // 1. Frase motivazionale base (sempre presente)
-  if(typeof PHRASES!=='undefined'&&PHRASES.length)
-    _coachPhrases.push(PHRASES[Math.floor(Math.random()*PHRASES.length)]);
+  // 1. Frase motivazionale — giorno/notte + stagionale
+  const _cbM=new Date().getMonth();
+  const _cbSeason=_cbM>=2&&_cbM<=4?'spring':_cbM>=5&&_cbM<=7?'summer':_cbM>=8&&_cbM<=10?'autumn':'winter';
+  const _cbSlot=_cbHour>=5&&_cbHour<12?'mattino':_cbHour>=12&&_cbHour<18?'pomeriggio':_cbHour>=18&&_cbHour<22?'sera':'notte';
+  const _tPool=(typeof TIME_PHRASES!=='undefined'&&TIME_PHRASES[_cbSlot])||[];
+  const _sPool=(typeof SEASON_PHRASES!=='undefined'&&SEASON_PHRASES[_cbSeason])||[];
+  const _gPool=(typeof PHRASES!=='undefined'&&PHRASES)||[];
+  // 60% time-specific, 30% generale, +stagionale extra
+  const _pr=Math.random();
+  if(_pr<0.60&&_tPool.length) _coachPhrases.push(_tPool[Math.floor(Math.random()*_tPool.length)]);
+  else if(_gPool.length) _coachPhrases.push(_gPool[Math.floor(Math.random()*_gPool.length)]);
+  if(_sPool.length) _coachPhrases.push(_sPool[Math.floor(Math.random()*_sPool.length)]);
 
   // 2. Frase meteo (se GPS attivo)
   if(_wxCache){
@@ -6771,12 +6854,20 @@ function buildCoachBubble(){
     shuffled.slice(0,Math.min(2,shuffled.length)).forEach(p=>_coachPhrases.push(p));
   }
 
+  // 6. Difficoltà dinamica
+  const _dp=getDifficultyPhrase();if(_dp)_coachPhrases.push(_dp);
+  // 7. Sfida stagionale
+  {const _sm=new Date().getMonth();
+  const _ss=_sm>=2&&_sm<=4?'spring':_sm>=5&&_sm<=7?'summer':_sm>=8&&_sm<=10?'autumn':'winter';
+  const _sl={spring:'🌸 Primavera',summer:'☀️ Estate',autumn:'🍂 Autunno',winter:'❄️ Inverno'};
+  const _sb={spring:'b_spring',summer:'b_summer',autumn:'b_autumn',winter:'b_winter'};
+  const _sn=(S.seasons||{})[_ss]||0;
+  if(!(S.badges||[]).includes(_sb[_ss])&&_sn<10)
+    _coachPhrases.push(_sl[_ss]+': '+_sn+'/10 sessioni → badge stagionale! 🏅');}
   // Start rotation
   _showCoachPhrase();
   if(_coachIv)clearInterval(_coachIv);
-  if(_coachPhrases.length>1){
-    _coachIv=setInterval(_showCoachPhrase, 6000); // cambia frase ogni 6 secondi
-  }
+  if(_coachPhrases.length>1)_coachIv=setInterval(_showCoachPhrase,6000);
 }
 
 function _showCoachPhrase(){
@@ -7413,7 +7504,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604250758'; // auto-set on each release
+const APP_BUILD='202604250835'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
