@@ -1356,7 +1356,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.037</div>
+      <div id="app-version-display">Versione v1.038</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1846,7 +1846,7 @@ function load(){
   }
   // ── STEP 4: Defaults per campi nuovi ──────────────────────────────────────
   if(typeof SET.onlyWithPhoto==='undefined')SET.onlyWithPhoto=true;
-  if(!S.history)S.history=[];if(!S.plan)S.plan=[];if(!S.catSet)S.catSet=[];
+  if(!S.history)S.history=[];if(!S.plan)S.plan=[];if(!S.aiDailyPhrases)S.aiDailyPhrases=[];if(!S.catSet)S.catSet=[];
   if(!S.sed)S.sed=0;if(!S.stretch_ct)S.stretch_ct=0;
   if(!S.skipped)S.skipped=0;if(!S.skippedTotal)S.skippedTotal=0;
   if(!S.boosts)S.boosts=0;if(!S.morningDone)S.morningDone=null;
@@ -5307,7 +5307,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.037 · 25/04/2026 13:15 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.038 · 25/04/2026 13:26 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -6497,6 +6497,13 @@ function showSwitchSide(){
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
   {v:'1.026',date:'20/04/2026',changes:['FIX CRITICO: Ss===1 typo in buildCoachBubble causava crash ogni lunedì mattina → streak 0 e Lv.1 visibili','buildCoachBubble avvolta in try-catch (safety net)','Streak reset: controlla giorni di riposo nel piano prima di azzerare','XP NaN guard: se S.xp è NaN usa 0 anziché mostrare Lv.1','Photo cache: invalida automaticamente quando DB.length cambia']},
+  {v:'1.038',date:'25/04/2026',changes:[
+    'AI Coach Bubble: frasi giornaliere personalizzate con Gemini',
+    'Una sola chiamata API al giorno, cached in S.aiDailyPhrases',
+    'Interleave AI+statiche nella rotazione (frase AI ogni 2)',
+    'Contesto: profilo, streak, oggi fatto, meteo, storico, badge vicini',
+    'Fetch background se cache assente: bubble aggiornato senza bloccare UI',
+  ]},
   {v:'1.037',date:'25/04/2026',changes:[
     'Gemini: rimossi modelli non funzionanti, lista pulita (2.5 Flash gratis + 1.5 Pro)',
   ]},
@@ -7086,6 +7093,97 @@ var _coachPhrases = [];  // queue of phrases to show
 var _coachIdx = 0;
 var _coachIv = null;
 
+// ─── AI COACH BUBBLE — frasi giornaliere personalizzate ─────────────────────────
+async function fetchAIDailyPhrases(){
+  if(!SET.aiEnabled||SET.aiFeature_bubble===false)return null;
+  const key=(SET.aiKeys&&SET.aiKeys[SET.aiProvider||'gemini'])||SET.aiKey||'';
+  const prov=AI_PROVIDERS[SET.aiProvider||'gemini'];
+  if(!prov||!key)return null;
+
+  // Usa cache se già generata oggi
+  const today=localDate();
+  if(S.aiDailyPhrases&&S.aiDailyPhrasesDate===today&&S.aiDailyPhrases.length>0)
+    return S.aiDailyPhrases;
+
+  // Contesto utente
+  const hour=new Date().getHours();
+  const month=new Date().getMonth();
+  const season=month>=2&&month<=4?'primavera':month>=5&&month<=7?'estate':month>=8&&month<=10?'autunno':'inverno';
+  const slot=hour>=5&&hour<12?'mattino':hour>=12&&hour<18?'pomeriggio':hour>=18&&hour<22?'sera':'notte';
+  const todayDone=(S.days||[]).includes(today);
+  const streak=S.str||0;
+  const recent=(S.history||[]).slice(-5).map(function(h){return h.type||h.focus||'?';}).join(', ')||'nessuna';
+
+  // Badge quasi sbloccati (top 2)
+  var nearBadges=[];
+  try{
+    BADGES.forEach(function(b){
+      if((S.badges||[]).includes(b.id))return;
+      var fn=b.check||b.fn;
+      if(!fn)return;
+      try{
+        // Check se "quasi" sbloccato — verifica con S clonato con +3 sessioni
+        var sPlus={};Object.assign(sPlus,S);sPlus.tot=(S.tot||0)+3;sPlus.str=(S.str||0)+3;
+        if(fn(sPlus,P,S.badges)&&nearBadges.length<2)nearBadges.push(b.name);
+      }catch(e){}
+    });
+  }catch(e){}
+
+  // Meteo (wttr.in, senza API key, best-effort)
+  var weatherStr='';
+  try{
+    var wr=await fetch('https://wttr.in/?format=%C+%t',{signal:AbortSignal.timeout(3000)});
+    if(wr.ok)weatherStr=await wr.text();
+  }catch(e){}
+
+  var _pLines=[
+    'Sei il coach simpatico e motivante dell app TurboTartaruga (fitness 10-15 min, tutte le eta).',
+    'Genera esattamente 4 frasi motivazionali BREVI in italiano (max 90 caratteri ciascuna).',
+    'Stile: amichevole, divertente, con emoji, come un coach amico che conosce bene l utente.',
+    'NON ripetere le stesse frasi. Varia tono: motivante, ironico, affettuoso, pratico.',
+    '',
+    'PROFILO UTENTE:',
+    '- Nome: '+(P.name||'Campione'),
+    '- Eta: '+(P.age||'?')+' anni, livello: '+(P.level||'base'),
+    '- Streak attuale: '+streak+' giorni consecutivi',
+    '- Sessioni totali: '+(S.tot||0),
+    '- Ora: '+slot+' ('+hour+':00)',
+    '- Stagione: '+season,
+    weatherStr?'- Meteo: '+weatherStr.trim():'',
+    '- Oggi: '+(todayDone?'ha GIA fatto la sessione, bravo!':'non ha ancora fatto la sessione'),
+    '- Ultime sessioni: '+recent,
+    nearBadges.length?'- Badge quasi sbloccati: '+nearBadges.join(', '):'',
+    '',
+    'Rispondi SOLO con un array JSON con 4 stringhe, nessun altro testo:',
+    '["frase1","frase2","frase3","frase4"]',
+  ];
+  var prompt=_pLines.filter(function(l){return l!=='';}).join('\n');
+    try{
+    var headers={'Content-Type':'application/json'};
+    if(prov.headers)Object.assign(headers,prov.headers(key));
+    else if(SET.aiProvider==='chatgpt')headers['Authorization']='Bearer '+key;
+    var gmModel=SET.aiGeminiModel||'gemini-2.5-flash';
+    var resp=await fetch(prov.endpoint(key,gmModel),{method:'POST',headers:headers,body:JSON.stringify(prov.buildBody(prompt))});
+    if(!resp.ok)return null;
+    var data=await resp.json();
+    var text=prov.parseResponse(data);
+    if(!text)return null;
+    // Parse JSON array dalla risposta
+    var clean=text.replace(/```json|```/g,'').trim();
+    var match=clean.match(/\[[\s\S]*\]/);
+    if(!match)return null;
+    var phrases=JSON.parse(match[0]);
+    if(!Array.isArray(phrases)||phrases.length===0)return null;
+    // Pulizia frasi
+    phrases=phrases.map(function(p){return String(p).trim().slice(0,120);}).filter(Boolean);
+    // Cache per oggi
+    S.aiDailyPhrases=phrases;
+    S.aiDailyPhrasesDate=today;
+    save();
+    return phrases;
+  }catch(e){return null;}
+}
+
 // ─── DIFFICOLTÀ DINAMICA (Fase B) ────────────────────────────────────────────
 function getDifficultyStatus(){
   const f=SET.recentFeedbacks||[];if(f.length<3)return null;
@@ -7211,6 +7309,31 @@ function buildCoachBubble(){
   const _sn=(S.seasons||{})[_ss]||0;
   if(!(S.badges||[]).includes(_sb[_ss])&&_sn<10)
     _coachPhrases.push(_sl[_ss]+': '+_sn+'/10 sessioni → badge stagionale! 🏅');}
+  // 8. AI Coach phrases — interleave con frasi statiche
+  if(SET.aiEnabled&&SET.aiFeature_bubble!==false){
+    var _today2=localDate();
+    var _aiCached=S.aiDailyPhrases&&S.aiDailyPhrasesDate===_today2&&S.aiDailyPhrases.length>0;
+    if(_aiCached){
+      // Cache presente: interleave subito AI+statiche
+      var _aiP=S.aiDailyPhrases;
+      var _mixed=[];
+      var _maxL=Math.max(_coachPhrases.length,_aiP.length);
+      for(var _ii=0;_ii<_maxL;_ii++){
+        if(_ii<_coachPhrases.length)_mixed.push(_coachPhrases[_ii]);
+        if(_ii<_aiP.length)_mixed.push('🤖 '+_aiP[_ii]);
+      }
+      _coachPhrases=_mixed;
+    }else{
+      // Nessuna cache: fetch in background, aggiunge frasi alla rotazione quando pronte
+      fetchAIDailyPhrases().then(function(_aiP2){
+        if(!_aiP2||!_aiP2.length)return;
+        _aiP2.forEach(function(p){_coachPhrases.push('🤖 '+p);});
+        // Se il bubble è ancora aperto, aggiorna il ciclo
+        if(_coachIv){clearInterval(_coachIv);_coachIv=setInterval(_showCoachPhrase,6000);}
+      }).catch(function(){});
+    }
+  }
+
   // Start rotation
   _showCoachPhrase();
   if(_coachIv)clearInterval(_coachIv);
@@ -7851,7 +7974,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604251315'; // auto-set on each release
+const APP_BUILD='202604251326'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
