@@ -469,6 +469,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <button class="abtn" onclick="go('progress')"><span class="ai">📊</span><span class="al">Progressi</span><span class="as">Statistiche</span></button>
     <button class="abtn" onclick="go('profile')"><span class="ai">🏅</span><span class="al">Badge & XP</span><span class="as">Traguardi</span></button>
   </div>
+  <div style="height:max(24px,env(safe-area-inset-bottom,24px));flex-shrink:0"></div>
 </div>
 
 <!-- PRE-SESSION -->
@@ -1356,7 +1357,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.038</div>
+      <div id="app-version-display">Versione v1.039</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -5307,7 +5308,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.038 · 25/04/2026 13:26 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.039 · 25/04/2026 17:08 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -6497,6 +6498,14 @@ function showSwitchSide(){
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
   {v:'1.026',date:'20/04/2026',changes:['FIX CRITICO: Ss===1 typo in buildCoachBubble causava crash ogni lunedì mattina → streak 0 e Lv.1 visibili','buildCoachBubble avvolta in try-catch (safety net)','Streak reset: controlla giorni di riposo nel piano prima di azzerare','XP NaN guard: se S.xp è NaN usa 0 anziché mostrare Lv.1','Photo cache: invalida automaticamente quando DB.length cambia']},
+  {v:'1.039',date:'25/04/2026',changes:[
+    'FIX CRITICO: AbortSignal.timeout rimosso (non supportato ovunque → crash offline)',
+    'FIX: navigator.onLine guard in fetchAIDailyPhrases',
+    'FIX: changelog ora mostra tutte le versioni in ordine',
+    'FIX: interleave AI rigoroso 1:1 (statica→AI→statica→AI)',
+    'FIX: icona AI 🤖 → 🧠✨',
+    'FIX: padding-bottom home (pulsanti tagliati su alcuni dispositivi)',
+  ]},
   {v:'1.038',date:'25/04/2026',changes:[
     'AI Coach Bubble: frasi giornaliere personalizzate con Gemini',
     'Una sola chiamata API al giorno, cached in S.aiDailyPhrases',
@@ -6600,7 +6609,7 @@ function toggleChangelog(){
   if(panel.style.display==='none'){
     panel.style.display='block';
     if(!panel.innerHTML.trim()){
-      panel.innerHTML=(typeof CHANGELOG!=='undefined'?CHANGELOG:[]).slice(0,4).map(v=>
+      panel.innerHTML=(typeof CHANGELOG!=='undefined'?CHANGELOG:[]).slice().map(v=>
         '<div style="margin-bottom:8px"><b style="color:var(--g1)">v'+v.v+'</b> <span style="color:var(--tlt)">'+v.date+'</span><ul style="margin:2px 0 0 12px;padding:0">'+
         v.changes.map(ch=>'<li>'+ch+'</li>').join('')+'</ul></div>'
       ).join('');
@@ -7104,7 +7113,8 @@ async function fetchAIDailyPhrases(){
   const today=localDate();
   if(S.aiDailyPhrases&&S.aiDailyPhrasesDate===today&&S.aiDailyPhrases.length>0)
     return S.aiDailyPhrases;
-
+  // Non tentare fetch se offline
+  if(typeof navigator!=='undefined'&&navigator.onLine===false)return null;
   // Contesto utente
   const hour=new Date().getHours();
   const month=new Date().getMonth();
@@ -7132,7 +7142,9 @@ async function fetchAIDailyPhrases(){
   // Meteo (wttr.in, senza API key, best-effort)
   var weatherStr='';
   try{
-    var wr=await fetch('https://wttr.in/?format=%C+%t',{signal:AbortSignal.timeout(3000)});
+    var _abCtrl=new AbortController(),_abT=setTimeout(function(){try{_abCtrl.abort();}catch(e){}},3000);
+    var wr=await fetch('https://wttr.in/?format=%C+%t',{signal:_abCtrl.signal});
+    clearTimeout(_abT);
     if(wr.ok)weatherStr=await wr.text();
   }catch(e){}
 
@@ -7314,20 +7326,28 @@ function buildCoachBubble(){
     var _today2=localDate();
     var _aiCached=S.aiDailyPhrases&&S.aiDailyPhrasesDate===_today2&&S.aiDailyPhrases.length>0;
     if(_aiCached){
-      // Cache presente: interleave subito AI+statiche
+      // Cache presente: interleave RIGOROSO — 1 statica, 1 AI, 1 statica, 1 AI...
       var _aiP=S.aiDailyPhrases;
+      var _static=_coachPhrases.slice();
       var _mixed=[];
-      var _maxL=Math.max(_coachPhrases.length,_aiP.length);
-      for(var _ii=0;_ii<_maxL;_ii++){
-        if(_ii<_coachPhrases.length)_mixed.push(_coachPhrases[_ii]);
-        if(_ii<_aiP.length)_mixed.push('🤖 '+_aiP[_ii]);
+      var _si=0, _ai=0;
+      while(_si<_static.length||_ai<_aiP.length){
+        if(_si<_static.length){_mixed.push(_static[_si]);_si++;}
+        if(_ai<_aiP.length){_mixed.push('🧠✨ '+_aiP[_ai]);_ai++;}
       }
       _coachPhrases=_mixed;
     }else{
       // Nessuna cache: fetch in background, aggiunge frasi alla rotazione quando pronte
       fetchAIDailyPhrases().then(function(_aiP2){
         if(!_aiP2||!_aiP2.length)return;
-        _aiP2.forEach(function(p){_coachPhrases.push('🤖 '+p);});
+        // Interleave: inserisci ogni frase AI dopo una statica
+        var _origLen=_coachPhrases.length;
+        var _newArr=[];
+        for(var _ki=0;_ki<Math.max(_origLen,_aiP2.length);_ki++){
+          if(_ki<_origLen)_newArr.push(_coachPhrases[_ki]);
+          if(_ki<_aiP2.length)_newArr.push('🧠✨ '+_aiP2[_ki]);
+        }
+        _coachPhrases=_newArr;
         // Se il bubble è ancora aperto, aggiorna il ciclo
         if(_coachIv){clearInterval(_coachIv);_coachIv=setInterval(_showCoachPhrase,6000);}
       }).catch(function(){});
@@ -7974,7 +7994,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604251326'; // auto-set on each release
+const APP_BUILD='202604251708'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
