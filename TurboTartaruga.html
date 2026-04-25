@@ -952,7 +952,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         </label>
         <!-- QR video preview -->
         <div id="qr-scan-wrap" style="display:none;margin-bottom:10px">
-          <video id="qr-video" style="width:100%;border-radius:12px;background:#000;max-height:220px;object-fit:cover"></video>
+          <video id="qr-video" playsinline muted style="width:100%;border-radius:12px;background:#000;max-height:220px;object-fit:cover"></video>
           <button onclick="stopQRScan()" style="width:100%;margin-top:6px;padding:9px;background:rgba(255,0,0,.2);color:#fff;border:1px solid rgba(255,0,0,.4);border-radius:100px;font-size:12px;cursor:pointer">
             ✕ Annulla scansione
           </button>
@@ -1297,7 +1297,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.026</div>
+      <div id="app-version-display">Versione v1.027</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1406,7 +1406,7 @@ var DB=[
   {id:'s5',n:'Stretching spalle',cat:'stretching',t:'🤸 Stretching',zona:'💪 Spalle posteriori',desc:'Porta un braccio attraverso il petto, l\'altra mano lo spinge. Tieni 20 sec, poi alterna.',floor:false},
   {id:'s6',n:'Stretching collo laterale',cat:'stretching',t:'🤸 Stretching',zona:'🦴 Collo · 💪 Trapezio',desc:'Inclina la testa verso la spalla destra dolcemente. Tieni, poi cambia lato.',switch:true,floor:false},
   {id:'s7',n:'Apertura del torace',cat:'stretching',t:'🤸 Stretching',zona:'💪 Pettorali · 💪 Spalle',desc:'Mani intrecciate dietro la schiena. Spingi le spalle indietro e apri il petto. Respira.',floor:false},
-  {id:'s8',n:'Stretching flessori anca',cat:'stretching',t:'🤸 Stretching',zona:'🦴 Anca · 🦵 Flessori',desc:'Affondo con un ginocchio a terra. Spingi il bacino in avanti finché senti lo stretch. Respira.',floor:true},
+  {id:'s8',n:'Stretching flessori anca',cat:'stretching',t:'🤸 Stretching',zona:'🦴 Anca · 🦵 Flessori',desc:'Affondo con un ginocchio a terra. Spingi il bacino in avanti finché senti lo stretch. Respira.',floor:true,switch:true},
   {id:'s9',n:'Ginocchia al petto',cat:'stretching',t:'🤸 Stretching',zona:'🦴 Lombari · 🍑 Glutei',desc:'Sdraiato, porta entrambe le ginocchia al petto e abbraccia le gambe. Respira profondo.',floor:true},
   {id:'s10',n:'Allungamento corpo intero',cat:'stretching',t:'🤸 Stretching',zona:'🎯 Corpo completo',desc:'In piedi, porta le braccia sopra la testa lentamente. Allunga tutto il corpo verso l\'alto.',floor:false},
   // SEDUTO (12)
@@ -1428,7 +1428,7 @@ var DB=[
   {id:'o3',n:'Equilibrio cigno',cat:'orientale',t:'🧘 Orientale',zona:'🦵 Caviglie · 🎯 Equilibrio',desc:'Fissa un punto fisso. Alza un piede sollevando il tallone. Tieni stabile. Poi cambia.',switch:true,floor:false},
   {id:'o4',n:'Apertura al cielo',cat:'orientale',t:'🧘 Orientale',zona:'🫁 Respiro · 💪 Spalle',desc:'Inspira portando le braccia verso il cielo, espira abbassandole lentamente. Fluido.',floor:false},
   {id:'o5',n:'Raccolta di energia',cat:'orientale',t:'🧘 Orientale',zona:'🫁 Respiro · 🎯 Focus',desc:'Mani al basso ventre, immagina di raccogliere energia. Porta le mani lentamente verso il cuore.',floor:false},
-  {id:'o6',n:'Cammino consapevole',cat:'orientale',t:'🧘 Orientale',zona:'🦵 Gambe · 🧠 Presenza',desc:'Cammina lentamente sul posto sentendo ogni passo. Respira profondo ad ogni passo.',floor:false},
+  {id:'o6',n:'Cammino consapevole',cat:'orientale',t:'🧘 Orientale',zona:'🦵 Gambe · 🧠 Presenza',desc:'Cammina lentamente sul posto sentendo ogni passo. Respira profondo ad ogni passo.',floor:false,dur:120},
   {id:'o7',n:'Danza del vento',cat:'orientale',t:'🧘 Orientale',zona:'💪 Braccia · 🎯 Fluidità',desc:'Lascia le braccia libere e dondola come rami nel vento. Lascia andare ogni tensione.',floor:false},
   {id:'o8',n:'Cerchio dell\'energia',cat:'orientale',t:'🧘 Orientale',zona:'💪 Spalle · 🫁 Respiro',desc:'Braccia davanti, palmi contrapposti. Disegna cerchi lenti immaginando energia tra le mani.',floor:false},
   {id:'o9',n:'Saluto al sole leggero',cat:'orientale',t:'🧘 Orientale',zona:'🎯 Corpo intero · 🫁 Respiro',desc:'Inspira portando le braccia sopra la testa, espira piegandoti dolcemente in avanti.',floor:false},
@@ -1534,7 +1534,7 @@ var DB=[
   {id:'po2', n:'Correzione spalle',cat:'postura',t:'🪑+ Postura',zona:'💪 Spalle posteriori · 🔄 Trapezio',desc:'Ruota le spalle indietro e tienile giù lontano dalle orecchie. Conta 10 sec. Ripeti spesso durante il lavoro.',floor:false},
   {id:'po3', n:'Apertura petto al muro',cat:'postura',t:'🪑+ Postura',zona:'💪 Petto · 💪 Spalle anteriori',desc:'Mano al muro all\'altezza della spalla. Ruota il corpo lontano dal muro. 30 sec per lato. Combatte la postura curva.',switch:true,floor:false},
   {id:'po4', n:'Rotazione toracica seduto',cat:'postura',t:'🪑+ Postura',zona:'🔄 Colonna toracica · 🎯 Mobilità',desc:'Seduto dritto, mani alle spalle. Ruota solo il busto a destra poi sinistra. Il bacino non si muove.',floor:false},
-  {id:'po5', n:'Regola 20-20-20 occhi',cat:'postura',t:'🪑+ Postura',zona:'👀 Occhi · 🧠 Affaticamento',desc:'Ogni 20 min guarda qualcosa a 6 metri per 20 secondi. In questo esercizio: 3 cicli completi. Salute degli occhi.',floor:false},
+  {id:'po5',n:'Allungamento dorsali seduto',cat:'postura',t:'🪑+ Postura',zona:'💪 Dorsali · 🦴 Colonna · 💪 Trapezio',desc:'Seduto, intreccia le mani davanti a te, spingi i palmi in avanti, arrotonda la schiena e allarga le scapole. Tieni 5 secondi, rilascia. Ripeti.',floor:false},
   {id:'po6', n:'Stretching polsi da tastiera',cat:'postura',t:'🪑+ Postura',zona:'🦴 Polsi · 💪 Avambracci',desc:'Braccio teso, piega il polso verso di te poi verso il basso. 15 sec per direzione per braccio. Anti-tunnel carpale.',floor:false},
   {id:'po7', n:'Rilascio tensione mandibola',cat:'postura',t:'🪑+ Postura',zona:'🦷 Mandibola · 🧠 Tensione',desc:'Labbra chiuse, denti distanti. Massaggia le guance con le mani in cerchi. Apri la bocca lentamente 5 volte.',floor:false},
   {id:'po8', n:'Stretching flessori anca',cat:'postura',t:'🪑+ Postura',zona:'🦵 Flessori anca · 🔄 Lombare',desc:'Affondo lungo: ginocchio posteriore a terra, spingi i fianchi in avanti. 30 sec per lato. Combatte lo star seduti.',switch:true,floor:true},
@@ -1786,6 +1786,8 @@ function go(scr){
   else if(scr==='party')initParty();else if(scr==='settings')buildSettings();
   // Keep back-button history in sync
   history.pushState({screen:scr},'',location.pathname+'#'+scr);
+  // Sincronizza --pct di tutti gli slider dopo ogni navigazione
+  setTimeout(_syncAllSliderPct,30);
 }
 function goSettingsFromTraining(){
   // Pause timer silently, remember we came from training
@@ -2438,7 +2440,7 @@ function generatePlan(){
   }
   S.plan=plan;save();
 }
-function refreshPlan(){
+function refreshPlan(silent){
   // ALWAYS read rest days from UI buttons if they exist (even if not explicitly saved)
   const rdBtns=document.querySelectorAll('#st-restdays .day-btn.sel');
   if(rdBtns.length>0){
@@ -2503,7 +2505,7 @@ function refreshPlan(){
   const homeEl=document.getElementById('screen-home');
   if(homeEl&&homeEl.classList.contains('active'))buildHome();
   const autoRests=S.plan.filter(p=>p.restKind==='auto').length;
-  toast('✅ Piano aggiornato! '+(autoRests>0?'('+autoRests+' giorni recupero automatico inseriti per evitare sovrallenamento)':''));
+  if(!silent)toast('✅ Piano aggiornato! '+(autoRests>0?'('+autoRests+' giorni recupero automatico inseriti per evitare sovrallenamento)':''));
 }
 function localDate(d){
   const dd=d||new Date();
@@ -2606,7 +2608,7 @@ const hsEl=document.getElementById('home-streak');if(hsEl)hsEl.textContent=typeo
   document.getElementById('hg-done').textContent=done;document.getElementById('hg-tot').textContent=goal;document.getElementById('hg-pct').textContent=pct+'%';document.getElementById('hg-fill').style.width=pct+'%';
   // Rigenera il piano se non esiste oppure se manca l'entry per oggi
   if(!S.plan||S.plan.length===0||!S.plan.some(p=>p.date===localDate())){
-    refreshPlan();return;
+    refreshPlan(true);return;
   }
   const tp=getTodayPlan();
   const isRest=tp.type==='rest';
@@ -2685,7 +2687,7 @@ function setFeeling(el){
   const btnStart=document.getElementById('btn-start');
   // Rigenera il piano se non esiste oppure se manca l'entry per oggi
   if(!S.plan||S.plan.length===0||!S.plan.some(p=>p.date===localDate())){
-    refreshPlan();return;
+    refreshPlan(true);return;
   }
   const tp=getTodayPlan();
   const isRest=tp.type==='rest';
@@ -3644,7 +3646,14 @@ function doShowEx(idx){
     startSessionMusic(getMusicType(T.sesType));
     // Mostra slider volume
     const mvEl=document.getElementById('tr-music-vol');
-    if(mvEl){mvEl.style.display='flex';mvEl.querySelector('input').value=SET.musicVol||60;_musicVol=(SET.musicVol||60)/100;}
+    if(mvEl){
+      const _trVol=SET.musicVol!=null?SET.musicVol:60;
+      mvEl.style.display='flex';
+      const _trS=mvEl.querySelector('input');
+      _trS.value=_trVol;
+      _trS.style.setProperty('--pct',_trVol.toFixed(1)+'%');
+      _musicVol=_trVol/100;
+    }
   }
   T.idx=idx;T.phase='act';T.left=ex.a;
   document.getElementById('tr-cat').textContent=ex.t;
@@ -3890,7 +3899,15 @@ function activateRiserva(){
 }
 function genBonusExs(){
   const used=new Set(T.exs.filter(e=>!e._bonus).map(e=>e.id));
-  let pool=shuffleArr(DB.filter(e=>!used.has(e.id)&&e.cat!=='riscaldamento'&&e.cat!=='party'));
+  // Usa solo categorie selezionate dall'utente (come genSession per misto)
+  const _bonusCats=P.categories&&P.categories.length>0
+    ?P.categories.filter(cat=>!['riscaldamento','party','mattino','presonno'].includes(cat))
+    :null;
+  let pool=shuffleArr(DB.filter(e=>
+    !used.has(e.id)&&
+    e.cat!=='riscaldamento'&&e.cat!=='party'&&
+    (!_bonusCats||_bonusCats.includes(e.cat))
+  ));
   if(P.noFloor)pool=pool.filter(e=>!e.floor);
   const avoided=new Set(P.avoided||[]);
   pool=pool.filter(e=>!avoided.has(e.id));
@@ -4810,7 +4827,7 @@ function showPartyChal(ch){
     img.style.display='none';ph.style.display='block';
     img.onload=()=>{img.style.display='block';ph.style.display='none'};
     img.onerror=()=>{img.style.display='none';ph.style.display='block'};
-    img.src='images/exercises/'+ch.img;
+    img.src='images/exercises/'+(ch.img||ch.id+'.png');
   }
   // Set timer
   partyLeft=ch.dur||60;
@@ -4937,7 +4954,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.026 · 22/04/2026 16:50 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.027 · 25/04/2026 07:58 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -5000,6 +5017,8 @@ function toggleAcc(id){
     }
     if(id==='acc-aspetto'){_syncGpsStatus();_syncAspettoSliders();}
     if(id==='acc-routine')_syncRoutineSliders();
+    // Dopo qualsiasi apertura accordion, risincronizza --pct (es. slider musica)
+    setTimeout(_syncAllSliderPct,20);
   }
 }
 function _syncAllenamentoSliders(){
@@ -5021,6 +5040,10 @@ function _syncAspettoSliders(){
   const mvr=document.getElementById('st-music-vol-range');
   if(mvr){mvr.value=mv;mvr.style.setProperty('--pct',((mv-0)/(100-0)*100).toFixed(1)+'%');}
   const mvd=document.getElementById('st-music-vol-disp');if(mvd)mvd.textContent=mv+'%';
+  // Sync anche tutti gli slider con class (training screen, etc)
+  document.querySelectorAll('.music-vol-slider').forEach(s=>{
+    if(s.id!=='st-music-vol-range'){s.value=mv;s.style.setProperty('--pct',mv.toFixed(1)+'%');}
+  });
 }
 function _syncRoutineSliders(){
   const morH=P.morningRoutineHour||7;
@@ -5375,7 +5398,11 @@ function restoreCode(){const code=document.getElementById('paste-input').value.t
 function toast(msg,dur=3200){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),dur)}
 
 // ═══ SLIDER ═══
-document.addEventListener('input',e=>{if(e.target.type==='range'){const pct=((e.target.value-e.target.min)/(e.target.max-e.target.min)*100).toFixed(1);e.target.style.setProperty('--pct',pct+'%')}});
+// ─── SLIDER --pct UNIVERSALE ────────────────────────────────────────────────
+function _sP(sl){if(!sl||sl.type!=='range')return;const p=((sl.value-sl.min)/(sl.max-sl.min)*100).toFixed(1)+'%';sl.style.setProperty('--pct',p);}
+function _syncAllSliderPct(){document.querySelectorAll('input[type=range]').forEach(_sP);}
+// Aggiorna --pct su ogni interazione utente
+document.addEventListener('input',e=>{if(e.target.type==='range')_sP(e.target);});
 
 // ═══ GUIDE ═══
 function partyTab(tab){
@@ -5470,8 +5497,20 @@ async function startQRScan(targetElId){
     toast('⚠️ Fotocamera non disponibile su questo dispositivo');return;
   }
   try{
-    _qrStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}});
+    // Constraints progressivi: exact → ideal → any (iOS compatibility)
+    let _qrConstraints=[
+      {video:{facingMode:{exact:'environment'}}},
+      {video:{facingMode:'environment'}},
+      {video:true}
+    ];
+    let _qrErr;
+    for(const ct of _qrConstraints){
+      try{_qrStream=await navigator.mediaDevices.getUserMedia(ct);break;}
+      catch(e){_qrErr=e;}
+    }
+    if(!_qrStream)throw _qrErr;
     video.srcObject=_qrStream;
+    video.setAttribute('playsinline','true');
     await video.play();
     wrap.style.display='block';
     if(btn)btn.style.display='none';
@@ -5520,7 +5559,11 @@ async function startQRScan(targetElId){
       },300);
     }
   }catch(e){
-    toast('⚠️ Accesso fotocamera negato. Permetti la fotocamera nelle impostazioni del browser.');
+    const isIOS=/iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const msg=isIOS
+      ? '📱 iOS: vai in Impostazioni → Safari → Fotocamera → Consenti. Poi riprova.'
+      : '⚠️ Fotocamera negata. Controlla i permessi del browser.';
+    toast(msg,6000);
     stopQRScan();
   }
 }
@@ -5782,15 +5825,21 @@ function importResultCode(){
     const r=JSON.parse(decodeURIComponent(escape(atob(raw.slice(4)))));
     if(r.type!=='TTR_result'){toast('⚠️ Questo non è un codice risultato!');return}
     // v0.5: multi-guest — check if current user is in the list
-    const myName=P.name||'';
+    const myName=(P.name||'').trim().toLowerCase();
     if(r.guests&&r.guests.length){
-      if(!r.guests.includes(myName)){
-        toast('⚠️ Il tuo nome ('+myName+') non è in questo codice risultato!');return;
+      const guestNames=r.guests.map(g=>(g||'').trim().toLowerCase());
+      if(myName&&!guestNames.includes(myName)){
+        // Prova anche parziale (per sicurezza)
+        const partialMatch=guestNames.some(g=>g.includes(myName)||myName.includes(g));
+        if(!partialMatch){
+          toast('⚠️ Il tuo nome ('+P.name+') non è in questo codice. Nomi nel codice: '+r.guests.join(', '));return;
+        }
       }
     }
     // v0.4 backward compat: single for field
-    if(r.for&&r.for!==myName&&!r.guests){
-      toast('⚠️ Questo codice è per '+r.for+', non per '+myName+'!');return;
+    const myNameOrig=P.name||'';
+    if(r.for&&r.for.trim().toLowerCase()!==myName&&!r.guests){
+      toast('⚠️ Questo codice è per '+r.for+', non per '+myNameOrig+'!');return;
     }
     const entry={
       date:r.date,type:r.type_ses||'misto',
@@ -5981,6 +6030,12 @@ async function checkPhotosAvailable(force){
   localStorage.setItem('tt4_photoCheck',Date.now().toString());
   _photoCheckRunning=false;
   updatePhotoStatus(found);
+  // Aggiorna buildExList se la sezione è aperta (refresh visivo immediato)
+  const exWrap=document.getElementById('ex-list-wrap');
+  if(exWrap&&exWrap.style.display!=='none')buildExList();
+  // Aggiorna il contatore nella settings
+  const lbl=document.getElementById('ex-count-lbl');
+  if(lbl){const nc=[...new Set(DB.map(e=>e.cat))].length;lbl.textContent=DB.length+' esercizi in '+nc+' categorie';}
 }
 
 function updatePhotoStatus(photos,msg){
@@ -7336,6 +7391,11 @@ function setMusicVolume(v){
     if(s!==document.activeElement)s.value=vol;
     s.style.setProperty('--pct',_pct);
   });
+  // Sync anche slider impostazioni (ha id, non solo class)
+  const _stSlider=document.getElementById('st-music-vol-range');
+  if(_stSlider&&_stSlider!==document.activeElement){
+    _stSlider.value=vol;_stSlider.style.setProperty('--pct',_pct);
+  }
 }
 
 function getMusicType(sesType){
@@ -7353,7 +7413,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604221650'; // auto-set on each release
+const APP_BUILD='202604250758'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
