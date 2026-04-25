@@ -1357,7 +1357,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.039</div>
+      <div id="app-version-display">Versione v1.040</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1519,7 +1519,7 @@ var DB=[
   {id:'c11',n:'Hollow hold',cat:'core',t:'🎯 Core',zona:'🎯 Addominali · 🎯 Core profondo',desc:'Sdraiato, solleva leggermente spalle e gambe. Corpo a banana. Respira. Più è basso più è difficile.',floor:true},
   {id:'c12',n:'Plank laterale',cat:'core',t:'🎯 Core',zona:'🎯 Obliqui · 🎯 Core laterale',desc:'Su un fianco, appoggiato sull\'avambraccio e sul bordo del piede. Fianchi alti e allineati. Tieni.',floor:true},
   // ── CORE extra non-floor (c13-c20) ─────────────────────────────────
-  {id:'c13',n:'Crunch in piedi',cat:'core',t:'🎯 Core',zona:'🎯 Addominali · 🎯 Obliqui',desc:'In piedi, mani alla nuca, gomiti larghi. Porta il ginocchio dx verso il gomito sx contraendo gli addominali. Alterna lento.',switch:true,floor:false},
+  {id:'c13',n:'Crunch in piedi',cat:'core',t:'🎯 Core',zona:'🎯 Addominali · 🎯 Obliqui',desc:'In piedi, mani alla nuca, gomiti larghi. Porta il ginocchio destro verso il gomito sinistro e viceversa, contraendo gli addominali. Continua alternando.',floor:false},
   {id:'c14',n:'Sollevamento ginocchio in piedi',cat:'core',t:'🎯 Core',zona:'🎯 Addominali inferiori · 🦵 Flessori anca',desc:'In piedi con una mano al muro. Porta il ginocchio verso il petto lentamente, tieni 2 sec, abbassa. Alterna lati.',switch:true,floor:false},
   {id:'c15',n:'Torsione obliqua in piedi',cat:'core',t:'🎯 Core',zona:'🎯 Obliqui · 🦴 Colonna toracica',desc:'In piedi, braccia piegate davanti al petto. Ruota il busto a destra e sinistra alternando, il bacino non si muove.',floor:false},
   {id:'c16',n:'Inclinazione laterale con braccio',cat:'core',t:'🎯 Core',zona:'🎯 Obliqui laterali · 💪 Intercostali',desc:'In piedi, un braccio lungo il fianco, l\'altro sopra la testa. Piegati lentamente di lato verso il basso. 15 sec, poi alterna.',floor:false},
@@ -3012,6 +3012,8 @@ function setScelgoFeeling(el){
   if(mainBtn){mainBtn.innerHTML='<span class="fi">🕹️</span>'+el.textContent.trim();}
   const btnStart=document.getElementById('btn-start');
   if(btnStart)btnStart.style.display='flex';
+  // Aggiorna avviso sedia/elastico in tempo reale
+  buildPresession();
 }
 function setFeeling(el){
   document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');
@@ -3072,10 +3074,15 @@ function buildPresession(){
   document.getElementById('ps-focus-info').innerHTML=`${fLabel.icon} <strong>${fLabel.label}</strong> — sessione di oggi`;
   // Equipment warning: detect chair or elastic need
   const focus=T.feeling&&T.feeling!=='piano'?T.feeling:tp.focus;
+  // Verifica sedia/elastico: prima controlla T.exs se già popolato,
+  // altrimenti controlla il DB in base al focus (T.exs è vuoto finché non parte la sessione)
+  const _hasSedutoDB=(typeof DB!=='undefined')&&DB.some(function(e){return e.cat==='seduto';});
   const needsChair=['seduto','misto_plus'].includes(focus)||
-    (T.exs&&T.exs.some(e=>e.cat==='seduto'));
+    (T.exs&&T.exs.length>0&&T.exs.some(function(e){return e.cat==='seduto';})) ||
+    ((!T.exs||T.exs.length===0)&&focus==='seduto');
   const needsElastic=focus==='elastici'||
-    (T.exs&&T.exs.some(e=>e.cat==='elastici'));
+    (T.exs&&T.exs.length>0&&T.exs.some(function(e){return e.cat==='elastici';})) ||
+    ((!T.exs||T.exs.length===0)&&focus==='elastici');
   const warnEl=document.getElementById('ps-equipment-warn');
   const titleEl=document.getElementById('ps-equip-title');
   const descEl=document.getElementById('ps-equip-desc');
@@ -5296,7 +5303,26 @@ function buildSettings(){
   _syncGpsStatus(); // sync GPS status
   // Sync view scale buttons
   document.querySelectorAll('.vw-opt').forEach(e=>e.classList.toggle('sel',e.dataset.vs===(SET.viewScale||'1x')));
-  syncToggles();
+  // ─── PRELOAD immagini esercizi (cache per offline) ───────────────────────────
+function preloadExerciseImages(){
+  if(typeof DB==='undefined'||!DB.length)return;
+  if(!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return;
+  // Precarica ogni immagine esercizio in background silenziosamente
+  var ids=DB.map(function(e){return e.id;});
+  var i=0;
+  function next(){
+    if(i>=ids.length)return;
+    var img=new Image();
+    img.src='images/exercises/'+ids[i]+'.png';
+    img.onload=img.onerror=function(){i++;setTimeout(next,50);};
+    i++;
+  }
+  // Ritarda per non bloccare il rendering iniziale
+  setTimeout(next, 2000);
+}
+
+syncToggles();
+  if(navigator.onLine!==false)preloadExerciseImages();
   // Sync music volume slider
   const _mvr=document.getElementById('st-music-vol-range');
   const _mvd=document.getElementById('st-music-vol-disp');
@@ -5308,7 +5334,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.039 · 25/04/2026 17:08 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.040 · 25/04/2026 17:35 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -6498,6 +6524,13 @@ function showSwitchSide(){
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
   {v:'1.026',date:'20/04/2026',changes:['FIX CRITICO: Ss===1 typo in buildCoachBubble causava crash ogni lunedì mattina → streak 0 e Lv.1 visibili','buildCoachBubble avvolta in try-catch (safety net)','Streak reset: controlla giorni di riposo nel piano prima di azzerare','XP NaN guard: se S.xp è NaN usa 0 anziché mostrare Lv.1','Photo cache: invalida automaticamente quando DB.length cambia']},
+  {v:'1.040',date:'25/04/2026',changes:[
+    'FIX: immagini offline — SW restituisce tartaruga placeholder se non in cache',
+    'FIX: preloadExerciseImages() carica tutte le img in background quando online',
+    'FIX: changelog ordinato per versione (più recente sempre in cima)',
+    'FIX: Crunch in piedi — rimosso cambio lato',
+    'FIX: avviso sedia aggiornato in tempo reale quando si sceglie il tipo sessione',
+  ]},
   {v:'1.039',date:'25/04/2026',changes:[
     'FIX CRITICO: AbortSignal.timeout rimosso (non supportato ovunque → crash offline)',
     'FIX: navigator.onLine guard in fetchAIDailyPhrases',
@@ -6609,7 +6642,8 @@ function toggleChangelog(){
   if(panel.style.display==='none'){
     panel.style.display='block';
     if(!panel.innerHTML.trim()){
-      panel.innerHTML=(typeof CHANGELOG!=='undefined'?CHANGELOG:[]).slice().map(v=>
+      const _clSorted=(typeof CHANGELOG!=='undefined'?CHANGELOG:[]).slice().sort((a,b)=>b.v.localeCompare(a.v,undefined,{numeric:true}));
+      panel.innerHTML=_clSorted.map(v=>
         '<div style="margin-bottom:8px"><b style="color:var(--g1)">v'+v.v+'</b> <span style="color:var(--tlt)">'+v.date+'</span><ul style="margin:2px 0 0 12px;padding:0">'+
         v.changes.map(ch=>'<li>'+ch+'</li>').join('')+'</ul></div>'
       ).join('');
@@ -7994,7 +8028,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604251708'; // auto-set on each release
+const APP_BUILD='202604251735'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
