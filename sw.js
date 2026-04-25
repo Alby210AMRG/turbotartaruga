@@ -1,5 +1,5 @@
 // f"TurboTartaruga Service Worker v{build}
-"const CACHE_NAME = 'turbotartaruga-202604251250';
+"const CACHE_NAME = 'turbotartaruga-202604251315';
 const PRECACHE = ['./TurboTartaruga.html', './manifest.json'];
 const EXTERNAL_CACHE = ['https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js'];
 
@@ -93,7 +93,7 @@ async function checkAndFireNotifs() {
         body: n.body,
         icon: './icon-192.png',
         badge: './icon-192.png',
-        tag: n.tag || 'turbotartaruga-202604251250',
+        tag: n.tag || 'turbotartaruga-202604251315',
         renotify: true,
         data: { url: './TurboTartaruga.html' }
       });
@@ -116,10 +116,10 @@ self.addEventListener('message', async event => {
   if (event.data.type === 'CANCEL_TODAY_NOTIF') {
     // Remove today's daily notification from pending
     const pending = await loadPendingNotifs();
-    const filtered = pending.filter(n => n.tag !== 'turbotartaruga-202604251250');
+    const filtered = pending.filter(n => n.tag !== 'turbotartaruga-202604251315');
     await savePendingNotifs(filtered);
     // Close any shown notification with that tag
-    self.registration.getNotifications({ tag: 'turbotartaruga-202604251250' })
+    self.registration.getNotifications({ tag: 'turbotartaruga-202604251315' })
       .then(notifs => notifs.forEach(n => n.close()));
     return;
   }
@@ -130,7 +130,7 @@ self.addEventListener('message', async event => {
     
     const pending = await loadPendingNotifs();
     // Replace any existing notif with same tag
-    const notifTag = tag || 'turbotartaruga-202604251250';
+    const notifTag = tag || 'turbotartaruga-202604251315';
     const filtered = pending.filter(n => n.tag !== notifTag);
     filtered.push({ at, title, body, tag: notifTag });
     await savePendingNotifs(filtered);

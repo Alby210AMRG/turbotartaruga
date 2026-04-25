@@ -1356,7 +1356,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.034</div>
+      <div id="app-version-display">Versione v1.037</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1974,57 +1974,55 @@ function toggleMusic(){SET.music=!(SET.music!==false);const b=document.getElemen
 const AI_PROVIDERS = {
   gemini: {
     name: 'Google Gemini',
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.5-flash',
     free: true,
     models: [
-      {id:'gemini-1.5-flash',        label:'Gemini 1.5 Flash',      tier:'🟢 Gratis'},
-      {id:'gemini-1.5-flash-latest', label:'Gemini 1.5 Flash Latest',tier:'🟢 Gratis'},
-      {id:'gemini-2.0-flash-lite',   label:'Gemini 2.0 Flash Lite',  tier:'🟢 Gratis'},
-      {id:'gemini-2.0-flash',        label:'Gemini 2.0 Flash',       tier:'🟡 Pagamento'},
-      {id:'gemini-1.5-pro-latest',   label:'Gemini 1.5 Pro',         tier:'🟡 Pagamento'},
+      {id:'gemini-2.5-flash', label:'Gemini 2.5 Flash', tier:'🟢 Gratis'},
+      {id:'gemini-1.5-pro',   label:'Gemini 1.5 Pro',   tier:'🟡 Pagamento'},
     ],
-    instructions: `<b>🟢 Gemini — GRATUITO</b><br><br>
-1. Vai su <b>aistudio.google.com</b><br>
-2. Accedi con il tuo account Google<br>
-3. Clicca <b>"Get API key"</b> → <b>"Create API key"</b><br>
-4. Copia la chiave e incollala qui sotto<br><br>
-<span style="color:var(--g1)">✅ Modelli gratuiti: 1.5 Flash, 1.5 Flash Latest, 2.0 Flash Lite</span><br>
-<span style="color:#FF9800">⚠️ 2.0 Flash e Pro richiedono fatturazione attiva</span>`,
-    endpoint: (key,model) => 'https://generativelanguage.googleapis.com/v1/models/'+(model||'gemini-1.5-flash')+':generateContent?key='+key,
-    buildBody: (msg) => ({contents:[{parts:[{text:msg}]}]}),
-    parseResponse: (d) => d?.candidates?.[0]?.content?.parts?.[0]?.text || null,
+    instructions: '<b>\uD83D\uDFE2 Gemini \u2014 Come ottenere la chiave</b><br><br>'
+      + '1. Vai su <b>aistudio.google.com</b> (NON Google Cloud!)<br>'
+      + '2. Accedi con un account Google <b>personale</b><br>'
+      + '3. Clicca <b>Get API key</b> \u2192 <b>Create API key in new project</b><br>'
+      + '4. Copia la chiave (inizia con <b>AIza...</b>) e incollala qui<br><br>'
+      + '\u26a0\uFE0F <b>Errore quota 0?</b> Il free tier non \u00e8 disponibile per il tuo account/paese.<br>'
+      + 'Modello consigliato: <b>Gemini 2.5 Flash</b> (free tier, senza carta).<br>'
+      + 'Se vedi errore quota: prova un altro modello dal selettore, oppure usa ChatGPT o Claude.',
+    endpoint: function(key, model){ return 'https://generativelanguage.googleapis.com/v1beta/models/' + (model||'gemini-2.5-flash') + ':generateContent?key=' + key; },
+    buildBody: function(msg){ return {contents:[{parts:[{text:msg}]}]}; },
+    parseResponse: function(d){ return (d&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts&&d.candidates[0].content.parts[0]&&d.candidates[0].content.parts[0].text)||null; },
   },
   claude: {
     name: 'Claude (Anthropic)',
-    model: 'claude-haiku-4-5',
+    model: 'claude-haiku-4-5-20251001',
     free: false,
-    instructions: `<b>🟠 Claude Haiku — A pagamento</b><br><br>
-1. Vai su <b>console.anthropic.com</b><br>
-2. Registrati e aggiungi un metodo di pagamento<br>
-3. Vai in <b>API Keys</b> → <b>Create Key</b><br>
-4. Copia la chiave e incollala qui sotto<br><br>
-<span style="color:#FF9800">⚠️ Costo: ~€0.001 per sessione — economicissimo!</span><br>
-<span style="color:var(--tlt)">ℹ️ Nota: alcune reti bloccano le chiamate browser dirette. Se il test fallisce prova con Gemini.</span>`,
-    endpoint: () => 'https://api.anthropic.com/v1/messages',
-    buildBody: (msg) => ({model:'claude-haiku-4-5-20251001',max_tokens:500,messages:[{role:'user',content:msg}]}),
-    parseResponse: (d) => d?.content?.[0]?.text || null,
-    headers: (key) => ({'x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}),
+    instructions: '<b>\uD83D\uDFE0 Claude Haiku \u2014 A pagamento</b><br><br>'
+      + '1. Vai su <b>console.anthropic.com</b><br>'
+      + '2. Registrati e aggiungi un metodo di pagamento<br>'
+      + '3. Vai in <b>API Keys</b> \u2192 <b>Create Key</b><br>'
+      + '4. Copia la chiave e incollala qui sotto<br><br>'
+      + '<span style="color:#FF9800">\u26a0\uFE0F Costo: \u223c\u20ac0.001 per sessione \u2014 economicissimo!</span><br>'
+      + '<span style="color:var(--tlt)">\u2139\uFE0F Nota: alcune reti bloccano le chiamate browser dirette (CORS). Se il test fallisce prova con Gemini.</span>',
+    endpoint: function(){ return 'https://api.anthropic.com/v1/messages'; },
+    buildBody: function(msg){ return {model:'claude-haiku-4-5-20251001',max_tokens:500,messages:[{role:'user',content:msg}]}; },
+    parseResponse: function(d){ return (d&&d.content&&d.content[0]&&d.content[0].text)||null; },
+    headers: function(key){ return {'x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}; },
   },
   chatgpt: {
     name: 'ChatGPT (OpenAI)',
     model: 'gpt-4o-mini',
     free: false,
-    instructions: `<b>🟣 GPT-4o Mini — A pagamento</b><br><br>
-1. Vai su <b>platform.openai.com</b><br>
-2. Registrati e aggiungi crediti (minimo $5)<br>
-3. Vai in <b>API Keys</b> → <b>Create new secret key</b><br>
-4. Copia la chiave e incollala qui sotto<br><br>
-<span style="color:#FF9800">⚠️ Costo: ~€0.001 per sessione — economicissimo!</span>`,
-    endpoint: () => 'https://api.openai.com/v1/chat/completions',
-    buildBody: (msg) => ({model:'gpt-4o-mini',max_tokens:500,messages:[{role:'user',content:msg}]}),
-    parseResponse: (d) => d?.choices?.[0]?.message?.content || null,
+    instructions: '<b>\uD83D\uDFE3 GPT-4o Mini \u2014 A pagamento</b><br><br>'
+      + '1. Vai su <b>platform.openai.com</b><br>'
+      + '2. Registrati e aggiungi crediti (minimo $5)<br>'
+      + '3. Vai in <b>API Keys</b> \u2192 <b>Create new secret key</b><br>'
+      + '4. Copia la chiave (inizia con <b>sk-...</b>) e incollala qui sotto<br><br>'
+      + '<span style="color:#FF9800">\u26a0\uFE0F Costo: \u223c\u20ac0.001 per sessione \u2014 economicissimo!</span>',
+    endpoint: function(){ return 'https://api.openai.com/v1/chat/completions'; },
+    buildBody: function(msg){ return {model:'gpt-4o-mini',max_tokens:500,messages:[{role:'user',content:msg}]}; },
+    parseResponse: function(d){ return (d&&d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||null; },
   },
-};
+}
 
 function _syncAISettings(){
   const enabled = SET.aiEnabled===true;
@@ -2059,9 +2057,9 @@ function _syncAISettings(){
   if(_modelDd && SET.aiProvider==='gemini'){
     const _gModels = AI_PROVIDERS.gemini.models||[];
     if(_modelDd.options.length !== _gModels.length){
-      _modelDd.innerHTML = _gModels.map(m=>`<option value="${m.id}">${m.tier} ${m.label}</option>`).join('');
+      _modelDd.innerHTML = _gModels.map(m=>'<option value="'+m.id+'">'+(m.tier||'')+' '+m.label+'</option>').join('');
     }
-    _modelDd.value = SET.aiGeminiModel||'gemini-1.5-flash';
+    _modelDd.value = SET.aiGeminiModel||'gemini-2.5-flash';
   }
   // Feature toggles
   ['bubble','sessions','chat'].forEach(f=>{
@@ -2167,6 +2165,10 @@ async function testAIConnection(){
     let msg = e.message||'Errore sconosciuto';
     if(msg.includes('Failed to fetch')||msg.includes('CORS'))
       msg='Connessione bloccata dal browser (CORS). Prova Gemini oppure usa una rete diversa.';
+    if(msg.includes('limit: 0')||msg.includes('free_tier'))
+      msg='Quota free tier esaurita o non disponibile per il tuo account/paese. Prova con un account Google personale, oppure attiva la fatturazione su aistudio.google.com.';
+    if(msg.includes('not found for API version'))
+      msg='Modello non trovato. Prova un modello diverso dal selettore sopra (es. Gemini 1.5 Flash).';
     if(res){
       res.style.display='block';
       res.style.background='#FFEBEE';
@@ -5305,7 +5307,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.034 · 25/04/2026 12:50 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.037 · 25/04/2026 13:15 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -6060,7 +6062,7 @@ var CAT_INFO={
 // ── Core state objects ──────────────────────────────────────────────────
 var P={};  // Profile
 var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0};  // Stats
-var SET={audio:true,voice:true,voiceDesc:true,music:true,musicVol:60,dynamicTheme:true,pauseSec:25,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light',aiEnabled:false,aiProvider:'gemini',aiKey:'',aiKeys:{gemini:'',claude:'',chatgpt:''},aiGeminiModel:'gemini-1.5-flash',aiFeature_bubble:true,aiFeature_sessions:true,aiFeature_chat:true};  // Settings
+var SET={audio:true,voice:true,voiceDesc:true,music:true,musicVol:60,dynamicTheme:true,pauseSec:25,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light',aiEnabled:false,aiProvider:'gemini',aiKey:'',aiKeys:{gemini:'',claude:'',chatgpt:''},aiGeminiModel:'gemini-2.5-flash',aiFeature_bubble:true,aiFeature_sessions:true,aiFeature_chat:true};  // Settings
 var T={exs:[],idx:0,phase:'act',left:0,paused:false,t0:0,iv:null,dur:12,feeling:'piano',sesType:'misto',_halfSpoken:false,_restDone:null,_isRoutine:false};  // Timer state
 
 function generateShareSession(){
@@ -6495,6 +6497,19 @@ function showSwitchSide(){
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
   {v:'1.026',date:'20/04/2026',changes:['FIX CRITICO: Ss===1 typo in buildCoachBubble causava crash ogni lunedì mattina → streak 0 e Lv.1 visibili','buildCoachBubble avvolta in try-catch (safety net)','Streak reset: controlla giorni di riposo nel piano prima di azzerare','XP NaN guard: se S.xp è NaN usa 0 anziché mostrare Lv.1','Photo cache: invalida automaticamente quando DB.length cambia']},
+  {v:'1.037',date:'25/04/2026',changes:[
+    'Gemini: rimossi modelli non funzionanti, lista pulita (2.5 Flash gratis + 1.5 Pro)',
+  ]},
+  {v:'1.036',date:'25/04/2026',changes:[
+    'Gemini: default cambiato a gemini-2.5-flash (free tier attuale)',
+    '2.5 Flash in cima alla lista modelli',
+  ]},
+  {v:'1.035',date:'25/04/2026',changes:[
+    'Gemini: ripristino v1beta (unico endpoint compatibile con API key)',
+    'Messaggi errore specifici per quota 0 e modello non trovato',
+    'Istruzioni Gemini con guida troubleshooting quota',
+    'Modelli v1beta: rimosso -latest, aggiunto gemini-2.0-flash-exp',
+  ]},
   {v:'1.034',date:'25/04/2026',changes:[
     'Gemini endpoint: v1beta → v1 (modelli stabili)',
     'Fix selettore modello: legge valore live dal dropdown',
@@ -7836,7 +7851,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604251250'; // auto-set on each release
+const APP_BUILD='202604251315'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
