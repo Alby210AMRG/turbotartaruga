@@ -1296,8 +1296,60 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
 
+    <!-- ════ AI COACH ACCORDION ════ -->
+    <div class="card" style="padding:0">
+      <button class="acc-hdr" onclick="toggleAcc('acc-ai')"><span>🤖 AI Coach <span style="font-size:10px;background:linear-gradient(90deg,#6C63FF,#42A5F5);color:#fff;padding:2px 7px;border-radius:100px;margin-left:4px">BETA</span></span><span class="acc-arr" id="arr-ai">▼</span></button>
+      <div class="acc-body" id="acc-ai">
+        <!-- Toggle principale -->
+        <div class="srow"><div class="si">🤖</div><div class="sinfo"><div class="stitle">Abilita AI Coach</div><div class="sval">Messaggi personalizzati e sessioni su misura</div></div><button class="toggle" id="st-ai-enabled" onclick="toggleAICoach()"></button></div>
+
+        <!-- Provider selector -->
+        <div id="ai-provider-section" style="display:none">
+          <div style="padding:10px 13px 4px;font-size:11px;font-weight:bold;color:var(--tlt);letter-spacing:.5px">SCEGLI IL PROVIDER AI</div>
+          <div style="display:flex;gap:7px;padding:0 13px 12px;flex-wrap:wrap">
+            <button id="ai-btn-gemini" onclick="selectAIProvider('gemini')" style="flex:1;min-width:80px;padding:10px 6px;border-radius:12px;border:2px solid var(--g1);background:var(--g4);color:var(--g1);cursor:pointer;font-size:12px;font-weight:bold">
+              <div style="font-size:20px">🟢</div>Gemini<div style="font-size:9px;margin-top:2px">Google · GRATIS</div>
+            </button>
+            <button id="ai-btn-claude" onclick="selectAIProvider('claude')" style="flex:1;min-width:80px;padding:10px 6px;border-radius:12px;border:2px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;font-size:12px;font-weight:bold">
+              <div style="font-size:20px">🟠</div>Claude<div style="font-size:9px;margin-top:2px">Anthropic · €</div>
+            </button>
+            <button id="ai-btn-chatgpt" onclick="selectAIProvider('chatgpt')" style="flex:1;min-width:80px;padding:10px 6px;border-radius:12px;border:2px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;font-size:12px;font-weight:bold">
+              <div style="font-size:20px">🟣</div>ChatGPT<div style="font-size:9px;margin-top:2px">OpenAI · €</div>
+            </button>
+          </div>
+
+          <!-- Istruzioni provider (dinamiche) -->
+          <div id="ai-instructions" style="margin:0 13px 12px;padding:11px 13px;background:var(--bg2);border-radius:12px;font-size:12px;line-height:1.6;color:var(--text)"></div>
+
+          <!-- API Key input -->
+          <div style="padding:0 13px 12px">
+            <div style="font-size:12px;font-weight:bold;color:var(--tlt);margin-bottom:6px">🔑 API Key</div>
+            <div style="display:flex;gap:7px">
+              <input type="password" id="ai-key-input" placeholder="Incolla qui la tua API key..."
+                style="flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--bdr);background:var(--bg2);color:var(--text);font-size:13px;outline:none"
+                oninput="SET.aiKey=this.value;save()">
+              <button onclick="toggleAIKeyVisibility()" style="padding:8px 12px;border-radius:10px;border:1.5px solid var(--bdr);background:var(--bg2);color:var(--text);cursor:pointer;font-size:16px" id="ai-key-eye">👁️</button>
+            </div>
+            <div style="font-size:10px;color:var(--tlt);margin-top:5px">🔒 La chiave è salvata solo su questo dispositivo, mai inviata a server esterni.</div>
+          </div>
+
+          <!-- Test connessione -->
+          <div style="padding:0 13px 14px;display:flex;gap:8px;align-items:center">
+            <button onclick="testAIConnection()" id="btn-ai-test" style="flex:1;padding:11px;border-radius:12px;background:var(--g1);color:#fff;border:none;font-size:13px;font-weight:bold;cursor:pointer">🔌 Testa connessione</button>
+          </div>
+          <div id="ai-test-result" style="margin:-4px 13px 12px;padding:10px 13px;border-radius:10px;font-size:12px;display:none"></div>
+
+          <!-- Feature toggles -->
+          <div style="padding:0 13px 4px;font-size:11px;font-weight:bold;color:var(--tlt);letter-spacing:.5px">FUNZIONALITÀ AI</div>
+          <div class="srow"><div class="si">💬</div><div class="sinfo"><div class="stitle">Messaggi nel Coach Bubble</div><div class="sval">Consigli personalizzati in home</div></div><button class="toggle" id="st-ai-bubble" onclick="toggleAIFeature('bubble')"></button></div>
+          <div class="srow"><div class="si">🎯</div><div class="sinfo"><div class="stitle">Sessioni personalizzate</div><div class="sval">Sessioni generate dall'AI su misura per te</div></div><button class="toggle" id="st-ai-sessions" onclick="toggleAIFeature('sessions')"></button></div>
+          <div class="srow" style="border-bottom:none"><div class="si">🗣️</div><div class="sinfo"><div class="stitle">Chat con il Coach</div><div class="sval">Scrivi all'AI — risponde solo su TurboTartaruga</div></div><button class="toggle" id="st-ai-chat" onclick="toggleAIFeature('chat')"></button></div>
+        </div>
+      </div>
+    </div>
+
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.029</div>
+      <div id="app-version-display">Versione v1.031</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1908,6 +1960,183 @@ function forceAppUpdate(){
   },600);
 }
 function toggleMusic(){SET.music=!(SET.music!==false);const b=document.getElementById('st-music');if(b)b.classList.toggle('on',SET.music!==false);save();if(!SET.music&&_musicPlaying)stopSessionMusic();}
+// ═══════════════════════════════════════════════════════════════
+// AI COACH — Impostazioni
+// ═══════════════════════════════════════════════════════════════
+
+const AI_PROVIDERS = {
+  gemini: {
+    name: 'Google Gemini',
+    model: 'gemini-1.5-flash',
+    free: true,
+    instructions: `<b>🟢 Gemini Flash — GRATUITO</b><br><br>
+1. Vai su <b>aistudio.google.com</b><br>
+2. Accedi con il tuo account Google<br>
+3. Clicca <b>"Get API key"</b> → <b>"Create API key"</b><br>
+4. Copia la chiave e incollala qui sotto<br><br>
+<span style="color:var(--g1)">✅ Piano gratuito: 60 richieste/minuto, più che sufficienti!</span>`,
+    endpoint: (key) => `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+    buildBody: (msg) => ({contents:[{parts:[{text:msg}]}]}),
+    parseResponse: (d) => d?.candidates?.[0]?.content?.parts?.[0]?.text || null,
+  },
+  claude: {
+    name: 'Claude (Anthropic)',
+    model: 'claude-haiku-4-5',
+    free: false,
+    instructions: `<b>🟠 Claude Haiku — A pagamento</b><br><br>
+1. Vai su <b>console.anthropic.com</b><br>
+2. Registrati e aggiungi un metodo di pagamento<br>
+3. Vai in <b>API Keys</b> → <b>Create Key</b><br>
+4. Copia la chiave e incollala qui sotto<br><br>
+<span style="color:#FF9800">⚠️ Costo: ~€0.001 per sessione — economicissimo!</span><br>
+<span style="color:var(--tlt)">ℹ️ Nota: alcune reti bloccano le chiamate browser dirette. Se il test fallisce prova con Gemini.</span>`,
+    endpoint: () => 'https://api.anthropic.com/v1/messages',
+    buildBody: (msg) => ({model:'claude-haiku-4-5-20251001',max_tokens:500,messages:[{role:'user',content:msg}]}),
+    parseResponse: (d) => d?.content?.[0]?.text || null,
+    headers: (key) => ({'x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}),
+  },
+  chatgpt: {
+    name: 'ChatGPT (OpenAI)',
+    model: 'gpt-4o-mini',
+    free: false,
+    instructions: `<b>🟣 GPT-4o Mini — A pagamento</b><br><br>
+1. Vai su <b>platform.openai.com</b><br>
+2. Registrati e aggiungi crediti (minimo $5)<br>
+3. Vai in <b>API Keys</b> → <b>Create new secret key</b><br>
+4. Copia la chiave e incollala qui sotto<br><br>
+<span style="color:#FF9800">⚠️ Costo: ~€0.001 per sessione — economicissimo!</span>`,
+    endpoint: () => 'https://api.openai.com/v1/chat/completions',
+    buildBody: (msg) => ({model:'gpt-4o-mini',max_tokens:500,messages:[{role:'user',content:msg}]}),
+    parseResponse: (d) => d?.choices?.[0]?.message?.content || null,
+  },
+};
+
+function _syncAISettings(){
+  const enabled = SET.aiEnabled===true;
+  const btn = document.getElementById('st-ai-enabled');
+  if(btn) btn.classList.toggle('on', enabled);
+  const provSec = document.getElementById('ai-provider-section');
+  if(provSec) provSec.style.display = enabled ? 'block' : 'none';
+  // Provider buttons
+  ['gemini','claude','chatgpt'].forEach(p=>{
+    const b = document.getElementById('ai-btn-'+p);
+    if(!b) return;
+    const active = (SET.aiProvider||'gemini') === p;
+    b.style.borderColor = active ? 'var(--g1)' : 'var(--bdr)';
+    b.style.background  = active ? 'var(--g4)' : 'var(--card)';
+    b.style.color       = active ? 'var(--g1)' : 'var(--text)';
+  });
+  // Instructions
+  const instr = document.getElementById('ai-instructions');
+  if(instr){
+    const prov = AI_PROVIDERS[SET.aiProvider||'gemini'];
+    instr.innerHTML = prov ? prov.instructions : '';
+  }
+  // API key
+  const keyInput = document.getElementById('ai-key-input');
+  if(keyInput && !keyInput._dirty) keyInput.value = SET.aiKey||'';
+  // Feature toggles
+  ['bubble','sessions','chat'].forEach(f=>{
+    const b = document.getElementById('st-ai-'+f);
+    if(b) b.classList.toggle('on', SET['aiFeature_'+f]!==false);
+  });
+}
+
+function toggleAICoach(){
+  SET.aiEnabled = !SET.aiEnabled;
+  save();
+  _syncAISettings();
+  toast(SET.aiEnabled ? '🤖 AI Coach attivato!' : 'AI Coach disattivato.');
+}
+
+function selectAIProvider(p){
+  const prev = SET.aiProvider||'gemini';
+  SET.aiProvider = p;
+  SET.aiKey = ''; // reset key when changing provider
+  save();
+  _syncAISettings();
+  const keyInput = document.getElementById('ai-key-input');
+  if(keyInput){ keyInput.value=''; keyInput._dirty=false; }
+  const res = document.getElementById('ai-test-result');
+  if(res) res.style.display='none';
+  // Track providers tried for badge
+  if(!S.aiProvidersTried) S.aiProvidersTried=[];
+  if(!S.aiProvidersTried.includes(p)) S.aiProvidersTried.push(p);
+  save();
+}
+
+function toggleAIKeyVisibility(){
+  const inp = document.getElementById('ai-key-input');
+  const eye = document.getElementById('ai-key-eye');
+  if(!inp) return;
+  inp.type = inp.type==='password' ? 'text' : 'password';
+  if(eye) eye.textContent = inp.type==='password' ? '👁️' : '🙈';
+}
+
+function toggleAIFeature(f){
+  SET['aiFeature_'+f] = !(SET['aiFeature_'+f]!==false);
+  save();
+  _syncAISettings();
+}
+
+async function testAIConnection(){
+  const key = (document.getElementById('ai-key-input')?.value||'').trim() || SET.aiKey||'';
+  if(!key){ toast('⚠️ Inserisci prima la tua API key!'); return; }
+  SET.aiKey = key; save();
+  const btn = document.getElementById('btn-ai-test');
+  const res = document.getElementById('ai-test-result');
+  if(btn){ btn.textContent='⏳ Connessione...'; btn.disabled=true; }
+  if(res){ res.style.display='none'; }
+  const prov = AI_PROVIDERS[SET.aiProvider||'gemini'];
+  if(!prov){ toast('⚠️ Provider non valido'); return; }
+  const testMsg = 'Rispondi in italiano con una sola frase simpatica di massimo 10 parole su una tartaruga sportiva.';
+  try{
+    const headers = {'Content-Type':'application/json'};
+    if(prov.headers) Object.assign(headers, prov.headers(key));
+    else if(SET.aiProvider==='chatgpt') headers['Authorization']='Bearer '+key;
+    const r = await fetch(prov.endpoint(key), {
+      method:'POST',
+      headers,
+      body: JSON.stringify(prov.buildBody(testMsg))
+    });
+    const data = await r.json();
+    if(!r.ok){
+      const errMsg = data?.error?.message || data?.error?.code || ('Errore HTTP '+r.status);
+      throw new Error(errMsg);
+    }
+    const reply = prov.parseResponse(data);
+    if(reply){
+      if(res){
+        res.style.display='block';
+        res.style.background='var(--g4)';
+        res.style.color='var(--g1)';
+        res.innerHTML='✅ <b>Connessione OK!</b><br><i>"'+reply.trim().slice(0,120)+'"</i>';
+      }
+      toast('🤖 AI connessa! '+prov.name+' risponde correttamente.');
+      // Badge: track provider
+      if(!S.aiProvidersTried) S.aiProvidersTried=[];
+      if(!S.aiProvidersTried.includes(SET.aiProvider)) S.aiProvidersTried.push(SET.aiProvider);
+      const nb=checkBadges(); save();
+      if(nb.length) nb.forEach(b=>toast('🏅 Badge sbloccato: '+b.name+'!',4000));
+    } else {
+      throw new Error('Risposta vuota o formato non riconosciuto');
+    }
+  } catch(e){
+    let msg = e.message||'Errore sconosciuto';
+    if(msg.includes('Failed to fetch')||msg.includes('CORS'))
+      msg='Connessione bloccata dal browser (CORS). Prova Gemini oppure usa una rete diversa.';
+    if(res){
+      res.style.display='block';
+      res.style.background='#FFEBEE';
+      res.style.color='#C62828';
+      res.innerHTML='❌ <b>Errore:</b> '+msg;
+    }
+    toast('❌ Test fallito: '+msg.slice(0,60),5000);
+  } finally {
+    if(btn){ btn.textContent='🔌 Testa connessione'; btn.disabled=false; }
+  }
+}
+
 function toggleVoiceDesc(){SET.voiceDesc=!SET.voiceDesc;const b=document.getElementById('st-voicedesc');if(b)b.classList.toggle('on',SET.voiceDesc===true);save();toast(SET.voiceDesc?'🗣️ Descrizione audio attivata!':'Descrizione audio disattivata.');}
 function toggleDynamicTheme(){SET.dynamicTheme=!(SET.dynamicTheme!==false);const b=document.getElementById('st-dynamictheme');if(b)b.classList.toggle('on',SET.dynamicTheme!==false);save();if(SET.dynamicTheme)applyDynamicTheme();else{const hero=document.querySelector('.home-hero');if(hero)hero.style.background='';}toast(SET.dynamicTheme?'🌈 Tema dinamico attivato!':'Tema dinamico disattivato.');}
 function toggleVoice(){SET.voice=!SET.voice;save();syncToggles()}
@@ -3818,7 +4047,19 @@ function showRestPreview(targetIdx, onDone){
     document.getElementById('rst-next-cat').textContent=nx.t;
     document.getElementById('rst-next-name').textContent=nx.n;
     // Descrizione audio del prossimo esercizio (se attivata)
-    if(SET.voice&&SET.voiceDesc&&left>=6)setTimeout(()=>speak('Prossimo: '+nx.n+'. '+(nx.desc||'').slice(0,160)),300);
+    if(SET.voice&&SET.voiceDesc&&left>=6){
+      const _vdTxt='Prossimo: '+nx.n+'. '+(nx.desc||'').slice(0,160);
+      if(targetIdx===0&&window.speechSynthesis){
+        // Primo esercizio: lancia la lettura DOPO il warmup (motore non ancora inizializzato)
+        try{const _wu=new SpeechSynthesisUtterance('');_wu.volume=0;
+          _wu.onend=()=>speak(_vdTxt);
+          _wu.onerror=()=>setTimeout(()=>speak(_vdTxt),500);
+          window.speechSynthesis.speak(_wu);
+        }catch(e){setTimeout(()=>speak(_vdTxt),800);}
+      } else {
+        setTimeout(()=>speak(_vdTxt),300);
+      }
+    }
     // Exercise type chip
     const typeEl=document.getElementById('rst-next-type');
     if(typeEl){
@@ -5023,7 +5264,7 @@ function buildSettings(){
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.029 · 25/04/2026 08:35 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.031 · 25/04/2026 09:47 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -5035,7 +5276,7 @@ function buildSettings(){
   const btn=document.getElementById('ex-toggle-btn');
   if(btn)btn.textContent='▼ Mostra';
   // Sincronizzo SEMPRE tutti gli slider
-  setTimeout(()=>{_syncAllenamentoSliders();_syncAspettoSliders();},0);
+  setTimeout(()=>{_syncAllenamentoSliders();_syncAspettoSliders();_syncAISettings();},0);
   // Aggiorna SEMPRE il contatore esercizi appena buildSettings gira
   const _exLblBS=document.getElementById('ex-count-lbl');
   if(_exLblBS){
@@ -5086,6 +5327,7 @@ function toggleAcc(id){
     }
     if(id==='acc-aspetto'){_syncGpsStatus();_syncAspettoSliders();}
     if(id==='acc-routine')_syncRoutineSliders();
+    if(id==='acc-ai')_syncAISettings();
     setTimeout(_syncAllSliderPct,20);
   }
 }
@@ -5753,6 +5995,14 @@ var BADGES=[
   {id:'b_autumn',lv:2,icon:'🍂',name:'Autunno costante',hint:'10 sessioni in autunno (set–nov)',check:(s)=>(s.seasons&&s.seasons.autumn>=10)||false},
   {id:'b_winter',lv:2,icon:'❄️',name:'Guerriero invernale',hint:'10 sessioni in inverno (dic–feb)',check:(s)=>(s.seasons&&s.seasons.winter>=10)||false},
   {id:'b_4seasons',lv:3,icon:'🌍',name:'Quattro Stagioni',hint:'Almeno 1 sessione in ciascuna stagione',check:(s)=>!!(s.seasons&&s.seasons.spring>=1&&s.seasons.summer>=1&&s.seasons.autumn>=1&&s.seasons.winter>=1)},
+  // ── AI COACH (badge simpatici) ────────────────────────────────────────────
+  {id:'b_ai1',lv:2,icon:'🤖',name:'Primo contatto',hint:'Hai completato la tua prima sessione con il Coach AI!',check:(s)=>(s.aiSessions||0)>=1},
+  {id:'b_ai5',lv:3,icon:'🧠',name:'Apprendista digitale',hint:'5 sessioni con il Coach AI — la tartaruga incontra il futuro!',check:(s)=>(s.aiSessions||0)>=5},
+  {id:'b_ai10',lv:4,icon:'⚡',name:'Cyborg tartaruga',hint:'10 sessioni AI — metà tartaruga, metà robot!',check:(s)=>(s.aiSessions||0)>=10},
+  {id:'b_ai25',lv:5,icon:'🎯',name:'Il coach sa tutto',hint:'25 sessioni AI — ormai il coach AI ti conosce meglio di te stesso!',check:(s)=>(s.aiSessions||0)>=25},
+  {id:'b_aichat',lv:2,icon:'💬',name:'Primo dialogo',hint:'Hai scritto per la prima volta al Coach AI. Benvenuto nel futuro!',check:(s)=>(s.aiChats||0)>=1},
+  {id:'b_aitogether',lv:3,icon:'🤝',name:'AI in compagnia',hint:'Sessione AI completata in modalità Insieme — il futuro è social!',check:(s)=>(s.aiTogetherSessions||0)>=1},
+  {id:'b_aiproviders',lv:4,icon:'🔬',name:'Sperimentatore',hint:'Hai testato almeno 2 provider AI diversi. Scienziato della tartaruga!',check:(s)=>(s.aiProvidersTried||[]).length>=2},
 ]
 var CAT_INFO={
   riscaldamento:{label:'Riscaldamento',icon:'🔥'},gambe:{label:'Gambe',icon:'🦵'},
@@ -5769,7 +6019,7 @@ var CAT_INFO={
 // ── Core state objects ──────────────────────────────────────────────────
 var P={};  // Profile
 var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0};  // Stats
-var SET={audio:true,voice:true,voiceDesc:true,music:true,musicVol:60,dynamicTheme:true,pauseSec:25,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light'};  // Settings
+var SET={audio:true,voice:true,voiceDesc:true,music:true,musicVol:60,dynamicTheme:true,pauseSec:25,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light',aiEnabled:false,aiProvider:'gemini',aiKey:'',aiFeature_bubble:true,aiFeature_sessions:true,aiFeature_chat:true};  // Settings
 var T={exs:[],idx:0,phase:'act',left:0,paused:false,t0:0,iv:null,dur:12,feeling:'piano',sesType:'misto',_halfSpoken:false,_restDone:null,_isRoutine:false};  // Timer state
 
 function generateShareSession(){
@@ -6204,6 +6454,27 @@ function showSwitchSide(){
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
   {v:'1.026',date:'20/04/2026',changes:['FIX CRITICO: Ss===1 typo in buildCoachBubble causava crash ogni lunedì mattina → streak 0 e Lv.1 visibili','buildCoachBubble avvolta in try-catch (safety net)','Streak reset: controlla giorni di riposo nel piano prima di azzerare','XP NaN guard: se S.xp è NaN usa 0 anziché mostrare Lv.1','Photo cache: invalida automaticamente quando DB.length cambia']},
+  {v:'1.030',date:'25/04/2026',changes:[
+    'AI Coach BETA: sezione impostazioni con Gemini/Claude/ChatGPT',
+    'Test connessione AI con risposta live',
+    '7 nuovi badge AI (Primo contatto, Cyborg tartaruga, Sperimentatore…)',
+    'Fix critico: SyntaxError doppia stringa versione (app si bloccava al wizard)',
+    'voiceDesc attivo di default per nuovi utenti',
+  ]},
+  {v:'1.029',date:'25/04/2026',changes:[
+    'Fase B: badge stagionali (Primavera/Estate/Autunno/Inverno/Quattro Stagioni)',
+    'Fase B: difficoltà dinamica — coach bubble suggerisce adattamento',
+    'Coach Bubble: frasi per fascia oraria (mattino/pomeriggio/sera/notte)',
+    'Coach Bubble: frasi stagionali in rotazione',
+    'Articolazioni 🦴 aggiunta al wizard e CAT_INFO',
+    'Fix slider --pct via MutationObserver + sync in go() e toggleAcc()',
+    'iOS QR: playsinline, constraints progressivi, messaggio errore guidato',
+  ]},
+  {v:'1.027',date:'25/04/2026',changes:[
+    'Fix definitivo slider: _syncAllSliderPct universale in go() e toggleAcc()',
+    'Fix QR iOS: playsinline+muted sul video, getUserMedia constraints progressivi',
+    'Messaggio errore fotocamera specifico per iOS (Impostazioni → Safari)',
+  ]},
   {v:'1.026',date:'20/04/2026',changes:['Fix foto: cache invalidata se DB aggiornato','Banner mattina: wakeH→wakeH+2h','Banner sera: usa orario utente non fisso 19:00','Fix contatore esercizi dinamico','Scelgo io: Misto/Misto+ in viola, Risveglio/Pre-sonno in ambra-notte, in fondo alla lista','Misto/Misto+: rispettano categorie utente + noFloor + solo con foto']},
   {v:'1.026',date:'20/04/2026',changes:['Fix icona Mobilità 🔄→🦴 (🔄 era usata per recupero automatico)','Fix contatore esercizi: dinamico (202 esercizi, non 187 hardcoded)','Fix Tutti gli esercizi: aggiunta categoria Mobilità/Articolazioni','Fix Scelgo io: aggiunto Mobilità, rimosso duplicato Pre-sonno','Fix Rigenera piano: refreshPlanFromSettings() forza rigenerazione completa','Aggiunto Mobilità al piano giornaliero (sottotitolo home)']},
   {v:'1.026',date:'20/04/2026',changes:['Nuova categoria Mobilità/Articolazioni 🔄 con 15 esercizi specifici (spalle, anca, ginocchio, caviglia, collo, polsi)','Sessione: esercizi a terra raggruppati prima, poi in piedi','Sessione: ultimo esercizio sempre stretching (anche col boost)','Musica completamente riscritta: crossfade morbido tra sezioni, pad e basso continui, drum loop mai interrotto, 8 sezioni orientale ~90s, struttura canzone rock ~80s']},
@@ -7504,7 +7775,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604250835'; // auto-set on each release
+const APP_BUILD='202604250947'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
