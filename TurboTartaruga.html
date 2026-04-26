@@ -1416,7 +1416,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.061</div>
+      <div id="app-version-display">Versione v1.063</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1785,10 +1785,16 @@ const TIME_PHRASES={
     "🌙 Muoversi la sera abbassa lo stress e migliora il sonno. 🧠",
   ],
   notte:[
-    "🌃 Nottambulo attivo! Sessione leggera e poi riposo! 😴",
+    "🌃 Nottambulo attivo! Sessione leggera e poi riposo — lo meriti! 😴",
     "🌒 Tardi ma convinto. La costanza non guarda l'orologio! 🐢",
-    "⭐ Anche di notte la tartaruga non molla. Però poi dorme! 😴",
+    "⭐ Anche di notte la tartaruga non molla. Però poi dorme bene! 😴",
     "🌌 Sessione notturna: energia bassa, determinazione alta! 💪",
+    "🌙 Di notte il silenzio aiuta la concentrazione. Sessione leggera? 🐢",
+    "🦉 I gufi si allenano di notte. Anche tu puoi! Ma poi riposati! 💤",
+    "🌛 Luna piena di motivazione? 10 minuti e poi ti meriti il riposo! ⭐",
+    "😴 Tardi lo so, ma 10 minuti leggeri aiutano anche il sonno. Provaci!",
+    "🌠 Notte fonda, allenamento breve. La tartaruga approva! 🐢",
+    "💤 Prima di dormire: muoviti un po' e dormirai da re! 👑",
   ],
 };
 // ─── FRASI STAGIONALI ────────────────────────────────────────────────────────
@@ -5759,19 +5765,60 @@ async function startAISessionFromHome(){
 // ─── PRELOAD immagini esercizi (cache per offline) ───────────────────────────
 function preloadExerciseImages(){
   if(typeof DB==='undefined'||!DB.length)return;
-  if(!('serviceWorker' in navigator)||!navigator.serviceWorker.controller)return;
-  // Precarica ogni immagine esercizio in background silenziosamente
-  var ids=DB.map(function(e){return e.id;});
+  if(!navigator.onLine)return;
+
+  var CACHE_KEY='tt4_imgCached';
+  var META_KEY='tt4_imgBuild';
+
+  // Se il build è cambiato (nuova versione deployata) → invalida cache
+  // Questo garantisce che immagini aggiornate o nuove vengano riscaricate
+  var savedBuild='';
+  try{savedBuild=localStorage.getItem(META_KEY)||'';}catch(e){}
+  if(savedBuild!==APP_BUILD){
+    try{
+      localStorage.removeItem(CACHE_KEY);
+      localStorage.setItem(META_KEY,APP_BUILD);
+    }catch(e){}
+  }
+
+  // Leggi set immagini già scaricate per questo build
+  var cached={};
+  try{cached=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');}catch(e){}
+
+  // Tutti gli id nel DB (incluse eventuali nuove immagini aggiunte)
+  var allIds=DB.map(function(e){return e.id;});
+  var ids=allIds.filter(function(id){return !cached[id];});
+
+  if(!ids.length)return; // tutto già scaricato per questo build
+
   var i=0;
+  var BATCH=3;
   function next(){
     if(i>=ids.length)return;
-    var img=new Image();
-    img.src='images/exercises/'+ids[i]+'.png';
-    img.onload=img.onerror=function(){i++;setTimeout(next,50);};
-    i++;
+    var batch=ids.slice(i,i+BATCH);
+    i+=BATCH;
+    var done=0;
+    batch.forEach(function(id){
+      var img=new Image();
+      // Cache-bust con build per forzare ri-download se immagine aggiornata
+      img.src='images/exercises/'+id+'.png?v='+APP_BUILD;
+      img.onload=function(){
+        cached[id]=1;
+        done++;
+        if(done===batch.length){
+          try{localStorage.setItem(CACHE_KEY,JSON.stringify(cached));}catch(e){}
+          setTimeout(next,120);
+        }
+      };
+      img.onerror=function(){
+        // Non marcare come scaricata: riproverà al prossimo avvio
+        done++;
+        if(done===batch.length)setTimeout(next,120);
+      };
+    });
   }
-  // Ritarda per non bloccare il rendering iniziale
-  setTimeout(next, 2000);
+  // Ritarda 3s per non bloccare rendering iniziale
+  setTimeout(next,3000);
 }
 
 syncToggles();
@@ -5791,7 +5838,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.061 · 26/04/2026 20:49 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.063 · 26/04/2026 21:01 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -7084,6 +7131,8 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.063',date:'26/04/2026',changes:['preloadExerciseImages: cache legata al build (APP_BUILD)','Nuovo build = re-download automatico di tutte le immagini','Cache-bust ?v=BUILD su ogni immagine per forzare aggiornamento','Nuove immagini aggiunte al DB vengono scaricate automaticamente']},
+  {v:'1.062',date:'26/04/2026',changes:['preloadExerciseImages: download progressivo con resume (localStorage)','Frasi meteo ora orario-consapevoli (niente sole/luce di notte)','Slot notte allargato 21:00-06:00 (era 22-05)','TIME_PHRASES.notte ampliato a 10 frasi','Prompt AI frasi: vieta riferimenti solari di notte']},
   {v:'1.061',date:'26/04/2026',changes:['FIX CRITICO: app ora funziona completamente offline','SW riscritto con strategia cache-first per HTML e asset','Precache di tutti i file al primo avvio (HTML, icone, loghi)','Immagini esercizi servite dalla cache offline con fallback 🐢']},
   {v:'1.060',date:'26/04/2026',changes:['FIX: Tema Dinamico ora correttamente dopo Conto Vocale','FIX: slider musicVol mostra riempimento --pct corretto','FIX: SET.musicVol null-safe (non ignora valore 0)']},
   {v:'1.026',date:'20/04/2026',changes:['FIX CRITICO: Ss===1 typo in buildCoachBubble causava crash ogni lunedì mattina → streak 0 e Lv.1 visibili','buildCoachBubble avvolta in try-catch (safety net)','Streak reset: controlla giorni di riposo nel piano prima di azzerare','XP NaN guard: se S.xp è NaN usa 0 anziché mostrare Lv.1','Photo cache: invalida automaticamente quando DB.length cambia']},
@@ -7747,7 +7796,7 @@ async function fetchAIDailyPhrases(){
   const hour=new Date().getHours();
   const month=new Date().getMonth();
   const season=month>=2&&month<=4?'primavera':month>=5&&month<=7?'estate':month>=8&&month<=10?'autunno':'inverno';
-  const slot=hour>=5&&hour<12?'mattino':hour>=12&&hour<18?'pomeriggio':hour>=18&&hour<22?'sera':'notte';
+  const slot=hour>=6&&hour<12?'mattino':hour>=12&&hour<18?'pomeriggio':hour>=18&&hour<21?'sera':'notte';
   const todayDone=(S.days||[]).includes(today);
   const streak=S.str||0;
   const recent=(S.history||[]).slice(-5).map(function(h){return h.type||h.focus||'?';}).join(', ')||'nessuna';
@@ -7787,7 +7836,7 @@ async function fetchAIDailyPhrases(){
     '- Eta: '+(P.age||'?')+' anni, livello: '+(P.level||'base'),
     '- Streak attuale: '+streak+' giorni consecutivi',
     '- Sessioni totali: '+(S.tot||0),
-    '- Ora: '+slot+' ('+hour+':00)',
+    '- Ora: '+slot+' ('+hour+':00) — IMPORTANTE: se e notte (21-06) NON usare mai parole come luce solare, sole, luminosa, alba, tramonto',
     '- Stagione: '+season,
     weatherStr?'- Meteo: '+weatherStr.trim():'',
     '- Oggi: '+(todayDone?'ha GIA fatto la sessione, bravo!':'non ha ancora fatto la sessione'),
@@ -7879,7 +7928,7 @@ function buildCoachBubble(){
   const _cbM=new Date().getMonth();
   const _cbTodayDone=(S.days||[]).includes(localDate());
   const _cbSeason=_cbM>=2&&_cbM<=4?'spring':_cbM>=5&&_cbM<=7?'summer':_cbM>=8&&_cbM<=10?'autumn':'winter';
-  const _cbSlot=_cbHour>=5&&_cbHour<12?'mattino':_cbHour>=12&&_cbHour<18?'pomeriggio':_cbHour>=18&&_cbHour<22?'sera':'notte';
+  const _cbSlot=_cbHour>=6&&_cbHour<12?'mattino':_cbHour>=12&&_cbHour<18?'pomeriggio':_cbHour>=18&&_cbHour<21?'sera':'notte'; // 21-6 è notte
   // Parole chiave da evitare se sessione già fatta
   const _doneFilter=['non hai ancora','ancora non','aspettare','non aspettare','divano','non hai fatto','mancano pochi','mancano ore'];
   function _filterDone(arr){
@@ -7915,10 +7964,11 @@ function buildCoachBubble(){
     const t=_wxCache.temp;
     // Use WEATHER_PHRASES for richer weather messages
     let wxArr=WEATHER_PHRASES.cloud;
+    var _wxIsNight=_cbHour<6||_cbHour>=21;
     if(t<=5)wxArr=WEATHER_PHRASES.cold;
     else if(t>=30)wxArr=WEATHER_PHRASES.hot;
     else if(['🌧️','🌦️','⛈️'].includes(_wxCache.emoji))wxArr=WEATHER_PHRASES.rain;
-    else if(['☀️','🌤️'].includes(_wxCache.emoji))wxArr=WEATHER_PHRASES.sun;
+    else if(['☀️','🌤️'].includes(_wxCache.emoji))wxArr=_wxIsNight?WEATHER_PHRASES.sun_night:WEATHER_PHRASES.sun;
     else if(['🌫️','💨'].includes(_wxCache.emoji))wxArr=WEATHER_PHRASES.fog;
     const wxPhrase=wxArr[Math.floor(Math.random()*wxArr.length)];
     _coachPhrases.push(wxPhrase+' ('+t+'°)');
@@ -8194,12 +8244,20 @@ function _playNote(ctx,freq,startTime,volume,duration,type){
 
 // ═══ FRASI METEO ════════════════════════════════════════════════════════════
 var WEATHER_PHRASES={
-  sun:[ // ☀️ sole/caldo moderato
+  sun:[ // ☀️ sole/caldo moderato — solo di giorno
     "☀️ Sole splendente! Perfetto per aprire la finestra e muoversi con l'aria fresca!",
     "🌞 Con questo sole è quasi un peccato non fare qualcosa di bello per il corpo!",
     "☀️ Giornata luminosa — anche l'umore è al top. Momento perfetto per allenarti!",
     "🌤️ Bella giornata! Il sole dà energia — usala bene! 💪",
     "🌻 Con questa luce muoversi è più bello. La tartaruga lo sa! 🐢",
+    "🌞 Il sole è la motivazione naturale — non sprecarlo sul divano!",
+  ],
+  sun_night:[ // ☀️ era sereno ma ora è notte
+    "🌙 Cielo sereno stanotte — 10 minuti e poi dormi da re! 💪",
+    "⭐ Notte limpida, mente limpida. Sessione leggera? 🐢",
+    "🌃 Bella serata tranquilla — con una sessione diventa ancora più bella! ✨",
+    "🌌 Cielo stellato fuori, energia dentro. Muoviamoci! 🐢",
+    "🌙 Temperatura mite anche di notte — perfetto per un po' di movimento!",
   ],
   rain:[ // 🌧️ pioggia
     "🌧️ Fuori piove — dentro si suda meglio! Niente scuse! 🏠",
@@ -8658,7 +8716,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604262049'; // auto-set on each release
+const APP_BUILD='202604262101'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
