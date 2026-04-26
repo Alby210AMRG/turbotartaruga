@@ -250,6 +250,26 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .sex-btn.active{border-color:var(--g1);background:var(--g4);color:var(--g1)}
   .ai-freq-sel{border:3px solid #43A047!important;background:#43A047!important;color:#fff!important;transform:scale(1.05)}
   .ai-freq-btn{border:3px solid var(--bdr);background:var(--card);color:var(--text);transition:all .15s}
+  /* ── AI CHAT ─────────────────────────────────────────────── */
+  #screen-chat{flex-direction:column;height:100vh;background:var(--bg)}
+  .screen.active#screen-chat{display:flex}
+  .chat-header{background:linear-gradient(135deg,#6C63FF,#42A5F5);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+  .chat-header-back{background:rgba(255,255,255,.2);border:none;border-radius:50%;width:36px;height:36px;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .chat-messages{flex:1;overflow-y:auto;padding:16px 12px;display:flex;flex-direction:column;gap:10px}
+  .chat-bubble{max-width:80%;padding:10px 14px;border-radius:18px;font-size:14px;line-height:1.5;word-break:break-word}
+  .chat-bubble-coach{align-self:flex-start;background:var(--card);color:var(--text);border-bottom-left-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+  .chat-bubble-user{align-self:flex-end;background:linear-gradient(135deg,#6C63FF,#42A5F5);color:#fff;border-bottom-right-radius:4px}
+  .chat-bubble-time{font-size:10px;opacity:.55;margin-top:3px}
+  .chat-input-bar{padding:10px 12px;background:var(--card);border-top:1px solid var(--bdr);display:flex;gap:8px;align-items:flex-end;flex-shrink:0;padding-bottom:max(10px,env(safe-area-inset-bottom,10px))}
+  .chat-input{flex:1;border:1.5px solid var(--bdr);border-radius:20px;padding:10px 14px;font-size:14px;background:var(--bg);color:var(--text);resize:none;max-height:100px;outline:none;font-family:var(--ff)}
+  .chat-send-btn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#6C63FF,#42A5F5);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .chat-typing{display:flex;gap:4px;align-items:center;padding:10px 14px}
+  .chat-typing span{width:7px;height:7px;border-radius:50%;background:var(--tlt);animation:chatDot .9s ease infinite}
+  .chat-typing span:nth-child(2){animation-delay:.15s}
+  .chat-typing span:nth-child(3){animation-delay:.3s}
+  @keyframes chatDot{0%,80%,100%{transform:scale(0.7);opacity:.4}40%{transform:scale(1);opacity:1}}
+  .chat-icon-btn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#6C63FF,#42A5F5);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
@@ -352,6 +372,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <!-- HOME -->
 <div id="screen-home" class="screen">
   <div class="home-hero" style="position:relative">
+    <div id="chat-icon-wrap" style="display:none;position:absolute;top:10px;left:12px;z-index:10"><button class="chat-icon-btn" onclick="openAIChat()" title="Chat con il Coach AI">🗨️</button></div>
     <div style="position:absolute;top:10px;right:12px;display:flex;flex-direction:column;align-items:center;gap:3px;z-index:10">
       <button onclick="go('settings')" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.95);border:2px solid #fff;cursor:pointer;font-size:19px;display:flex;align-items:center;justify-content:center;color:#1B5E20;box-shadow:0 2px 8px rgba(0,0,0,.25)" title="Impostazioni">⚙️</button>
       <button id="backup-alert-btn" onclick="showBackupModal()" style="display:none;width:26px;height:26px;border-radius:50%;background:#E53935;border:2px solid #fff;cursor:pointer;font-size:13px;display:none;align-items:center;justify-content:center;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);animation:pulse 1.5s ease infinite" title="Backup consigliato!">⚠️</button>
@@ -478,6 +499,21 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <button class="abtn" onclick="go('profile')"><span class="ai">🏅</span><span class="al">Badge & XP</span><span class="as">Traguardi</span></button>
   </div>
   <div style="height:max(24px,env(safe-area-inset-bottom,24px));flex-shrink:0"></div>
+</div>
+
+<!-- CHAT AI COACH -->
+<div class="screen" id="screen-chat">
+  <div class="chat-header">
+    <button class="chat-header-back" onclick="go('home')">&#8592;</button>
+    <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px">🐢</div>
+    <div style="flex:1"><div style="font-weight:bold;font-size:15px">🐢 Coach AI</div><div style="font-size:11px;opacity:.8">TurboTartaruga &middot; fitness e app</div></div>
+    <button onclick="clearAIChat()" style="background:rgba(255,255,255,.15);border:none;border-radius:100px;padding:5px 10px;color:#fff;font-size:11px;cursor:pointer">&#128465; Svuota</button>
+  </div>
+  <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-input-bar">
+    <textarea class="chat-input" id="chat-input" placeholder="Scrivi al tuo Coach..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMessage();}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
+    <button class="chat-send-btn" onclick="sendChatMessage()">&#10148;</button>
+  </div>
 </div>
 
 <!-- PRE-SESSION -->
@@ -1213,12 +1249,12 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
             </div>
             <input type="range" min="0" max="100" value="60" class="music-vol-slider" id="st-music-vol-range"
               style="width:100%;accent-color:var(--g1)"
-              oninput="setMusicVolume(this.value);document.getElementById('st-music-vol-disp').textContent=this.value+'%'">
+              oninput="setMusicVolume(this.value);document.getElementById('st-music-vol-disp').textContent=this.value+'%'" onchange="SET.musicVol=parseInt(this.value);save();">
             <div style="display:flex;justify-content:space-between;width:100%;font-size:10px;color:var(--tlt)"><span>🔇 Silenzioso</span><span>🔊 Massimo</span></div>
           </div>
-          <div class="srow"><div class="si">🗣️</div><div class="sinfo"><div class="stitle">Descrizione audio esercizi</div><div class="sval">Durante la pausa legge il nome e la descrizione del prossimo esercizio (pausa min. 12s)</div></div><button class="toggle" id="st-voicedesc" onclick="toggleVoiceDesc()"></button></div>
-          <div class="srow"><div class="si">🌈</div><div class="sinfo"><div class="stitle">Tema dinamico</div><div class="sval">La palette cambia automaticamente in base all'ora e alla stagione</div></div><button class="toggle" id="st-dynamictheme" onclick="toggleDynamicTheme()"></button></div>
+          <div class="srow"><div class="si">🗣️</div><div class="sinfo"><div class="stitle">Descrizione audio esercizi</div><div class="sval">Durante la pausa legge il nome e la descrizione del prossimo esercizio (pausa min. 20s)</div></div><button class="toggle" id="st-voicedesc" onclick="toggleVoiceDesc()"></button></div>
           <div class="srow"><div class="si">🗣️</div><div class="sinfo"><div class="stitle">Conto vocale</div><div class="sval">3… 2… 1… prima del cambio</div></div><button class="toggle" id="st-voice" onclick="toggleVoice()"></button></div>
+<div class="srow"><div class="si">🌈</div><div class="sinfo"><div class="stitle">Tema dinamico</div><div class="sval">La palette cambia automaticamente in base all'ora e alla stagione</div></div><button class="toggle" id="st-dynamictheme" onclick="toggleDynamicTheme()"></button></div>
 
         </div>
       </div>
@@ -1373,14 +1409,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           <!-- Feature toggles -->
           <div style="padding:0 13px 4px;font-size:11px;font-weight:bold;color:var(--tlt);letter-spacing:.5px">FUNZIONALITÀ AI</div>
           <div class="srow"><div class="si">💬</div><div class="sinfo"><div class="stitle">Messaggi nel Coach Bubble</div><div class="sval">Consigli personalizzati in home</div></div><button class="toggle" id="st-ai-bubble" onclick="toggleAIFeature('bubble')"></button></div>
-          <div class="srow"><div class="si">🎯</div><div class="sinfo"><div class="stitle">Sessioni personalizzate</div><div class="sval">Sessione su misura generata dall'AI 🧠 — trovi il tasto dopo "Inizia sessione"!</div></div><button class="toggle" id="st-ai-sessions" onclick="toggleAIFeature('sessions')"></button></div>
+          <div class="srow"><div class="si">🎯</div><div class="sinfo"><div class="stitle">Sessioni personalizzate</div><div class="sval">La tartaruga ha un asso nella manica! Cerca il segnale nel Coach Bubble 🧠✨</div></div><button class="toggle" id="st-ai-sessions" onclick="toggleAIFeature('sessions')"></button></div>
 <div class="srow" style="border-bottom:none"><div class="si">🗣️</div><div class="sinfo"><div class="stitle">Chat con il Coach</div><div class="sval">Scrivi all'AI — risponde solo su TurboTartaruga</div></div><button class="toggle" id="st-ai-chat" onclick="toggleAIFeature('chat')"></button></div>
         </div>
       </div>
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.057</div>
+      <div id="app-version-display">Versione v1.061</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1931,7 +1967,7 @@ function go(scr){
   else if(scr==='onboarding'){history.replaceState(null,'',location.pathname+'#onboarding');initWizard();}
   else if(scr==='complete')buildComplete();
   else if(scr==='onboarding'){setTimeout(initWizard,50);}
-  else if(scr==='party')initParty();else if(scr==='settings')buildSettings();
+  else if(scr==='party')initParty();else if(scr==='settings')buildSettings();else if(scr==='chat')buildChatScreen();
   // Keep back-button history in sync
   history.pushState({screen:scr},'',location.pathname+'#'+scr);
   setTimeout(_syncAllSliderPct,30);
@@ -3029,7 +3065,12 @@ const hsEl=document.getElementById('home-streak');if(hsEl)hsEl.textContent=typeo
   const mainScelgo=document.querySelector('.fbtn[data-f="__scelgo__"]');if(mainScelgo)mainScelgo.innerHTML='<span class="fi">🕹️</span>Scelgo io!';
   T.feeling='piano';
   _syncAIHomeButton();
-
+  _syncChatIcon();
+  // Tenta pregen AI in background se non disponibile
+  if(!!SET.aiEnabled&&SET.aiFeature_sessions!==false&&navigator.onLine!==false){
+    var _aik=(SET.aiKeys&&SET.aiKeys[SET.aiProvider||'gemini'])||SET.aiKey||'';
+    if(_aik&&_shouldGenerateAISession())setTimeout(pregenAISession,800);
+  }
 }
 function toggleScelgo(btn){
   document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('sel'));
@@ -3239,13 +3280,6 @@ async function generateAISession(){
       }
     }
 
-    // Aggiungi a/r a ogni esercizio (come fa genSession)
-    var _cfg = DUR_CFG[dur] || DUR_CFG[12];
-    var _a = _cfg.a, _r = _cfg.r;
-    resolvedExs = resolvedExs.map(function(ex){
-      return Object.assign({}, ex, {a: _a, r: _r});
-    });
-
     return {
       title: result.title || 'Sessione AI Coach',
       note:  result.note  || 'Buon allenamento!',
@@ -3278,9 +3312,6 @@ async function startAISession(){
 
   // Imposta sessione come ai_coach
   T.sesType = 'ai_coach';
-  T.dur     = T.dur || SET.preferredDur || 12;
-  T.left    = (DUR_CFG[T.dur] || DUR_CFG[12]).a;
-  T.phase   = 'rest';
   T.aiTitle = result.title;
   T.aiNote  = result.note;
   T.exs     = result.exs;
@@ -3321,7 +3352,8 @@ function buildPresession(){
   // Mostra/nascondi sezione AI Coach
   const aiSec=document.getElementById('ps-ai-section');
   if(aiSec){
-    const aiReady=!!SET.aiEnabled&&SET.aiFeature_sessions!==false;
+    const aiReady=SET.aiEnabled&&SET.aiFeature_sessions!==false&&
+      ((SET.aiKeys&&SET.aiKeys[SET.aiProvider||'gemini'])||SET.aiKey||'').length>0;
     aiSec.style.display=aiReady?'block':'none';
   }
   const warnEl=document.getElementById('ps-equipment-warn');
@@ -5605,6 +5637,37 @@ function testGenAISession(){
   });
 }
 
+function setAISessionFreq(freq){
+  SET.aiSessionFreq = freq;
+  save();
+  // Aggiorna visuale bottoni tramite CSS class
+  ['daily','sometimes','manual'].forEach(function(f){
+    var _fb=document.getElementById('ai-freq-'+f);if(!_fb)return;
+    _fb.classList.toggle('ai-freq-sel', freq===f);
+  });
+  var labels={daily:'ogni giorno 📅',sometimes:'ogni 3 giorni 🔄',manual:'ogni 4 giorni 🕹️'};
+  toast('🧠 Sessione AI: '+(labels[freq]||freq));
+  S.aiSessionLastGenDate=null; save();
+  if(navigator.onLine!==false)setTimeout(pregenAISession,500);
+}
+
+function _shouldGenerateAISession(){
+  if(!SET.aiEnabled || SET.aiFeature_sessions===false) return false;
+  var key = (SET.aiKeys&&SET.aiKeys[SET.aiProvider||'gemini'])||SET.aiKey||'';
+  if(!key) return false;
+  var today = localDate();
+  // Già generata oggi?
+  if(S.aiSessionDate===today && S.aiSessionToday && S.aiSessionToday.ids && S.aiSessionToday.ids.length>0) return false;
+  // Controlla frequenza
+  var freq = SET.aiSessionFreq || 'daily';
+  if(freq === 'daily') return true;
+  var lastDate = S.aiSessionLastGenDate || '2000-01-01';
+  var daysDiff = Math.floor((new Date(today) - new Date(lastDate)) / 86400000);
+  if(freq === 'sometimes') return daysDiff >= 3;
+  if(freq === 'manual')    return daysDiff >= 4;
+  return true;
+}
+
 function forceRegenAISession(){
   var statusEl=document.getElementById('ai-regen-status');
   var key=(SET.aiKeys&&SET.aiKeys[SET.aiProvider||'gemini'])||SET.aiKey||'';
@@ -5623,7 +5686,7 @@ function forceRegenAISession(){
 }
 
 async function pregenAISession(){
-  if(!false) {
+  if(!_shouldGenerateAISession()) {
     _syncAIHomeButton(); return;
   }
   var result = await generateAISession();
@@ -5644,7 +5707,7 @@ function _syncAIHomeButton(){
   var today = localDate();
   var aiEnabled = !!SET.aiEnabled && SET.aiFeature_sessions!==false;
   var hasSession = S.aiSessionDate===today && S.aiSessionToday && S.aiSessionToday.ids && S.aiSessionToday.ids.length>0;
-  var isScheduledToday = aiEnabled;
+  var isScheduledToday = aiEnabled && (hasSession || _shouldGenerateAISession());
   btn.style.display = isScheduledToday ? 'flex' : 'none';
   if(!isScheduledToday) return;
   var sp = btn.querySelector('span');
@@ -5720,15 +5783,15 @@ syncToggles();
   // Sync music volume slider
   const _mvr=document.getElementById('st-music-vol-range');
   const _mvd=document.getElementById('st-music-vol-disp');
-  const _mv=SET.musicVol||60;
-  if(_mvr)_mvr.value=_mv;
+  const _mv=SET.musicVol!=null?SET.musicVol:60;
+  if(_mvr){_mvr.value=_mv;_mvr.style.setProperty('--pct',_mv.toFixed(1)+'%');}
   if(_mvd)_mvd.textContent=_mv+'%';
   // Update version display
   // Update XP total and badge count in profile
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.057 · 26/04/2026 13:14 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.061 · 26/04/2026 20:49 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -5753,6 +5816,109 @@ syncToggles();
     setTimeout(()=>checkPhotosAvailable(true),500); // rescan automatico
   }
 }
+// ═══ AI COACH CHAT ═══════════════════════════════════════════════════════════
+var _MAX_CHAT=20;
+function openAIChat(){go('chat');}
+function buildChatScreen(){
+  var msgs=document.getElementById('chat-messages');if(!msgs)return;
+  msgs.innerHTML='';
+  var hist=S.aiChatHistory||[];
+  if(!hist.length){
+    _chatBubble('coach','Ciao '+(P.name||'')+'. Sono il tuo Coach AI. Chiedimi di allenamenti, progressi, come funziona l\'app e consigli fitness!',null,false);
+  }else{
+    hist.forEach(function(m){_chatBubble(m.role,m.content,m.time,false);});
+  }
+  setTimeout(function(){var m=document.getElementById('chat-messages');if(m)m.scrollTop=m.scrollHeight;},50);
+  setTimeout(function(){var i=document.getElementById('chat-input');if(i)i.focus();},300);
+  _syncChatIcon();
+}
+function _chatBubble(role,text,time,scroll){
+  var msgs=document.getElementById('chat-messages');if(!msgs)return;
+  var wrap=document.createElement('div');
+  wrap.style.cssText='display:flex;flex-direction:column;'+(role==='user'?'align-items:flex-end':'align-items:flex-start');
+  var bub=document.createElement('div');
+  bub.className='chat-bubble '+(role==='user'?'chat-bubble-user':'chat-bubble-coach');
+  bub.innerHTML=text.split('\n').join('<br>');
+  var tEl=document.createElement('div');tEl.className='chat-bubble-time';
+  tEl.style.textAlign=(role==='user'?'right':'left');
+  tEl.textContent=time||_chatNow();
+  wrap.appendChild(bub);wrap.appendChild(tEl);msgs.appendChild(wrap);
+  if(scroll!==false)msgs.scrollTop=msgs.scrollHeight;
+}
+function _chatNow(){var n=new Date();return n.getHours()+':'+String(n.getMinutes()).padStart(2,'0');}
+function _chatTyping(){
+  var msgs=document.getElementById('chat-messages');if(!msgs)return;
+  var w=document.createElement('div');w.id='chat-typing-wrap';
+  w.style.cssText='display:flex;flex-direction:column;align-items:flex-start';
+  var b=document.createElement('div');b.className='chat-bubble chat-bubble-coach chat-typing';
+  b.innerHTML='<span></span><span></span><span></span>';
+  w.appendChild(b);msgs.appendChild(w);msgs.scrollTop=msgs.scrollHeight;
+}
+function _chatStopTyping(){var t=document.getElementById('chat-typing-wrap');if(t)t.remove();}
+async function sendChatMessage(){
+  var inp=document.getElementById('chat-input');if(!inp)return;
+  var text=inp.value.trim();if(!text)return;
+  var key=(SET.aiKeys&&SET.aiKeys[SET.aiProvider||'gemini'])||SET.aiKey||'';
+  if(!SET.aiEnabled||!key){toast('Configura il Coach AI nelle Impostazioni!');return;}
+  var t=_chatNow();
+  _chatBubble('user',text,t);inp.value='';inp.style.height='auto';
+  if(!S.aiChatHistory)S.aiChatHistory=[];
+  S.aiChatHistory.push({role:'user',content:text,time:t});
+  var isFirst=(S.aiChats||0)===0;S.aiChats=(S.aiChats||0)+1;save();
+  _chatTyping();
+  var sys=_chatSysPrompt();var hist=S.aiChatHistory.slice(-12);
+  try{
+    var prov=AI_PROVIDERS[SET.aiProvider||'gemini'];
+    var headers={'Content-Type':'application/json'};
+    if(prov.headers)Object.assign(headers,prov.headers(key));
+    else if(SET.aiProvider==='chatgpt')headers['Authorization']='Bearer '+key;
+    var gmModel=SET.aiGeminiModel||'gemini-2.5-flash';
+    var fullP=sys+'\n\n---\n';
+    hist.forEach(function(m){fullP+=(m.role==='user'?'Utente: ':'Coach: ')+m.content+'\n';});
+    fullP+='Coach: ';
+    var body;
+    var _hm=hist.map(function(m){return{role:m.role==='coach'?'assistant':'user',content:m.content};});
+    if(SET.aiProvider==='gemini'){
+      body={contents:[{parts:[{text:fullP}]}]};
+    }else if(SET.aiProvider==='claude'){
+      body={model:'claude-haiku-4-5-20251001',max_tokens:500,system:sys,messages:_hm};
+    }else{
+      body={model:'gpt-4o-mini',max_tokens:500,messages:[{role:'system',content:sys}].concat(_hm)};
+    }
+    var resp=await fetch(prov.endpoint(key,gmModel),{method:'POST',headers:headers,body:JSON.stringify(body)});
+    if(!resp.ok)throw new Error('HTTP '+resp.status);
+    var data=await resp.json();var reply=prov.parseResponse(data);
+    if(!reply)throw new Error('Risposta vuota');
+    _chatStopTyping();var rt=_chatNow();
+    _chatBubble('coach',reply.trim(),rt);
+    S.aiChatHistory.push({role:'coach',content:reply.trim(),time:rt});
+    if(S.aiChatHistory.length>_MAX_CHAT*2)S.aiChatHistory=S.aiChatHistory.slice(-_MAX_CHAT*2);
+    if(isFirst){var nb=checkBadges();save();if(nb.length)nb.forEach(function(b){toast('Badge: '+b.name+'!',3500);});}else save();
+  }catch(e){
+    _chatStopTyping();var em=e.message||'Errore';
+    if(em.includes('Failed to fetch')||em.includes('CORS'))em='Connessione bloccata. Prova Gemini o altra rete.';
+    _chatBubble('coach','Errore: '+em,_chatNow());
+  }
+}
+function _chatSysPrompt(){
+  var hist=(S.history||[]).slice(0,10);
+  var name=P.name||'Utente',age=P.age||'?',level=P.level||'principiante';
+  var streak=S.str||0,tot=S.tot||0,xp=S.xp||0,badges=(S.badges||[]).length;
+  var cats=[...new Set(hist.map(function(h){return h.type||h.focus;}).filter(Boolean))].join(', ')||'nessuna';
+  var recent=hist.slice(0,5).map(function(h){return (h.type||h.focus||'?')+' '+(h.dur||0)+'min';}).join(', ')||'nessuna';
+  return ['Sei il Coach AI di TurboTartaruga, app italiana di fitness (sessioni 10-15 min a casa senza attrezzatura).',
+    'PROFILO: '+name+', eta '+age+', livello '+level+', streak '+streak+' giorni, '+tot+' sessioni, '+xp+' XP, '+badges+' badge.',
+    'Categorie recenti: '+cats+'. Ultime sessioni: '+recent+'.',
+    'FUNZIONALITA APP: Gambe/Braccia/Core/Stretching/Orientale/Seduto/Elastici/Cardio/Postura/Mobilita/Mattino/Pre-sonno.',
+    'XP+badge (8 livelli Uovo->Leggenda). Riserva Turbo=2 esercizi bonus. Routine mattino 4min, pre-sonno 8min.',
+    'Party mode, Allena Insieme con QR, AI Coach sessioni personalizzate, piano mensile con giorni riposo.',
+    'REGOLE: rispondi SOLO su fitness/benessere/recupero/sonno/motivazione/app TurboTartaruga.',
+    'NO diagnosi mediche. NO piani nutrizionali dettagliati. Tono amichevole, max 150 parole, italiano.',
+  ].join('\n');
+}
+function clearAIChat(){if(!confirm('Svuotare la chat con il Coach?'))return;S.aiChatHistory=[];save();buildChatScreen();toast('Chat svuotata');}
+function _syncChatIcon(){var w=document.getElementById('chat-icon-wrap');if(!w)return;w.style.display=(!!SET.aiEnabled&&SET.aiFeature_chat!==false)?'block':'none';}
+
 function saveField(f){
   const raw=(document.getElementById('fld-'+f).value||'').trim();
   if(!raw){toast('⚠️ Campo vuoto!');return}
@@ -6479,12 +6645,12 @@ var CAT_INFO={
   party:{label:'Party',icon:'🎉'},riposo:{label:'Riposo',icon:'😴'},
   mobilita:{label:'Mobilità',icon:'🦴'},
   articolazioni:{label:'Articolazioni',icon:'🦴'},
-  ai_coach:{label:'AI Coach',icon:'🤖',cls:'ai_coach'}
+  ai_coach:{label:'AI Coach',icon:'🐢',cls:'ai_coach'}
 };
 // ── Core state objects ──────────────────────────────────────────────────
 var P={};  // Profile
-var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0};  // Stats
-var SET={audio:true,voice:true,voiceDesc:true,music:true,musicVol:60,dynamicTheme:true,pauseSec:25,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light',aiEnabled:false,aiProvider:'gemini',aiKey:'',aiKeys:{gemini:'',claude:'',chatgpt:''},aiGeminiModel:'gemini-2.5-flash',aiFeature_bubble:true,aiFeature_sessions:true,aiFeature_chat:true};  // Settings
+var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0,aiChatHistory:[],aiChats:0};  // Stats
+var SET={audio:true,voice:true,voiceDesc:true,music:true,musicVol:60,dynamicTheme:true,pauseSec:25,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light',aiEnabled:false,aiProvider:'gemini',aiKey:'',aiKeys:{gemini:'',claude:'',chatgpt:''},aiGeminiModel:'gemini-2.5-flash',aiFeature_bubble:true,aiFeature_sessions:true,aiFeature_chat:true,aiSessionFreq:'daily'};  // Settings
 var T={exs:[],idx:0,phase:'act',left:0,paused:false,t0:0,iv:null,dur:12,feeling:'piano',sesType:'misto',_halfSpoken:false,_restDone:null,_isRoutine:false};  // Timer state
 
 function generateShareSession(){
@@ -6918,12 +7084,9 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.061',date:'26/04/2026',changes:['FIX CRITICO: app ora funziona completamente offline','SW riscritto con strategia cache-first per HTML e asset','Precache di tutti i file al primo avvio (HTML, icone, loghi)','Immagini esercizi servite dalla cache offline con fallback 🐢']},
+  {v:'1.060',date:'26/04/2026',changes:['FIX: Tema Dinamico ora correttamente dopo Conto Vocale','FIX: slider musicVol mostra riempimento --pct corretto','FIX: SET.musicVol null-safe (non ignora valore 0)']},
   {v:'1.026',date:'20/04/2026',changes:['FIX CRITICO: Ss===1 typo in buildCoachBubble causava crash ogni lunedì mattina → streak 0 e Lv.1 visibili','buildCoachBubble avvolta in try-catch (safety net)','Streak reset: controlla giorni di riposo nel piano prima di azzerare','XP NaN guard: se S.xp è NaN usa 0 anziché mostrare Lv.1','Photo cache: invalida automaticamente quando DB.length cambia']},
-  {v:'1.057',date:'26/04/2026',changes:['FIX: testo JS visibile a fondo pagina rimosso (era fuori dal tag script)','FIX: icona sessione AI Coach nel calendario corretta (🤖)']},
-  {v:'1.056',date:'26/04/2026',changes:['FIX ROOT NaN timer sessione AI: esercizi ora hanno proprieta a/r (secondi attivi/riposo)']},
-  {v:'1.055',date:'26/04/2026',changes:['FIX CRITICO: timer NaN nella sessione AI — T.dur/T.left/T.phase ora inizializzati correttamente']},
-  {v:'1.054',date:'26/04/2026',changes:['Rimossi i 3 bottoni frequenza AI','Sessione AI Coach disponibile sempre se AI attivo','Coach Bubble annuncia sessione AI senza logica frequenza','Descrizione sessioni aggiornata']},
-  {v:'1.054',date:'26/04/2026',changes:['RIMOSSI bottoni frequenza AI','Sessione AI sempre disponibile se AI attivo','Coach Bubble annuncia sessione AI','Descrizione sessioni aggiornata']},
   {v:'1.048',date:'26/04/2026',changes:['FIX freq buttons: CSS class per cambio colore affidabile','Rimosso Genera sessione ora dalle impostazioni','Home button AI solo quando sessione schedulata','Coach Bubble annuncia sessione AI disponibile','Descrizione sessioni AI aggiornata']},
   {v:'1.047',date:'25/04/2026',changes:['FIX: home button visibile appena AI abilitata (no key check)','FIX: freq buttons verde pieno su selezione (setProperty !important)','FIX: stessa logica in _syncAISettings']},
   {v:'1.046',date:'25/04/2026',changes:['Forward declarations AI prima di buildHome (fix cache browser)','Fix null crash st-goal-disp in buildSettings']},
@@ -7840,18 +8003,22 @@ function buildCoachBubble(){
     }
   }
 
-  // 9. Segnala sessione AI disponibile (se sessions attivo e non fatto oggi)
+  // 9. Segnala sessione AI disponibile oggi (solo se non già fatta una sessione)
   if(!!SET.aiEnabled && SET.aiFeature_sessions!==false && !_cbTodayDone){
-    var _aiSP=[
-      '🧠✨ Oggi puoi allenarti con il Coach AI! Premi "Inizia sessione" e scegli il tasto 🧠✨',
-      '🐢 Premi "Inizia sessione" e cerca il tasto 🧠✨ Sessione AI Coach — è lì che ti aspetta!',
-      '🎯 Il Coach AI è pronto per te! Dopo "Inizia sessione" trova il pulsante 🧠✨',
-      '✨ Sessione personalizzata disponibile — cercala dopo "Inizia sessione" 🧠',
-      '🤖 Dopo "Inizia sessione" premi il tasto 🧠✨ e lascia scegliere il Coach!',
-    ];
-    _coachPhrases.push(_aiSP[Math.floor(Math.random()*_aiSP.length)]);
+    var _today3=localDate();
+    var _aiSessReady=S.aiSessionDate===_today3&&S.aiSessionToday&&S.aiSessionToday.ids&&S.aiSessionToday.ids.length>0;
+    var _aiSessScheduled=_aiSessReady||_shouldGenerateAISession();
+    if(_aiSessScheduled){
+      var _aiSessPhrases=[
+        '🧠✨ Oggi il Coach AI ha preparato una sessione su misura per te! Trovala accanto al tasto "Inizia sessione" in home!',
+        '🐢 Psst! Il tuo Coach AI ha studiato i tuoi allenamenti e ha qualcosa di speciale in home per te oggi!',
+        '✨ Novità: oggi c\' una sessione personalizzata AI che ti aspetta! Trovila in home accanto al solito tasto 🧠',
+        '🤖 Il Coach AI ha fatto i compiti stanotte! Vai in home e trovi la sua sessione tutta per te 🎯',
+      ];
+      _coachPhrases.push(_aiSessPhrases[Math.floor(Math.random()*_aiSessPhrases.length)]);
+    }
   }
-    // Start rotation
+  // Start rotation
   _showCoachPhrase();
   if(_coachIv)clearInterval(_coachIv);
   if(_coachPhrases.length>1)_coachIv=setInterval(_showCoachPhrase,6000);
@@ -8491,7 +8658,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604261314'; // auto-set on each release
+const APP_BUILD='202604262049'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
