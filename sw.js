@@ -1,5 +1,5 @@
-// TurboTartaruga Service Worker
-const CACHE_NAME = 'turbotartaruga-202604251735';
+// f"TurboTartaruga Service Worker v{build}
+"const CACHE_NAME = 'turbotartaruga-202604261314';
 const PRECACHE = ['./TurboTartaruga.html', './manifest.json'];
 const EXTERNAL_CACHE = ['https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.min.js'];
 
@@ -48,25 +48,15 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  const isImage = url.pathname.match(/\.png$|\.jpg$|\.jpeg$|\.webp$|\.svg$/i);
   event.respondWith(
     caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
+      const fetchPromise = fetch(event.request).then(response => {
         if (response && response.status === 200) {
           caches.open(CACHE_NAME).then(cache => cache.put(event.request, response.clone()));
         }
         return response;
-      }).catch(() => {
-        if (isImage) {
-          // Fallback SVG per immagini non in cache offline
-          return new Response(
-            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160"><rect width="200" height="160" fill="#f5f5f5" rx="12"/><text x="100" y="75" text-anchor="middle" font-size="36">🐢</text><text x="100" y="110" text-anchor="middle" font-size="12" fill="#aaa">Immagine offline</text></svg>',
-            { headers: { 'Content-Type': 'image/svg+xml' } }
-          );
-        }
-        return new Response('', { status: 503 });
-      });
+      }).catch(() => null);
+      return cached || fetchPromise;
     })
   );
 });
@@ -103,7 +93,7 @@ async function checkAndFireNotifs() {
         body: n.body,
         icon: './icon-192.png',
         badge: './icon-192.png',
-        tag: n.tag || 'turbotartaruga-202604251735',
+        tag: n.tag || 'turbotartaruga-202604261314',
         renotify: true,
         data: { url: './TurboTartaruga.html' }
       });
@@ -126,10 +116,10 @@ self.addEventListener('message', async event => {
   if (event.data.type === 'CANCEL_TODAY_NOTIF') {
     // Remove today's daily notification from pending
     const pending = await loadPendingNotifs();
-    const filtered = pending.filter(n => n.tag !== 'turbotartaruga-202604251735');
+    const filtered = pending.filter(n => n.tag !== 'turbotartaruga-202604261314');
     await savePendingNotifs(filtered);
     // Close any shown notification with that tag
-    self.registration.getNotifications({ tag: 'turbotartaruga-202604251735' })
+    self.registration.getNotifications({ tag: 'turbotartaruga-202604261314' })
       .then(notifs => notifs.forEach(n => n.close()));
     return;
   }
@@ -140,7 +130,7 @@ self.addEventListener('message', async event => {
     
     const pending = await loadPendingNotifs();
     // Replace any existing notif with same tag
-    const notifTag = tag || 'turbotartaruga-202604251735';
+    const notifTag = tag || 'turbotartaruga-202604261314';
     const filtered = pending.filter(n => n.tag !== notifTag);
     filtered.push({ at, title, body, tag: notifTag });
     await savePendingNotifs(filtered);
