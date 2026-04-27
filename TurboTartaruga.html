@@ -1310,62 +1310,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <!-- GUIDA RAPIDA -->
-    <div class="acc-card">
-      <button class="acc-hdr" onclick="toggleAcc('acc-guida')"><span>❓ Guida rapida</span><span class="acc-arr" id="arr-guida">▼</span></button>
-      <div class="acc-body" id="acc-guida">
-        <div style="padding:16px;font-size:13px;color:var(--tmid);line-height:1.8">
-          <!-- INTRO -->
-          <div style="background:var(--g4);border-radius:12px;padding:14px;margin-bottom:16px;border-left:4px solid var(--g1)">
-            <div style="font-weight:bold;color:var(--g1);margin-bottom:6px">🐢 TurboTartaruga — la tartaruga che vince!</div>
-            <p style="margin:0;line-height:1.6">Un coach tascabile per sessioni brevi (10-15 min), divertenti e accessibili a tutti. Lento ma costante vince la gara: bastano pochi minuti al giorno per sentirsi meglio. Personalizza il piano, scegli le categorie, guadagna badge e tieni lo streak — la tartaruga è con te!</p>
-          </div>
-          <!-- Q&A in ordine di utilizzo -->
-          <div style="font-weight:bold;color:var(--text);margin-bottom:4px">🚀 Come si inizia?</div>
-          <p>Al primo avvio completa il wizard (2 minuti). Inserisci nome, età, livello, categorie preferite e giorni di riposo. L'app genera subito un piano da 30 giorni personalizzato.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🏠 Cosa vedo nella Home?</div>
-          <p>In alto la tartaruga con la frase del giorno e il tuo streak. Al centro il piano di oggi con focus e durata. In basso i pulsanti per scegliere come allenarti.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">▶️ Come inizio una sessione?</div>
-          <p>Premi <b>Inizia sessione</b>. Puoi scegliere la durata (5-30 min) nella schermata di preparazione, poi parte il conto alla rovescia con foto e istruzioni per ogni esercizio.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">❓ Non vedo il tasto "Inizia sessione"</div>
-          <p>Controlla il feeling selezionato: se hai premuto <b>Stanco</b>, il tasto è nascosto finché non scegli l'intensità. Se oggi è riposo, usa <b>Segui piano</b> o scegli una categoria per una sessione bonus.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🎯 Cosa sono i feeling?</div>
-          <p><b>Segui piano</b>: segue il piano del giorno. <b>Scelgo io</b>: scegli tu la categoria. <b>Stanco</b>: sessione più leggera con opzioni dedicate.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🔄 Cosa significa "Cambio lato"?</div>
-          <p>Per esercizi asimmetrici (es. stretching gamba destra), a metà timer compare un overlay blu con "CAMBIA LATO!". Il timer si ferma 5 secondi poi riprende automaticamente.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🪑🎽 Avvisi sedia/elastico</div>
-          <p>Se la sessione include esercizi da seduto o con elastici, nella schermata di preparazione comparirà un avviso arancione per prepararti l'attrezzatura necessaria.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">⭐ Come funzionano XP e Badge?</div>
-          <p>Ogni sessione guadagni XP in base alla durata e al boost. Accumula XP per salire di livello (Tartarughina → Tartaruga → TurboTartaruga). I badge si sbloccano automaticamente quando raggiungi i traguardi.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🔥 Cos'è lo Streak?</div>
-          <p>Lo streak conta i giorni consecutivi in cui hai completato almeno una sessione. Non si azzera nei giorni di riposo pianificati. Importando un backup il tuo streak viene preservato.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">☀️🌙 Le routine quotidiane</div>
-          <p><b>Mattutina</b> (4 min nel letto): attiva il corpo prima di alzarti. <b>Pre-sonno</b> (8-10 min): stretching e respirazione per dormire meglio. Attivale in Impostazioni → Routine quotidiane.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">📅 Come funziona il calendario?</div>
-          <p>Mostra il tuo piano mensile con icone per ogni giorno: colori per il tipo di allenamento, grigio per i riposi. Tocca un giorno per vedere i dettagli della sessione.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">📊 Cosa trovo nei Progressi?</div>
-          <p>In ordine: obiettivo, numeri chiave, heatmap 90 giorni, mappa muscolare tartaruga, radar categorie, miglioramento, record, distribuzione e ultime sessioni.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🐢 Mappa muscolare</div>
-          <p>La tartaruga colora le zone del corpo allenate negli ultimi 14 giorni. 🟢 Verde = allenata di recente, 🟡 Giallo = questa settimana, ⬜ Grigio = non allenata.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🕸️ Radar categorie</div>
-          <p>Ragnatela con 8 assi (Gambe, Braccia, Core, ecc.). L'area colorata mostra il bilanciamento delle ultime 4 settimane. Più grande = più allenato in quella categoria.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">💾 Come faccio il backup?</div>
-          <p>Impostazioni → 💾 Dati e backup → <b>Esporta JSON</b>. Salva il file in un posto sicuro. Per importare usa "Importa JSON" nello stesso menu o nella schermata di benvenuto.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🎉 Modalità Party</div>
-          <p>Fino a 4 persone insieme! Vai in Party dalla home. Aggiungi i nomi dei partecipanti, poi usa le sfide di gruppo o la sessione sincronizzata. Ogni partecipante può rimuoversi toccando ✕.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🔔 Notifiche su iPhone</div>
-          <p>Prima aggiungi l'app alla schermata Home: Safari → 📤 Condividi → "Aggiungi a schermata Home". Poi vai in Impostazioni → 🔔 Notifiche e attivale.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">📴 Funziona offline?</div>
-          <p>Sì! Dopo il primo caricamento funziona completamente offline. Il Service Worker salva tutto in cache. Aggiungi alla schermata Home per la migliore esperienza.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🔄 Come rigenero il piano?</div>
-          <p>Impostazioni → 🏋️ Allenamento → <b>Rigenera piano 30 giorni</b>. Il tuo storico sessioni non viene toccato, viene solo rigenerato il piano futuro.</p>
-          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">⚙️ Cosa posso personalizzare?</div>
-          <p>Profilo (nome, età, peso, altezza, livello), categorie attive, giorni di riposo, giorni target, routine quotidiane, notifiche, tema (chiaro/scuro/auto), audio, conto vocale e pausa tra esercizi.</p>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- ════ AI COACH ACCORDION ════ -->
     <div class="card" style="padding:0">
       <button class="acc-hdr" onclick="toggleAcc('acc-ai')"><span>🤖 AI Coach <span style="font-size:10px;background:linear-gradient(90deg,#6C63FF,#42A5F5);color:#fff;padding:2px 7px;border-radius:100px;margin-left:4px">BETA</span></span><span class="acc-arr" id="arr-ai">▼</span></button>
       <div class="acc-body" id="acc-ai">
@@ -1426,8 +1370,64 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       </div>
     </div>
 
+
+    <!-- ════ AI COACH ACCORDION ════ -->
+    <div class="acc-card">
+      <button class="acc-hdr" onclick="toggleAcc('acc-guida')"><span>❓ Guida rapida</span><span class="acc-arr" id="arr-guida">▼</span></button>
+      <div class="acc-body" id="acc-guida">
+        <div style="padding:16px;font-size:13px;color:var(--tmid);line-height:1.8">
+          <!-- INTRO -->
+          <div style="background:var(--g4);border-radius:12px;padding:14px;margin-bottom:16px;border-left:4px solid var(--g1)">
+            <div style="font-weight:bold;color:var(--g1);margin-bottom:6px">🐢 TurboTartaruga — la tartaruga che vince!</div>
+            <p style="margin:0;line-height:1.6">Un coach tascabile per sessioni brevi (10-15 min), divertenti e accessibili a tutti. Lento ma costante vince la gara: bastano pochi minuti al giorno per sentirsi meglio. Personalizza il piano, scegli le categorie, guadagna badge e tieni lo streak — la tartaruga è con te!</p>
+          </div>
+          <!-- Q&A in ordine di utilizzo -->
+          <div style="font-weight:bold;color:var(--text);margin-bottom:4px">🚀 Come si inizia?</div>
+          <p>Al primo avvio completa il wizard (2 minuti). Inserisci nome, età, livello, categorie preferite e giorni di riposo. L'app genera subito un piano da 30 giorni personalizzato.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🏠 Cosa vedo nella Home?</div>
+          <p>In alto la tartaruga con la frase del giorno e il tuo streak. Al centro il piano di oggi con focus e durata. In basso i pulsanti per scegliere come allenarti.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">▶️ Come inizio una sessione?</div>
+          <p>Premi <b>Inizia sessione</b>. Puoi scegliere la durata (5-30 min) nella schermata di preparazione, poi parte il conto alla rovescia con foto e istruzioni per ogni esercizio.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">❓ Non vedo il tasto "Inizia sessione"</div>
+          <p>Controlla il feeling selezionato: se hai premuto <b>Stanco</b>, il tasto è nascosto finché non scegli l'intensità. Se oggi è riposo, usa <b>Segui piano</b> o scegli una categoria per una sessione bonus.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🎯 Cosa sono i feeling?</div>
+          <p><b>Segui piano</b>: segue il piano del giorno. <b>Scelgo io</b>: scegli tu la categoria. <b>Stanco</b>: sessione più leggera con opzioni dedicate.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🔄 Cosa significa "Cambio lato"?</div>
+          <p>Per esercizi asimmetrici (es. stretching gamba destra), a metà timer compare un overlay blu con "CAMBIA LATO!". Il timer si ferma 5 secondi poi riprende automaticamente.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🪑🎽 Avvisi sedia/elastico</div>
+          <p>Se la sessione include esercizi da seduto o con elastici, nella schermata di preparazione comparirà un avviso arancione per prepararti l'attrezzatura necessaria.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">⭐ Come funzionano XP e Badge?</div>
+          <p>Ogni sessione guadagni XP in base alla durata e al boost. Accumula XP per salire di livello (Tartarughina → Tartaruga → TurboTartaruga). I badge si sbloccano automaticamente quando raggiungi i traguardi.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🔥 Cos'è lo Streak?</div>
+          <p>Lo streak conta i giorni consecutivi in cui hai completato almeno una sessione. Non si azzera nei giorni di riposo pianificati. Importando un backup il tuo streak viene preservato.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">☀️🌙 Le routine quotidiane</div>
+          <p><b>Mattutina</b> (4 min nel letto): attiva il corpo prima di alzarti. <b>Pre-sonno</b> (8-10 min): stretching e respirazione per dormire meglio. Attivale in Impostazioni → Routine quotidiane.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">📅 Come funziona il calendario?</div>
+          <p>Mostra il tuo piano mensile con icone per ogni giorno: colori per il tipo di allenamento, grigio per i riposi. Tocca un giorno per vedere i dettagli della sessione.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">📊 Cosa trovo nei Progressi?</div>
+          <p>In ordine: obiettivo, numeri chiave, heatmap 90 giorni, mappa muscolare tartaruga, radar categorie, miglioramento, record, distribuzione e ultime sessioni.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🐢 Mappa muscolare</div>
+          <p>La tartaruga colora le zone del corpo allenate negli ultimi 14 giorni. 🟢 Verde = allenata di recente, 🟡 Giallo = questa settimana, ⬜ Grigio = non allenata.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🕸️ Radar categorie</div>
+          <p>Ragnatela con 8 assi (Gambe, Braccia, Core, ecc.). L'area colorata mostra il bilanciamento delle ultime 4 settimane. Più grande = più allenato in quella categoria.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">💾 Come faccio il backup?</div>
+          <p>Impostazioni → 💾 Dati e backup → <b>Esporta JSON</b>. Salva il file in un posto sicuro. Per importare usa "Importa JSON" nello stesso menu o nella schermata di benvenuto.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🎉 Modalità Party</div>
+          <p>Fino a 4 persone insieme! Vai in Party dalla home. Aggiungi i nomi dei partecipanti, poi usa le sfide di gruppo o la sessione sincronizzata. Ogni partecipante può rimuoversi toccando ✕.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🔔 Notifiche su iPhone</div>
+          <p>Prima aggiungi l'app alla schermata Home: Safari → 📤 Condividi → "Aggiungi a schermata Home". Poi vai in Impostazioni → 🔔 Notifiche e attivale.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">📴 Funziona offline?</div>
+          <p>Sì! Dopo il primo caricamento funziona completamente offline. Il Service Worker salva tutto in cache. Aggiungi alla schermata Home per la migliore esperienza.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">🔄 Come rigenero il piano?</div>
+          <p>Impostazioni → 🏋️ Allenamento → <b>Rigenera piano 30 giorni</b>. Il tuo storico sessioni non viene toccato, viene solo rigenerato il piano futuro.</p>
+          <div style="font-weight:bold;color:var(--text);margin:12px 0 4px">⚙️ Cosa posso personalizzare?</div>
+          <p>Profilo (nome, età, peso, altezza, livello), categorie attive, giorni di riposo, giorni target, routine quotidiane, notifiche, tema (chiaro/scuro/auto), audio, conto vocale e pausa tra esercizi.</p>
+        </div>
+      </div>
+    </div>
+
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.068</div>
+      <div id="app-version-display">Versione v1.069</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -5881,7 +5881,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.068 · 27/04/2026 10:23 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.069 · 27/04/2026 12:23 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -7320,6 +7320,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.069',date:'27/04/2026',changes:['Settings: AI Coach spostato sopra Guida Rapida','Prompt AI frasi: rimosso orario numerico (evita frasi con ore specifiche)']},
   {v:'1.068',date:'27/04/2026',changes:['Aggiunto pool ACTION_PHRASES: frasi motivazionali per fare la sessione (solo giorno allenamento + non ancora fatto)','Frase streak a rischio se 3+ giorni e non ancora allenato oggi','Frase con categoria del piano del giorno','7 frasi complimento sessione fatta (da 5)','Frase riposo: badge sbloccati aggiunta al pool']},
   {v:'1.067',date:'27/04/2026',changes:['FIX ROOT: _shouldGenerateAISession rimossa da buildCoachBubble (causava ReferenceError che bloccava rotazione frasi)','try-catch globale in buildCoachBubble per protezione futura','Frasi di fallback garantite se _coachPhrases vuoto']},
   {v:'1.066',date:'27/04/2026',changes:['FIX link aistudio.google.com cliccabile','FIX giorno riposo: frasi con streak/stat/badge/categoria preferita','FIX cache AI bubble allineata al nuovo sistema slot','FIX errori chat 503/429/401 con messaggi chiari','FIX sessione da chat: avvio diretto senza race condition su go(home)']},
@@ -8031,7 +8032,7 @@ async function fetchAIDailyPhrases(){
     '- Eta: '+(P.age||'?')+' anni, livello: '+(P.level||'base'),
     '- Streak attuale: '+streak+' giorni consecutivi',
     '- Sessioni totali: '+(S.tot||0),
-    '- Ora: '+slot+' ('+hour+':00) — IMPORTANTE: se e notte (21-06) NON usare mai parole come luce solare, sole, luminosa, alba, tramonto',
+    '- Momento della giornata: '+slot+' — IMPORTANTE: NON menzionare mai ore specifiche. Se e notte (21-06) NON usare parole come luce solare, sole, luminosa, alba, tramonto',
     '- Stagione: '+season,
     weatherStr?'- Meteo: '+weatherStr.trim():'',
     '- Oggi: '+(todayDone?'ha GIA fatto la sessione, bravo!':'non ha ancora fatto la sessione'),
@@ -8950,7 +8951,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604271023'; // auto-set on each release
+const APP_BUILD='202604271223'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
