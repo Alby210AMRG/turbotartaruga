@@ -270,6 +270,16 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   @keyframes chatDot{0%,80%,100%{transform:scale(0.7);opacity:.4}40%{transform:scale(1);opacity:1}}
   .chat-icon-btn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#6C63FF,#42A5F5);border:none;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 
+  /* ── CHAT CHIPS & SESSION CARD ──────────────────────────────── */
+  .chat-chips{display:flex;flex-wrap:wrap;gap:8px;padding:10px 12px 4px;flex-shrink:0}
+  .chat-chip{background:var(--card);border:1.5px solid var(--g1);border-radius:100px;padding:7px 13px;font-size:12px;color:var(--g1);cursor:pointer;font-family:var(--ff);font-weight:600;white-space:nowrap;transition:all .2s}
+  .chat-chip:active{background:var(--g1);color:#fff}
+  .chat-session-card{background:linear-gradient(135deg,#6C63FF22,#42A5F522);border:2px solid #6C63FF55;border-radius:16px;padding:14px;margin:4px 0;max-width:90%}
+  .chat-session-card .cs-title{font-weight:bold;font-size:14px;color:var(--g1);margin-bottom:4px}
+  .chat-session-card .cs-note{font-size:12px;color:var(--tlt);margin-bottom:10px}
+  .chat-session-card .cs-exs{font-size:11px;color:var(--text);margin-bottom:10px;opacity:.8}
+  .chat-session-btn{width:100%;padding:10px;border-radius:100px;background:linear-gradient(135deg,#6C63FF,#42A5F5);border:none;color:#fff;font-size:14px;font-weight:bold;cursor:pointer;font-family:var(--ff)}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
@@ -510,6 +520,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <button onclick="clearAIChat()" style="background:rgba(255,255,255,.15);border:none;border-radius:100px;padding:5px 10px;color:#fff;font-size:11px;cursor:pointer">&#128465; Svuota</button>
   </div>
   <div class="chat-messages" id="chat-messages"></div>
+  <div class="chat-chips" id="chat-chips"></div>
   <div class="chat-input-bar">
     <textarea class="chat-input" id="chat-input" placeholder="Scrivi al tuo Coach..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMessage();}" oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
     <button class="chat-send-btn" onclick="sendChatMessage()">&#10148;</button>
@@ -1416,7 +1427,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.063</div>
+      <div id="app-version-display">Versione v1.068</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -2047,7 +2058,7 @@ const AI_PROVIDERS = {
       {id:'gemini-1.5-pro',   label:'Gemini 1.5 Pro',   tier:'🟡 Pagamento'},
     ],
     instructions: '<b>\uD83D\uDFE2 Gemini \u2014 Come ottenere la chiave</b><br><br>'
-      + '1. Vai su <b>aistudio.google.com</b> (NON Google Cloud!)<br>'
+      + '1. Vai su <b><a href="https://aistudio.google.com" target="_blank" rel="noopener" style="color:var(--g1)">aistudio.google.com</a></b> (NON Google Cloud!)<br>'
       + '2. Accedi con un account Google <b>personale</b><br>'
       + '3. Clicca <b>Get API key</b> \u2192 <b>Create API key in new project</b><br>'
       + '4. Copia la chiave (inizia con <b>AIza...</b>) e incollala qui<br><br>'
@@ -2998,6 +3009,38 @@ function buildHome(){
     // Non mostrare nei giorni di riposo (pianificati o automatici)
     if(_isRestDay){
       _noSessBanner.style.display='none';
+      // Frasi rassicuranti per il giorno di riposo con statistiche
+      var _rHist=(S.history||[]).filter(function(h){return h.type!=='riposo_vol'&&h.type!=='mattino'&&h.type!=='presonno';});
+      var _rTot=_rHist.length;
+      var _rStreak=S.str||0;
+      var _rXp=S.xp||0;
+      // Esercizio/categoria più frequente
+      var _rCatCount={};
+      _rHist.forEach(function(h){var cat=h.focus||h.type||'';if(cat)_rCatCount[cat]=(_rCatCount[cat]||0)+1;});
+      var _rTopCat=Object.keys(_rCatCount).sort(function(a,b){return _rCatCount[b]-_rCatCount[a];})[0]||'';
+      // Sessione più lunga
+      var _rMaxDur=Math.max.apply(null,_rHist.map(function(h){return h.dur||0;}).concat([0]));
+      // Badge
+      var _rBadges=(S.badges||[]).length;
+      var _rRestPhrases=[
+        '😴 Oggi è il tuo giorno di riposo — te lo sei guadagnato! '+(S.str>1?'🔥 '+S.str+' giorni di fila!':''),
+        '🐢 La tartaruga si ferma quando deve. Il riposo fa parte dell\'allenamento!',
+        '💤 Riposa, recupera, torna più forte. La costanza si costruisce anche così!',
+        '🏆 '+_rTot+' sessioni fatte finora — oggi si riposa e si celebra! 🐢',
+      ];
+      if(_rTopCat) _rRestPhrases.push('\u{1F4AA} Il tuo punto di forza? '+_rTopCat+'! Continua cosi dopo il riposo!');
+      if(_rMaxDur>=15) _rRestPhrases.push('⚡ La tua sessione più lunga è stata di '+_rMaxDur+' minuti — un record da battere!');
+      if(_rBadges>0) _rRestPhrases.push('🏅 Hai già '+_rBadges+' badge! Quanti altri riesci a sbloccare?');
+      if(_rStreak>2) _rRestPhrases.push('🔥 Streak di '+_rStreak+' giorni! Il riposo di oggi è parte del piano.');
+      _coachPhrases.push(_rRestPhrases[Math.floor(Math.random()*_rRestPhrases.length)]);
+      // Aggiungi 1 frase statistica extra
+      if(_rTot>5){
+        var _extraRest=[
+          '📊 In totale hai fatto '+_rTot+' sessioni. Stai costruendo una bella abitudine! 🌱',
+          '✨ '+_rXp+' XP guadagnati finora — continua e sbloccherai nuovi livelli!',
+        ];
+        _coachPhrases.push(_extraRest[Math.floor(Math.random()*_extraRest.length)]);
+      }
     } else {
       // Non mostrare al primo giorno (utente senza storia)
       if(!S.last&&!S.tot){_noSessBanner.style.display='none';return;}
@@ -5838,7 +5881,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.063 · 26/04/2026 21:01 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.068 · 27/04/2026 10:23 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -5871,14 +5914,103 @@ function buildChatScreen(){
   msgs.innerHTML='';
   var hist=S.aiChatHistory||[];
   if(!hist.length){
-    _chatBubble('coach','Ciao '+(P.name||'')+'. Sono il tuo Coach AI. Chiedimi di allenamenti, progressi, come funziona l\'app e consigli fitness!',null,false);
+    _chatBubble('coach','Ciao '+(P.name||'campione')+'! 🐢 Sono il tuo Coach AI.\n\nPosso creare sessioni personalizzate per te, rispondere su allenamenti, progressi e come funziona l\'app. Prova uno dei suggerimenti qui sotto!',null,false);
   }else{
-    hist.forEach(function(m){_chatBubble(m.role,m.content,m.time,false);});
+    hist.forEach(function(m){
+      if(m.sessionCard){
+        _renderSessionCard(m.sessionCard,false);
+      }else{
+        _chatBubble(m.role,m.content,m.time,false);
+      }
+    });
   }
-  setTimeout(function(){var m=document.getElementById('chat-messages');if(m)m.scrollTop=m.scrollHeight;},50);
+  _buildChatChips();
+  setTimeout(function(){var m=document.getElementById('chat-messages');if(m)m.scrollTop=m.scrollHeight;},80);
   setTimeout(function(){var i=document.getElementById('chat-input');if(i)i.focus();},300);
   _syncChatIcon();
 }
+
+function _buildChatChips(){
+  var wrap=document.getElementById('chat-chips');if(!wrap)return;
+  var chips=[
+    {icon:'💪',label:'Sessione per le braccia',msg:'Crea una sessione per le braccia'},
+    {icon:'🦵',label:'Allena le gambe',msg:'Crea una sessione per le gambe'},
+    {icon:'🎯',label:'Allenamento core',msg:'Crea una sessione per il core e addominali'},
+    {icon:'🧘',label:'Stretching e relax',msg:'Crea una sessione di stretching'},
+    {icon:'🪑',label:'Da seduto',msg:'Crea una sessione da fare seduto sulla sedia'},
+    {icon:'📊',label:'I miei progressi',msg:'Come sto andando con i miei allenamenti?'},
+    {icon:'😴',label:'Sonno e recupero',msg:'Dammi consigli su recupero e sonno'},
+    {icon:'❓',label:'Come funziona l\'app',msg:'Spiegami le funzioni principali dell\'app'},
+  ];
+  wrap.innerHTML='';
+  chips.forEach(function(ch){
+    var btn=document.createElement('button');
+    btn.className='chat-chip';
+    btn.textContent=ch.icon+' '+ch.label;
+    btn.onclick=function(){
+      document.getElementById('chat-input').value=ch.msg;
+      sendChatMessage();
+      // Nascondi chips dopo uso
+      wrap.style.display='none';
+    };
+    wrap.appendChild(btn);
+  });
+  wrap.style.display='flex';
+}
+function _renderSessionCard(sessionData,scroll){
+  var msgs=document.getElementById('chat-messages');if(!msgs)return;
+  var wrap=document.createElement('div');
+  wrap.style.cssText='display:flex;flex-direction:column;align-items:flex-start';
+  var card=document.createElement('div');
+  card.className='chat-bubble chat-bubble-coach chat-session-card';
+  var exNames=(sessionData.exs||[]).slice(0,4).map(function(e){
+    var db=DB.find(function(d){return d.id===e.id;});
+    return db?db.n:e.id;
+  }).join(' · ');
+  if((sessionData.exs||[]).length>4)exNames+=' · +'+((sessionData.exs||[]).length-4)+' altri';
+  card.innerHTML=
+    '<div class="cs-title">🧠 '+_escHtml(sessionData.title||'Sessione personalizzata')+'</div>'+
+    '<div class="cs-note">'+_escHtml(sessionData.note||'')+'</div>'+
+    '<div class="cs-exs">'+_escHtml(exNames)+'</div>'+
+    '<button class="chat-session-btn" onclick="_launchChatSession(this)">▶️ Avvia sessione</button>';
+  // Salva i dati nella card per recuperarli al click
+  card.dataset.session=JSON.stringify(sessionData);
+  var tEl=document.createElement('div');
+  tEl.className='chat-bubble-time';
+  tEl.textContent=sessionData.time||_chatNow();
+  wrap.appendChild(card);wrap.appendChild(tEl);
+  msgs.appendChild(wrap);
+  if(scroll!==false)msgs.scrollTop=msgs.scrollHeight;
+}
+
+function _escHtml(s){
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+async function _launchChatSession(btn){
+  var card=btn.closest('.chat-session-card');if(!card)return;
+  var sessionData;
+  try{sessionData=JSON.parse(card.dataset.session);}catch(e){return;}
+  if(!sessionData||!sessionData.exs||!sessionData.exs.length){
+    toast('Sessione non valida'); return;
+  }
+  btn.disabled=true;btn.textContent='⏳ Avvio...';
+  // Configura T come fa startAISession
+  T.sesType='ai_coach';
+  T.dur=T.dur||SET.preferredDur||12;
+  T.left=(DUR_CFG[T.dur]||DUR_CFG[12]).a;
+  T.phase='rest';
+  T.aiTitle=sessionData.title||'Sessione personalizzata';
+  T.aiNote=sessionData.note||'';
+  T.exs=sessionData.exs;
+  T.idx=0;T.paused=false;T.t0=Date.now();
+  riservaDone=false;requestWakeLock();
+  if(!S.aiSessions)S.aiSessions=0;S.aiSessions++;
+  toast('🧠 '+T.aiTitle,3000);
+  // Avvia direttamente senza passare per home (evita race condition)
+  showRestPreview(0,function(){doShowEx(0);});
+}
+
 function _chatBubble(role,text,time,scroll){
   var msgs=document.getElementById('chat-messages');if(!msgs)return;
   var wrap=document.createElement('div');
@@ -5937,30 +6069,87 @@ async function sendChatMessage(){
     var data=await resp.json();var reply=prov.parseResponse(data);
     if(!reply)throw new Error('Risposta vuota');
     _chatStopTyping();var rt=_chatNow();
-    _chatBubble('coach',reply.trim(),rt);
-    S.aiChatHistory.push({role:'coach',content:reply.trim(),time:rt});
+    // Controlla se la reply contiene una sessione generata
+    var _sessData=_parseSessionFromReply(reply,text);
+    if(_sessData){
+      _sessData.time=rt;
+      _renderSessionCard(_sessData);
+      S.aiChatHistory.push({role:'coach',sessionCard:_sessData,time:rt});
+      // Mostra chips di nuovo dopo risposta
+      var _chw=document.getElementById('chat-chips');if(_chw)_chw.style.display='flex';
+    }else{
+      _chatBubble('coach',reply.trim(),rt);
+      S.aiChatHistory.push({role:'coach',content:reply.trim(),time:rt});
+      var _chw=document.getElementById('chat-chips');if(_chw)_chw.style.display='flex';
+    }
     if(S.aiChatHistory.length>_MAX_CHAT*2)S.aiChatHistory=S.aiChatHistory.slice(-_MAX_CHAT*2);
     if(isFirst){var nb=checkBadges();save();if(nb.length)nb.forEach(function(b){toast('Badge: '+b.name+'!',3500);});}else save();
   }catch(e){
     _chatStopTyping();var em=e.message||'Errore';
-    if(em.includes('Failed to fetch')||em.includes('CORS'))em='Connessione bloccata. Prova Gemini o altra rete.';
-    _chatBubble('coach','Errore: '+em,_chatNow());
+    if(em.includes('Failed to fetch')||em.includes('CORS'))
+      em='Connessione non disponibile. Riprova quando sei online.';
+    else if(em.includes('503')||em.includes('overloaded'))
+      em='Il server AI è momentaneamente sovraccarico 😅 Riprova tra qualche secondo!';
+    else if(em.includes('429')||em.includes('quota'))
+      em='Hai esaurito le chiamate AI disponibili. Aspetta qualche minuto o controlla il tuo piano Gemini.';
+    else if(em.includes('401')||em.includes('403')||em.includes('API key'))
+      em='Chiave API non valida. Controlla le impostazioni AI! ⚙️';
+    _chatBubble('coach','⚠️ '+em,_chatNow());
   }
 }
+function _parseSessionFromReply(reply,userMsg){
+  // Controlla se la reply è una sessione strutturata (JSON tra ``` o direttamente)
+  var jsonMatch=reply.match(/```json\s*([\s\S]+?)```/i)||reply.match(/```([\s\S]+?)```/i);
+  if(jsonMatch){
+    try{
+      var data=JSON.parse(jsonMatch[1].trim());
+      if(data.type==='session'&&data.exs&&data.exs.length){
+        var dur=T.dur||SET.preferredDur||12;
+        var cfg=DUR_CFG[dur]||DUR_CFG[12];
+        data.exs=data.exs.map(function(ex){
+          var dbEx=DB.find(function(d){return d.id===ex.id;});
+          if(!dbEx)return null;
+          return Object.assign({},dbEx,{a:cfg.a,r:cfg.r});
+        }).filter(Boolean);
+        if(data.exs.length>=3)return data;
+      }
+    }catch(e){}
+  }
+  return null;
+}
+
 function _chatSysPrompt(){
   var hist=(S.history||[]).slice(0,10);
   var name=P.name||'Utente',age=P.age||'?',level=P.level||'principiante';
   var streak=S.str||0,tot=S.tot||0,xp=S.xp||0,badges=(S.badges||[]).length;
   var cats=[...new Set(hist.map(function(h){return h.type||h.focus;}).filter(Boolean))].join(', ')||'nessuna';
   var recent=hist.slice(0,5).map(function(h){return (h.type||h.focus||'?')+' '+(h.dur||0)+'min';}).join(', ')||'nessuna';
+  // Lista esercizi disponibili per sessioni personalizzate
+  var availExs=DB.filter(function(e){
+    if(!e.id||e.id.startsWith('p'))return false; // no party
+    if(SET.noFloor&&e.floor)return false;
+    if((P.excludedEx||[]).includes(e.id))return false;
+    return true;
+  }).slice(0,120).map(function(e){return e.id+':'+e.n+':'+e.cat;}).join('\n');
+
   return ['Sei il Coach AI di TurboTartaruga, app italiana di fitness (sessioni 10-15 min a casa senza attrezzatura).',
     'PROFILO: '+name+', eta '+age+', livello '+level+', streak '+streak+' giorni, '+tot+' sessioni, '+xp+' XP, '+badges+' badge.',
     'Categorie recenti: '+cats+'. Ultime sessioni: '+recent+'.',
     'FUNZIONALITA APP: Gambe/Braccia/Core/Stretching/Orientale/Seduto/Elastici/Cardio/Postura/Mobilita/Mattino/Pre-sonno.',
     'XP+badge (8 livelli Uovo->Leggenda). Riserva Turbo=2 esercizi bonus. Routine mattino 4min, pre-sonno 8min.',
-    'Party mode, Allena Insieme con QR, AI Coach sessioni personalizzate, piano mensile con giorni riposo.',
-    'REGOLE: rispondi SOLO su fitness/benessere/recupero/sonno/motivazione/app TurboTartaruga.',
-    'NO diagnosi mediche. NO piani nutrizionali dettagliati. Tono amichevole, max 150 parole, italiano.',
+    '',
+    'SESSIONI PERSONALIZZATE: Se l\'utente chiede di creare/fare/generare una sessione per una zona specifica (es. braccia, gambe, core, schiena, spalle, stretching, da seduto), rispondi ESCLUSIVAMENTE con un JSON strutturato in un blocco ```json. NON aggiungere testo prima o dopo il JSON.',
+    'Formato richiesto:',
+    '```json',
+    '{"type":"session","title":"Nome sessione","note":"Messaggio motivazionale breve","exs":[{"id":"ID_ESERCIZIO"},{"id":"ID_ESERCIZIO"},...]}',
+    '```',
+    'Scegli 6-10 esercizi dalla lista ESERCIZI DISPONIBILI qui sotto. Usa SOLO ID presenti nella lista. Varia le categorie quando possibile.',
+    '',
+    'ESERCIZI DISPONIBILI (id:nome:categoria):',
+    availExs,
+    '',
+    'REGOLE GENERALI: rispondi SOLO su fitness/benessere/recupero/sonno/motivazione/app TurboTartaruga.',
+    'NO diagnosi mediche. NO piani nutrizionali dettagliati. Tono amichevole, max 200 parole, italiano.',
   ].join('\n');
 }
 function clearAIChat(){if(!confirm('Svuotare la chat con il Coach?'))return;S.aiChatHistory=[];save();buildChatScreen();toast('Chat svuotata');}
@@ -7131,6 +7320,11 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.068',date:'27/04/2026',changes:['Aggiunto pool ACTION_PHRASES: frasi motivazionali per fare la sessione (solo giorno allenamento + non ancora fatto)','Frase streak a rischio se 3+ giorni e non ancora allenato oggi','Frase con categoria del piano del giorno','7 frasi complimento sessione fatta (da 5)','Frase riposo: badge sbloccati aggiunta al pool']},
+  {v:'1.067',date:'27/04/2026',changes:['FIX ROOT: _shouldGenerateAISession rimossa da buildCoachBubble (causava ReferenceError che bloccava rotazione frasi)','try-catch globale in buildCoachBubble per protezione futura','Frasi di fallback garantite se _coachPhrases vuoto']},
+  {v:'1.066',date:'27/04/2026',changes:['FIX link aistudio.google.com cliccabile','FIX giorno riposo: frasi con streak/stat/badge/categoria preferita','FIX cache AI bubble allineata al nuovo sistema slot','FIX errori chat 503/429/401 con messaggi chiari','FIX sessione da chat: avvio diretto senza race condition su go(home)']},
+  {v:'1.065',date:'26/04/2026',changes:['Step A: chip domande esempio nella chat (8 suggerimenti clickabili)','Step B: sessioni personalizzate da chat con card e pulsante Avvia','System prompt aggiornato: il Coach genera JSON strutturato per sessioni','La sessione da chat va nel calendario e nelle statistiche']},
+  {v:'1.064',date:'26/04/2026',changes:['FIX frasi AI: cache per slot (mattino/pomeriggio/sera/notte) non più per giorno intero — frasi corrette a ogni fascia oraria']},
   {v:'1.063',date:'26/04/2026',changes:['preloadExerciseImages: cache legata al build (APP_BUILD)','Nuovo build = re-download automatico di tutte le immagini','Cache-bust ?v=BUILD su ogni immagine per forzare aggiornamento','Nuove immagini aggiunte al DB vengono scaricate automaticamente']},
   {v:'1.062',date:'26/04/2026',changes:['preloadExerciseImages: download progressivo con resume (localStorage)','Frasi meteo ora orario-consapevoli (niente sole/luce di notte)','Slot notte allargato 21:00-06:00 (era 22-05)','TIME_PHRASES.notte ampliato a 10 frasi','Prompt AI frasi: vieta riferimenti solari di notte']},
   {v:'1.061',date:'26/04/2026',changes:['FIX CRITICO: app ora funziona completamente offline','SW riscritto con strategia cache-first per HTML e asset','Precache di tutti i file al primo avvio (HTML, icone, loghi)','Immagini esercizi servite dalla cache offline con fallback 🐢']},
@@ -7788,15 +7982,16 @@ async function fetchAIDailyPhrases(){
 
   // Usa cache se già generata oggi
   const today=localDate();
-  if(S.aiDailyPhrases&&S.aiDailyPhrasesDate===today&&S.aiDailyPhrases.length>0)
+  const hour=new Date().getHours();
+  const slot=hour>=6&&hour<12?'mattino':hour>=12&&hour<18?'pomeriggio':hour>=18&&hour<21?'sera':'notte';
+  const cacheKey=today+'_'+slot;
+  if(S.aiDailyPhrases&&S.aiDailyPhrasesDate===cacheKey&&S.aiDailyPhrases.length>0)
     return S.aiDailyPhrases;
   // Non tentare fetch se offline
   if(typeof navigator!=='undefined'&&navigator.onLine===false)return null;
   // Contesto utente
-  const hour=new Date().getHours();
   const month=new Date().getMonth();
   const season=month>=2&&month<=4?'primavera':month>=5&&month<=7?'estate':month>=8&&month<=10?'autunno':'inverno';
-  const slot=hour>=6&&hour<12?'mattino':hour>=12&&hour<18?'pomeriggio':hour>=18&&hour<21?'sera':'notte';
   const todayDone=(S.days||[]).includes(today);
   const streak=S.str||0;
   const recent=(S.history||[]).slice(-5).map(function(h){return h.type||h.focus||'?';}).join(', ')||'nessuna';
@@ -7867,7 +8062,7 @@ async function fetchAIDailyPhrases(){
     phrases=phrases.map(function(p){return String(p).trim().slice(0,120);}).filter(Boolean);
     // Cache per oggi
     S.aiDailyPhrases=phrases;
-    S.aiDailyPhrasesDate=today;
+    S.aiDailyPhrasesDate=cacheKey;
     save();
     return phrases;
   }catch(e){return null;}
@@ -7890,7 +8085,8 @@ function getDifficultyPhrase(){
 
 function buildCoachBubble(){
   _coachPhrases = [];
-  
+  try { // ← protezione globale: nessun errore interno blocca la rotazione frasi
+
   // ── RECAP SETTIMANALE (lunedì mattina) ─────────────────────────────────────
   const _cbDay=new Date().getDay(); // 0=Dom, 1=Lun
   const _cbHour=new Date().getHours();
@@ -7949,8 +8145,42 @@ function buildCoachBubble(){
       '🌟 Hai già fatto la tua sessione oggi — goditi il meritato riposo!',
       '💪 Fatto! Ogni giorno che ti alleni è una vittoria. Bravo/a!',
       '🐢 Tartaruga soddisfatta: oggi hai già vinto! Ci vediamo domani!',
+      '🎯 Check! Sessione completata. Il futuro-'+(P.name||'te')+' ti sta già ringraziando!',
+      '🔥 Streak mantenuto! Ogni giorno che non salti vale doppio. 💪',
     ];
     _coachPhrases.push(_donePhrases[Math.floor(Math.random()*_donePhrases.length)]);
+  } else {
+    // Non ancora allenato oggi — solo se NON è giorno di riposo
+    const _todayPlanCB=getTodayPlan();
+    const _isRestDayCB=_todayPlanCB.type==='rest'||_todayPlanCB.focus==='riposo';
+    if(!_isRestDayCB){
+      // Frasi di azione: spingono a fare la sessione
+      var _actionPhrases=[
+        '🚀 '+(P.name||'Campione')+', la sessione di oggi ti aspetta! 10 minuti e sei a posto! 🐢',
+        '⏰ Non aspettare la sera — fallo adesso! Il corpo ti ringrazia subito! 💪',
+        '🎯 Un solo click e parte la sessione. La tartaruga è già scaldata! 🐢',
+        '💡 Ogni volta che ti alleni stai costruendo la versione migliore di te! 🌟',
+        '⚡ Non rimandare — il momento perfetto è adesso. 10 minuti, via! 🚀',
+        '🌱 La costanza si costruisce un giorno alla volta. Oggi è quel giorno! 🐢',
+        '🏃 La tartaruga non aspetta l\'umore giusto — inizia e l\'umore arriva! 💪',
+        '🎽 Tieni lo streak vivo! Solo 10 minuti separano ieri dal domani! 🔥',
+        '💪 '+(S.str>0?'🔥 '+S.str+' giorni di fila — ':' ')+'Non fermarti proprio oggi! 🐢',
+        '🌟 Sai già come ci si sente dopo una sessione. Vuoi quella sensazione? Inizia! 💪',
+        '⏱️ 10 minuti. È tutto quello che serve. La tartaruga aspetta! 🐢',
+        '🔥 Il corpo che hai vuole muoversi — e tu sai già come si fa! 💪',
+      ];
+      // Aggiungi frase speciale se streak a rischio
+      if(S.str>=3&&S.last!==localDate()){
+        _actionPhrases.push('⚠️ Attenzione! Lo streak di '+S.str+' giorni è in bilico — allenati oggi! 🔥');
+        _actionPhrases.push('🔥 '+S.str+' giorni di fila — troppo bello per buttarlo via oggi! 💪');
+      }
+      // Aggiungi frase col piano del giorno
+      var _planLabel=(CAT_INFO[_todayPlanCB.focus]&&CAT_INFO[_todayPlanCB.focus].label)||'';
+      if(_planLabel){
+        _actionPhrases.push(_todayPlanCB.icon+' Oggi tocca '+ _planLabel.toLowerCase()+'! Premi "Inizia sessione" quando sei pronto! 🐢');
+      }
+      _coachPhrases.push(_actionPhrases[Math.floor(Math.random()*_actionPhrases.length)]);
+    }
   }
   // 60% time-specific, 30% generale, +stagionale extra
   const _pr=Math.random();
@@ -8023,7 +8253,9 @@ function buildCoachBubble(){
   // 8. AI Coach phrases — interleave con frasi statiche
   if(SET.aiEnabled&&SET.aiFeature_bubble!==false){
     var _today2=localDate();
-    var _aiCached=S.aiDailyPhrases&&S.aiDailyPhrasesDate===_today2&&S.aiDailyPhrases.length>0;
+    const _cbSlot2=_cbHour>=6&&_cbHour<12?'mattino':_cbHour>=12&&_cbHour<18?'pomeriggio':_cbHour>=18&&_cbHour<21?'sera':'notte';
+    var _cacheKey2=_today2+'_'+_cbSlot2;
+    var _aiCached=S.aiDailyPhrases&&(S.aiDailyPhrasesDate===_cacheKey2||S.aiDailyPhrasesDate===_today2)&&S.aiDailyPhrases.length>0;
     if(_aiCached){
       // Cache presente: interleave RIGOROSO — 1 statica, 1 AI, 1 statica, 1 AI...
       var _aiP=S.aiDailyPhrases;
@@ -8053,22 +8285,24 @@ function buildCoachBubble(){
     }
   }
 
-  // 9. Segnala sessione AI disponibile oggi (solo se non già fatta una sessione)
+  // 9. Segnala sessione AI disponibile (se sessions attivo e non fatto oggi)
   if(!!SET.aiEnabled && SET.aiFeature_sessions!==false && !_cbTodayDone){
-    var _today3=localDate();
-    var _aiSessReady=S.aiSessionDate===_today3&&S.aiSessionToday&&S.aiSessionToday.ids&&S.aiSessionToday.ids.length>0;
-    var _aiSessScheduled=_aiSessReady||_shouldGenerateAISession();
-    if(_aiSessScheduled){
-      var _aiSessPhrases=[
-        '🧠✨ Oggi il Coach AI ha preparato una sessione su misura per te! Trovala accanto al tasto "Inizia sessione" in home!',
-        '🐢 Psst! Il tuo Coach AI ha studiato i tuoi allenamenti e ha qualcosa di speciale in home per te oggi!',
-        '✨ Novità: oggi c\' una sessione personalizzata AI che ti aspetta! Trovila in home accanto al solito tasto 🧠',
-        '🤖 Il Coach AI ha fatto i compiti stanotte! Vai in home e trovi la sua sessione tutta per te 🎯',
-      ];
-      _coachPhrases.push(_aiSessPhrases[Math.floor(Math.random()*_aiSessPhrases.length)]);
-    }
+    var _aiSessPhrases=[
+      '🧠✨ Vuoi un allenamento su misura? Premi "Inizia sessione" e scegli il tasto AI Coach!',
+      '🐢 Il Coach AI può creare una sessione personalizzata per te! Cercala dopo "Inizia sessione".',
+      '✨ Sessione personalizzata AI disponibile! Trovila nella schermata dopo "Inizia sessione" 🧠',
+      '🤖 Lascia scegliere il Coach AI oggi! Dopo "Inizia sessione" premi il tasto 🧠✨',
+    ];
+    _coachPhrases.push(_aiSessPhrases[Math.floor(Math.random()*_aiSessPhrases.length)]);
   }
-  // Start rotation
+  // Start rotation — in try-catch: qualsiasi errore sopra non deve bloccare le frasi
+  } catch(_cbErr){ console.warn('buildCoachBubble error:',_cbErr); }
+  // Garantisci almeno 1 frase di fallback
+  if(!_coachPhrases.length){
+    _coachPhrases=['🐢 Pronto per il tuo allenamento? La tartaruga ti aspetta!',
+      '💪 Ogni sessione conta — anche quella di oggi!',
+      '🌟 La costanza batte il talento. Vai '+( P.name||'campione')+'!'];
+  }
   _showCoachPhrase();
   if(_coachIv)clearInterval(_coachIv);
   if(_coachPhrases.length>1)_coachIv=setInterval(_showCoachPhrase,6000);
@@ -8716,7 +8950,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604262101'; // auto-set on each release
+const APP_BUILD='202604271023'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
