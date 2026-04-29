@@ -280,6 +280,29 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   .chat-session-card .cs-exs{font-size:11px;color:var(--text);margin-bottom:10px;opacity:.8}
   .chat-session-btn{width:100%;padding:10px;border-radius:100px;background:linear-gradient(135deg,#6C63FF,#42A5F5);border:none;color:#fff;font-size:14px;font-weight:bold;cursor:pointer;font-family:var(--ff)}
 
+  /* ── SCUOLA + TAB SYSTEM ──────────────────────────────────── */
+  .prog-seg{display:flex;gap:8px;padding:12px 16px;background:var(--card);border-bottom:1px solid var(--bdr);flex-shrink:0}
+  .prog-seg-btn{flex:1;padding:10px 8px;border:2px solid var(--bdr);border-radius:12px;background:var(--bg);font-size:13px;font-weight:bold;color:var(--tlt);cursor:pointer;font-family:var(--ff);transition:all .2s}
+  .prog-seg-btn.active{background:var(--g1);border-color:var(--g1);color:#fff}
+  .tab-pane{display:none}
+  .tab-pane.active{display:flex;flex-direction:column;flex:1;overflow-y:auto;min-height:0}
+  .scuola-badge{font-size:9px;padding:2px 6px;border-radius:100px;font-weight:bold}
+  .scuola-badge-floor{background:#FFF3E0;color:#E65100}
+  .scuola-badge-switch{background:#E3F2FD;color:#1565C0}
+  .scuola-badge-tips{background:var(--g3);color:var(--g1)}
+  .screen.active#screen-scuola{display:flex}
+  .screen.active#screen-progress{display:flex;flex-direction:column}
+  #scuola-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9000;align-items:center;justify-content:center;padding:20px;box-sizing:border-box}
+  #scuola-modal.open{display:flex}
+  .scuola-detail{background:var(--card);border-radius:20px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto}
+  .scuola-detail-img{width:100%;max-height:200px;object-fit:contain;background:var(--bg2);border-radius:20px 20px 0 0;min-height:80px}
+  .scuola-section{margin-bottom:14px}
+  .scuola-section-title{font-size:12px;font-weight:bold;color:var(--g1);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+  .scuola-step{display:flex;gap:10px;margin-bottom:6px;align-items:flex-start}
+  .scuola-step-num{width:22px;height:22px;border-radius:50%;background:var(--g1);color:#fff;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+  .scuola-step-txt{font-size:13px;color:var(--tmid);line-height:1.5}
+  .scuola-tip{display:flex;gap:8px;margin-bottom:6px;font-size:13px;color:var(--tmid);line-height:1.5}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
@@ -505,8 +528,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   <div class="agrid">
     <button class="abtn" onclick="go('calendar')"><span class="ai">📅</span><span class="al">Calendario</span><span class="as">Piano & storico</span></button>
     <button class="abtn party" onclick="go('party')"><span class="ai">🎉</span><span class="al">Party!</span><span class="as">Insieme è meglio!</span></button>
-    <button class="abtn" onclick="go('progress')"><span class="ai">📊</span><span class="al">Progressi</span><span class="as">Statistiche</span></button>
-    <button class="abtn" onclick="go('profile')"><span class="ai">🏅</span><span class="al">Badge & XP</span><span class="as">Traguardi</span></button>
+    <button class="abtn" onclick="go('progress')"><span class="ai">📊</span><span class="al">Progressi</span><span class="as">Statistiche & Badge</span></button>
+    <button class="abtn" onclick="go('scuola')"><span class="ai">🐢</span><span class="al">Scuola</span><span class="as">Impara gli esercizi</span></button>
   </div>
   <div style="height:max(24px,env(safe-area-inset-bottom,24px));flex-shrink:0"></div>
 </div>
@@ -526,6 +549,50 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <button class="chat-send-btn" onclick="sendChatMessage()">&#10148;</button>
   </div>
 </div>
+
+<!-- SCUOLA DELLA TARTARUGA -->
+<div id="screen-scuola" class="screen" style="flex-direction:column;height:100vh">
+  <div class="hdr">
+    <button class="hdr-back" onclick="closeScuola()">&#8592;</button>
+    <h1>&#x1F422; Scuola della Tartaruga</h1>
+  </div>
+  <div style="padding:10px 12px;background:var(--card);border-bottom:1px solid var(--bdr);flex-shrink:0">
+    <input type="search" id="scuola-search" placeholder="&#x1F50D; Cerca esercizio..."
+      style="width:100%;padding:9px 14px;border:1.5px solid var(--bdr);border-radius:100px;font-size:14px;background:var(--bg);color:var(--text);outline:none;box-sizing:border-box;font-family:var(--ff)"
+      oninput="filterScuola(this.value)">
+  </div>
+  <div id="scuola-list" style="flex:1;overflow-y:auto;padding:12px"></div>
+</div>
+
+<!-- SCUOLA DETAIL MODAL -->
+<div id="scuola-modal" onclick="if(event.target===this)closeScuolaModal()">
+  <div class="scuola-detail">
+    <div style="position:relative">
+      <img id="scuola-detail-img" src="" alt="" class="scuola-detail-img">
+      <button onclick="closeScuolaModal()" style="position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.45);border:none;color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center">&#x2715;</button>
+    </div>
+    <div style="padding:16px 18px">
+      <div style="font-size:11px;font-weight:bold;color:var(--g1);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px" id="scuola-detail-cat"></div>
+      <div style="font-family:var(--ft);font-size:22px;font-weight:bold;margin-bottom:6px" id="scuola-detail-name"></div>
+      <div style="font-size:13px;color:var(--tlt);margin-bottom:14px" id="scuola-detail-zona"></div>
+      <div class="scuola-section">
+        <div class="scuola-section-title">Descrizione</div>
+        <div id="scuola-detail-desc" style="font-size:14px;color:var(--tmid);line-height:1.6"></div>
+      </div>
+      <div class="scuola-section" id="scuola-steps-section" style="display:none">
+        <div class="scuola-section-title">&#x2705; Come si fa</div>
+        <div id="scuola-detail-steps"></div>
+      </div>
+      <div class="scuola-section" id="scuola-tips-section" style="display:none">
+        <div class="scuola-section-title">&#x26A0; Attenzione a</div>
+        <div id="scuola-detail-tips"></div>
+      </div>
+      <div id="scuola-detail-flags" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+
+
 
 <!-- PRE-SESSION -->
 <div id="screen-presession" class="screen">
@@ -666,6 +733,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <div id="rst-next-type" style="display:none;font-size:11px;font-weight:bold;padding:3px 9px;border-radius:100px;background:var(--bg2);color:var(--g1);border:1.5px solid var(--g1)"></div>
       </div>
       <div style="font-family:var(--ft);font-size:19px;font-weight:bold;color:var(--text);margin-bottom:8px" id="rst-next-name">Squat base</div>
+      <button id="rst-scuola-btn" onclick="openScuolaFromRest()" style="display:none;margin-bottom:8px;background:rgba(0,0,0,.07);border:1.5px solid var(--bdr);border-radius:100px;padding:6px 16px;color:var(--g1);font-size:12px;font-weight:bold;cursor:pointer;font-family:var(--ff)">&#x1F422; Scopri questo esercizio</button>
       <!-- Immagine prossimo esercizio -->
       <div class="ex-img-wrap" id="rst-next-img-wrap" style="border-radius:12px;margin-bottom:10px;min-height:160px">
         <div class="ex-img-placeholder" id="rst-next-placeholder">📷 Immagine non disponibile</div>
@@ -769,9 +837,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 </div>
 
 <!-- PROGRESS -->
-<div id="screen-progress" class="screen">
+<div id="screen-progress" class="screen" style="flex-direction:column;height:100vh">
   <div class="hdr"><button class="hdr-back" onclick="go('home')">←</button><h1>📊 Progressi</h1></div>
-  <div class="scrollable">
+  <div class="prog-seg">
+    <button class="prog-seg-btn active" id="tab-progressi" onclick="switchProgressTab('progressi')">📊 Statistiche</button>
+    <button class="prog-seg-btn" id="tab-badge" onclick="switchProgressTab('badge')">🏅 Badge & XP</button>
+  </div>
+  <div id="tab-pane-progressi" class="tab-pane active" style="overflow-y:auto">
     <!-- 1. OBIETTIVO -->
     <div class="card"><div class="card-title">🎯 Il mio obiettivo</div>
       <div style="display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--tlt);margin-bottom:5px"><span id="prg-goal-lbl">0 / 90</span><span id="prg-goal-pct">0%</span></div>
@@ -853,7 +925,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <button id="share-widget-btn" onclick="shareProgressWidget()" style="display:none;margin:8px 12px 16px;width:calc(100% - 24px);padding:16px;background:linear-gradient(135deg,#1B5E20,#43A047);color:#fff;border:none;border-radius:16px;font-family:var(--ft);font-size:15px;font-weight:bold;cursor:pointer;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 16px rgba(27,94,32,.3)">
       📤 Condividi i tuoi progressi
     </button>
-  </div>
+  </div><!-- /tab-pane-progressi -->
+  <div id="tab-pane-badge" class="tab-pane"></div>
 </div>
 
 <!-- PROFILE -->
@@ -1427,7 +1500,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.069</div>
+      <div id="app-version-display">Versione v1.079</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1491,14 +1564,14 @@ var DB=[
   {id:'w2',n:'Rotazione spalle',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'💪 Spalle · 🦴 Articolazioni',desc:'Piedi larghi, ruota entrambe le spalle in avanti con cerchi ampi, poi all\'indietro.',floor:false},
   {id:'w3',n:'Cerchi braccia grandi',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'💪 Spalle · 💪 Braccia',desc:'Braccia aperte ai lati: fai cerchi grandi verso l\'alto, poi in senso contrario. Respira.',floor:false},
   {id:'w4',n:'Rotazione fianchi',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'🎯 Core · 🦴 Lombare',desc:'Mani sui fianchi, piedi larghi. Ruota i fianchi in cerchi ampi, poi in senso contrario.',floor:false},
-  {id:'w5',n:'Marcia leggera',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'🦵 Gambe · ❤️ Cardio',desc:'Alza alternamente le ginocchia muovendo le braccia in sincronia. Ritmo comodo.',floor:false},
+  {id:'w5',n:'Marcia leggera',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'🦵 Gambe · ❤️ Cardio',desc:'Alza alternamente le ginocchia muovendo le braccia in sincronia. Ritmo comodo.',floor:false,steps:['Stai in piedi con i piedi uniti','Alza il ginocchio destro verso i fianchi portando il braccio sinistro in avanti','Abbassa e ripeti con gamba sinistra e braccio destro','Mantieni un ritmo costante e respira'],tips:['Busto dritto senza oscillare lateralmente','Ginocchio verso i fianchi senza forzare','Se hai problemi di equilibrio appoggiati a una parete']},
   {id:'w6',n:'Rotazione caviglie',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'🦵 Caviglie · 🦴 Articolazioni',desc:'Appoggiati al muro, solleva un piede e ruota la caviglia. 10 cerchi per lato.',floor:false},
   {id:'w7',n:'Flessione laterale',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'🎯 Fianchi · 🦴 Colonna',desc:'In piedi, scivola una mano lungo il fianco verso il basso. Alterna lato. Bacino fermo.',floor:false},
   {id:'w8',n:'Respiro attivante',cat:'riscaldamento',t:'🔥 Riscaldamento',zona:'🫁 Respiro · ❤️ Attivazione',desc:'Inspira 4 sec aprendo le braccia, espira 4 sec abbassandole. Ripeti lentamente.',floor:false},
   // GAMBE (12)
-  {id:'g1',n:'Squat base',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Quadricipiti · 🍑 Glutei',desc:'Piedi larghi, punte fuori. Scendi come su una sedia mantenendo la schiena dritta, poi risali sui talloni.',floor:false},
+  {id:'g1',n:'Squat base',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Quadricipiti · 🍑 Glutei',desc:'Piedi larghi, punte fuori. Scendi come su una sedia mantenendo la schiena dritta, poi risali sui talloni.',floor:false,steps:['Stai in piedi con i piedi alla larghezza delle spalle, punte leggermente aperte','Porta le braccia in avanti o sui fianchi per bilanciare','Scendi piegando ginocchia e fianchi, come se volessi sederti su una sedia','Fermati quando le cosce sono parallele al pavimento (o fin dove riesci)','Spingi sui talloni e risali lentamente'],tips:['Ginocchia allineate con le punte, non cadano verso l\'interno','Talloni sempre a terra — non sollevarli','Schiena dritta e petto aperto, non piegarsi in avanti']},
   {id:'g2',n:'Squat sumo',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Adduttori · 🍑 Glutei',desc:'Piedi molto larghi, punte verso fuori. Scendi con busto eretto, ginocchia verso l\'esterno.',floor:false},
-  {id:'g3',n:'Affondo frontale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Quadricipiti · 🍑 Glutei',desc:'Passo avanti, piega entrambe le ginocchia a 90°. Risali spingendo sul piede davanti.',switch:false,floor:false},
+  {id:'g3',n:'Affondo frontale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Quadricipiti · 🍑 Glutei',desc:'Passo avanti, piega entrambe le ginocchia a 90°. Risali spingendo sul piede davanti.',switch:false,floor:false,steps:['Piedi uniti, mani sui fianchi o in avanti','Fai un passo avanti con una gamba','Scendi finché il ginocchio posteriore sfiora quasi il suolo','Spingi sul tallone anteriore e torna alla posizione iniziale','Ripeti con l\'altra gamba'],tips:['Il ginocchio anteriore non deve superare la punta del piede','Passo abbastanza ampio — troppo corto stessa sul ginocchio','Busto dritto, non inclinarti in avanti']},
   {id:'g4',n:'Affondo laterale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Adduttori · 🦵 Quadricipiti',desc:'Passo laterale ampio, piega il ginocchio tenendo l\'altro dritto. Torna al centro e alterna.',floor:false},
   {id:'g5',n:'Sollevamento talloni',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Polpacci · 🦴 Caviglie',desc:'Alzati sulle punte dei piedi, tieni 2 sec, scendi piano. Appoggiati al muro se serve.',floor:false},
   {id:'g6',n:'Marcia ginocchio alto',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Flessori anca · ❤️ Cardio',desc:'Porta ogni ginocchio verso il petto alternando. Busto eretto, braccia che pompano.',floor:false},
@@ -1980,11 +2053,14 @@ function go(scr){
   const el=document.getElementById('screen-'+scr);if(el)el.classList.add('active');window.scrollTo(0,0);
   if(scr==='home')buildHome();else if(scr==='presession')buildPresession();
   else if(scr==='calendar'){const n=new Date();calYear=n.getFullYear();calMonth=n.getMonth();buildCal();}
-  else if(scr==='progress')buildProgress();else if(scr==='profile')buildProfile();
-  else if(scr==='onboarding'){history.replaceState(null,'',location.pathname+'#onboarding');initWizard();}
+  else if(scr==='progress')buildProgressWithBadge();
+  else if(scr==='profile')buildProfile();
   else if(scr==='complete')buildComplete();
   else if(scr==='onboarding'){setTimeout(initWizard,50);}
-  else if(scr==='party')initParty();else if(scr==='settings')buildSettings();else if(scr==='chat')buildChatScreen();
+  else if(scr==='party')initParty();
+  else if(scr==='settings')buildSettings();
+  else if(scr==='chat')buildChatScreen();
+  else if(scr==='scuola')buildScuola();
   // Keep back-button history in sync
   history.pushState({screen:scr},'',location.pathname+'#'+scr);
   setTimeout(_syncAllSliderPct,30);
@@ -4420,6 +4496,7 @@ function showRestPreview(targetIdx, onDone){
   if(nx){
     document.getElementById('rst-next-cat').textContent=nx.t;
     document.getElementById('rst-next-name').textContent=nx.n;
+    var _sb=document.getElementById('rst-scuola-btn');if(_sb)_sb.style.display=nx?'block':'none';
     // Descrizione audio del prossimo esercizio (se attivata)
     if(SET.voice&&SET.voiceDesc&&left>=6){
       // isFirst: leggi 'Preparati: nome' poi descrizione; altri: 'Prossimo: nome. desc'
@@ -4603,7 +4680,7 @@ function genBonusExs(){
   }
   return bonusExs;
 }
-function dismissRiserva(){riservaDone=true;document.getElementById('riserva-banner').style.display='none'}
+function dismissRiserva(){document.getElementById('riserva-banner').style.display='none';}
 
 // ═══ TRANSITION ═══
 function showTransition(ex,idx){
@@ -5881,7 +5958,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.069 · 27/04/2026 12:23 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.079 · 29/04/2026 16:22 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -5997,8 +6074,9 @@ async function _launchChatSession(btn){
   btn.disabled=true;btn.textContent='⏳ Avvio...';
   // Configura T come fa startAISession
   T.sesType='ai_coach';
-  T.dur=T.dur||SET.preferredDur||12;
-  T.left=(DUR_CFG[T.dur]||DUR_CFG[12]).a;
+  T.dur=parseInt(T.dur||SET.preferredDur||12)||12;
+  var _durCfg=DUR_CFG[T.dur]||DUR_CFG[12];
+  T.left=_durCfg.a;
   T.phase='rest';
   T.aiTitle=sessionData.title||'Sessione personalizzata';
   T.aiNote=sessionData.note||'';
@@ -6154,6 +6232,165 @@ function _chatSysPrompt(){
 }
 function clearAIChat(){if(!confirm('Svuotare la chat con il Coach?'))return;S.aiChatHistory=[];save();buildChatScreen();toast('Chat svuotata');}
 function _syncChatIcon(){var w=document.getElementById('chat-icon-wrap');if(!w)return;w.style.display=(!!SET.aiEnabled&&SET.aiFeature_chat!==false)?'block':'none';}
+
+
+// ═══ PROGRESS + BADGE TAB ═══════════════════════════════════════
+function buildProgressWithBadge(){
+  document.querySelectorAll('.prog-seg-btn').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active');});
+  var btn=document.getElementById('tab-progressi');var pane=document.getElementById('tab-pane-progressi');
+  if(btn)btn.classList.add('active');if(pane)pane.classList.add('active');
+  buildProgress();
+}
+function switchProgressTab(tab){
+  document.querySelectorAll('.prog-seg-btn').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active');});
+  var btn=document.getElementById('tab-'+tab);var pane=document.getElementById('tab-pane-'+tab);
+  if(btn)btn.classList.add('active');if(pane)pane.classList.add('active');
+  if(tab==='badge')_buildBadgeTab();
+}
+function _buildBadgeTab(){
+  var pane=document.getElementById('tab-pane-badge');
+  if(!pane)return;
+  // Popola screen-profile (già esiste nel DOM con tutti gli ID necessari)
+  buildProfile();
+  // Copia il contenuto scrollabile di screen-profile nel pane badge
+  // (screen-profile = hdr + scrollable)
+  var profileScreen=document.getElementById('screen-profile');
+  if(!profileScreen)return;
+  // Prendi tutto tranne l'hdr (primo figlio)
+  var children=Array.prototype.slice.call(profileScreen.children);
+  pane.innerHTML='';
+  children.forEach(function(child){
+    if(!child.classList.contains('hdr')){
+      pane.appendChild(child.cloneNode(true));
+    }
+  });
+  // Re-attach onclick per openBadgeModal (usa attributi inline - già funzionano nel clone)
+  // Ma buildProfile ha già chiamato buildProfile() quindi i dati sono già renderizzati nel clone
+}
+
+var _scuolaReturnToSession=false;
+var SCUOLA_CATS=[
+  {key:'riscaldamento',label:'Riscaldamento'},{key:'gambe',label:'Gambe'},
+  {key:'braccia',label:'Braccia'},{key:'core',label:'Core'},
+  {key:'stretching',label:'Stretching'},{key:'seduto',label:'Da Seduto'},
+  {key:'orientale',label:'Orientale'},{key:'elastici',label:'Elastici'},
+  {key:'cardio',label:'Cardio/Box'},{key:'presonno',label:'Pre-sonno'},
+  {key:'postura',label:'Postura'},{key:'mobilita',label:'Mobilita'},
+  {key:'mattino',label:'Risveglio mattutino'},
+];
+function buildScuola(openExId){
+  var list=document.getElementById('scuola-list');if(!list)return;
+  list.innerHTML='';
+  var srch=document.getElementById('scuola-search');if(srch)srch.value='';
+  SCUOLA_CATS.forEach(function(cat){
+    var exs=DB.filter(function(e){return e.cat===cat.key;});if(!exs.length)return;
+    var hdr=document.createElement('div');
+    hdr.style.cssText='font-size:11px;font-weight:bold;color:var(--tlt);text-transform:uppercase;letter-spacing:.8px;padding:10px 4px 6px;margin-top:8px';
+    hdr.setAttribute('data-cat-hdr',cat.key);
+    var catInfo=CAT_INFO[cat.key]||{icon:'',label:cat.label};
+    hdr.textContent=catInfo.icon+' '+cat.label+' ('+exs.length+')';
+    list.appendChild(hdr);
+    exs.forEach(function(ex){
+      var card=document.createElement('div');
+      card.style.cssText='display:flex;align-items:center;gap:12px;background:var(--card);border-radius:14px;padding:10px 12px;margin-bottom:8px;cursor:pointer;border:1.5px solid var(--bdr)';
+      card.setAttribute('data-exid',ex.id);card.setAttribute('data-name',(ex.n||'').toLowerCase());card.setAttribute('data-cat',ex.cat||'');
+      card.onclick=function(){openScuolaDetail(ex.id);};
+      var img=document.createElement('img');
+      img.style.cssText='width:52px;height:52px;border-radius:10px;object-fit:cover;background:var(--bg2);flex-shrink:0';
+      img.src='images/exercises/'+ex.id+'.png';img.alt='';
+      img.onerror=function(){this.style.display='none';var ph=document.createElement('div');ph.style.cssText='width:52px;height:52px;border-radius:10px;background:var(--g3);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0';ph.textContent='🐢';this.parentNode.insertBefore(ph,this);};
+      var info=document.createElement('div');info.style.cssText='flex:1;min-width:0';
+      var nm=document.createElement('div');nm.style.cssText='font-weight:bold;font-size:13px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis';nm.textContent=ex.n||'';
+      var zona=document.createElement('div');zona.style.cssText='font-size:11px;color:var(--tlt);margin-top:2px';zona.textContent=ex.zona||'';
+      var bgs=document.createElement('div');bgs.style.cssText='display:flex;gap:4px;margin-top:4px;flex-wrap:wrap';
+      if(ex.floor){var b=document.createElement('span');b.className='scuola-badge scuola-badge-floor';b.textContent='🏔️ Terra';bgs.appendChild(b);}
+      if(ex.switch){var b=document.createElement('span');b.className='scuola-badge scuola-badge-switch';b.textContent='🔄 Cambio Lato';bgs.appendChild(b);}
+      if(ex.tips&&ex.tips.length){var b=document.createElement('span');b.className='scuola-badge scuola-badge-tips';b.textContent='💡 Tips';bgs.appendChild(b);}
+      info.appendChild(nm);info.appendChild(zona);info.appendChild(bgs);
+      var arr=document.createElement('div');arr.style.cssText='color:var(--tlt);font-size:18px;flex-shrink:0';arr.textContent='›';
+      card.appendChild(img);card.appendChild(info);card.appendChild(arr);
+      list.appendChild(card);
+    });
+  });
+  if(openExId)setTimeout(function(){openScuolaDetail(openExId);},100);
+}
+function filterScuola(q){
+  q=(q||'').toLowerCase().trim();
+  document.querySelectorAll('#scuola-list [data-exid]').forEach(function(card){
+    var show=!q||(card.getAttribute('data-name')||'').includes(q)||(card.getAttribute('data-cat')||'').includes(q);
+    card.style.display=show?'flex':'none';
+  });
+  document.querySelectorAll('#scuola-list [data-cat-hdr]').forEach(function(hdr){
+    var cat=hdr.getAttribute('data-cat-hdr');
+    var hasVis=false;
+    document.querySelectorAll('#scuola-list [data-cat="'+cat+'"]').forEach(function(c){if(c.style.display!=='none')hasVis=true;});
+    hdr.style.display=hasVis?'block':'none';
+  });
+}
+function openScuolaDetail(exId){
+  var ex=DB.find(function(e){return e.id===exId;});if(!ex)return;
+  var ci=CAT_INFO[ex.cat]||{icon:'',label:ex.cat||''};
+  document.getElementById('scuola-detail-cat').textContent=ci.icon+' '+ci.label;
+  document.getElementById('scuola-detail-name').textContent=ex.n||'';
+  document.getElementById('scuola-detail-zona').textContent='Zona: '+(ex.zona||'—');
+  document.getElementById('scuola-detail-desc').textContent=ex.desc||'';
+  var steps=ex.steps||[];
+  var stepsSec=document.getElementById('scuola-steps-section');
+  var stepsEl=document.getElementById('scuola-detail-steps');
+  if(steps.length){
+    stepsEl.innerHTML=steps.map(function(s,i){return '<div class="scuola-step"><div class="scuola-step-num">'+(i+1)+'</div><div class="scuola-step-txt">'+s+'</div></div>';}).join('');
+    stepsSec.style.display='block';
+  }else stepsSec.style.display='none';
+  var tips=ex.tips||[];
+  var tipsSec=document.getElementById('scuola-tips-section');
+  var tipsEl=document.getElementById('scuola-detail-tips');
+  if(tips.length){
+    tipsEl.innerHTML=tips.map(function(t){return '<div class="scuola-tip"><span>&#x26A0;</span><span>'+t+'</span></div>';}).join('');
+    tipsSec.style.display='block';
+  }else tipsSec.style.display='none';
+  var flags=[];
+  if(ex.floor)flags.push('<span class="scuola-badge scuola-badge-floor" style="padding:4px 10px;font-size:11px">Richiede pavimento</span>');
+  if(ex.switch)flags.push('<span class="scuola-badge scuola-badge-switch" style="padding:4px 10px;font-size:11px">Cambio lato</span>');
+  document.getElementById('scuola-detail-flags').innerHTML=flags.join('');
+  var img=document.getElementById('scuola-detail-img');
+  // Reset: rimuovi placeholder precedenti per evitare accumulo
+  var imgWrap=img.parentNode;
+  Array.prototype.slice.call(imgWrap.children).forEach(function(ch){
+    if(ch!==img&&!ch.classList.contains('scuola-close-btn'))ch.remove();
+  });
+  img.style.display='';
+  img.src='images/exercises/'+ex.id+'.png';
+  img.onerror=function(){
+    this.style.display='none';
+    if(imgWrap.querySelector('.scuola-ph'))return;
+    var ph=document.createElement('div');ph.className='scuola-ph';
+    ph.style.cssText='width:100%;height:140px;background:var(--g3);display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:20px 20px 0 0;gap:6px';
+    ph.innerHTML='<div style="font-size:52px">🐢</div><div style="font-size:12px;color:var(--g1);font-weight:bold">Immagine non disponibile</div>';
+    imgWrap.insertBefore(ph,this);
+  };
+  document.getElementById('scuola-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeScuolaModal(){
+  document.getElementById('scuola-modal').classList.remove('open');
+  document.body.style.overflow='';
+}
+function closeScuola(){
+  closeScuolaModal();
+  if(_scuolaReturnToSession){_scuolaReturnToSession=false;go_scr('rest');}
+  else go('home');
+}
+function openScuolaFromRest(){
+  if(!T.paused){T.paused=true;var b=document.getElementById('btn-pause');if(b)b.textContent='Riprendi';}
+  _scuolaReturnToSession=true;
+  var nextEx=T.exs.slice(T.idx+1).find(function(e){return !e._transition;});
+  var targetId=nextEx?nextEx.id:(T.exs[T.idx]?T.exs[T.idx].id:null);
+  go_scr('scuola');
+  buildScuola(targetId);
+}
+
 
 function saveField(f){
   const raw=(document.getElementById('fld-'+f).value||'').trim();
@@ -7320,6 +7557,18 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.079',date:'29/04/2026',changes:['FIX: frase saltata ieri esclusa se ieri era giorno di riposo (piano o app)','FIX: _scuolaReturnToSession dichiarata top-level (chiudi scuola senza errori)']},
+  {v:'1.078',date:'29/04/2026',changes:['FIX1: SCUOLA_CATS reinserita (lista esercizi vuota)','FIX2: NaN timer sessione AI da chat con parseInt fallback','FIX3: dismissRiserva non segna riservaDone=true (no +5XP indebiti)','FIX4: audio lookahead 0.15s e volume clamping','FIX5: frase sessione saltata ieri nel Coach Bubble','FIX7+8: frasi Coach Bubble per Progressi e Badge ogni N giorni']},
+  {v:'1.078',date:'29/04/2026',changes:['FIX1: SCUOLA_CATS reinserita','FIX2: NaN timer sessione AI','FIX3: dismissRiserva no +5XP ingiusti','FIX4: audio lookahead e volume clamping','FIX5: frase sessione saltata ieri','FIX7+8: frasi Coach Bubble Progressi e Badge']},
+  {v:'1.078',date:'29/04/2026',changes:['FIX1: SCUOLA_CATS reinserita','FIX2: NaN timer sessione AI parseInt fallback','FIX3: dismissRiserva no XP indebiti','FIX5: frase sessione saltata ieri','FIX7+8: Coach Bubble frasi Progressi e Badge']},
+  {v:'1.077',date:'27/04/2026',changes:['FIX: SCUOLA_CATS reinserita','FIX: placeholder 🐢 non si accumula nel modal (check classe scuola-ph)']},
+  {v:'1.076',date:'27/04/2026',changes:['FIX Badge & XP tab: ora usa buildProfile() + copia HTML da screen-profile — layout identico alla vecchia schermata Badge']},
+  {v:'1.075',date:'27/04/2026',changes:['FIX: screen-progress non più visibile nella home (rimosso display:flex inline)']},
+  {v:'1.074',date:'27/04/2026',changes:['FIX ROOT: Badge & XP tab ora visibile — screen-progress diventa flex column height:100vh','tab-pane usa flex:1 per riempire lo spazio correttamente']},
+  {v:'1.073',date:'27/04/2026',changes:['FIX Badge tab: bottoni segmentati al posto dei tab','FIX Scuola: badge Cambio Lato / Terra / Tips','FIX Scuola: placeholder tartaruga per immagini mancanti','Aggiunti steps+tips a Squat base, Affondo frontale, Marcia leggera']},
+  {v:'1.072',date:'27/04/2026',changes:['FIX: Scuola della Tartaruga non più visibile nella home (display:flex inline rimosso)','FIX: modal esercizio ora centrato sullo schermo (non più in basso)']},
+  {v:'1.071',date:'27/04/2026',changes:['FIX CRITICO: go() aveva progress e onboarding duplicati che rompevano il routing — calendario/party/progressi aprivano la scuola']},
+  {v:'1.070',date:'27/04/2026',changes:['Merge Progressi+Badge in schermata unica con tab','Bottone home Scuola della Tartaruga','Scuola: lista esercizi per categoria con badge floor/switch/tips','Scheda dettaglio: foto, zona, steps, tips','Pulsante Scopri nella pausa sessione']},
   {v:'1.069',date:'27/04/2026',changes:['Settings: AI Coach spostato sopra Guida Rapida','Prompt AI frasi: rimosso orario numerico (evita frasi con ore specifiche)']},
   {v:'1.068',date:'27/04/2026',changes:['Aggiunto pool ACTION_PHRASES: frasi motivazionali per fare la sessione (solo giorno allenamento + non ancora fatto)','Frase streak a rischio se 3+ giorni e non ancora allenato oggi','Frase con categoria del piano del giorno','7 frasi complimento sessione fatta (da 5)','Frase riposo: badge sbloccati aggiunta al pool']},
   {v:'1.067',date:'27/04/2026',changes:['FIX ROOT: _shouldGenerateAISession rimossa da buildCoachBubble (causava ReferenceError che bloccava rotazione frasi)','try-catch globale in buildCoachBubble per protezione futura','Frasi di fallback garantite se _coachPhrases vuoto']},
@@ -8154,6 +8403,25 @@ function buildCoachBubble(){
     // Non ancora allenato oggi — solo se NON è giorno di riposo
     const _todayPlanCB=getTodayPlan();
     const _isRestDayCB=_todayPlanCB.type==='rest'||_todayPlanCB.focus==='riposo';
+    // Frase "sessione saltata ieri" — solo se ieri era giorno di allenamento (non riposo)
+    if(!_isRestDayCB && S.last){
+      const _yesterday=new Date();_yesterday.setDate(_yesterday.getDate()-1);
+      const _yd=_yesterday.toISOString().slice(0,10);
+      // Controlla se ieri era un giorno di riposo nel piano
+      const _yesterdayPlan=(S.plan||[]).filter(function(p){return p.date===_yd;});
+      const _yp=_yesterdayPlan[_yesterdayPlan.length-1]||{};
+      const _yesterdayWasRest=_yp.type==='rest'||_yp.focus==='riposo';
+      if(S.last<_yd && S.tot>0 && S.str===0 && !_yesterdayWasRest){
+        const _skipPhrases=[
+          '😅 Ieri hai saltato, vero? Tranquillo — la tartaruga non giudica... però sa tutto! Dai, oggi si rientra! 🐢',
+          '🕵️ Ho notato che ieri la sessione è rimasta in sospeso. Oggi si riscatta! 💪',
+          '🐢 La tartaruga tiene il conto... ieri zero esercizi! Oggi però sei qui, e questo conta! 🌟',
+          '😏 Ieri ci hai fatto un pensierino ma non hai fatto la sessione. Oggi però eccoti qui — bravo! 🐢',
+          '🌅 Nuovo giorno, nuova occasione. Ieri è andato com è andato — l\'importante è oggi! 💪',
+        ];
+        _coachPhrases.push(_skipPhrases[Math.floor(Math.random()*_skipPhrases.length)]);
+      }
+    }
     if(!_isRestDayCB){
       // Frasi di azione: spingono a fare la sessione
       var _actionPhrases=[
@@ -8241,6 +8509,27 @@ function buildCoachBubble(){
     shuffled.slice(0,Math.min(2,shuffled.length)).forEach(p=>_coachPhrases.push(p));
   }
 
+  // 5b. Ogni tot sessioni, ricorda di controllare Progressi e Badge
+  var _navSugg=[];
+  if(S.tot>3){
+    var _navSeed=(S.tot+new Date().getDay())%7;
+    if(_navSeed===0||_navSeed===3){
+      _navSugg=[
+        '📊 Hai visto i tuoi progressi ultimamente? Vai in "Progressi" e guarda quanto sei cresciuto! 💪',
+        '📈 Curiosità: sai quante sessioni hai fatto questo mese? Controlla in "Progressi → Statistiche"! 🐢',
+        '🗓️ La heatmap dei tuoi allenamenti ti aspetta! Vai su "Progressi" per vederla 🌟',
+      ];
+    }else if(_navSeed===1||_navSeed===5){
+_navSugg=[
+        '🏅 Sai quanti badge hai sbloccato? Aprili in Progressi Badge e XP! 🐢',
+        '🏆 Ci sono badge che ti mancano pochissimo! Vai su Progressi e Badge per vedere cosa ti serve 💪',
+        '⭐ Hai guadagnato nuovi XP! Vai in Progressi a vedere il tuo livello attuale 🌟',
+      ]
+      ;
+    }
+    if(_navSugg.length)_coachPhrases.push(_navSugg[Math.floor(Math.random()*_navSugg.length)]);
+  }
+
   // 6. Difficoltà dinamica
   const _dp=getDifficultyPhrase();if(_dp)_coachPhrases.push(_dp);
   // 7. Sfida stagionale
@@ -8254,9 +8543,7 @@ function buildCoachBubble(){
   // 8. AI Coach phrases — interleave con frasi statiche
   if(SET.aiEnabled&&SET.aiFeature_bubble!==false){
     var _today2=localDate();
-    const _cbSlot2=_cbHour>=6&&_cbHour<12?'mattino':_cbHour>=12&&_cbHour<18?'pomeriggio':_cbHour>=18&&_cbHour<21?'sera':'notte';
-    var _cacheKey2=_today2+'_'+_cbSlot2;
-    var _aiCached=S.aiDailyPhrases&&(S.aiDailyPhrasesDate===_cacheKey2||S.aiDailyPhrasesDate===_today2)&&S.aiDailyPhrases.length>0;
+    var _aiCached=S.aiDailyPhrases&&S.aiDailyPhrasesDate===_today2&&S.aiDailyPhrases.length>0;
     if(_aiCached){
       // Cache presente: interleave RIGOROSO — 1 statica, 1 AI, 1 statica, 1 AI...
       var _aiP=S.aiDailyPhrases;
@@ -8286,23 +8573,28 @@ function buildCoachBubble(){
     }
   }
 
-  // 9. Segnala sessione AI disponibile (se sessions attivo e non fatto oggi)
+  // 9. Segnala sessione AI disponibile oggi (solo se non già fatta una sessione)
   if(!!SET.aiEnabled && SET.aiFeature_sessions!==false && !_cbTodayDone){
-    var _aiSessPhrases=[
-      '🧠✨ Vuoi un allenamento su misura? Premi "Inizia sessione" e scegli il tasto AI Coach!',
-      '🐢 Il Coach AI può creare una sessione personalizzata per te! Cercala dopo "Inizia sessione".',
-      '✨ Sessione personalizzata AI disponibile! Trovila nella schermata dopo "Inizia sessione" 🧠',
-      '🤖 Lascia scegliere il Coach AI oggi! Dopo "Inizia sessione" premi il tasto 🧠✨',
-    ];
-    _coachPhrases.push(_aiSessPhrases[Math.floor(Math.random()*_aiSessPhrases.length)]);
+    var _today3=localDate();
+    var _aiSessReady=S.aiSessionDate===_today3&&S.aiSessionToday&&S.aiSessionToday.ids&&S.aiSessionToday.ids.length>0;
+    var _aiSessScheduled=_aiSessReady||_shouldGenerateAISession();
+    if(_aiSessScheduled){
+      var _aiSessPhrases=[
+        '🧠✨ Oggi il Coach AI ha preparato una sessione su misura per te! Trovala accanto al tasto "Inizia sessione" in home!',
+        '🐢 Psst! Il tuo Coach AI ha studiato i tuoi allenamenti e ha qualcosa di speciale in home per te oggi!',
+        '✨ Novità: oggi c\' una sessione personalizzata AI che ti aspetta! Trovila in home accanto al solito tasto 🧠',
+        '🤖 Il Coach AI ha fatto i compiti stanotte! Vai in home e trovi la sua sessione tutta per te 🎯',
+      ];
+      _coachPhrases.push(_aiSessPhrases[Math.floor(Math.random()*_aiSessPhrases.length)]);
+    }
   }
-  // Start rotation — in try-catch: qualsiasi errore sopra non deve bloccare le frasi
+  // Start rotation — in try-catch: qualsiasi errore sopra non blocca le frasi
   } catch(_cbErr){ console.warn('buildCoachBubble error:',_cbErr); }
   // Garantisci almeno 1 frase di fallback
   if(!_coachPhrases.length){
     _coachPhrases=['🐢 Pronto per il tuo allenamento? La tartaruga ti aspetta!',
       '💪 Ogni sessione conta — anche quella di oggi!',
-      '🌟 La costanza batte il talento. Vai '+( P.name||'campione')+'!'];
+      '🌟 La costanza batte il talento. Vai '+(P.name||'campione')+'!'];
   }
   _showCoachPhrase();
   if(_coachIv)clearInterval(_coachIv);
@@ -8479,20 +8771,12 @@ function _playNote(ctx,freq,startTime,volume,duration,type){
 
 // ═══ FRASI METEO ════════════════════════════════════════════════════════════
 var WEATHER_PHRASES={
-  sun:[ // ☀️ sole/caldo moderato — solo di giorno
+  sun:[ // ☀️ sole/caldo moderato
     "☀️ Sole splendente! Perfetto per aprire la finestra e muoversi con l'aria fresca!",
     "🌞 Con questo sole è quasi un peccato non fare qualcosa di bello per il corpo!",
     "☀️ Giornata luminosa — anche l'umore è al top. Momento perfetto per allenarti!",
     "🌤️ Bella giornata! Il sole dà energia — usala bene! 💪",
     "🌻 Con questa luce muoversi è più bello. La tartaruga lo sa! 🐢",
-    "🌞 Il sole è la motivazione naturale — non sprecarlo sul divano!",
-  ],
-  sun_night:[ // ☀️ era sereno ma ora è notte
-    "🌙 Cielo sereno stanotte — 10 minuti e poi dormi da re! 💪",
-    "⭐ Notte limpida, mente limpida. Sessione leggera? 🐢",
-    "🌃 Bella serata tranquilla — con una sessione diventa ancora più bella! ✨",
-    "🌌 Cielo stellato fuori, energia dentro. Muoviamoci! 🐢",
-    "🌙 Temperatura mite anche di notte — perfetto per un po' di movimento!",
   ],
   rain:[ // 🌧️ pioggia
     "🌧️ Fuori piove — dentro si suda meglio! Niente scuse! 🏠",
@@ -8951,7 +9235,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604271223'; // auto-set on each release
+const APP_BUILD='202604291622'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
