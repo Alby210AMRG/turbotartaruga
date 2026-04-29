@@ -1042,6 +1042,14 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <!-- TAB: Allena insieme -->
     <div id="party-pane-insieme" style="display:none;padding:0 12px 20px">
 
+      <!-- Card: Storico sessioni Insieme (SEMPRE VISIBILE) -->
+      <div class="p-card" id="together-history-card">
+        <div class="p-tag">📋 Ultime sessioni Insieme</div>
+        <div id="together-history-list">
+          <p style="font-size:12px;opacity:.6;text-align:center;padding:8px 0">Nessuna sessione condivisa ancora 🐢</p>
+        </div>
+      </div>
+
       <!-- Card: Sei l'OSPITE → genera il tuo codice -->
       <div class="p-card">
         <div class="p-tag">🎫 Unisciti a un amico</div>
@@ -1117,12 +1125,21 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <!-- Card: Genera e condividi risultati (sempre visibile se ci sono ospiti) -->
       
       <!-- Card: Genera risultato per gli ospiti (visibile dopo sessione) -->
-      <div class="p-card" id="result-card" style="display:none">
-        <div class="p-tag">🎉 Sessione completata! Manda i risultati ai tuoi amici</div>
-        <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:10px">
-          Un solo codice per tutti i tuoi amici — fallo inquadrare oppure condividi via WhatsApp.
-        </p>
-        <div id="result-codes-list">
+      <div class="p-card" id="result-card">
+        <div class="p-tag">📤 Risultato da condividere</div>
+        <!-- Bottone TEST locale -->
+        <button id="btn-test-insieme" onclick="_testInsiemeMode()" style="display:none;width:100%;margin-bottom:8px;padding:8px;background:rgba(255,165,0,.2);color:orange;border:1px dashed orange;border-radius:100px;font-size:11px;cursor:pointer;font-family:var(--ff)">🧪 TEST: simula sessione completata</button>
+        <!-- Stato vuoto: nessuna sessione ancora -->
+        <div id="result-empty-state">
+          <p style="font-size:13px;opacity:.7;text-align:center;padding:12px 0 4px">
+            🐢 Fai una sessione con i tuoi amici e qui apparirà il codice risultato da condividere!
+          </p>
+        </div>
+        <!-- Stato popolato: dopo sessione completata -->
+        <div id="result-codes-list" style="display:none">
+          <p style="font-size:13px;opacity:.85;line-height:1.6;margin-bottom:10px">
+            Un solo codice per tutti i tuoi amici — fallo inquadrare o condividi via WhatsApp.
+          </p>
           <!-- QR del risultato -->
           <div id="result-qr-wrap" style="text-align:center;margin-bottom:10px">
             <div style="background:#fff;border-radius:14px;padding:14px;display:inline-block">
@@ -1144,6 +1161,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
             style="width:100%;margin-top:10px;padding:10px;background:transparent;color:rgba(255,255,255,.5);border:1px dashed rgba(255,255,255,.25);border-radius:100px;font-size:12px;cursor:pointer">
             🔄 Nuova sessione (resetta amici)
           </button>
+          
           <div id="result-code-single" style="display:none"></div>
         </div>
       </div>
@@ -1500,7 +1518,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.079</div>
+      <div id="app-version-display">Versione v1.083</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -2924,6 +2942,29 @@ function wizBuildSummary(){
 }
 
 // ═══ PLAN GENERATION ═══
+function _calcAutoRestDays(userRestDays,level){
+  var minRest=(level==='esperto')?1:2;
+  var needed=minRest-(userRestDays||[]).length;
+  if(needed<=0)return[];
+  var autoRests=[];var allRests=(userRestDays||[]).slice();
+  for(var n=0;n<needed;n++){
+    var bestDay=-1,bestDist=-1;
+    for(var d=0;d<7;d++){
+      if(allRests.includes(d))continue;
+      var minDist=7;
+      for(var ri=0;ri<allRests.length;ri++){
+        var diff=Math.abs(d-allRests[ri]);
+        var circ=Math.min(diff,7-diff);
+        if(circ<minDist)minDist=circ;
+      }
+      if(minDist<=1)continue;
+      if(minDist>bestDist){bestDist=minDist;bestDay=d;}
+    }
+    if(bestDay>=0){autoRests.push(bestDay);allRests.push(bestDay);}
+  }
+  return autoRests;
+}
+
 function generatePlan(){
   // Per nuovo utente: genera da zero. Per utente esistente: delega a refreshPlan
   // che preserva lo storico e continua la rotazione da dove si era
@@ -2933,14 +2974,16 @@ function generatePlan(){
   }
   // Primo avvio: genera piano pulito da zero
   const cats=(P.categories||['gambe','braccia','core','stretching','orientale']).filter(c=>c!=='riscaldamento');
-  const restDays=P.restDays||[0,6];
+  const _urd=P.restDays||[0,6];
+  const _ard=_calcAutoRestDays(_urd,P.level||'principiante');
+  const restDays=[...new Set([..._urd,..._ard])];
   const plan=[];let focusIdx=0,consec=0;
   for(let i=0;i<30;i++){
     const d=new Date();d.setDate(d.getDate()+i);
     const dow=d.getDay();const ds=localDate(d); // usa data locale
     const isRest=restDays.includes(dow)||(consec>=(P.level==='principiante'?2:P.level==='esperto'?5:3));
     if(isRest){
-      const isUserRest=restDays.includes(dow);
+      const isUserRest=_urd.includes(dow);
       plan.push({date:ds,type:'rest',focus:'riposo',
         icon:isUserRest?'😴':'🔄',
         restKind:isUserRest?'user':'auto'});
@@ -2962,7 +3005,9 @@ function refreshPlan(silent){
     P.categories=[...catBtns].map(e=>e.dataset.cat);
   }
   const cats=(P.categories||['gambe','braccia','core','stretching','orientale']).filter(c=>c!=='riscaldamento');
-  const restDays=P.restDays||[0,6];
+  const _urd2=P.restDays||[0,6];
+  const _ard2=_calcAutoRestDays(_urd2,P.level||'principiante');
+  const restDays=[...new Set([..._urd2,..._ard2])];
   const maxConsec=P.level==='principiante'?2:P.level==='esperto'?5:3;
   const today=localDate();
   
@@ -2997,7 +3042,7 @@ function refreshPlan(silent){
     if(ds<today)continue; // già gestito con pastEntries
     const isRest=restDays.includes(dow)||(consec>=maxConsec);
     if(isRest){
-      const isUserRest=restDays.includes(dow);
+      const isUserRest=_urd2.includes(dow);
       plan.push({date:ds,type:'rest',focus:'riposo',
         icon:isUserRest?'😴':'🔄',
         restKind:isUserRest?'user':'auto'});
@@ -3109,6 +3154,10 @@ function buildHome(){
       if(_rBadges>0) _rRestPhrases.push('🏅 Hai già '+_rBadges+' badge! Quanti altri riesci a sbloccare?');
       if(_rStreak>2) _rRestPhrases.push('🔥 Streak di '+_rStreak+' giorni! Il riposo di oggi è parte del piano.');
       _coachPhrases.push(_rRestPhrases[Math.floor(Math.random()*_rRestPhrases.length)]);
+      var _uRd=(P.restDays||[]).length;
+      var _isEsp=(P.level||'')==='esperto';
+      if(!_isEsp&&_uRd>=3)_coachPhrases.push(['😅 '+_uRd+' giorni di riposo sono tanti! Per il tuo livello 2 bastano — la tartaruga di allena di piu!','🐢 Psst... 2 giorni di riposo sono il numero magico per te. Aggiungine qualche sessione! 💪'][Math.floor(Math.random()*2)]);
+      else if(_isEsp&&_uRd>=2)_coachPhrases.push('💪 '+_uRd+' giorni di riposo? Sei Avanzato — uno solo ti basta! 🐢');
       // Aggiungi 1 frase statistica extra
       if(_rTot>5){
         var _extraRest=[
@@ -5598,7 +5647,74 @@ function initParty(){
   players=P.name?[P.name]:['Giocatore 1'];scores={};chalIdx=0;
   showPartyChal(CHALLENGES[0]);
   updatePartyUI();
+  _buildTogetherHistory();
+  // Mostra bottone TEST solo in locale (file:// o localhost)
+  var _isLocal=location.protocol==='file:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
+  var _tb=document.getElementById('btn-test-insieme');
+  if(_tb)_tb.style.display=_isLocal?'block':'none';
+  // Ripristina il codice risultato dall'ultimo storico (se esiste)
+  var _lastH=(S.togetherHistory||[])[0];
+  if(_lastH&&_lastH.code){
+    var _es=document.getElementById('result-empty-state');
+    var _rl=document.getElementById('result-codes-list');
+    var _rcs=document.getElementById('result-code-single');
+    if(_es)_es.style.display='none';
+    if(_rl)_rl.style.display='block';
+    if(_rcs){_rcs.textContent=_lastH.code;_rcs.style.display='none';}
+    _lastResultCode=_lastH.code;
+    makeQR('result-qr-canvas',_lastH.code);
+  }
 }
+
+function _buildTogetherHistory(){
+  var list=document.getElementById('together-history-list');if(!list)return;
+  var hist=S.togetherHistory||[];
+  if(!hist.length){list.innerHTML='<p style="font-size:12px;opacity:.6;text-align:center;padding:8px 0">Nessuna sessione condivisa ancora 🐢</p>';return;}
+  var html='';
+  hist.forEach(function(h,i){
+    var ci=CAT_INFO[h.type]||{icon:'💪',label:h.type||'Workout'};
+    var bStr=h.badges>0?(' · 🏅 '+h.badges+' badge'):'';
+    var cPrev=(h.code||'').slice(0,45)+(h.code&&h.code.length>45?'...':'');
+    html+='<div style="background:rgba(255,255,255,.1);border-radius:12px;padding:10px 12px;margin-bottom:8px">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">'
+      +'<span style="font-weight:bold;font-size:13px;color:#fff">'+ci.icon+' con '+h.partner+'</span>'
+      +'<span style="font-size:11px;opacity:.6;color:#fff">'+h.date+'</span>'
+      +'</div>'
+      +'<div style="font-size:11px;opacity:.8;color:#fff;margin-bottom:6px">'+ci.label+' · +'+h.xp+' XP'+bStr+'</div>'
+      +'<div style="display:flex;gap:6px;align-items:center">'
+      +'<span style="font-family:monospace;font-size:9px;background:rgba(0,0,0,.3);padding:3px 7px;border-radius:6px;color:rgba(255,255,255,.65);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+cPrev+'</span>'
+      +'<button onclick="_copyTH('+i+')" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:100px;padding:4px 10px;color:#fff;font-size:11px;cursor:pointer;white-space:nowrap;font-family:var(--ff)">📋 Copia</button>'
+      +'</div></div>';
+  });
+  list.innerHTML=html;
+}
+
+function _copyTH(i){
+  var h=(S.togetherHistory||[])[i];if(!h||!h.code){toast('Nessun codice');return;}
+  if(navigator.clipboard){navigator.clipboard.writeText(h.code).then(function(){toast('📋 Codice copiato!');}).catch(function(){_cbFallback(h.code);});}
+  else _cbFallback(h.code);
+}
+function _testInsiemeMode(){
+  // Simula una sessione completata per testare il flusso host
+  if(!togetherGuests||!togetherGuests.length){
+    // Aggiungi ospiti di test
+    togetherGuests=[{name:'TestOspite1'},{name:'TestOspite2'}];
+    updateTogetherGuestsList&&updateTogetherGuestsList();
+  }
+  var fakeEntry={
+    date:localDate(),type:'gambe',focus:'gambe',
+    icon:'🦵',dur:12,exCount:8,xp:25,
+    tags:['🦵 Quadricipiti','🍑 Glutei'],
+    exercises:[{id:'g1',n:'Squat base',cat:'gambe'},{id:'g3',n:'Affondo frontale',cat:'gambe'}]
+  };
+  buildResultCodes(fakeEntry);
+  toast('🧪 Test: codice risultato generato!');
+}
+
+// Il bottone TEST viene mostrato da initParty() se in locale
+
+
+function _cbFallback(t){var ta=document.createElement('textarea');ta.value=t;ta.style.cssText='position:fixed;top:0;opacity:0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');toast('📋 Copiato!');}catch(e){toast('Copia: '+t.slice(0,30)+'...');}document.body.removeChild(ta);}
 function updatePartyUI(){
   const av=['🐢','🦊','🐧','🦁'];
   document.getElementById('party-players').innerHTML=players.map((p,i)=>`<div style="background:rgba(255,255,255,.14);border-radius:11px;padding:8px 12px;display:flex;align-items:center;gap:6px;color:#fff"><span style="font-size:16px">${av[i%4]}</span><span style="font-weight:bold;font-size:12px;flex:1">${p}</span><button onclick="removePlayer(${i})" style="background:rgba(255,255,255,.25);border:none;border-radius:50%;width:22px;height:22px;cursor:pointer;color:#fff;font-size:11px;padding:0;line-height:1">✕</button></div>`).join('');
@@ -5958,7 +6074,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.079 · 29/04/2026 16:22 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.083 · 29/04/2026 18:50 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -6831,12 +6947,7 @@ function partyTab(tab){
     ti.style.color=tab==='insieme'?'#1B5E20':'#fff';
     ti.style.borderColor=tab==='insieme'?'rgba(255,255,255,.6)':'rgba(255,255,255,.3)';
   }
-  // Show result card if guests and last session today
-  const today=localDate(); // use local date, not UTC
-  const lastH=S.history&&S.history[0];
-  const rc=document.getElementById('result-card');
-  if(rc)rc.style.display=(tab==='insieme'&&togetherGuests.length>0&&lastH&&lastH.date===today)?'block':'none';
-  if(tab==='insieme'&&togetherGuests.length>0&&lastH&&lastH.date===today)buildResultCodes(lastH);
+  // result-card è sempre visibile nella tab insieme — non toccare il suo display
 }
 
 // ═══ ALLENA INSIEME ═══
@@ -6979,7 +7090,7 @@ function stopQRScan(){
 }
 
 function processScannedCode(raw){
-  if(raw.startsWith('TTS-')){addGuestFromRaw(raw);return;}
+  if(raw.startsWith('TTS-')&&_qrScanTarget!=='result-code-input'){addGuestFromRaw(raw);return;}
   if(raw.startsWith('TTR-')){
     const inp=document.getElementById('result-code-input');
     if(inp){inp.value=raw;importResultCode();}
@@ -7122,7 +7233,7 @@ var CAT_INFO={
 };
 // ── Core state objects ──────────────────────────────────────────────────
 var P={};  // Profile
-var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0,aiChatHistory:[],aiChats:0};  // Stats
+var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0,aiChatHistory:[],aiChats:0,togetherHistory:[]};  // Stats
 var SET={audio:true,voice:true,voiceDesc:true,music:true,musicVol:60,dynamicTheme:true,pauseSec:25,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light',aiEnabled:false,aiProvider:'gemini',aiKey:'',aiKeys:{gemini:'',claude:'',chatgpt:''},aiGeminiModel:'gemini-2.5-flash',aiFeature_bubble:true,aiFeature_sessions:true,aiFeature_chat:true,aiSessionFreq:'daily'};  // Settings
 var T={exs:[],idx:0,phase:'act',left:0,paused:false,t0:0,iv:null,dur:12,feeling:'piano',sesType:'misto',_halfSpoken:false,_restDone:null,_isRoutine:false};  // Timer state
 
@@ -7180,7 +7291,7 @@ function resetPartySession(){
   togetherGuests=[];
   _lastResultCode='';
   updateTogetherUI();
-  const rc=document.getElementById('result-card');if(rc)rc.style.display='none';
+  const rc=document.getElementById('result-card');if(rc){var _es2=rc.querySelector('#result-empty-state');var _rl2=rc.querySelector('#result-codes-list');if(_es2)_es2.style.display='block';if(_rl2)_rl2.style.display='none';}
   const qrWrap=document.getElementById('result-qr-wrap');if(qrWrap)qrWrap.innerHTML='';
   document.getElementById('result-qr-canvas').innerHTML='';
   toast('🔄 Sessione resettata — pronti per una nuova partita! 🐢');
@@ -7190,7 +7301,10 @@ function resetPartySession(){
 function buildResultCodes(histEntry){
   if(!togetherGuests.length)return;
   const card=document.getElementById('result-card');
-  if(card)card.style.display='block';
+  var _es=document.getElementById('result-empty-state');
+  var _rl=document.getElementById('result-codes-list');
+  if(_es)_es.style.display='none';
+  if(_rl)_rl.style.display='block';
   // Build ONE code containing all guests
   const result={
     type:'TTR_result',v:'0.5',
@@ -7208,6 +7322,12 @@ function buildResultCodes(histEntry){
   _lastResultCode=code;
   document.getElementById('result-code-single').textContent=code;
   makeQR('result-qr-canvas', code);
+  // Salva nello storico HOST
+  if(!S.togetherHistory)S.togetherHistory=[];
+  var _gn=(togetherGuests||[]).map(function(g){return g.name||g;}).join(', ')||'?';
+  S.togetherHistory.unshift({date:histEntry.date||localDate(),partner:_gn,type:histEntry.type||'workout',xp:histEntry.xp||0,badges:(S.badges||[]).length,code:code});
+  if(S.togetherHistory.length>3)S.togetherHistory=S.togetherHistory.slice(0,3);
+  save();_buildTogetherHistory();
   // Auto-show result card when returning to party tab
   const pane=document.getElementById('party-pane-insieme');
   if(pane)pane.scrollTop=0;
@@ -7236,7 +7356,11 @@ function importResultCode(){
   if(!raw.startsWith('TTR-')){toast('⚠️ Codice risultato non valido! Deve iniziare con TTR-');return}
   try{
     const r=JSON.parse(decodeURIComponent(escape(atob(raw.slice(4)))));
-    if(r.type!=='TTR_result'){toast('⚠️ Questo non è un codice risultato!');return}
+    // Accetta sia formato v0.5 (r.guests) che formato legacy (r.name+r.dt)
+    var _isLegacy=!r.guests&&r.name&&r.dt;
+    if(!r.guests&&!_isLegacy){toast('⚠️ Codice risultato non valido');return}
+    // Normalizza formato legacy
+    if(_isLegacy){r.guests=[r.name];r.type_ses=r.lastSession&&r.lastSession.type||'misto';r.xp=r.lastSession&&r.lastSession.xp||0;r.dur=r.lastSession&&r.lastSession.dur||0;r.exCount=r.lastSession&&r.lastSession.exCount||0;r.icon=r.lastSession&&r.lastSession.icon||'💪';r.date=r.dt;}
     // v0.5: multi-guest — check if current user is in the list
     const myName=(P.name||'').trim().toLowerCase();
     if(r.guests&&r.guests.length){
@@ -7274,6 +7398,11 @@ function importResultCode(){
     const newBadges=checkBadges();
     save();
     document.getElementById('result-code-input').value='';
+    // Salva nello storico
+    if(!S.togetherHistory)S.togetherHistory=[];
+    S.togetherHistory.unshift({date:r.date||localDate(),partner:(r.name||(r.guests&&r.guests[0])||'?'),type:r.type_ses||'workout',xp:r.xp||0,badges:newBadges.length,code:raw});
+    if(S.togetherHistory.length>3)S.togetherHistory=S.togetherHistory.slice(0,3);
+    save();_buildTogetherHistory();
     launchConfetti();
     toast('✅ Sessione party importata! +'+r.xp+' XP guadagnati 🎉',3500);
     beep(660,.15);
@@ -7557,6 +7686,10 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.083',date:'29/04/2026',changes:['FIX: bottone TEST ora visibile (spostato fuori dal div display:none)']},
+  {v:'1.082',date:'29/04/2026',changes:['FIX: result-card sempre visibile (rimossa logica display in partyTab)','FIX: bottone TEST ora mostrato da initParty() non DOMContentLoaded']},
+  {v:'1.081',date:'29/04/2026',changes:['result-card sempre visibile (stato vuoto/popolato)','Ripristino QR al rientro nella tab (da storico)','Bottone TEST 🧪 visibile solo in locale per debug Insieme']},
+  {v:'1.080',date:'29/04/2026',changes:['Giorni riposo automatici bilanciati per livello','Coach Bubble: frase troppi giorni di riposo','FIX TTR- parser: supporto formato legacy+v0.5','FIX QR scanner modalita TTS vs TTR','Party Insieme: storico 3 sessioni sempre visibile con codice copiabile']},
   {v:'1.079',date:'29/04/2026',changes:['FIX: frase saltata ieri esclusa se ieri era giorno di riposo (piano o app)','FIX: _scuolaReturnToSession dichiarata top-level (chiudi scuola senza errori)']},
   {v:'1.078',date:'29/04/2026',changes:['FIX1: SCUOLA_CATS reinserita (lista esercizi vuota)','FIX2: NaN timer sessione AI da chat con parseInt fallback','FIX3: dismissRiserva non segna riservaDone=true (no +5XP indebiti)','FIX4: audio lookahead 0.15s e volume clamping','FIX5: frase sessione saltata ieri nel Coach Bubble','FIX7+8: frasi Coach Bubble per Progressi e Badge ogni N giorni']},
   {v:'1.078',date:'29/04/2026',changes:['FIX1: SCUOLA_CATS reinserita','FIX2: NaN timer sessione AI','FIX3: dismissRiserva no +5XP ingiusti','FIX4: audio lookahead e volume clamping','FIX5: frase sessione saltata ieri','FIX7+8: frasi Coach Bubble Progressi e Badge']},
@@ -9235,7 +9368,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604291622'; // auto-set on each release
+const APP_BUILD='202604291850'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
