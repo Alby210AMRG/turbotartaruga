@@ -1518,7 +1518,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.083</div>
+      <div id="app-version-display">Versione v1.086</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -5652,18 +5652,12 @@ function initParty(){
   var _isLocal=location.protocol==='file:'||location.hostname==='localhost'||location.hostname==='127.0.0.1';
   var _tb=document.getElementById('btn-test-insieme');
   if(_tb)_tb.style.display=_isLocal?'block':'none';
-  // Ripristina il codice risultato dall'ultimo storico (se esiste)
-  var _lastH=(S.togetherHistory||[])[0];
-  if(_lastH&&_lastH.code){
-    var _es=document.getElementById('result-empty-state');
-    var _rl=document.getElementById('result-codes-list');
-    var _rcs=document.getElementById('result-code-single');
-    if(_es)_es.style.display='none';
-    if(_rl)_rl.style.display='block';
-    if(_rcs){_rcs.textContent=_lastH.code;_rcs.style.display='none';}
-    _lastResultCode=_lastH.code;
-    makeQR('result-qr-canvas',_lastH.code);
-  }
+  // Il box risultato riparte sempre vuoto ad ogni apertura
+  var _es=document.getElementById('result-empty-state');
+  var _rl=document.getElementById('result-codes-list');
+  if(_es)_es.style.display='block';
+  if(_rl)_rl.style.display='none';
+  _lastResultCode=null;
 }
 
 function _buildTogetherHistory(){
@@ -5695,12 +5689,9 @@ function _copyTH(i){
   else _cbFallback(h.code);
 }
 function _testInsiemeMode(){
-  // Simula una sessione completata per testare il flusso host
-  if(!togetherGuests||!togetherGuests.length){
-    // Aggiungi ospiti di test
-    togetherGuests=[{name:'TestOspite1'},{name:'TestOspite2'}];
-    updateTogetherGuestsList&&updateTogetherGuestsList();
-  }
+  var myName=P.name||'TestHost';
+  var _prevGuests=togetherGuests;
+  togetherGuests=[{name:myName},{name:'TestAmico'}];
   var fakeEntry={
     date:localDate(),type:'gambe',focus:'gambe',
     icon:'🦵',dur:12,exCount:8,xp:25,
@@ -5708,7 +5699,8 @@ function _testInsiemeMode(){
     exercises:[{id:'g1',n:'Squat base',cat:'gambe'},{id:'g3',n:'Affondo frontale',cat:'gambe'}]
   };
   buildResultCodes(fakeEntry);
-  toast('🧪 Test: codice risultato generato!');
+  togetherGuests=_prevGuests;
+  toast('🧪 Codice TEST generato! Copialo e incollalo in Importa i tuoi risultati');
 }
 
 // Il bottone TEST viene mostrato da initParty() se in locale
@@ -6074,7 +6066,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.083 · 29/04/2026 18:50 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.086 · 30/04/2026 12:50 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -7686,6 +7678,9 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.086',date:'30/04/2026',changes:['FIX test: rimosso updateTogetherGuestsList non definita','Box risultato sempre vuoto al rientro in Party Insieme']},
+  {v:'1.085',date:'30/04/2026',changes:['FIX: QR risultato ripristinato solo se la sessione e di oggi (non da storico vecchio)']},
+  {v:'1.084',date:'30/04/2026',changes:['FIX test Insieme: codice TTR- ora include il nome utente corrente tra gli ospiti']},
   {v:'1.083',date:'29/04/2026',changes:['FIX: bottone TEST ora visibile (spostato fuori dal div display:none)']},
   {v:'1.082',date:'29/04/2026',changes:['FIX: result-card sempre visibile (rimossa logica display in partyTab)','FIX: bottone TEST ora mostrato da initParty() non DOMContentLoaded']},
   {v:'1.081',date:'29/04/2026',changes:['result-card sempre visibile (stato vuoto/popolato)','Ripristino QR al rientro nella tab (da storico)','Bottone TEST 🧪 visibile solo in locale per debug Insieme']},
@@ -9368,7 +9363,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202604291850'; // auto-set on each release
+const APP_BUILD='202604301250'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
