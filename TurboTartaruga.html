@@ -303,6 +303,28 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   .scuola-step-txt{font-size:13px;color:var(--tmid);line-height:1.5}
   .scuola-tip{display:flex;gap:8px;margin-bottom:6px;font-size:13px;color:var(--tmid);line-height:1.5}
 
+  /* ── BANNER AGGIORNAMENTO ─────────────────────────────────── */
+  #update-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:8000;
+    background:linear-gradient(135deg,#1B5E20,#2E7D32);
+    color:#fff;padding:0;box-shadow:0 2px 12px rgba(0,0,0,.25);
+    font-family:var(--ff);animation:slideDown .35s ease}
+  @keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+  .upd-bar{display:flex;align-items:center;gap:10px;padding:10px 14px}
+  .upd-icon{font-size:22px;flex-shrink:0}
+  .upd-text{flex:1;min-width:0}
+  .upd-title{font-weight:bold;font-size:13px;line-height:1.3}
+  .upd-sub{font-size:11px;opacity:.8;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .upd-actions{display:flex;gap:6px;flex-shrink:0}
+  .upd-btn{padding:6px 12px;border-radius:100px;border:none;font-size:12px;font-weight:bold;cursor:pointer;font-family:var(--ff)}
+  .upd-btn-primary{background:#C8E6C9;color:#1B5E20}
+  .upd-btn-ghost{background:rgba(255,255,255,.15);color:#fff}
+  /* Changelog panel */
+  #update-changelog{display:none;background:#1B5E20;border-top:1px solid rgba(255,255,255,.15);padding:10px 14px 14px;max-height:220px;overflow-y:auto}
+  #update-changelog.open{display:block}
+  .upd-changes{list-style:none;padding:0;margin:0}
+  .upd-changes li{font-size:12px;color:rgba(255,255,255,.9);padding:3px 0;padding-left:14px;position:relative;line-height:1.4}
+  .upd-changes li::before{content:'→';position:absolute;left:0;opacity:.6}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
@@ -403,6 +425,27 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 </div>
 
 <!-- HOME -->
+<!-- BANNER AGGIORNAMENTO -->
+<div id="update-banner">
+  <div class="upd-bar">
+    <div class="upd-icon">🐢</div>
+    <div class="upd-text">
+      <div class="upd-title" id="upd-title">Nuova versione disponibile!</div>
+      <div class="upd-sub" id="upd-sub">Premi Aggiorna per installare</div>
+    </div>
+    <div class="upd-actions">
+      <button class="upd-btn upd-btn-ghost" onclick="toggleChangelog()" id="upd-changelog-btn" title="Cosa c'è di nuovo">📋</button>
+      <button class="upd-btn upd-btn-primary" onclick="doUpdate()">↺ Aggiorna</button>
+      <button class="upd-btn upd-btn-ghost" onclick="dismissUpdateBanner()">✕</button>
+    </div>
+  </div>
+  <div id="update-changelog">
+    <div style="font-size:11px;font-weight:bold;opacity:.7;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Novità di questa versione</div>
+    <ul class="upd-changes" id="upd-changes-list"></ul>
+  </div>
+</div>
+
+
 <div id="screen-home" class="screen">
   <div class="home-hero" style="position:relative">
     <div id="chat-icon-wrap" style="display:none;position:absolute;top:10px;left:12px;z-index:10"><button class="chat-icon-btn" onclick="openAIChat()" title="Chat con il Coach AI">🗨️</button></div>
@@ -1521,7 +1564,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.097</div>
+      <div id="app-version-display">Versione v1.098</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -6134,7 +6177,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.097 · 18/05/2026 13:52 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.098 · 18/05/2026 14:00 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -7830,6 +7873,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.098',date:'18/05/2026',changes:['Banner aggiornamento in home: versione, changelog, pulsanti Aggiorna e Chiudi','Changelog espandibile con novita della versione']},
   {v:'1.097',date:'18/05/2026',changes:['Ancora Uno: pulsante riappare anche dopo esercizi bonus (piu Ancora Uno consecutivi)']},
   {v:'1.096',date:'18/05/2026',changes:['Ancora Uno accodato DOPO il prossimo esercizio','Visibile solo dal terzultimo in poi','Badge ESERCIZIO BONUS nella training screen','Non appare se e gia in coda un Ancora Uno']},
   {v:'1.095',date:'14/05/2026',changes:['BUG respirazione ridotta ~90s','BUG NaN timer AI a/r aggiunti','BUG sessione AI non cambia calendario','Chip floor/switch/tips in lista esercizi','Ancora Uno button + 3 badge']},
@@ -9526,7 +9570,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202605181352'; // auto-set on each release
+const APP_BUILD='202605181400'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
@@ -9719,6 +9763,42 @@ document.addEventListener('visibilitychange',async()=>{
 
 // ═══ SERVICE WORKER + UPDATE ═══
 
+// ─── BANNER AGGIORNAMENTO HOME ───────────────────────────────────
+var _updateBannerDismissed=false;
+var _pendingUpdateData=null;
+
+function showUpdateBanner(data){
+  _pendingUpdateData=data;
+  var banner=document.getElementById('update-banner');
+  if(!banner||_updateBannerDismissed)return;
+  document.getElementById('upd-title').textContent='🆕 TurboTartaruga v'+data.version+' disponibile!';
+  document.getElementById('upd-sub').textContent='La tua versione: v'+(APP_BUILD||'?')+' · Nuova: v'+(data.build||data.version);
+  // Popola changelog
+  var list=document.getElementById('upd-changes-list');
+  if(list&&data.changes&&data.changes.length){
+    list.innerHTML=data.changes.map(function(ch){return '<li>'+ch+'</li>';}).join('');
+  }
+  banner.style.display='block';
+  // Aggiungi padding-top alla home per non coprire contenuto
+  var home=document.getElementById('screen-home');
+  if(home)home.style.paddingTop='0';
+}
+
+function dismissUpdateBanner(){
+  _updateBannerDismissed=true;
+  var banner=document.getElementById('update-banner');
+  if(banner){banner.style.animation='slideDown .3s ease reverse';setTimeout(function(){banner.style.display='none';},280);}
+}
+
+function toggleChangelog(){
+  var cl=document.getElementById('update-changelog');
+  if(!cl)return;
+  cl.classList.toggle('open');
+  var btn=document.getElementById('upd-changelog-btn');
+  if(btn)btn.textContent=cl.classList.contains('open')?'▲':'📋';
+}
+
+
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
   const status=document.getElementById('update-status');
@@ -9779,7 +9859,7 @@ setTimeout(()=>{
       const remote=String(data.build||'').trim();
       const local=String(APP_BUILD||'').trim();
       if(remote&&remote!==local){
-        toast('🆕 Nuova versione v'+data.version+' disponibile! Vai in Impostazioni → Verifica.',7000);
+        showUpdateBanner(data);
         const s=document.getElementById('update-status');
         if(s)s.textContent='🆕 v'+data.version+' disponibile — premi Verifica!';
       }
