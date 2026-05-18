@@ -1,5 +1,5 @@
 // TurboTartaruga Service Worker v202604262049
-const CACHE_NAME = 'turbotartaruga-202605010830';
+const CACHE_NAME = 'turbotartaruga-202605181352';
 
 // File da precacheare all'installazione (OBBLIGATORI per offline)
 const PRECACHE = [

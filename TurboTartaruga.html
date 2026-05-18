@@ -650,6 +650,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   <!-- Exercise card: image + description -->
   <div class="ex-card">
     <div style="padding:10px 14px 5px;display:flex;align-items:center;gap:8px">
+      <div id="tr-ancuno-badge" style="display:none;background:linear-gradient(135deg,#FF6F61,#FF8A65);color:#fff;font-size:11px;font-weight:bold;padding:4px 14px;border-radius:100px;margin-bottom:4px;text-align:center">➕ ESERCIZIO BONUS!</div>
       <div class="ex-cat-tag" id="tr-cat">🦵 Gambe</div>
       <div style="margin-left:auto;display:flex;gap:6px">
         <button id="tr-fav-btn" onclick="toggleFav()" title="Esercizio preferito"
@@ -734,6 +735,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <div id="rst-next-type" style="display:none;font-size:11px;font-weight:bold;padding:3px 9px;border-radius:100px;background:var(--bg2);color:var(--g1);border:1.5px solid var(--g1)"></div>
       </div>
       <div style="font-family:var(--ft);font-size:19px;font-weight:bold;color:var(--text);margin-bottom:8px" id="rst-next-name">Squat base</div>
+      <button id="ancuno-btn" onclick="doAncUno()" style="display:none;margin-bottom:8px;background:linear-gradient(135deg,#FF6F61,#FF8A65);border:none;border-radius:100px;padding:7px 18px;color:#fff;font-size:13px;font-weight:bold;cursor:pointer;font-family:var(--ff)">➕ Ancora Uno!</button>
       <button id="rst-scuola-btn" onclick="openScuolaFromRest()" style="display:none;margin-bottom:8px;background:rgba(0,0,0,.07);border:1.5px solid var(--bdr);border-radius:100px;padding:6px 16px;color:var(--g1);font-size:12px;font-weight:bold;cursor:pointer;font-family:var(--ff)">&#x1F422; Scopri questo esercizio</button>
       <!-- Immagine prossimo esercizio -->
       <div class="ex-img-wrap" id="rst-next-img-wrap" style="border-radius:12px;margin-bottom:10px;min-height:160px">
@@ -1519,7 +1521,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.094</div>
+      <div id="app-version-display">Versione v1.097</div>
       <button onclick="toggleChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -3489,6 +3491,11 @@ async function generateAISession(){
       }
     }
 
+    // Aggiungi a/r a ogni esercizio — OBBLIGATORIO per il timer
+    var _dc2 = DUR_CFG[dur] || DUR_CFG[12];
+    resolvedExs = resolvedExs.map(function(ex){
+      return Object.assign({}, ex, {a: _dc2.a, r: _dc2.r});
+    });
     return {
       title: result.title || 'Sessione AI Coach',
       note:  result.note  || 'Buon allenamento!',
@@ -4484,6 +4491,7 @@ function doShowEx(idx){
   }
   T.idx=idx;T.phase='act';T.left=ex.a;
   document.getElementById('tr-cat').textContent=ex.t;
+  var _ancB=document.getElementById('tr-ancuno-badge');if(_ancB)_ancB.style.display=ex._ancUno?'block':'none';
   document.getElementById('tr-name').textContent=ex._fav?ex.n+' ⭐':ex.n;
   document.getElementById('tr-desc').textContent=ex.desc||(ex.steps?ex.steps.join(' → '):'');
   document.getElementById('tr-zona').textContent=ex.zona;
@@ -4543,7 +4551,7 @@ function updateTimerUI(){
 function tick(){
   if(T.paused)return;T.left--;
   // Promemoria respirazione: ogni ~30s in media, solo se non sta già parlando
-  if(T.phase==='act'&&T.left>5&&SET.audio!==false&&SET.voice&&Math.random()<0.033){
+  if(T.phase==='act'&&T.left>5&&SET.audio!==false&&SET.voice&&Math.random()<0.011){
     var _isSpeaking=window.speechSynthesis&&window.speechSynthesis.speaking;
     if(!_isSpeaking){
       var _bp=['Ricorda di respirare!','Inspira dal naso, espira dalla bocca!','Respira regolarmente!','Non trattenere il respiro!','Riprendi fiato!'];
@@ -4591,6 +4599,7 @@ function showRestPreview(targetIdx, onDone){
     document.getElementById('rst-next-cat').textContent=nx.t;
     document.getElementById('rst-next-name').textContent=nx.n;
     var _sb=document.getElementById('rst-scuola-btn');if(_sb)_sb.style.display=nx?'block':'none';
+  _updateAncUnoBtn();
     // Descrizione audio del prossimo esercizio (se attivata)
     if(SET.voice&&SET.voiceDesc&&left>=6){
       // isFirst: leggi 'Preparati: nome' poi descrizione; altri: 'Prossimo: nome. desc'
@@ -4714,6 +4723,39 @@ function skipExercise(){
   const nextIdx=T.idx+1;
   showRestPreview(nextIdx,()=>doShowEx(nextIdx));
 }
+function doAncUno(){
+  var curFocus=T.sesType||'';
+  var usedIds=(T.exs||[]).map(function(x){return x.id;});
+  var pool=DB.filter(function(e){
+    if(usedIds.includes(e.id)||e._transition)return false;
+    if(SET.noFloor&&e.floor)return false;
+    return e.cat===curFocus;
+  });
+  if(!pool.length)pool=DB.filter(function(e){return !usedIds.includes(e.id)&&!e._transition&&!e._party;});
+  if(!pool.length){toast('Nessun esercizio extra disponibile!');return;}
+  var extra=pool[Math.floor(Math.random()*pool.length)];
+  var cfg=DUR_CFG[T.dur||12]||DUR_CFG[12];
+  var _nxReal=-1;
+  for(var _ni=_restNextIdx;_ni<T.exs.length;_ni++){
+    if(!T.exs[_ni]._transition){_nxReal=_ni;break;}
+  }
+  var _insertAt=(_nxReal>=0)?_nxReal+1:T.exs.length;
+  T.exs.splice(_insertAt,0,Object.assign({},extra,{a:cfg.a,r:cfg.r,_ancUno:true}));
+  var btn=document.getElementById('ancuno-btn');if(btn)btn.style.display='none';
+  S.ancUno=(S.ancUno||0)+1;
+  var nb=checkBadges();save();
+  if(nb.length)nb.forEach(function(b){toast('🏅 Badge: '+b.name+'!',3500);});
+  toast('➕ '+extra.n+' accodato dopo il prossimo! 💪',3000);
+}
+function _updateAncUnoBtn(){
+  var btn=document.getElementById('ancuno-btn');if(!btn)return;
+  var origExs=T.exs.filter(function(e){return !e._transition&&!e._ancUno;});
+  var total=origExs.length;
+  var doneOrig=T.exs.slice(0,_restNextIdx).filter(function(e){return !e._transition&&!e._ancUno;}).length;
+  var remaining=total-doneOrig;
+  btn.style.display=(remaining<=3&&remaining>0)?'block':'none';
+}
+
 function skipRest(){
   // Cancella immediatamente qualsiasi lettura in corso (voiceDesc)
   if(window.speechSynthesis)try{window.speechSynthesis.cancel();}catch(e){}
@@ -4906,27 +4948,7 @@ function completeSession(){
   });
   const planEntry=S.plan.find(p=>p.date===today);if(planEntry)planEntry.done=true;
   // Se sessione AI: trasla la sessione pianificata al giorno successivo disponibile
-  if(T.sesType==='ai_coach' && planEntry && planEntry.type==='workout'){
-    var _restDays=P.restDays||[0,6];
-    var _shifted=false;
-    for(var _di=1;_di<=7&&!_shifted;_di++){
-      var _nd=new Date(); _nd.setDate(_nd.getDate()+_di);
-      var _ndStr=localDate(_nd);
-      var _existing=S.plan.find(function(p){return p.date===_ndStr;});
-      if(!_existing||_existing.type==='rest'){
-        // Inserisci la sessione spostata
-        var _newEntry=Object.assign({},planEntry,{date:_ndStr,done:false,aiShifted:true});
-        if(_existing&&_existing.type==='rest'){
-          // Sostituisci il giorno di riposo con workout e sposta il riposo avanti
-          _existing.type='workout'; _existing.focus=planEntry.focus; _existing.icon=planEntry.icon; _existing.aiShifted=true;
-        } else {
-          S.plan.push(_newEntry);
-          S.plan.sort(function(a,b){return a.date<b.date?-1:1;});
-        }
-        _shifted=true;
-      }
-    }
-  }
+  // Sessione AI Coach: NON spostare il piano — è una sessione extra
   save();
   // Auto-generate result code for party guests if any
   if(typeof togetherGuests!=='undefined'&&togetherGuests&&togetherGuests.length>0){
@@ -6112,7 +6134,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.094 · 01/05/2026 08:30 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.097 · 18/05/2026 13:52 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -6808,6 +6830,14 @@ function buildExList(){
       const dc=document.createElement('div');
       dc.className='ex-card-mini-desc';
       dc.textContent=ex.desc||ex.n;
+      // Chip badge (floor/switch/tips/steps)
+      var _chips=document.createElement('div');
+      _chips.style.cssText='display:flex;flex-wrap:wrap;gap:3px;margin-top:4px';
+      if(ex.floor){var _ch=document.createElement('span');_ch.style.cssText='font-size:9px;padding:2px 6px;border-radius:100px;background:#FFF3E0;color:#E65100;font-weight:bold';_ch.textContent='🏔️ Terra';_chips.appendChild(_ch);}
+      if(ex.switch){var _ch=document.createElement('span');_ch.style.cssText='font-size:9px;padding:2px 6px;border-radius:100px;background:#E3F2FD;color:#1565C0;font-weight:bold';_ch.textContent='🔄 Cambio lato';_chips.appendChild(_ch);}
+      if(ex.tips&&ex.tips.length){var _ch=document.createElement('span');_ch.style.cssText='font-size:9px;padding:2px 6px;border-radius:100px;background:var(--g3);color:var(--g1);font-weight:bold';_ch.textContent='💡 Tips';_chips.appendChild(_ch);}
+      if(ex.steps&&ex.steps.length){var _ch=document.createElement('span');_ch.style.cssText='font-size:9px;padding:2px 6px;border-radius:100px;background:#EDE7F6;color:#4527A0;font-weight:bold';_ch.textContent='📋 Guide';_chips.appendChild(_ch);}
+      if(_chips.children.length)info.appendChild(_chips);
       info.appendChild(nm);info.appendChild(dc);
       row.appendChild(info);
       // Buttons
@@ -7324,6 +7354,9 @@ var BADGES=[
   {id:'b_ai5',lv:3,icon:'🧠',name:'Apprendista digitale',hint:'5 sessioni con il Coach AI — la tartaruga incontra il futuro!',check:(s)=>(s.aiSessions||0)>=5},
   {id:'b_ai10',lv:4,icon:'⚡',name:'Cyborg tartaruga',hint:'10 sessioni AI — metà tartaruga, metà robot!',check:(s)=>(s.aiSessions||0)>=10},
   {id:'b_ai25',lv:5,icon:'🎯',name:'Il coach sa tutto',hint:'25 sessioni AI — ormai il coach AI ti conosce meglio di te stesso!',check:(s)=>(s.aiSessions||0)>=25},
+  {id:'b_ancuno50',  lv:3,icon:'💥',name:'Instancabile',    desc:'Hai chiesto Ancora Uno 50 volte!',   cond:function(s){return (s.ancUno||0)>=50;}},
+  {id:'b_ancuno100', lv:4,icon:'🔥',name:'Inarrestabile',   desc:'Hai chiesto Ancora Uno 100 volte!',  cond:function(s){return (s.ancUno||0)>=100;}},
+  {id:'b_ancuno500', lv:6,icon:'⚡',name:'Leggenda del Piu',desc:'Hai chiesto Ancora Uno 500 volte!',  cond:function(s){return (s.ancUno||0)>=500;}},
   {id:'b_aichat',lv:2,icon:'💬',name:'Primo dialogo',hint:'Hai scritto per la prima volta al Coach AI. Benvenuto nel futuro!',check:(s)=>(s.aiChats||0)>=1},
   {id:'b_aitogether',lv:3,icon:'🤝',name:'AI in compagnia',hint:'Sessione AI completata in modalità Insieme — il futuro è social!',check:(s)=>(s.aiTogetherSessions||0)>=1},
   {id:'b_aiproviders',lv:4,icon:'🔬',name:'Sperimentatore',hint:'Hai testato almeno 2 provider AI diversi. Scienziato della tartaruga!',check:(s)=>(s.aiProvidersTried||[]).length>=2},
@@ -7344,7 +7377,7 @@ var CAT_INFO={
 };
 // ── Core state objects ──────────────────────────────────────────────────
 var P={};  // Profile
-var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0,aiChatHistory:[],aiChats:0,togetherHistory:[]};  // Stats
+var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0,aiChatHistory:[],aiChats:0,togetherHistory:[],ancUno:0};  // Stats
 var SET={audio:true,voice:true,voiceDesc:true,music:true,musicVol:60,dynamicTheme:true,pauseSec:25,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light',aiEnabled:false,aiProvider:'gemini',aiKey:'',aiKeys:{gemini:'',claude:'',chatgpt:''},aiGeminiModel:'gemini-2.5-flash',aiFeature_bubble:true,aiFeature_sessions:true,aiFeature_chat:true,aiSessionFreq:'daily'};  // Settings
 var T={exs:[],idx:0,phase:'act',left:0,paused:false,t0:0,iv:null,dur:12,feeling:'piano',sesType:'misto',_halfSpoken:false,_restDone:null,_isRoutine:false};  // Timer state
 
@@ -7797,6 +7830,9 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.097',date:'18/05/2026',changes:['Ancora Uno: pulsante riappare anche dopo esercizi bonus (piu Ancora Uno consecutivi)']},
+  {v:'1.096',date:'18/05/2026',changes:['Ancora Uno accodato DOPO il prossimo esercizio','Visibile solo dal terzultimo in poi','Badge ESERCIZIO BONUS nella training screen','Non appare se e gia in coda un Ancora Uno']},
+  {v:'1.095',date:'14/05/2026',changes:['BUG respirazione ridotta ~90s','BUG NaN timer AI a/r aggiunti','BUG sessione AI non cambia calendario','Chip floor/switch/tips in lista esercizi','Ancora Uno button + 3 badge']},
   {v:'1.094',date:'01/05/2026',changes:['FIX ROOT Scopri esercizio: rimosso check T.phase (inaffidabile) — usa sempre _restNextExId che viene dal MEDESIMO nx della rest screen','T.phase=rst impostato anche in skipExercise e showRestPreview(0,...)']},
   {v:'1.093',date:'30/04/2026',changes:['FIX definitivo Scopri esercizio: salva nx.id direttamente in showRestPreview (_restNextExId) — nessun ricalcolo errato con transizioni']},
   {v:'1.092',date:'30/04/2026',changes:['FIX ROOT Scopri esercizio: usa _restNextIdx salvato da showRestPreview — indice sempre corretto anche per il primo esercizio']},
@@ -9490,7 +9526,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202605010830'; // auto-set on each release
+const APP_BUILD='202605181352'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
