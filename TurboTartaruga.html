@@ -1649,7 +1649,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.100</div>
+      <div id="app-version-display">Versione v1.101</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1729,7 +1729,8 @@ var DB=[
 
   {id:'g5',n:'Sollevamento talloni',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Polpacci · 🦴 Caviglie',desc:'Alzati sulle punte dei piedi, tieni 2 sec, scendi piano. Appoggiati al muro se serve.',floor:false,steps:['Stai in piedi con i piedi larghezza spalle','Puoi tenerti a una sedia per l equilibrio','Solleva i talloni salendo sulle punte dei piedi','Tieni la posizione un secondo','Abbassa lentamente'],tips:['Salita e discesa lente e controllate','Non rimbalzare','Per aumentare l intensita fallo su un gradino']},
 
-  {id:'g6',n:'Marcia ginocchio alto',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Flessori anca · ❤️ Cardio',desc:'Porta ogni ginocchio verso il petto alternando. Busto eretto, braccia che pompano.',floor:false},
+  {id:'g6',n:'Marcia ginocchio alto',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Flessori anca · ❤️ Cardio',desc:'Porta ogni ginocchio verso il petto alternando. Busto eretto, braccia che pompano.',floor:false,steps:['Stai in piedi con i piedi uniti e le braccia lungo i fianchi','Alza il ginocchio destro fino all altezza del bacino mentre porti il braccio sinistro in avanti','Abbassa e ripeti con il lato opposto','Mantieni un ritmo regolare e costante'],tips:['Tieni il busto dritto senza oscillare lateralmente','Non portare il ginocchio oltre il bacino se hai problemi alle articolazioni','Respira regolarmente']},
+
   {id:'g7',n:'Step touch laterale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Abduttori · 🎯 Equilibrio',desc:'Passo laterale a destra poi porta il piede sinistro. Stesso movimento a sinistra. Continua.',floor:false},
   {id:'g8',n:'Sollevamento gamba laterale',cat:'gambe',t:'🦵 Gambe',zona:'🦵 Abduttori · 🍑 Glutei',desc:'Appoggiato al muro, solleva una gamba di lato con piede a flex. Abbassa lento. Alterna.',floor:false},
   {id:'g9',n:'Sollevamento gamba posteriore',cat:'gambe',t:'🦵 Gambe',zona:'🍑 Glutei · 🦵 Femorali',desc:'Appoggiato a un supporto, spingi una gamba indietro contraendo il gluteo. Abbassa lento.',switch:false,floor:false},
@@ -1739,10 +1740,12 @@ var DB=[
   // BRACCIA (10)
   {id:'b1',n:'Cerchi braccia avanti',cat:'braccia',t:'💪 Braccia',zona:'💪 Deltoidi · 💪 Rotatori',desc:'Braccia tese ai lati all\'altezza delle spalle: fai piccoli cerchi in avanti poi indietro.',floor:false,steps:['Mani larghezza spalle, corpo in linea retta dalle spalle ai talloni','Piega i gomiti abbassando il petto verso il pavimento','Senza toccare terra, spingi verso l alto','Corpo sempre rigido come una tavola'],tips:['Non lasciare cadere i fianchi','Guarda leggermente in avanti, non in basso','Versione facile: appoggiate le ginocchia']},
 
-  {id:'b2',n:'Press braccia verso l\'alto',cat:'braccia',t:'💪 Braccia',zona:'💪 Spalle · 💪 Tricipiti',desc:'Mani all\'altezza delle spalle, pugni verso l\'alto. Spingi al soffitto poi abbassa lento.',floor:false},
+  {id:'b2',n:'Press braccia verso l\'alto',cat:'braccia',t:'💪 Braccia',zona:'💪 Spalle · 💪 Tricipiti',desc:'Mani all\'altezza delle spalle, pugni verso l\'alto. Spingi al soffitto poi abbassa lento.',floor:false,steps:['Siediti sul bordo di una sedia con le mani che afferrano il bordo ai lati dei fianchi','Scivola in avanti fino a uscire dalla sedia con i glutei','Piega i gomiti abbassando il corpo verso il pavimento','Spingi verso l alto per tornare alla posizione iniziale'],tips:['Non abbassarti troppo se senti dolore alle spalle','Tieni i gomiti verso l interno non verso l esterno','La schiena deve restare vicina alla sedia']},
+
   {id:'b3',n:'Push-up in ginocchio',cat:'braccia',t:'💪 Braccia',zona:'💪 Pettorali · 💪 Tricipiti',desc:'In ginocchio, mani larghe. Piega le braccia abbassando il petto, poi risali lentamente.',floor:true,steps:['Stai in piedi con le braccia lungo i fianchi','Piega i gomiti portando le mani verso le spalle','Tieni i gomiti fermi ai fianchi durante tutto il movimento','Abbassa lentamente'],tips:['Non dondolare il busto','Gomiti fissi, non spostarli in avanti']},
 
-  {id:'b4',n:'Apertura braccia laterale',cat:'braccia',t:'💪 Braccia',zona:'💪 Pettorali · 💪 Deltoidi',desc:'Braccia avanti: apri ai lati lentamente poi torna davanti. Mai movimenti bruschi.',floor:false},
+  {id:'b4',n:'Apertura braccia laterale',cat:'braccia',t:'💪 Braccia',zona:'💪 Pettorali · 💪 Deltoidi',desc:'Braccia avanti: apri ai lati lentamente poi torna davanti. Mai movimenti bruschi.',floor:false,steps:['Appoggia le mani su una superficie rialzata come una sedia o un tavolo','Corpo in linea retta dalle spalle ai talloni','Piega i gomiti abbassando il petto verso la superficie','Spingi verso l alto tornando alla posizione iniziale'],tips:['Questa variante e piu facile delle flessioni normali','Il corpo deve restare rigido come una tavola','Non alzare i glutei']},
+
   {id:'b5',n:'Curl isometrico',cat:'braccia',t:'💪 Braccia',zona:'💪 Bicipiti · 💪 Avambracci',desc:'Una mano sotto il polso dell\'altra. Piega il braccio di sopra mentre quello sotto fa resistenza.',floor:false},
   {id:'b6',n:'Stretching tricipite',cat:'braccia',t:'💪 Braccia',zona:'💪 Tricipiti · 💪 Spalle',desc:'Un braccio sopra la testa, piega il gomito verso la nuca. L\'altra mano spinge il gomito. Poi alterna.',switch:true,floor:false},
   {id:'b7',n:'Rotazione polsi',cat:'braccia',t:'💪 Braccia',zona:'💪 Avambracci · 🦴 Polsi',desc:'Braccia davanti: ruota i polsi in cerchio 10 volte in avanti, poi 10 all\'indietro.',floor:false},
@@ -1752,10 +1755,12 @@ var DB=[
   // CORE (8)
   {id:'c1',n:'Addominali leggeri',cat:'core',t:'🎯 Core',zona:'🎯 Addominali · 🦴 Lombari',desc:'Sdraiato, ginocchia piegate. Mani sulla nuca: solleva solo le spalle, non la schiena. Lento.',floor:true,steps:['Posizione come le flessioni ma appoggiati sugli avambracci','Corpo in linea retta dalla testa ai talloni','Stringi l addome e i glutei','Mantieni la posizione respirando regolarmente'],tips:['Non alzare i fianchi ne lasciarli scendere','Guarda il pavimento, non in avanti','Respira! Non trattenere il fiato']},
 
-  {id:'c2',n:'Bridge (ponticello)',cat:'core',t:'🎯 Core',zona:'🍑 Glutei · 🦴 Lombari',desc:'Sdraiato, piedi vicino ai glutei. Spingi i fianchi verso il soffitto, tieni 3 sec, abbassa.',floor:true},
+  {id:'c2',n:'Bridge (ponticello)',cat:'core',t:'🎯 Core',zona:'🍑 Glutei · 🦴 Lombari',desc:'Sdraiato, piedi vicino ai glutei. Spingi i fianchi verso il soffitto, tieni 3 sec, abbassa.',floor:true,steps:['Posizione di plank con le braccia tese e il corpo in linea','Porta il ginocchio destro verso il petto','Torna alla posizione di plank e ripeti con il sinistro','Alterna velocemente mantenendo i fianchi stabili'],tips:['Non alzare i fianchi durante il movimento','Mantieni le spalle sopra i polsi','Inizia lentamente e aumenta la velocita']},
+
   {id:'c3',n:'Plank sulle ginocchia',cat:'core',t:'🎯 Core',zona:'🎯 Addominali · 💪 Braccia',desc:'Ginocchia a terra, avambracci sul pavimento. Corpo dritto dalla testa alle ginocchia. Tieni.',floor:true,steps:['Sdraiati sulla schiena, ginocchia piegate, piedi a terra','Mani dietro la nuca o incrociate sul petto','Solleva le spalle da terra contraendo l addome','Non tirare il collo con le mani','Abbassa lentamente'],tips:['Muovi le spalle, non la testa','Il collo resta rilassato','Non sollevare completamente la schiena']},
 
-  {id:'c4',n:'Superman',cat:'core',t:'🎯 Core',zona:'🦴 Lombari · 🍑 Glutei',desc:'Pancia in giù, braccia avanti. Solleva insieme braccia e gambe, tieni 3 sec, abbassa.',floor:true},
+  {id:'c4',n:'Superman',cat:'core',t:'🎯 Core',zona:'🦴 Lombari · 🍑 Glutei',desc:'Pancia in giù, braccia avanti. Solleva insieme braccia e gambe, tieni 3 sec, abbassa.',floor:true,steps:['Sdraiati sulla schiena con le mani dietro la nuca e le gambe sollevate a 90 gradi','Porta il gomito destro verso il ginocchio sinistro estendendo la gamba destra','Torna al centro e ripeti sul lato opposto','Movimento alternato continuo'],tips:['Non tirare il collo con le mani','Il movimento deve venire dal busto non dalla testa','Mantieni le gambe sollevate durante tutto l esercizio']},
+
   {id:'c5',n:'Rotazione busto in piedi',cat:'core',t:'🎯 Core',zona:'🎯 Obliqui · 🦴 Colonna',desc:'In piedi, braccia avanti. Ruota il busto a destra poi a sinistra. Bacino sempre fermo.',floor:false},
   {id:'c6',n:'Lateral crunch',cat:'core',t:'🎯 Core',zona:'🎯 Obliqui laterali',desc:'Sdraiato, ginocchia piegate. Porta il gomito verso il fianco dello stesso lato. Alterna.',floor:true},
   {id:'c7',n:'Gatto-Mucca',cat:'core',t:'🎯 Core',zona:'🦴 Colonna · 🦴 Lombari',desc:'In quadrupedia: inspira abbassando la pancia e alzando la testa (Mucca), espira incurvando la schiena (Gatto).',floor:true},
@@ -1904,7 +1909,8 @@ var DB=[
   // ── PRE-SONNO (ps1-ps10) ───────────────────────────────────────────
   {id:'ps1', n:'Respirazione 4-7-8',cat:'presonno',t:'😴 Pre-sonno',zona:'🫁 Respiro · 🧠 Sistema nervoso',desc:'Inspira 4 sec, tieni 7 sec, espira 8 sec. Attiva il sistema parasimpatico. Ripeti 4 volte.',floor:false,steps:['Siediti sulla sedia con i piedi a terra e la schiena dritta','Ritrai le scapole come se volessi tenerle un matita tra di loro','Tieni il mento leggermente rientrato','Mantieni la posizione respirando regolarmente'],tips:['Non inarcare la schiena lombare esageratamente','Il monitor deve essere all altezza degli occhi','Ogni ora fai una pausa di 5 minuti']},
 
-  {id:'ps2', n:'Rilassamento progressivo',cat:'presonno',t:'😴 Pre-sonno',zona:'🎯 Corpo completo · 🧠 Rilassamento',desc:'Contrai e rilascia ogni gruppo muscolare partendo dai piedi fino alla fronte. 3 sec contrazione, poi lascia.',floor:true},
+  {id:'ps2', n:'Rilassamento progressivo',cat:'presonno',t:'😴 Pre-sonno',zona:'🎯 Corpo completo · 🧠 Rilassamento',desc:'Contrai e rilascia ogni gruppo muscolare partendo dai piedi fino alla fronte. 3 sec contrazione, poi lascia.',floor:true,steps:['Siediti diritto sulla sedia con i piedi a terra','Inclina la testa verso la spalla destra tenendo il braccio destro lungo il fianco','Puoi aiutarti con la mano destra sulla testa per aumentare lo stretch','Mantieni 20 secondi e ripeti sull altro lato'],tips:['Movimenti lentissimi e delicati','Non tirare con forza la testa','Smetti se senti formicolio o dolore']},
+
   {id:'ps3', n:'Stretching schiena supino',cat:'presonno',t:'😴 Pre-sonno',zona:'🔄 Colonna · 🎯 Lombari',desc:'Sdraiato, porta entrambe le ginocchia al petto. Oscilla leggermente. Decomprime la colonna.',floor:true},
   {id:'ps4', n:'Torsione supina',cat:'presonno',t:'😴 Pre-sonno',zona:'🔄 Colonna toracica · 🎯 Obliqui',desc:'Sdraiato, un ginocchio piega verso il lato opposto. Braccia aperte. 30 sec per lato. Nessuna forzatura.',floor:true},
   {id:'ps5', n:'Butterfly sdraiato',cat:'presonno',t:'😴 Pre-sonno',zona:'🦵 Inguine · 🍑 Anca',desc:'Sdraiato, piante dei piedi unite. Lascia scendere le ginocchia per gravità. Respira e rilascia ogni espiro.',floor:true},
@@ -1952,7 +1958,8 @@ var DB=[
   // MOBILITÀ / ARTICOLAZIONI — 🦴
   {id:'mob1',n:'Cerchi con le spalle',cat:'mobilita',t:'🦴 Mobilità',zona:'💪 Spalle · 🦴 Articolazione gleno-omerale',desc:'Braccia lungo i fianchi, ruota le spalle in grandi cerchi avanti 5 volte, poi indietro 5 volte. Lento e ampio.',floor:false,switch:false,steps:['Siediti o stai in piedi con la schiena dritta','Inclina la testa verso la spalla destra tenendola per 10 secondi','Torna al centro e inclina dall altro lato','Poi ruota lentamente guardando a destra, poi a sinistra'],tips:['Movimenti lentissimi, mai bruschi','Non forzare il range','Smetti se hai dolore o formicolio']},
 
-  {id:'mob2',n:'Rotazione anca sul posto',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Anca · 🦵 Adduttori',desc:'In piedi, mani sui fianchi. Ruota le anche in grandi cerchi come se usassi un hula hoop. 8 cerchi per lato.',floor:false,switch:false},
+  {id:'mob2',n:'Rotazione anca sul posto',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Anca · 🦵 Adduttori',desc:'In piedi, mani sui fianchi. Ruota le anche in grandi cerchi come se usassi un hula hoop. 8 cerchi per lato.',floor:false,switch:false,steps:['Siediti o stai in piedi con una gamba sollevata','Ruota il piede in cerchi ampi in senso orario','Completa 10 cerchi poi inverti la direzione','Ripeti con l altro piede'],tips:['Cerchi lenti e ampi per massima mobilita','Se hai avuto distorsioni fai movimenti piu piccoli','Esegui seduto se hai problemi di equilibrio']},
+
   {id:'mob3',n:'Flesso-estensione ginocchio',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Ginocchio · 🦵 Quadricipiti',desc:'Seduto su una sedia, stendi una gamba lentamente fino a sentire il ginocchio aprirsi, poi ripiega. Lento e controllato.',floor:false,switch:true,steps:['Siediti su una sedia con la schiena dritta','Mani dietro la nuca o incrociate sul petto','Ruota il busto a destra il piu possibile','Torna al centro e ruota a sinistra','Solo il busto si muove, il bacino resta fermo'],tips:['Tieni il bacino fisso sulla sedia','Movimenti lenti e controllati']},
 
   {id:'mob4',n:'Cerchi con le caviglie',cat:'mobilita',t:'🦴 Mobilità',zona:'🦴 Caviglia · 🦵 Polpacci',desc:'Seduto, solleva un piede da terra e disegna cerchi ampi con la caviglia. 8 in un senso, 8 nell altro.',floor:false,switch:true},
@@ -6262,7 +6269,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.100 · 18/05/2026 15:14 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.101 · 22/05/2026 14:44 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -6827,17 +6834,27 @@ function launchMyWorkout(id){
   var w=(S.savedWorkouts||[]).find(function(x){return x.id===id;});
   if(!w||!w.exs||!w.exs.length){toast('Scheda vuota!');return;}
   var cfg=DUR_CFG[w.dur||12]||DUR_CFG[12];
+  // Prepara T esattamente come startTraining
   T.exs=w.exs.map(function(e){
-    return Object.assign({},e,{a:e.a||cfg.a,r:e.r||cfg.r,t:e.t||(CAT_INFO[e.cat]&&CAT_INFO[e.cat].icon+' '+(CAT_INFO[e.cat].label))||e.cat||'💪'});
+    var ci=CAT_INFO[e.cat]||{icon:'💪',label:e.cat||''};
+    return Object.assign({},e,{
+      a:e.a||cfg.a,
+      r:e.r||cfg.r,
+      t:e.t||ci.icon+' '+ci.label
+    });
   });
-  T.idx=0;T.dur=w.dur||12;T.sesType=w.sesType||'misto';
-  T.feeling='myw';T.paused=false;T.aiTitle=w.name;
-  go('home');
-  setTimeout(function(){
-    T.phase='rst';
-    showRestPreview(0,function(){doShowEx(0);});
-    go_scr('rest');
-  },100);
+  T.idx=0;
+  T.dur=w.dur||12;
+  T.sesType=w.sesType||'misto';
+  T.feeling='myw';
+  T.paused=false;
+  T.t0=Date.now();
+  T.aiTitle=w.name;
+  riservaDone=false;
+  requestWakeLock&&requestWakeLock();
+  // Avvia con rest preview (stesso pattern di startTraining)
+  T.phase='rst';
+  showRestPreview(0,function(){doShowEx(0);});
 }
 
 // ── Salva sessione corrente (da screen-complete) ─────────────────
@@ -8218,6 +8235,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.101',date:'22/05/2026',changes:['FIX Le mie Tartarughe: Avvia ora funziona correttamente (stesso pattern startTraining)','steps+tips aggiunti a 10 esercizi (g6,b2,b4,c2,c4,st2,st3,mob2,or2,ps2)']},
   {v:'1.100',date:'18/05/2026',changes:['Le mie Tartarughe: schede sessioni personalizzate in Scelgo io!','Salva sessione da screen-complete (AI e Piano)','Creazione manuale con picker full esercizi','Modifica e cancellazione schede','Avvio diretto scheda salvata']},
   {v:'1.099',date:'18/05/2026',changes:['FIX: Cosa c e di nuovo nelle impostazioni ora funziona (funzione separata toggleSettingsChangelog)']},
   {v:'1.098',date:'18/05/2026',changes:['Banner aggiornamento in home: versione, changelog, pulsanti Aggiorna e Chiudi','Changelog espandibile con novita della versione']},
@@ -9917,7 +9935,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202605181514'; // auto-set on each release
+const APP_BUILD='202605221444'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
