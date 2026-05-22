@@ -1649,7 +1649,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.101</div>
+      <div id="app-version-display">Versione v1.109</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -3184,14 +3184,16 @@ function refreshPlan(silent){
   const today=localDate();
   
   // ── Preserva i giorni già passati dal piano esistente ────────────────────
-  const pastEntries=(S.plan||[]).filter(p=>p.date<today);
+  // Preserva i giorni passati E quello di oggi se già presente (done o non)
+  // Così la sessione di oggi non viene rigenerata se già pianificata/fatta
+  const pastEntries=(S.plan||[]).filter(p=>p.date<=today);
   
   // ── Calcola da dove continuare la rotazione delle categorie ──────────────
   // Conta le sessioni di allenamento reali già fatte (storia + piano passato)
   // Prima: sessioni reali nella history
-  const realSessions=(S.history||[]).filter(h=>
-    h.type!=='riposo_vol'&&h.type!=='mattino'&&h.type!=='presonno'&&h.type!=='rest'
-  ).length;
+  // Conta solo sessioni che fanno parte del piano (no AI, no Scelgo io!, no Le mie Tartarughe)
+  const EXTRA_TYPES=['riposo_vol','mattino','presonno','rest','ai_coach','myw','misto','misto_plus'];
+  const realSessions=(S.history||[]).filter(h=>!EXTRA_TYPES.includes(h.type)).length;
   // Poi: sessioni di workout nel piano passato (se non già in history)
   const planWorkouts=pastEntries.filter(p=>p.type==='workout').length;
   // Usa il massimo tra i due come base per la rotazione
@@ -3206,12 +3208,12 @@ function refreshPlan(silent){
     consec++;
   }
   
-  // Dedup: rimuovi dal vecchio piano qualsiasi entry per date >= today (sarà rigenerate)
-  const plan=pastEntries.filter(p=>p.date<today);
+  // Preserva tutto incluso oggi (già in pastEntries con done:true)
+  const plan=pastEntries.filter(p=>p.date<=today);
   for(let i=0;i<30;i++){
     const d=new Date();d.setDate(d.getDate()+i);
     const dow=d.getDay();const ds=localDate(d); // usa data locale non UTC
-    if(ds<today)continue; // già gestito con pastEntries
+    if(ds<=today)continue; // già gestito con pastEntries (incluso oggi)
     const isRest=restDays.includes(dow)||(consec>=maxConsec);
     if(isRest){
       const isUserRest=_urd2.includes(dow);
@@ -3224,15 +3226,14 @@ function refreshPlan(silent){
   }
   // Mantieni solo 30 giorni dal oggi a ritroso, senza tagliare lo storico utile
   S.plan=plan.slice(-60); // max 60 per non appesantire
-  save();buildHome();const _cn=new Date();calYear=_cn.getFullYear();calMonth=_cn.getMonth();if(document.getElementById('screen-calendar')?.classList.contains('active'))buildCal();
-  // Refresh calendar if currently open
-  const calEl=document.getElementById('screen-calendar');
-  if(calEl&&calEl.classList.contains('active'))buildCal();
-  // Refresh home if currently open
-  const homeEl=document.getElementById('screen-home');
-  if(homeEl&&homeEl.classList.contains('active'))buildHome();
+  save();
+  // Aggiorna calendario se aperto
+  const _calEl=document.getElementById('screen-calendar');
+  if(_calEl&&_calEl.classList.contains('active')){const _cn=new Date();calYear=_cn.getFullYear();calMonth=_cn.getMonth();buildCal();}
+  // NON chiamare buildHome() da qui — causa ricorsione infinita
+  // buildHome chiama refreshPlan che chiama buildHome...
   const autoRests=S.plan.filter(p=>p.restKind==='auto').length;
-  if(!silent)toast('✅ Piano aggiornato! '+(autoRests>0?'('+autoRests+' giorni recupero automatico inseriti per evitare sovrallenamento)':''));
+  if(!silent)toast('✅ Piano aggiornato! '+(autoRests>0?'('+autoRests+' giorni recupero automatico)':''));
 }
 function localDate(d){
   const dd=d||new Date();
@@ -3379,7 +3380,12 @@ const hsEl=document.getElementById('home-streak');if(hsEl)hsEl.textContent=typeo
   document.getElementById('hg-done').textContent=done;document.getElementById('hg-tot').textContent=goal;document.getElementById('hg-pct').textContent=pct+'%';document.getElementById('hg-fill').style.width=pct+'%';
   // Rigenera il piano se non esiste oppure se manca l'entry per oggi
   if(!S.plan||S.plan.length===0||!S.plan.some(p=>p.date===localDate())){
-    refreshPlan(true);return;
+    if(!window._refreshingPlan){
+      window._refreshingPlan=true;
+      refreshPlan(true);
+      window._refreshingPlan=false;
+    }
+    return;
   }
   const tp=getTodayPlan();
   const isRest=tp.type==='rest';
@@ -3389,11 +3395,69 @@ const hsEl=document.getElementById('home-streak');if(hsEl)hsEl.textContent=typeo
   document.getElementById('today-focus').textContent=(tp.type==='rest'?'Giorno di riposo':ci.label+' — '+tp.icon);
   const subs={gambe:'Rafforza gambe e glutei! 🦵',braccia:'Potenzia braccia e spalle! 💪',core:'Rinforza il core! 🎯',stretching:'Allungati e rilassati! 🤸',orientale:'Respira e trova l\'equilibrio! 🧘',seduto:'Allenati comodamente seduto! 🪑',elastici:'Allenamento con elastici! 🎽',cardio:'Cardio e boxe leggera! 🥊',presonno:'Rilassati prima di dormire! 😴',postura:'Corregi la postura, stai meglio! 🪑+',mobilita:'Mobilità articolare — ginocchio, spalle, anca! 🦴',misto:'Allenamento completo misto! 🌈',misto_plus:'Corpo libero + esercizi da seduto! 🪑💪',riposo:'Oggi riposi — ci vediamo domani! 😴'};
   document.getElementById('today-sub').textContent=subs[tp.focus]||'Allenamento di oggi!';
-  // Show start button — if plan is empty but profile exists, show it (plan will generate)
+  // Controlla se la sessione di oggi è già stata fatta
+  const today_bh=localDate();
+  // Controlla se oggi è già stata fatta una sessione
+  // Controlla sessione fatta oggi: S.days (senza _volrest), history, S.last
+  var _histDoneToday=(S.history||[]).some(function(h){
+    return h.date===today_bh&&h.type!=='riposo_vol'&&h.type!=='rest';
+  });
+  var _daysDoneToday=(S.days||[]).some(function(d){
+    return d===today_bh||(d.startsWith&&d.startsWith(today_bh)&&!d.includes('_volrest'));
+  });
+  const _todayDone=tp.done===true||_histDoneToday||_daysDoneToday||(S.last===today_bh);
+
   const hasValidPlan=S.plan&&S.plan.length>0;
-  const showStart=!isRest||!hasValidPlan;
+  const showStart=(!isRest||!hasValidPlan)&&!_todayDone;
   const btn=document.getElementById('btn-start');
-  if(btn)btn.style.display=showStart?'flex':'none';
+  if(btn){
+    // Trova sessione di piano fatta oggi (priorità: tipo del piano, poi qualsiasi)
+    var _todayH=null;
+    if(_todayDone){
+      // Prima cerca la sessione che corrisponde al piano di oggi
+      _todayH=(S.history||[]).find(function(h){
+        return h.date===today_bh&&h.type===tp.focus&&h.type!=='riposo_vol'&&h.type!=='rest';
+      });
+      // Fallback: qualsiasi sessione di oggi
+      if(!_todayH)_todayH=(S.history||[]).find(function(h){
+        return h.date===today_bh&&h.type!=='riposo_vol'&&h.type!=='rest';
+      });
+    }
+
+    if(_todayDone&&!isRest){
+      // Sessione completata: bottone grigio cliccabile con testo simpatico
+      btn.style.display='flex';
+      // Usa className per sovrascrivere btn-p senza conflitti
+      btn.className='btn btn-full btn-lg';
+      btn.style.cssText='flex:1;background:#78909C;color:#fff;opacity:0.9;cursor:pointer;border:none';
+      // Mantiene cliccabile → va comunque a presession (potrebbe fare un'altra sessione)
+      btn.setAttribute('onclick',"go('presession')");
+      var _doneFrasi=[
+        '✅ Tartaruga soddisfatta! Farne un altra? 🐢',
+        '✅ Gia allenato! Un altra sessione? 💪',
+        '✅ Campione! Vuoi fare di piu? 🌟'
+      ];
+      btn.textContent=_doneFrasi[Math.floor(Date.now()/60000)%_doneFrasi.length];
+      // Sottotitolo con dettagli sessione fatta
+      if(_todayH){
+        var _ci2=CAT_INFO[_todayH.type]||{icon:'💪',label:_todayH.type||_todayH.focus||''};
+        var _subTxt=_ci2.icon+' '+_ci2.label;
+        if(_todayH.exCount)_subTxt+=' · '+_todayH.exCount+' esercizi';
+        if(_todayH.xp)_subTxt+=' · +'+_todayH.xp+' XP';
+        if(_todayH.dur)_subTxt+=' · '+_todayH.dur+'min';
+        _subTxt+=' ✅';
+        document.getElementById('today-sub').textContent=_subTxt;
+      }else{
+        document.getElementById('today-sub').textContent='Sessione completata oggi — ottimo lavoro! 🐢';
+      }
+    }else{
+      btn.style.display=showStart?'flex':'none';
+      btn.className='btn btn-p btn-full btn-lg';
+      btn.style.cssText='flex:1';
+      btn.setAttribute('onclick',"go('presession')");
+      btn.textContent='▶️ Inizia sessione';
+    }
+  }
   // Favorites chip: check if today's session has any favorite exercises
   const favs=P.favorites||[];
   if(favs.length>0&&!isRest&&tp.focus){
@@ -3467,7 +3531,12 @@ function setFeeling(el){
   const btnStart=document.getElementById('btn-start');
   // Rigenera il piano se non esiste oppure se manca l'entry per oggi
   if(!S.plan||S.plan.length===0||!S.plan.some(p=>p.date===localDate())){
-    refreshPlan(true);return;
+    if(!window._refreshingPlan){
+      window._refreshingPlan=true;
+      refreshPlan(true);
+      window._refreshingPlan=false;
+    }
+    return;
   }
   const tp=getTodayPlan();
   const isRest=tp.type==='rest';
@@ -3475,11 +3544,29 @@ function setFeeling(el){
     stancoOpts.style.display='block';
     if(btnStart)btnStart.style.display='none';
   } else {
-    // 'piano' or specific category chosen — always show start btn
     stancoOpts.style.display='none';
     if(btnStart){
-      btnStart.style.display='flex';
-      btnStart.textContent=isRest?'▶️ Sessione bonus (oggi è riposo)':'▶️ Inizia sessione';
+      // Controlla se sessione già fatta oggi prima di resettare il bottone
+      var _sf_today=localDate();
+      var _sf_done=tp.done===true||
+        (S.history||[]).some(function(h){return h.date===_sf_today&&h.type!=='riposo_vol'&&h.type!=='rest';})||
+        (S.days||[]).some(function(d){return d===_sf_today||(d.startsWith&&d.startsWith(_sf_today)&&!d.includes('_volrest'));})||
+        S.last===_sf_today;
+      if(_sf_done&&!isRest){
+        // Sessione già fatta: bottone grigio ma cliccabile
+        btnStart.style.display='flex';
+        btnStart.className='btn btn-full btn-lg';
+        btnStart.style.cssText='flex:1;background:#78909C;color:#fff;opacity:0.9;cursor:pointer;border:none';
+        btnStart.setAttribute('onclick',"go('presession')");
+        var _sf_frasi=['✅ Tartaruga soddisfatta! Farne un altra? 🐢','✅ Gia allenato! Un altra sessione? 💪','✅ Campione! Vuoi fare di piu? 🌟'];
+        btnStart.textContent=_sf_frasi[Math.floor(Date.now()/60000)%_sf_frasi.length];
+      } else {
+        btnStart.style.display='flex';
+        btnStart.className='btn btn-p btn-full btn-lg';
+        btnStart.style.cssText='flex:1';
+        btnStart.setAttribute('onclick',"go('presession')");
+        btnStart.textContent=isRest?'▶️ Sessione bonus (oggi è riposo)':'▶️ Inizia sessione';
+      }
     }
   }
 }
@@ -4758,7 +4845,12 @@ function showRestPreview(targetIdx, onDone){
       else if((nx.desc||'').match(/tieni \d|mantieni|isometric/i)){typeEl.textContent='🧘 Mantieni posizione';typeEl.style.display='block';typeEl.style.background='#F3E5F5';typeEl.style.color='#6A1B9A';typeEl.style.borderColor='#AB47BC';}
       else{typeEl.textContent='';typeEl.style.display='none';}
     }
-    document.getElementById('rst-next-desc').textContent=nx.desc||(nx.steps?nx.steps.join(' → '):'');
+    document.getElementById('rst-next-desc').textContent=(function(){
+      if(nx.desc)return nx.desc;
+      var _db=DB.find(function(d){return d.id===nx.id;})||{};
+      if(_db.desc)return _db.desc;
+      return _db.steps&&_db.steps.length?_db.steps.join(' → '):'';
+    })();
     const nxImg=document.getElementById('rst-next-img');
     const nxPh=document.getElementById('rst-next-placeholder');
     if(nxImg&&nxPh){
@@ -5081,7 +5173,16 @@ function completeSession(){
     cats,tags,
     exercises:doneExs.map(e=>({id:e.id,n:e.n,cat:e.cat}))
   });
-  const planEntry=S.plan.find(p=>p.date===today);if(planEntry)planEntry.done=true;
+  // Segna done solo se la sessione corrisponde al piano del giorno
+  // AI Coach, Scelgo io! e Le mie Tartarughe sono sessioni extra — non toccano il piano
+  const _extraTypes=['ai_coach','myw','misto','misto_plus'];
+  const planEntry=S.plan.find(p=>p.date===today);
+  if(planEntry&&!_extraTypes.includes(T.sesType)){
+    planEntry.done=true;
+  } else if(planEntry&&_extraTypes.includes(T.sesType)){
+    // Sessione extra: non marcare done, ma aggiungi un flag extra_done
+    planEntry.extra_done=(planEntry.extra_done||0)+1;
+  }
   // Se sessione AI: trasla la sessione pianificata al giorno successivo disponibile
   // Sessione AI Coach: NON spostare il piano — è una sessione extra
   save();
@@ -6269,7 +6370,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.101 · 22/05/2026 14:44 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.109 · 22/05/2026 20:27 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -6837,10 +6938,14 @@ function launchMyWorkout(id){
   // Prepara T esattamente come startTraining
   T.exs=w.exs.map(function(e){
     var ci=CAT_INFO[e.cat]||{icon:'💪',label:e.cat||''};
-    return Object.assign({},e,{
-      a:e.a||cfg.a,
-      r:e.r||cfg.r,
-      t:e.t||ci.icon+' '+ci.label
+    var _dbEx=DB.find(function(d){return d.id===e.id;})||{};
+    return Object.assign({},_dbEx,e,{
+      a:e.a||cfg.a, r:e.r||cfg.r,
+      t:e.t||ci.icon+' '+ci.label,
+      desc:e.desc||_dbEx.desc||'',
+      zona:e.zona||_dbEx.zona||'',
+      steps:e.steps||_dbEx.steps||[],
+      tips:e.tips||_dbEx.tips||[]
     });
   });
   T.idx=0;
@@ -6868,7 +6973,10 @@ function saveCurrentSession(){
   var origin=T.sesType==='ai_coach'?'ai':(T.sesType&&T.sesType!=='misto'?'plan':'manual');
   var cfg=DUR_CFG[T.dur||12]||DUR_CFG[12];
   var exs=T.exs.filter(function(e){return !e._transition;}).map(function(e){
-    return {id:e.id,n:e.n,cat:e.cat,t:e.t||'',a:e.a||cfg.a,r:e.r||cfg.r};
+    var _dbEx2=DB.find(function(d){return d.id===e.id;})||{};
+    return {id:e.id,n:e.n,cat:e.cat,t:e.t||'',a:e.a||cfg.a,r:e.r||cfg.r,
+      desc:e.desc||_dbEx2.desc||'',zona:e.zona||_dbEx2.zona||'',
+      steps:e.steps||_dbEx2.steps||[],tips:e.tips||_dbEx2.tips||[]};
   });
   if(!S.savedWorkouts)S.savedWorkouts=[];
   if(S.savedWorkouts.length>=20){toast('Hai già 20 schede salvate! Elimina qualcuna prima.');return;}
@@ -8235,6 +8343,14 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.109',date:'22/05/2026',changes:['FIX ROOT DEFINITIVO: setFeeling() resettava il bottone a verde ignorando sessione gia fatta — ora controlla _sf_done prima di resettare']},
+  {v:'1.108',date:'22/05/2026',changes:['FIX ROOT: refreshPlan plan=pastEntries.filter(date<=today) — oggi non viene piu rigenerato perdendo done:true']},
+  {v:'1.107',date:'22/05/2026',changes:['FIX _todayDone: S.days.some con check startsWith','FIX Le mie Tartarughe: desc/zona/steps/tips da DB al salvataggio e avvio','FIX rest screen: desc lookup dal DB per esercizi senza descrizione']},
+  {v:'1.106',date:'22/05/2026',changes:['FIX: _todayDone usa 3 fonti (history+S.days+S.last) per rilevare sessione fatta','FIX: bottone grigio usa cssText per vincere su btn-p classe','Bottone rimane cliccabile — porta a presession per sessione extra']},
+  {v:'1.105',date:'22/05/2026',changes:['FIX: bottone sessione completata usa textContent invece di innerHTML (compatibile con classi CSS)','Bottone grigio con frase simpatica e sottotitolo dettagli sessione fatta']},
+  {v:'1.104',date:'22/05/2026',changes:['FIX CRITICO: ricorsione infinita buildHome↔refreshPlan — rimossa chiamata buildHome da refreshPlan, aggiunto guard _refreshingPlan']},
+  {v:'1.103',date:'22/05/2026',changes:['FIX ROOT: refreshPlan preserva sessione di oggi (pastEntries include today)','UX: bottone verde Sessione completata oggi se sessione gia fatta','Sottotitolo mostra dettagli sessione completata (tipo, esercizi, XP, minuti)']},
+  {v:'1.102',date:'22/05/2026',changes:['FIX CRITICO: sessioni AI Coach, Scelgo io! e Le mie Tartarughe non alterano piu la rotazione del calendario','FIX: piano non marcato done per sessioni extra (AI/myw/misto)']},
   {v:'1.101',date:'22/05/2026',changes:['FIX Le mie Tartarughe: Avvia ora funziona correttamente (stesso pattern startTraining)','steps+tips aggiunti a 10 esercizi (g6,b2,b4,c2,c4,st2,st3,mob2,or2,ps2)']},
   {v:'1.100',date:'18/05/2026',changes:['Le mie Tartarughe: schede sessioni personalizzate in Scelgo io!','Salva sessione da screen-complete (AI e Piano)','Creazione manuale con picker full esercizi','Modifica e cancellazione schede','Avvio diretto scheda salvata']},
   {v:'1.099',date:'18/05/2026',changes:['FIX: Cosa c e di nuovo nelle impostazioni ora funziona (funzione separata toggleSettingsChangelog)']},
@@ -9935,7 +10051,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202605221444'; // auto-set on each release
+const APP_BUILD='202605222027'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
