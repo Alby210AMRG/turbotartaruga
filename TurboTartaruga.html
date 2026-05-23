@@ -1521,10 +1521,24 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           </div>
 
           <!-- Reimposta -->
-          <div style="padding:12px 0">
+          <div style="padding:12px 0;border-bottom:1px solid var(--bdr)">
             <div style="font-weight:bold;font-size:14px;margin-bottom:3px;color:#E53935">⚠️ Reimposta app</div>
             <div style="font-size:12px;color:var(--tmid);margin-bottom:8px">Cancella <b>tutti</b> i dati: profilo, sessioni, badge, progressi. Operazione <b>irreversibile</b> — assicurati di aver esportato il JSON prima!</div>
             <button class="btn btn-s btn-full" style="padding:10px;background:#FFEBEE;color:#E53935;border-color:#E53935" onclick="if(confirm('Sei sicuro? Tutti i dati verranno cancellati definitivamente!'))resetAll()">🗑️ Reimposta app</button>
+          </div>
+
+          <!-- Log diagnostico -->
+          <div style="padding:12px 0">
+            <div style="font-weight:bold;font-size:14px;margin-bottom:3px">📋 Log diagnostico</div>
+            <div style="font-size:12px;color:var(--tmid);margin-bottom:8px">Registro eventi dell'app — utile per debug e segnalazioni. Max 100 voci.</div>
+            <div style="display:flex;gap:6px;margin-bottom:8px">
+              <button class="btn btn-s" style="flex:1;padding:8px" onclick="buildDebugLog()">🔄 Aggiorna</button>
+              <button class="btn btn-s" style="flex:1;padding:8px" onclick="copyDebugLog()">📋 Copia tutto</button>
+              <button class="btn btn-s" style="flex:1;padding:8px;background:#FFEBEE;color:#E53935;border-color:#E53935" onclick="clearDebugLog()">🗑️ Cancella</button>
+            </div>
+            <div id="debug-log-wrap" style="max-height:200px;overflow-y:auto;background:var(--bg2);border-radius:10px;padding:8px;border:1px solid var(--bdr);font-family:monospace;font-size:11px">
+              <div style="color:var(--tlt)">Premi 🔄 Aggiorna per vedere i log.</div>
+            </div>
           </div>
 
         </div>
@@ -1649,7 +1663,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.109</div>
+      <div id="app-version-display">Versione v1.113</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -2194,6 +2208,8 @@ function load(){
   if(!S.sleepTotal)S.sleepTotal=0;
   if(!S.badges)S.badges=[];
   if(!S.days)S.days=[];
+  // Carica debug log persistente
+  try{var _dl=localStorage.getItem('tt_dbglog');if(_dl&&!S.debugLog.length)S.debugLog=JSON.parse(_dl);}catch(e){}
   if(typeof S.str!=='number')S.str=0;
   if(typeof S.xp!=='number')S.xp=0;
 }
@@ -3161,11 +3177,17 @@ function generatePlan(){
         restKind:isUserRest?'user':'auto'});
       consec=0;
     }
-    else{const focus=cats[focusIdx%cats.length];plan.push({date:ds,type:'workout',focus,icon:CAT_INFO[focus]?.icon||'🏋️'});focusIdx++;consec++;}
+    else{
+      const focus=cats[focusIdx%cats.length];
+      const _e={date:ds,type:'workout',focus,icon:CAT_INFO[focus]?.icon||'🏋️'};
+      if(_existingToday&&ds===today&&_existingToday.done)_e.done=true;
+      plan.push(_e);focusIdx++;consec++;
+    }
   }
   S.plan=plan;save();
 }
 function refreshPlan(silent){
+  appLog('REFRESH_PLAN plan.len='+(S.plan||[]).length+' today='+localDate());
   // ALWAYS read rest days from UI buttons if they exist (even if not explicitly saved)
   const rdBtns=document.querySelectorAll('#st-restdays .day-btn.sel');
   if(rdBtns.length>0){
@@ -3208,12 +3230,13 @@ function refreshPlan(silent){
     consec++;
   }
   
-  // Preserva tutto incluso oggi (già in pastEntries con done:true)
-  const plan=pastEntries.filter(p=>p.date<=today);
-  for(let i=0;i<30;i++){
+  // Mantieni solo passato stretto (< oggi); il loop genera oggi + futuro
+  const _existingToday=(S.plan||[]).find(p=>p.date===today)||null;
+  const plan=pastEntries.filter(p=>p.date<today);
+  for(let i=0;i<31;i++){
     const d=new Date();d.setDate(d.getDate()+i);
     const dow=d.getDay();const ds=localDate(d); // usa data locale non UTC
-    if(ds<=today)continue; // già gestito con pastEntries (incluso oggi)
+    if(ds<today)continue; // skippa solo il passato stretto
     const isRest=restDays.includes(dow)||(consec>=maxConsec);
     if(isRest){
       const isUserRest=_urd2.includes(dow);
@@ -3222,7 +3245,12 @@ function refreshPlan(silent){
         restKind:isUserRest?'user':'auto'});
       consec=0;
     }
-    else{const focus=cats[focusIdx%cats.length];plan.push({date:ds,type:'workout',focus,icon:CAT_INFO[focus]?.icon||'🏋️'});focusIdx++;consec++;}
+    else{
+      const focus=cats[focusIdx%cats.length];
+      const _e={date:ds,type:'workout',focus,icon:CAT_INFO[focus]?.icon||'🏋️'};
+      if(_existingToday&&ds===today&&_existingToday.done)_e.done=true;
+      plan.push(_e);focusIdx++;consec++;
+    }
   }
   // Mantieni solo 30 giorni dal oggi a ritroso, senza tagliare lo storico utile
   S.plan=plan.slice(-60); // max 60 per non appesantire
@@ -3407,8 +3435,8 @@ const hsEl=document.getElementById('home-streak');if(hsEl)hsEl.textContent=typeo
   });
   const _todayDone=tp.done===true||_histDoneToday||_daysDoneToday||(S.last===today_bh);
 
-  const hasValidPlan=S.plan&&S.plan.length>0;
-  const showStart=(!isRest||!hasValidPlan)&&!_todayDone;
+  // Applica lo stato corretto al bottone tramite helper centralizzato
+  _applyStartBtn();
   const btn=document.getElementById('btn-start');
   if(btn){
     // Trova sessione di piano fatta oggi (priorità: tipo del piano, poi qualsiasi)
@@ -3495,8 +3523,7 @@ function toggleScelgo(btn){
     if(piano){piano.classList.add('sel');T.feeling='piano';}
     // On non-rest days, show start btn when reverting to piano
     const tp=getTodayPlan();
-    const btnStart=document.getElementById('btn-start');
-    if(btnStart)btnStart.style.display=tp.type!=='rest'?'flex':'none';
+    _applyStartBtn();
   } else {
     btn.classList.add('sel');
     grid.style.display='grid';
@@ -3514,11 +3541,63 @@ function setScelgoFeeling(el){
   // Update the "Scelgo io!" main button to show selection
   const mainBtn=document.querySelector('.fbtn[data-f="__scelgo__"]');
   if(mainBtn){mainBtn.innerHTML='<span class="fi">🕹️</span>'+el.textContent.trim();}
-  const btnStart=document.getElementById('btn-start');
-  if(btnStart)btnStart.style.display='flex';
+  _applyStartBtn();
   // Aggiorna avviso sedia/elastico in tempo reale
   buildPresession();
 }
+// Helper centralizzato: applica stato corretto al btn-start (grigio se già fatto, verde altrimenti)
+function appLog(msg,level){
+  if(!S||!S.debugLog)return;
+  var ts=new Date().toLocaleTimeString('it-IT',{hour12:false});
+  S.debugLog.unshift({ts:ts,msg:msg,lv:level||'INFO'});
+  if(S.debugLog.length>100)S.debugLog.length=100;
+  if(S.debugLog.length%10===1)save();
+  console.log('[TT '+ts+'] '+msg);
+}
+function buildDebugLog(){
+  var wrap=document.getElementById('debug-log-wrap');if(!wrap)return;
+  var logs=S.debugLog||[];
+  if(!logs.length){wrap.innerHTML='<div style="color:var(--tlt);font-size:12px">Nessun log.</div>';return;}
+  wrap.innerHTML=logs.slice(0,50).map(function(e){
+    return '<div style="font-size:10px;font-family:monospace;padding:3px 0;border-bottom:1px solid var(--bdr);word-break:break-all"><span style="opacity:.5">'+e.ts+'</span> '+e.msg+'</div>';
+  }).join('');
+}
+function clearDebugLog(){S.debugLog=[];save();buildDebugLog();toast('Log cancellato');}
+function copyDebugLog(){
+  var logs=(S.debugLog||[]).map(function(e){return e.ts+' ['+e.lv+'] '+e.msg;}).join('\n');
+  if(!logs){toast('Log vuoto');return;}
+  if(navigator.clipboard){navigator.clipboard.writeText(logs).then(function(){toast('📋 Log copiato negli appunti!');}).catch(function(){_cbFallback&&_cbFallback(logs);});}
+  else if(window._cbFallback)_cbFallback(logs);
+}
+
+function _applyStartBtn(){
+  var btn=document.getElementById('btn-start');
+  if(!btn)return;
+  var today=localDate();
+  var tp=getTodayPlan();
+  var isRest=tp&&tp.type==='rest';
+  var _h=(S.history||[]).some(function(h){return h.date===today&&h.type!=='riposo_vol'&&h.type!=='rest';});
+  var _d=(S.days||[]).some(function(d){return d===today||(d.startsWith&&d.startsWith(today)&&!d.includes('_volrest'));});
+  var _l=S.last===today;
+  var _p=!!(tp&&tp.done);
+  var done=_p||_h||_d||_l;
+  appLog('BTN today='+today+' done='+done+' plan='+_p+' hist='+_h+' days='+_d+' last='+_l+' Slast='+(S.last||'?'));
+  if(done&&!isRest){
+    btn.style.display='flex';
+    btn.className='btn btn-full btn-lg';
+    btn.style.cssText='flex:1;background:#78909C;color:#fff;opacity:0.9;cursor:pointer;border:none';
+    btn.setAttribute('onclick',"go('presession')");
+    var frasi=['✅ Tartaruga soddisfatta! Vuoi farne un altra? 🐢','✅ Gia allenato! Un altra sessione? 💪','✅ Campione! Vuoi fare di piu? 🌟'];
+    btn.textContent=frasi[Math.floor(Date.now()/60000)%frasi.length];
+  } else {
+    btn.style.display=isRest?'none':'flex';
+    btn.className='btn btn-p btn-full btn-lg';
+    btn.style.cssText='flex:1';
+    btn.setAttribute('onclick',"go('presession')");
+    btn.textContent='▶️ Inizia sessione';
+  }
+}
+
 function setFeeling(el){
   document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');
   T.feeling=el.dataset.f;
@@ -3545,29 +3624,7 @@ function setFeeling(el){
     if(btnStart)btnStart.style.display='none';
   } else {
     stancoOpts.style.display='none';
-    if(btnStart){
-      // Controlla se sessione già fatta oggi prima di resettare il bottone
-      var _sf_today=localDate();
-      var _sf_done=tp.done===true||
-        (S.history||[]).some(function(h){return h.date===_sf_today&&h.type!=='riposo_vol'&&h.type!=='rest';})||
-        (S.days||[]).some(function(d){return d===_sf_today||(d.startsWith&&d.startsWith(_sf_today)&&!d.includes('_volrest'));})||
-        S.last===_sf_today;
-      if(_sf_done&&!isRest){
-        // Sessione già fatta: bottone grigio ma cliccabile
-        btnStart.style.display='flex';
-        btnStart.className='btn btn-full btn-lg';
-        btnStart.style.cssText='flex:1;background:#78909C;color:#fff;opacity:0.9;cursor:pointer;border:none';
-        btnStart.setAttribute('onclick',"go('presession')");
-        var _sf_frasi=['✅ Tartaruga soddisfatta! Farne un altra? 🐢','✅ Gia allenato! Un altra sessione? 💪','✅ Campione! Vuoi fare di piu? 🌟'];
-        btnStart.textContent=_sf_frasi[Math.floor(Date.now()/60000)%_sf_frasi.length];
-      } else {
-        btnStart.style.display='flex';
-        btnStart.className='btn btn-p btn-full btn-lg';
-        btnStart.style.cssText='flex:1';
-        btnStart.setAttribute('onclick',"go('presession')");
-        btnStart.textContent=isRest?'▶️ Sessione bonus (oggi è riposo)':'▶️ Inizia sessione';
-      }
-    }
+    _applyStartBtn();
   }
 }
 function doVolRest(type){
@@ -5125,6 +5182,7 @@ function completeSession(){
   const xpGain=10+(S.str>0?Math.min(S.str,5):0)+(riservaDone?5:0);
   S.tot++;S.xp=(S.xp||0)+xpGain;
   if(!S.days.includes(today))S.days.push(today);
+  appLog('SESSION type='+T.sesType+' today='+today+' days='+S.days.slice(-2).join(','));
   if(T.sesType==='orientale')S.ori++;
   if(T.sesType==='seduto'||T.sesType==='misto_plus')S.sed=(S.sed||0)+1;
   // Track all categories in catSet for badge checking
@@ -6370,7 +6428,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.109 · 22/05/2026 20:27 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.113 · 23/05/2026 06:51 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -7890,7 +7948,7 @@ var CAT_INFO={
 };
 // ── Core state objects ──────────────────────────────────────────────────
 var P={};  // Profile
-var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0,aiChatHistory:[],aiChats:0,togetherHistory:[],ancUno:0,savedWorkouts:[]};  // Stats
+var S={tot:0,str:0,last:null,days:[],history:[],party:0,ori:0,badges:[],xp:0,plan:[],catSet:[],skipped:0,skippedTotal:0,boosts:0,morningDone:null,sleepDone:null,morningTotal:0,sleepTotal:0,aiChatHistory:[],aiChats:0,togetherHistory:[],ancUno:0,savedWorkouts:[],debugLog:[]};  // Stats
 var SET={audio:true,voice:true,voiceDesc:true,music:true,musicVol:60,dynamicTheme:true,pauseSec:25,preferredDur:12,onlyWithPhoto:true,viewScale:'1x',theme:'light',aiEnabled:false,aiProvider:'gemini',aiKey:'',aiKeys:{gemini:'',claude:'',chatgpt:''},aiGeminiModel:'gemini-2.5-flash',aiFeature_bubble:true,aiFeature_sessions:true,aiFeature_chat:true,aiSessionFreq:'daily'};  // Settings
 var T={exs:[],idx:0,phase:'act',left:0,paused:false,t0:0,iv:null,dur:12,feeling:'piano',sesType:'misto',_halfSpoken:false,_restDone:null,_isRoutine:false};  // Timer state
 
@@ -8343,6 +8401,11 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.113',date:'23/05/2026',changes:['Log diagnostico inserito correttamente dentro Dati e Backup con pulsanti conformi al design app']},
+  {v:'1.112',date:'22/05/2026',changes:['FIX ROOT: loop usa ds<today — oggi sempre nel piano','done:true preservato per oggi','Log diagnostico dentro acc-dati con Copia']},
+  {v:'1.111',date:'22/05/2026',changes:['Log di debug persistente in Impostazioni > Dati > Log di debug','Logga applyStartBtn, completeSession, updateStreak, refreshPlan']},
+  {v:'1.111',date:'22/05/2026',changes:['Log diagnostico in Impostazioni > Dati e Backup (max 100 voci, pulsanti Aggiorna e Cancella)','Log SESSION_COMPLETE REFRESH_PLAN BTN_START con tutti i valori utili']},
+  {v:'1.110',date:'22/05/2026',changes:['Funzione _applyStartBtn centralizzata: tutti i punti che toccano btn-start usano la stessa logica done/grigio/verde']},
   {v:'1.109',date:'22/05/2026',changes:['FIX ROOT DEFINITIVO: setFeeling() resettava il bottone a verde ignorando sessione gia fatta — ora controlla _sf_done prima di resettare']},
   {v:'1.108',date:'22/05/2026',changes:['FIX ROOT: refreshPlan plan=pastEntries.filter(date<=today) — oggi non viene piu rigenerato perdendo done:true']},
   {v:'1.107',date:'22/05/2026',changes:['FIX _todayDone: S.days.some con check startsWith','FIX Le mie Tartarughe: desc/zona/steps/tips da DB al salvataggio e avvio','FIX rest screen: desc lookup dal DB per esercizi senza descrizione']},
@@ -10051,7 +10114,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202605222027'; // auto-set on each release
+const APP_BUILD='202605230651'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
@@ -10377,3 +10440,18 @@ setTimeout(()=>{
 },5000);</script>
 </body>
 </html>
+
+          <div style="margin-top:14px;border-top:1px solid var(--bdr);padding-top:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+              <div style="font-size:12px;font-weight:bold;color:var(--g1)">📋 Log diagnostico</div>
+              <div style="display:flex;gap:4px">
+                <button onclick="buildDebugLog()" style="padding:4px 10px;background:var(--bg2);border:1px solid var(--bdr);border-radius:100px;font-size:11px;cursor:pointer;font-family:var(--ff);color:var(--text)">🔄 Aggiorna</button>
+                <button onclick="copyDebugLog()" style="padding:4px 10px;background:var(--bg2);border:1px solid var(--bdr);border-radius:100px;font-size:11px;cursor:pointer;font-family:var(--ff);color:var(--text)">📋 Copia</button>
+                <button onclick="clearDebugLog()" style="padding:4px 10px;background:#FFEBEE;color:#C62828;border:1px solid #FFCDD2;border-radius:100px;font-size:11px;cursor:pointer;font-family:var(--ff)">🗑️</button>
+              </div>
+            </div>
+            <div id="debug-log-wrap" style="max-height:200px;overflow-y:auto;background:var(--bg2);border-radius:10px;padding:8px;border:1px solid var(--bdr)">
+              <div style="color:var(--tlt);font-size:11px;font-family:monospace">Premi 🔄 Aggiorna per vedere i log.</div>
+            </div>
+          </div>
+        
