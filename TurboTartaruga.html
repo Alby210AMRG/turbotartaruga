@@ -34,7 +34,7 @@ body.v2x .timer-num{font-size:100px}
 html,body{height:100%}
 body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--text);max-width:500px;margin:0 auto;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}
 @media(min-width:520px){body{box-shadow:0 0 60px rgba(0,0,0,.13)}}
-.screen{display:none;min-height:100vh;animation:fadeIn .28s ease}.screen.active{display:block}
+.screen{display:none;min-height:100vh;animation:fadeIn .28s ease;overflow:hidden}.screen.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .hdr{background:var(--g1);color:#fff;padding:13px 16px;display:flex;align-items:center;gap:11px;position:sticky;top:0;z-index:100}
 .hdr h1{font-family:var(--ft);font-size:18px;flex:1}
@@ -586,11 +586,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       </div>
       <div style="display:flex;gap:8px;margin-top:10px">
       <button class="btn btn-p btn-full btn-lg" id="btn-start" onclick="go('presession')" style="flex:1">▶️ Inizia sessione</button>
-      <button id="btn-ai-home" onclick="startAISessionFromHome()"
-        style="display:none;flex:1;background:linear-gradient(135deg,#6C63FF,#42A5F5);color:#fff;border:none;padding:13px 8px;border-radius:16px;font-size:12px;font-weight:bold;cursor:pointer;line-height:1.3;text-align:center">
-        🧠✨<br><span style="font-size:11px">Il Coach ha<br>scelto per te!</span>
-      </button>
     </div>
+
     </div>
   </div>
   <!-- Morning routine banner (context-aware) -->
@@ -719,8 +716,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <button onclick="closePicker()" style="flex:1;padding:10px;border:1.5px solid var(--bdr);border-radius:100px;background:var(--bg);font-size:13px;font-weight:bold;cursor:pointer;font-family:var(--ff)">Chiudi</button>
       <button onclick="applyPickerSelection()" style="flex:1;padding:10px;background:var(--g1);color:#fff;border:none;border-radius:100px;font-size:13px;font-weight:bold;cursor:pointer;font-family:var(--ff)">✅ Aggiungi selezionati</button>
     </div>
-  </div>
-</div>
+  </div></div>
 
 <!-- PRE-SESSION -->
 <div id="screen-presession" class="screen">
@@ -1663,7 +1659,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.115</div>
+      <div id="app-version-display">Versione v1.124</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -2189,6 +2185,13 @@ function load(){
     if(s){var sd=JSON.parse(s);Object.assign(S,sd);}
     if(st){var setd=JSON.parse(st);Object.assign(SET,setd);}
   }catch(e){console.warn('Load failed:',e);}
+  // Mostra subito bottone AI e icona chat se abilitati — diretto, senza funzioni intermedie
+  try{
+    var _aibtn=document.getElementById('btn-ai-home');
+    if(_aibtn)_aibtn.style.display=SET.aiEnabled?'flex':'none';
+    var _chatw=document.getElementById('chat-icon-wrap');
+    if(_chatw)_chatw.style.display=(SET.aiEnabled&&SET.aiFeature_chat!==false)?'block':'none';
+  }catch(_e){}
   // ── STEP 3: Ripristina GPS da tutte le sorgenti possibili ───────────────────
   // Sorgente A: tt4_gps (dedicato, già letto in step 1)
   if(_gpsLat&&_gpsLon){P.gpsLat=_gpsLat;P.gpsLon=_gpsLon;}
@@ -3285,6 +3288,9 @@ if(typeof pregenAISession==='undefined')   window.pregenAISession=function(){ret
 if(typeof startAISessionFromHome==='undefined') window.startAISessionFromHome=function(){go('presession');};
 
 function buildHome(){
+  // Sincronizza sempre il bottone AI e icona chat, anche in caso di early return
+  if(typeof _syncAIHomeButton==='function')_syncAIHomeButton();
+  if(typeof _syncChatIcon==='function')_syncChatIcon();
   if(!P.name)return;
   T.energyLevel=3; // reset energy to normal each day
   try{const defNrg=document.querySelector('.nrg-btn[data-nrg="3"]');if(defNrg)setEnergy(defNrg);}catch(e){}
@@ -6310,18 +6316,25 @@ function _syncAIHomeButton(){
   if(!btn) return;
   var key=(SET.aiKeys&&SET.aiKeys[SET.aiProvider||'gemini'])||SET.aiKey||'';
   var today = localDate();
-  var aiEnabled = !!SET.aiEnabled && SET.aiFeature_sessions!==false;
+  var aiEnabled = !!SET.aiEnabled; // mostra se AI attivo, senza dipendere da sub-toggle
   var hasSession = S.aiSessionDate===today && S.aiSessionToday && S.aiSessionToday.ids && S.aiSessionToday.ids.length>0;
   var isScheduledToday = aiEnabled && (hasSession || _shouldGenerateAISession());
   // Mostra sempre se AI è abilitato (anche senza sessione pre-generata)
   btn.style.display = aiEnabled ? 'flex' : 'none';
+  appLog('_syncAI: aiEnabled='+aiEnabled+' display='+btn.style.display);
   if(!aiEnabled) return;
+  // Se btn-start è nascosto (riposo/fatto), allarga il bottone AI a tutta larghezza
+  var btnStart=document.getElementById('btn-start');
+  var startHidden=!btnStart||btnStart.style.display==='none'||btnStart.offsetParent===null;
+  btn.style.flex=startHidden?'unset':'1';
+  btn.style.width=startHidden?'100%':'';
   var sp = btn.querySelector('span');
+  var txt=document.getElementById('btn-ai-home-txt');
   if(hasSession && S.aiSessionToday.title){
-    if(sp) sp.innerHTML = '<span style="font-size:10px;font-weight:bold">' + S.aiSessionToday.title.slice(0,26) + '</span>';
+    if(txt)txt.textContent=S.aiSessionToday.title.slice(0,40);
     btn.style.opacity='1';
   } else {
-    if(sp) sp.innerHTML = '<span style="font-size:10px">Il Coach ha<br>una sessione per te!</span>';
+    if(txt)txt.textContent='Il Coach AI ha una sessione per te!';
     btn.style.opacity='0.85';
   }
 }
@@ -6438,7 +6451,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.115 · 24/05/2026 12:51 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.124 · 24/05/2026 18:38 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -8411,6 +8424,15 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.124',date:'24/05/2026',changes:['FIX icona chat AI in alto: _syncChatIcon aggiunta in init e buildHome','Rimosso btn-ai-home dalla home content (non era quello cercato)']},
+  {v:'1.123',date:'24/05/2026',changes:['Bottone AI ripristinato accanto a Inizia Sessione con aspetto originale','Su giorno riposo/sessione fatta si allarga a tutta larghezza']},
+  {v:'1.122',date:'24/05/2026',changes:['FIX diretto bottone AI: display impostato inline nel codice di init subito dopo caricamento localStorage']},
+  {v:'1.121',date:'24/05/2026',changes:['FIX bottone AI: posizionato correttamente dentro screen-home dopo btn-start come blocco autonomo']},
+  {v:'1.120',date:'24/05/2026',changes:['FIX definitivo bottone AI: spostato fuori dal row btn-start — bottone autonomo sempre visibile se AI abilitato indipendentemente da giorno riposo o sessione completata']},
+  {v:'1.119',date:'24/05/2026',changes:['FIX AI button: _syncAIHomeButton chiamata come prima istruzione di buildHome (prima di tutti gli early return)','FIX mobile log visibile: overflow:hidden su .screen']},
+  {v:'1.118',date:'24/05/2026',changes:['FIX: spostato appLog DOPO btn.style.display in _syncAIHomeButton (non bloccava piu il display)','Log aggiunto dopo display per conferma']},
+  {v:'1.117',date:'24/05/2026',changes:['FIX CRITICO: div log era finito fuori da </html> — file strutturalmente rotto','FIX: _syncAIHomeButton chiamata 200ms dopo avvio per garantire visibilità bottone AI']},
+  {v:'1.116',date:'24/05/2026',changes:['FIX definitivo bottone AI: visibile se SET.aiEnabled=true indipendentemente dai sub-toggle sessioni']},
   {v:'1.115',date:'24/05/2026',changes:['FIX: bottone AI sempre visibile se AI Coach abilitato (non dipende piu da API key o sessione pregen)','FIX: appLog inizializza debugLog se mancante (compatibilita dati vecchi)']},
   {v:'1.114',date:'24/05/2026',changes:['FIX: _applyStartBtn chiama _syncAIHomeButton — pulsante AI torna visibile','FIX: refreshPlan richiama buildHome via setTimeout(50ms) — home corretta al primo avvio']},
   {v:'1.113',date:'23/05/2026',changes:['Log diagnostico inserito correttamente dentro Dati e Backup con pulsanti conformi al design app']},
@@ -10126,7 +10148,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202605241251'; // auto-set on each release
+const APP_BUILD='202605241838'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
@@ -10214,6 +10236,9 @@ if(P.name){
     // L'aggiornamento viene gestito dal sistema version.json dell'app
   }
   go('home');
+  // Sincronizza bottone AI subito (dati già caricati qui)
+  if(typeof _syncAIHomeButton==='function')_syncAIHomeButton();
+  setTimeout(function(){ if(typeof _syncAIHomeButton==='function')_syncAIHomeButton(); }, 300);
 }else go('welcome');
 
 
@@ -10452,18 +10477,3 @@ setTimeout(()=>{
 },5000);</script>
 </body>
 </html>
-
-          <div style="margin-top:14px;border-top:1px solid var(--bdr);padding-top:12px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-              <div style="font-size:12px;font-weight:bold;color:var(--g1)">📋 Log diagnostico</div>
-              <div style="display:flex;gap:4px">
-                <button onclick="buildDebugLog()" style="padding:4px 10px;background:var(--bg2);border:1px solid var(--bdr);border-radius:100px;font-size:11px;cursor:pointer;font-family:var(--ff);color:var(--text)">🔄 Aggiorna</button>
-                <button onclick="copyDebugLog()" style="padding:4px 10px;background:var(--bg2);border:1px solid var(--bdr);border-radius:100px;font-size:11px;cursor:pointer;font-family:var(--ff);color:var(--text)">📋 Copia</button>
-                <button onclick="clearDebugLog()" style="padding:4px 10px;background:#FFEBEE;color:#C62828;border:1px solid #FFCDD2;border-radius:100px;font-size:11px;cursor:pointer;font-family:var(--ff)">🗑️</button>
-              </div>
-            </div>
-            <div id="debug-log-wrap" style="max-height:200px;overflow-y:auto;background:var(--bg2);border-radius:10px;padding:8px;border:1px solid var(--bdr)">
-              <div style="color:var(--tlt);font-size:11px;font-family:monospace">Premi 🔄 Aggiorna per vedere i log.</div>
-            </div>
-          </div>
-        
