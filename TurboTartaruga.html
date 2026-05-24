@@ -1663,7 +1663,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.113</div>
+      <div id="app-version-display">Versione v1.115</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -3258,8 +3258,14 @@ function refreshPlan(silent){
   // Aggiorna calendario se aperto
   const _calEl=document.getElementById('screen-calendar');
   if(_calEl&&_calEl.classList.contains('active')){const _cn=new Date();calYear=_cn.getFullYear();calMonth=_cn.getMonth();buildCal();}
-  // NON chiamare buildHome() da qui — causa ricorsione infinita
-  // buildHome chiama refreshPlan che chiama buildHome...
+  // Richiama buildHome se è la schermata attiva (con setTimeout per evitare stack overflow)
+  const _homeEl=document.getElementById('screen-home');
+  if(_homeEl&&_homeEl.classList.contains('active')){
+    setTimeout(function(){
+      window._refreshingPlan=false;
+      buildHome();
+    },50);
+  }
   const autoRests=S.plan.filter(p=>p.restKind==='auto').length;
   if(!silent)toast('✅ Piano aggiornato! '+(autoRests>0?'('+autoRests+' giorni recupero automatico)':''));
 }
@@ -3547,7 +3553,8 @@ function setScelgoFeeling(el){
 }
 // Helper centralizzato: applica stato corretto al btn-start (grigio se già fatto, verde altrimenti)
 function appLog(msg,level){
-  if(!S||!S.debugLog)return;
+  if(!S)return;
+  if(!S.debugLog)S.debugLog=[];
   var ts=new Date().toLocaleTimeString('it-IT',{hour12:false});
   S.debugLog.unshift({ts:ts,msg:msg,lv:level||'INFO'});
   if(S.debugLog.length>100)S.debugLog.length=100;
@@ -3596,6 +3603,8 @@ function _applyStartBtn(){
     btn.setAttribute('onclick',"go('presession')");
     btn.textContent='▶️ Inizia sessione';
   }
+  // Sincronizza sempre anche il bottone AI
+  if(typeof _syncAIHomeButton==='function')_syncAIHomeButton();
 }
 
 function setFeeling(el){
@@ -6304,8 +6313,9 @@ function _syncAIHomeButton(){
   var aiEnabled = !!SET.aiEnabled && SET.aiFeature_sessions!==false;
   var hasSession = S.aiSessionDate===today && S.aiSessionToday && S.aiSessionToday.ids && S.aiSessionToday.ids.length>0;
   var isScheduledToday = aiEnabled && (hasSession || _shouldGenerateAISession());
-  btn.style.display = isScheduledToday ? 'flex' : 'none';
-  if(!isScheduledToday) return;
+  // Mostra sempre se AI è abilitato (anche senza sessione pre-generata)
+  btn.style.display = aiEnabled ? 'flex' : 'none';
+  if(!aiEnabled) return;
   var sp = btn.querySelector('span');
   if(hasSession && S.aiSessionToday.title){
     if(sp) sp.innerHTML = '<span style="font-size:10px;font-weight:bold">' + S.aiSessionToday.title.slice(0,26) + '</span>';
@@ -6428,7 +6438,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.113 · 23/05/2026 06:51 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.115 · 24/05/2026 12:51 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -8401,6 +8411,8 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.115',date:'24/05/2026',changes:['FIX: bottone AI sempre visibile se AI Coach abilitato (non dipende piu da API key o sessione pregen)','FIX: appLog inizializza debugLog se mancante (compatibilita dati vecchi)']},
+  {v:'1.114',date:'24/05/2026',changes:['FIX: _applyStartBtn chiama _syncAIHomeButton — pulsante AI torna visibile','FIX: refreshPlan richiama buildHome via setTimeout(50ms) — home corretta al primo avvio']},
   {v:'1.113',date:'23/05/2026',changes:['Log diagnostico inserito correttamente dentro Dati e Backup con pulsanti conformi al design app']},
   {v:'1.112',date:'22/05/2026',changes:['FIX ROOT: loop usa ds<today — oggi sempre nel piano','done:true preservato per oggi','Log diagnostico dentro acc-dati con Copia']},
   {v:'1.111',date:'22/05/2026',changes:['Log di debug persistente in Impostazioni > Dati > Log di debug','Logga applyStartBtn, completeSession, updateStreak, refreshPlan']},
@@ -10114,7 +10126,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202605230651'; // auto-set on each release
+const APP_BUILD='202605241251'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
