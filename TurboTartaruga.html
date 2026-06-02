@@ -540,7 +540,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           <span class="fi">🕹️</span>Scelgo io!
         </button>
         <button class="fbtn tired" data-f="stanco" onclick="setFeeling(this)" style="padding:10px 6px">
-          <span class="fi">😴</span>Stanco
+          <span class="fi">🌡️</span>Non mi sento...
         </button>
       </div>
       <!-- Energy level selector -->
@@ -559,6 +559,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <!-- Categorie normali -->
         <button class="fbtn fbtn-sub" data-f="__myworkouts__" onclick="openMyWorkouts()" style="grid-column:1/-1;background:linear-gradient(135deg,var(--g3),#E8F5E9);border:2px solid var(--g1)"><span class="fi">🎒</span><span style="color:var(--g1);font-weight:bold">Le mie Tartarughe</span></button>
         <button class="fbtn fbtn-sub" data-f="gambe" onclick="setScelgoFeeling(this)"><span class="fi">🦵</span>Gambe</button>
+        <button class="fbtn fbtn-sub" data-f="equilibrio" onclick="setScelgoFeeling(this)"><span class="fi">🦢</span>Equilibrio</button>
         <button class="fbtn fbtn-sub" data-f="braccia" onclick="setScelgoFeeling(this)"><span class="fi">💪</span>Braccia</button>
         <button class="fbtn fbtn-sub" data-f="core" onclick="setScelgoFeeling(this)"><span class="fi">🎯</span>Core</button>
         <button class="fbtn fbtn-sub" data-f="stretching" onclick="setScelgoFeeling(this)"><span class="fi">🤸</span>Stretch</button>
@@ -579,10 +580,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div id="stanco-opts" style="display:none;margin-top:9px">
         <div style="font-size:var(--fs-xs);color:var(--tmid);margin-bottom:8px">💬 Va benissimo! Come preferisci?</div>
         <div style="display:flex;gap:8px">
-          <button onclick="doVolRest('mini')" class="btn btn-s" style="flex:1;font-size:var(--fs-xs);padding:10px">🤸 Mini 5min</button>
+          <button onclick="doVolRest('mini')" class="btn btn-s" style="flex:1;font-size:var(--fs-xs);padding:10px">⚡ Mini-sessione</button>
           <button onclick="doVolRest('riposo')" class="btn" style="flex:1;font-size:var(--fs-xs);padding:10px;background:var(--bg2);color:var(--tmid);border:3px solid var(--bdr)">😴 Riposo completo</button>
+          <button onclick="doInfortunato()" class="btn" style="flex:1;font-size:var(--fs-xs);padding:10px;background:#FFF3E0;color:#E65100;border:3px solid #FFB74D">🩹 Infortunato</button>
         </div>
-        <p style="font-size:10px;color:var(--tlt);margin-top:6px;text-align:center">Riposo volontario → streak preservato 🐢</p>
+        <p style="font-size:10px;color:var(--tlt);margin-top:6px;text-align:center">Riposo completo slitta la sessione a domani (max 4 giorni) · streak preservato 🐢</p>
       </div>
       <div style="display:flex;gap:8px;margin-top:10px">
       <button class="btn btn-p btn-full btn-lg" id="btn-start" onclick="go('presession')" style="flex:1">▶️ Inizia sessione</button>
@@ -689,6 +691,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <label style="font-size:11px;font-weight:bold;color:var(--tlt);text-transform:uppercase;letter-spacing:.5px">Nome scheda</label>
       <input id="myw-edit-name" type="text" placeholder="Es: Gambe del martedì"
         style="width:100%;margin-top:4px;padding:10px 12px;border:1.5px solid var(--bdr);border-radius:12px;font-size:14px;background:var(--bg);color:var(--text);outline:none;box-sizing:border-box;font-family:var(--ff)">
+    </div>
+    <div style="margin-bottom:12px">
+      <label style="font-size:11px;font-weight:bold;color:var(--tlt);text-transform:uppercase;letter-spacing:.5px">Icona scheda</label>
+      <div id="myw-emoji-picker" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">
+        <button onclick="selectMywEmoji(this,'🐢')" data-emoji="🐢" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🐢</button><button onclick="selectMywEmoji(this,'🏃')" data-emoji="🏃" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🏃</button><button onclick="selectMywEmoji(this,'🚴')" data-emoji="🚴" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🚴</button><button onclick="selectMywEmoji(this,'🤸')" data-emoji="🤸" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🤸</button><button onclick="selectMywEmoji(this,'🧗')" data-emoji="🧗" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🧗</button><button onclick="selectMywEmoji(this,'🏊')" data-emoji="🏊" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🏊</button><button onclick="selectMywEmoji(this,'🥋')" data-emoji="🥋" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🥋</button><button onclick="selectMywEmoji(this,'🦅')" data-emoji="🦅" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🦅</button><button onclick="selectMywEmoji(this,'🐯')" data-emoji="🐯" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🐯</button><button onclick="selectMywEmoji(this,'🦁')" data-emoji="🦁" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🦁</button><button onclick="selectMywEmoji(this,'🌊')" data-emoji="🌊" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🌊</button><button onclick="selectMywEmoji(this,'🌈')" data-emoji="🌈" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🌈</button><button onclick="selectMywEmoji(this,'🍀')" data-emoji="🍀" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🍀</button><button onclick="selectMywEmoji(this,'🦋')" data-emoji="🦋" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🦋</button><button onclick="selectMywEmoji(this,'🐉')" data-emoji="🐉" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🐉</button><button onclick="selectMywEmoji(this,'🎪')" data-emoji="🎪" style="font-size:22px;padding:4px 8px;border-radius:8px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer" class="myw-emoji-btn">🎪</button>
+      </div>
+      <input type="hidden" id="myw-edit-emoji" value="🐢">
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
       <div style="font-size:11px;font-weight:bold;color:var(--tlt);text-transform:uppercase;letter-spacing:.5px">Esercizi</div>
@@ -1556,8 +1565,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
             <button id="ai-btn-gemini" onclick="selectAIProvider('gemini')" style="flex:1;min-width:80px;padding:10px 6px;border-radius:12px;border:2px solid var(--g1);background:var(--g4);color:var(--g1);cursor:pointer;font-size:12px;font-weight:bold">
               <div style="font-size:20px">🟢</div>Gemini<div style="font-size:9px;margin-top:2px">Google · GRATIS</div>
             </button>
-            <button id="ai-btn-claude" onclick="selectAIProvider('claude')" style="flex:1;min-width:80px;padding:10px 6px;border-radius:12px;border:2px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;font-size:12px;font-weight:bold">
-              <div style="font-size:20px">🟠</div>Claude<div style="font-size:9px;margin-top:2px">Anthropic · €</div>
+            <button id="ai-btn-groq" onclick="selectAIProvider('groq')" style="flex:1;min-width:80px;padding:10px 6px;border-radius:12px;border:2px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;font-size:12px;font-weight:bold">
+              <div style="font-size:20px">⚡</div>Groq<div style="font-size:9px;margin-top:2px">Llama3 · GRATIS</div>
+            </button>
+            <button id="ai-btn-openrouter" onclick="selectAIProvider('openrouter')" style="flex:1;min-width:80px;padding:10px 6px;border-radius:12px;border:2px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;font-size:12px;font-weight:bold">
+              <div style="font-size:20px">🌐</div>OpenRouter<div style="font-size:9px;margin-top:2px">Multi · €</div>
             </button>
             <button id="ai-btn-chatgpt" onclick="selectAIProvider('chatgpt')" style="flex:1;min-width:80px;padding:10px 6px;border-radius:12px;border:2px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;font-size:12px;font-weight:bold">
               <div style="font-size:20px">🟣</div>ChatGPT<div style="font-size:9px;margin-top:2px">OpenAI · €</div>
@@ -1580,7 +1592,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
             <div style="display:flex;gap:7px">
               <input type="password" id="ai-key-input" placeholder="Incolla qui la tua API key..."
                 style="flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--bdr);background:var(--bg2);color:var(--text);font-size:13px;outline:none"
-                oninput="SET.aiKey=this.value;if(!SET.aiKeys)SET.aiKeys={gemini:'',claude:'',chatgpt:''};SET.aiKeys[SET.aiProvider||'gemini']=this.value;save();_syncAISettings();">
+                oninput="SET.aiKey=this.value;if(!SET.aiKeys)SET.aiKeys={gemini:'',chatgpt:'',groq:'',openrouter:''};SET.aiKeys[SET.aiProvider||'gemini']=this.value;save();_syncAISettings();">
               <button onclick="toggleAIKeyVisibility()" style="padding:8px 12px;border-radius:10px;border:1.5px solid var(--bdr);background:var(--bg2);color:var(--text);cursor:pointer;font-size:16px" id="ai-key-eye">👁️</button>
             </div>
             <div style="font-size:10px;color:var(--tlt);margin-top:5px">🔒 La chiave è salvata solo su questo dispositivo, mai inviata a server esterni.</div>
@@ -1659,7 +1671,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.124</div>
+      <div id="app-version-display">Versione v1.127</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1949,7 +1961,19 @@ var DB=[
   {id:'am7',n:'Stiramento laterale in piedi',cat:'mattino',t:'☀️ Mattino',zona:'🔄 Dorsali · 💪 Intercostali',desc:'In piedi accanto al letto. Un braccio sopra la testa, piegati lentamente di lato. Respira. Poi alterna.',floor:false},
   {id:'am8',n:'Respirazione profonda attivante',cat:'mattino',t:'☀️ Mattino',zona:'🫁 Respiro · 🧠 Attivazione',desc:'In piedi. Inspira 4 sec portando le braccia in alto, espira 4 sec abbassandole. Ripeti 5 volte. Sveglia il corpo.',floor:false},
   {id:'po10',n:'Cammino consapevole pausa',cat:'postura',t:'🪑+ Postura',zona:'🦵 Gambe · ❤️ Circolazione',desc:'Alzati e cammina 2 minuti. Anche solo in casa. Necessario ogni ora per la salute metabolica. Niente scuse!',floor:false},
-  // ── PARTY ─────────────────────────────────────────────────────────────
+  // ── EQUILIBRIO (eq1-eq11) ──────────────────────────────────────────────
+  {id:'eq1',n:'Stazione monopodalica',cat:'equilibrio',t:'🦢 Equilibrio',zona:'🎯 Equilibrio · 🦵 Caviglia',desc:'Stai su un piede solo fissando un punto fisso. Tieni respirando, poi cambia.',floor:false,switch:true},
+  {id:'eq2',n:'Tandem stance',cat:'equilibrio',t:'🦢 Equilibrio',zona:'🎯 Equilibrio · 🦵 Caviglie',desc:'Un piede davanti all altro come su una linea, tallone a punta. Braccia aperte per bilanciare.',floor:false,switch:true},
+  {id:'eq3',n:'Cammino tallone-punta',cat:'equilibrio',t:'🦢 Equilibrio',zona:'🎯 Equilibrio · 🦵 Gambe',desc:'Cammina mettendo il tallone subito davanti alla punta dell altro piede. Lento e controllato.',floor:false},
+  {id:'eq4',n:'Equilibrio occhi chiusi',cat:'equilibrio',t:'🦢 Equilibrio',zona:'🎯 Sistema vestibolare · 🎯 Propriocezione',desc:'Su due piedi chiudi gli occhi e resta immobile 20 secondi. Sfida al sistema vestibolare.',floor:false},
+  {id:'eq5',n:'Spostamento peso laterale',cat:'equilibrio',t:'🦢 Equilibrio',zona:'🎯 Equilibrio · 🦵 Abduttori',desc:'Sposta il peso lentamente da un piede all altro sollevando leggermente il piede opposto.',floor:false,switch:true},
+  {id:'eq6',n:'Sollevamento ginocchio lento',cat:'equilibrio',t:'🦢 Equilibrio',zona:'🎯 Equilibrio · 🦵 Flessori anca',desc:'Solleva un ginocchio in 3 secondi, pausa 3 secondi in cima, abbassa 3 secondi. Alterna.',floor:false,switch:true},
+  {id:'eq7',n:'Cerchi anca in equilibrio',cat:'equilibrio',t:'🦢 Equilibrio',zona:'🦴 Anca · 🎯 Equilibrio',desc:'Su un piede solo, con l altro disegna cerchi lenti in aria. Il bacino resta fermo.',floor:false,switch:true},
+  {id:'eq8',n:'Equilibrio su punta piedi',cat:'equilibrio',t:'🦢 Equilibrio',zona:'🦵 Polpacci · 🎯 Equilibrio',desc:'Sali sulle punte di entrambi i piedi e tieni la posizione. Poi prova su un piede solo.',floor:false},
+  {id:'eq9',n:'Mini-squat monopodalico',cat:'equilibrio',t:'🦢 Equilibrio',zona:'🦵 Quadricipiti · 🎯 Equilibrio',desc:'Su un piede solo piega leggermente il ginocchio. Sedia vicina per sicurezza.',floor:false,switch:true},
+  {id:'eq10',n:'Pendolo avanti-indietro',cat:'equilibrio',t:'🦢 Equilibrio',zona:'🎯 Propriocezione · 🦴 Caviglie',desc:'Piedi larghezza spalle: sposta il peso sulle punte poi sui talloni come un pendolo lento.',floor:false},
+  {id:'eq11',n:'Equilibrio su superficie morbida',cat:'equilibrio',t:'🦢 Equilibrio',zona:'🎯 Propriocezione · 🦵 Caviglie',desc:'Piega un asciugamano o usa un cuscino. Stai sopra su un piede solo. La superficie instabile allena la propriocezione.',floor:false,switch:true},
+  // ── PARTY ─────────────────────────────────────────────────────────────────
   {id:'p1',n:'Squat sincronizzato',cat:'party',t:'🎉 Party',zona:'🦵 Gambe · 🍑 Glutei',desc:'Tutti insieme! 3-2-1 e squat. Chi si alza prima perde un punto. Sincronizzazione perfetta!',floor:false},
   {id:'p2',n:'Sfida equilibrio',cat:'party',t:'🎉 Party',zona:'🔄 Equilibrio',desc:'Tutti su un piede. Chi tiene la posizione più a lungo vince! Via!',floor:false},
   {id:'p3',n:'Gara affondi',cat:'party',t:'🎉 Party',zona:'🦵 Gambe',desc:'Chi fa più affondi in 30 secondi? Conta ad alta voce! Niente imbrogliare!',floor:false},
@@ -2354,21 +2378,23 @@ const AI_PROVIDERS = {
     buildBody: function(msg){ return {contents:[{parts:[{text:msg}]}]}; },
     parseResponse: function(d){ return (d&&d.candidates&&d.candidates[0]&&d.candidates[0].content&&d.candidates[0].content.parts&&d.candidates[0].content.parts[0]&&d.candidates[0].content.parts[0].text)||null; },
   },
-  claude: {
-    name: 'Claude (Anthropic)',
-    model: 'claude-haiku-4-5-20251001',
+  groq: {
+    name: 'Groq (Llama 3.3)',
+    free: true,
+    instructions: '<b>⚡ Groq — Llama 3.3 70B — Gratuito</b><br><br>1. Vai su <a href="https://console.groq.com" target="_blank" style="color:var(--g1)">console.groq.com</a><br>2. Crea account gratuito<br>3. <b>API Keys</b> → <b>Create API Key</b><br>4. Copia la chiave (inizia con <b>gsk_...</b>)<br><br>✅ Piano gratuito generoso — ideale per TurboTartaruga!',
+    endpoint: function(){ return 'https://api.groq.com/openai/v1/chat/completions'; },
+    buildBody: function(msg){ return {model:'llama-3.3-70b-versatile',max_tokens:500,messages:[{role:'user',content:msg}]}; },
+    parseResponse: function(d){ return (d&&d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||null; },
+    headers: function(key){ return {'Authorization':'Bearer '+key}; },
+  },
+  openrouter: {
+    name: 'OpenRouter (DeepSeek)',
     free: false,
-    instructions: '<b>\uD83D\uDFE0 Claude Haiku \u2014 A pagamento</b><br><br>'
-      + '1. Vai su <b>console.anthropic.com</b><br>'
-      + '2. Registrati e aggiungi un metodo di pagamento<br>'
-      + '3. Vai in <b>API Keys</b> \u2192 <b>Create Key</b><br>'
-      + '4. Copia la chiave e incollala qui sotto<br><br>'
-      + '<span style="color:#FF9800">\u26a0\uFE0F Costo: \u223c\u20ac0.001 per sessione \u2014 economicissimo!</span><br>'
-      + '<span style="color:var(--tlt)">\u2139\uFE0F Nota: alcune reti bloccano le chiamate browser dirette (CORS). Se il test fallisce prova con Gemini.</span>',
-    endpoint: function(){ return 'https://api.anthropic.com/v1/messages'; },
-    buildBody: function(msg){ return {model:'claude-haiku-4-5-20251001',max_tokens:500,messages:[{role:'user',content:msg}]}; },
-    parseResponse: function(d){ return (d&&d.content&&d.content[0]&&d.content[0].text)||null; },
-    headers: function(key){ return {'x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}; },
+    instructions: '<b>🌐 OpenRouter — Multi-modello</b><br><br>1. Vai su <a href="https://openrouter.ai" target="_blank" style="color:var(--g1)">openrouter.ai</a><br>2. Crea account e aggiungi crediti (da $1)<br>3. <b>Keys</b> → <b>Create Key</b><br>4. Copia la chiave (inizia con <b>sk-or-...</b>)<br><br><span style="color:#FF9800">⚠️ Costo: ~€0.001 per sessione con DeepSeek Chat</span>',
+    endpoint: function(){ return 'https://openrouter.ai/api/v1/chat/completions'; },
+    buildBody: function(msg){ return {model:'deepseek/deepseek-chat',max_tokens:500,messages:[{role:'user',content:msg}]}; },
+    parseResponse: function(d){ return (d&&d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content)||null; },
+    headers: function(key){ return {'Authorization':'Bearer '+key,'HTTP-Referer':'https://turbotartaruga.app'}; },
   },
   chatgpt: {
     name: 'ChatGPT (OpenAI)',
@@ -2393,7 +2419,7 @@ function _syncAISettings(){
   const provSec = document.getElementById('ai-provider-section');
   if(provSec) provSec.style.display = enabled ? 'block' : 'none';
   // Provider buttons
-  ['gemini','claude','chatgpt'].forEach(p=>{
+  ['gemini','chatgpt','groq','openrouter'].forEach(p=>{
     const b = document.getElementById('ai-btn-'+p);
     if(!b) return;
     const active = (SET.aiProvider||'gemini') === p;
@@ -2408,7 +2434,7 @@ function _syncAISettings(){
     instr.innerHTML = prov ? prov.instructions : '';
   }
   // API key — per-provider
-  if(!SET.aiKeys) SET.aiKeys={gemini:'',claude:'',chatgpt:''};
+  if(!SET.aiKeys) SET.aiKeys={gemini:'',chatgpt:'',groq:'',openrouter:''};
   const _provKey = SET.aiKeys[SET.aiProvider||'gemini'] || SET.aiKey || '';
   const keyInput = document.getElementById('ai-key-input');
   if(keyInput && !keyInput._dirty) keyInput.value = _provKey;
@@ -2461,7 +2487,7 @@ function selectAIProvider(p){
   const prev = SET.aiProvider||'gemini';
   // Salva key del provider corrente prima di cambiare
   const curKey = (document.getElementById('ai-key-input')?.value||'').trim();
-  if(!SET.aiKeys) SET.aiKeys={gemini:'',claude:'',chatgpt:''};
+  if(!SET.aiKeys) SET.aiKeys={gemini:'',chatgpt:'',groq:'',openrouter:''};
   if(curKey) SET.aiKeys[prev] = curKey;
   SET.aiKey = SET.aiKeys[prev] || SET.aiKey || '';
   // Cambia provider e carica la sua key salvata
@@ -2498,7 +2524,7 @@ async function testAIConnection(){
   const key = (document.getElementById('ai-key-input')?.value||'').trim() || (SET.aiKeys&&SET.aiKeys[SET.aiProvider||'gemini']) || SET.aiKey||'';
   if(!key){ toast('⚠️ Inserisci prima la tua API key!'); return; }
   SET.aiKey = key;
-  if(!SET.aiKeys) SET.aiKeys={gemini:'',claude:'',chatgpt:''};
+  if(!SET.aiKeys) SET.aiKeys={gemini:'',chatgpt:'',groq:'',openrouter:''};
   SET.aiKeys[SET.aiProvider||'gemini'] = key;
   save();
   const btn = document.getElementById('btn-ai-test');
@@ -2726,7 +2752,7 @@ var WIZ_STEPS = [
           ['core','🎯','Core'],['stretching','🤸','Stretching'],
           ['seduto','🪑','Da Seduto'],['orientale','🧘','Orientale'],
           ['elastici','🎽','Elastici'],['cardio','🥊','Cardio/Box'],
-          ['postura','🖥️','Postura'],['bottiglie','🍶','Bottiglie'],['articolazioni','🦴','Articolazioni'],  // presonno managed in dedicated routine step
+          ['postura','🖥️','Postura'],['bottiglie','🍶','Bottiglie'],['articolazioni','🦴','Articolazioni'],['equilibrio','🦢','Equilibrio'],  // presonno managed in dedicated routine step
         ].map(([v,ico,lbl])=>{const sel=(_wizData.cats||[]).includes(v);return`<button class="wiz-cat-btn${sel?' sel':''}" data-cat="${v}" onclick="wizToggleCat(this)"
           style="padding:14px 10px;border-radius:14px;border:3px solid ${sel?'#fff':'rgba(255,255,255,.25)'};background:${sel?'rgba(255,255,255,.25)':'rgba(255,255,255,.1)'};color:#fff;cursor:pointer;text-align:center">
           <div style="font-size:28px;margin-bottom:4px">${ico}</div>
@@ -3181,8 +3207,14 @@ function generatePlan(){
       consec=0;
     }
     else{
-      const focus=cats[focusIdx%cats.length];
-      const _e={date:ds,type:'workout',focus,icon:CAT_INFO[focus]?.icon||'🏋️'};
+      let focus=cats[focusIdx%cats.length];
+      // Se oggi esiste già nel piano, preserva il suo focus (non ricalcolare)
+      // Questo evita che la categoria cambi dopo ogni sessione completata
+      if(ds===today&&_existingToday&&_existingToday.focus){
+        focus=_existingToday.focus;
+      }
+      const _icon=(CAT_INFO[focus]&&CAT_INFO[focus].icon)||(_existingToday&&ds===today?_existingToday.icon:null)||'🏋️';
+      const _e={date:ds,type:'workout',focus,icon:_icon};
       if(_existingToday&&ds===today&&_existingToday.done)_e.done=true;
       plan.push(_e);focusIdx++;consec++;
     }
@@ -3249,8 +3281,14 @@ function refreshPlan(silent){
       consec=0;
     }
     else{
-      const focus=cats[focusIdx%cats.length];
-      const _e={date:ds,type:'workout',focus,icon:CAT_INFO[focus]?.icon||'🏋️'};
+      let focus=cats[focusIdx%cats.length];
+      // Se oggi esiste già nel piano, preserva il suo focus (non ricalcolare)
+      // Questo evita che la categoria cambi dopo ogni sessione completata
+      if(ds===today&&_existingToday&&_existingToday.focus){
+        focus=_existingToday.focus;
+      }
+      const _icon=(CAT_INFO[focus]&&CAT_INFO[focus].icon)||(_existingToday&&ds===today?_existingToday.icon:null)||'🏋️';
+      const _e={date:ds,type:'workout',focus,icon:_icon};
       if(_existingToday&&ds===today&&_existingToday.done)_e.done=true;
       plan.push(_e);focusIdx++;consec++;
     }
@@ -3642,12 +3680,45 @@ function setFeeling(el){
     _applyStartBtn();
   }
 }
+function _slideSessionToTomorrow(fromDate){
+  var todayEntry=(S.plan||[]).find(function(p){return p.date===fromDate&&p.type==='workout';});
+  if(!todayEntry)return;
+  if((S._slideCount||0)>=4){S._slideCount=0;appLog('Slide max 4 raggiunto');return;}
+  var d=new Date(fromDate.replace(/-/g,'/'));d.setDate(d.getDate()+1);
+  var nextDate=localDate(d);
+  var nextEntry=(S.plan||[]).find(function(p){return p.date===nextDate;});
+  if(nextEntry&&nextEntry.type==='rest'){
+    nextEntry.type='workout';nextEntry.focus=todayEntry.focus;nextEntry.icon=todayEntry.icon;nextEntry.slid=true;
+  } else if(!nextEntry){
+    S.plan.push({date:nextDate,type:'workout',focus:todayEntry.focus,icon:todayEntry.icon,slid:true});
+    S.plan.sort(function(a,b){return a.date<b.date?-1:1;});
+  }
+  S._slideCount=(S._slideCount||0)+1;
+  appLog('SLIDE: '+todayEntry.focus+' → '+nextDate+' (#'+S._slideCount+')');
+}
+function doInfortunato(){
+  var days=parseInt(prompt('Quanti giorni di infortunio? (1-30)','3'));
+  if(!days||isNaN(days)||days<1||days>30){toast('Inserisci un numero tra 1 e 30');return;}
+  for(var i=0;i<days;i++){
+    var d=new Date();d.setDate(d.getDate()+i);
+    var ds=localDate(d);
+    var existing=(S.plan||[]).find(function(p){return p.date===ds;});
+    if(existing){existing.type='rest';existing.focus='riposo';existing.icon='🩹';existing.injured=true;}
+    else{S.plan.push({date:ds,type:'rest',focus:'riposo',icon:'🩹',injured:true});}
+  }
+  S.plan.sort(function(a,b){return a.date<b.date?-1:1;});
+  S._slideCount=0;save();
+  toast('🩹 '+days+' giorni di riposo inseriti — guarisci presto! 🐢',4000);
+  go('home');
+}
+
 function doVolRest(type){
   const today=localDate(); // use local date, not UTC
   if(type==='riposo'){
-    // Record voluntary rest, preserve streak
     addHistory({date:today,type:'riposo_vol',focus:'riposo_vol',icon:'🛋️',dur:0,exCount:0,xp:0,feeling:'stanco',streakPreserved:true});
-    S.days.push(today+'_volrest');save();
+    S.days.push(today+'_volrest');
+    _slideSessionToTomorrow(today);
+    save();
     document.getElementById('vr-streak').textContent=S.str;
     go_scr('volrest');
   }else{
@@ -5647,8 +5718,17 @@ function buildCal(){
       cls=`cd ${type} done`;
       done++;
       if(histEntries.length===1){
-        const ico=(first.type==='riposo_vol'?'🛋️':ci.icon)+(first.boost?'💥':'');
-        icoHtml=`<div class="cd-ico">${ico}</div>`;
+        // Mostra icona sessione fatta; se è extra (AI/myw) mostra anche piano non fatto
+        const _isExtra=['ai_coach','myw','misto','misto_plus'].includes(first.type);
+        const _planEntry=planEntry&&planEntry.type==='workout'&&!planEntry.done;
+        let ico=(first.type==='riposo_vol'?'🛋️':ci.icon)+(first.boost?'💥':'');
+        let icoExtra='';
+        if(_isExtra&&_planEntry){
+          // Sessione extra + piano non fatto: mostra entrambi
+          const _planCi=CAT_INFO[_planEntry.focus]||{icon:'🏋️'};
+          icoExtra=`<div class="cd-ico" style="opacity:0.4;font-size:11px" title="Piano previsto: ${_planCi.label||''}">${_planCi.icon}</div>`;
+        }
+        icoHtml=`<div class="cd-ico">${ico}</div>`+icoExtra;
         const lbl=first.type==='riposo_vol'?'Riposo volontario':ci.label||first.type;
         tipLines.push('✅ '+lbl);
         if(first.dur)tipLines.push('⏱️ '+first.dur+' minuti');
@@ -6173,7 +6253,7 @@ function buildSettings(){
   // Categories
   const catWrap=document.getElementById('st-cats');
   // presonno and mattino are managed via dedicated routine settings, not here
-  if(catWrap){const cats=['riscaldamento','gambe','braccia','core','stretching','seduto','orientale','elastici','bottiglie','cardio','postura','mobilita'];
+  if(catWrap){const cats=['riscaldamento','gambe','braccia','core','stretching','seduto','orientale','elastici','bottiglie','cardio','postura','mobilita','equilibrio'];
     catWrap.innerHTML=cats.map(c=>{const ci=CAT_INFO[c]||{icon:'💪',label:c};const sel=(P.categories||[]).includes(c);return`<div class="mchk${sel?' sel':''}" data-cat="${c}" onclick="toggleStCat(this)" style="margin-bottom:6px"><span class="mchk-icon">${ci.icon}</span><div class="mchk-label">${ci.label}</div><div class="mchk-check">${sel?'✓':''}</div></div>`}).join('');
   }
   // Rest days
@@ -6451,7 +6531,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.124 · 24/05/2026 18:38 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.127 · 02/06/2026 16:22 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -6784,6 +6864,7 @@ var SCUOLA_CATS=[
   {key:'postura',label:'Postura'},{key:'mobilita',label:'Mobilita'},
   {key:'mattino',label:'Risveglio mattutino'},
   {key:'bottiglie',label:'Con le Bottiglie'},
+  {key:'equilibrio',label:'Equilibrio 🦢'},
   {key:'party',label:'Party! 🎉'},
 ];
 function buildScuola(openExId){
@@ -6993,7 +7074,7 @@ function _renderMyWorkouts(workouts){
     var chips=(w.exs||[]).slice(0,5).map(function(e){
       return '<span class="myw-ex-chip">'+e.n+'</span>';
     }).join('')+(exCount>5?'<span class="myw-ex-chip">+'+( exCount-5)+'</span>':'');
-    card.innerHTML='<div class="myw-card-name">'+w.name+'</div>'
+    card.innerHTML='<div class="myw-card-name">'+(w.emoji||'🐢')+' '+w.name+'</div>'
       +'<div class="myw-card-meta">'+originLabel+' · '+exCount+' esercizi · '+dur+' min · '+w.createdAt+'</div>'
       +'<div class="myw-card-exs">'+chips+'</div>'
       +'<div class="myw-actions">'
@@ -7051,6 +7132,9 @@ function saveCurrentSession(){
   var defaultName=(T.aiTitle&&T.aiTitle!=='Sessione personalizzata'&&T.aiTitle!=='Sessione AI Coach')?T.aiTitle:catLabel+' del '+new Date().toLocaleDateString('it-IT',{weekday:'long'});
   var name=prompt('Nome per questa scheda:',defaultName);
   if(!name)return;
+  // Chiedi emoji
+  var emojiChoice=prompt('Emoji per la scheda (es: 🏃 🚴 🤸 🧗 🏊 🥋 🦅 🐯 🦁 🌊 🌈 🍀 🦋 🐉 🎪)\nLascia vuoto per 🐢','');
+  var emoji=(emojiChoice&&emojiChoice.trim())||'🐢';
   var origin=T.sesType==='ai_coach'?'ai':(T.sesType&&T.sesType!=='misto'?'plan':'manual');
   var cfg=DUR_CFG[T.dur||12]||DUR_CFG[12];
   var exs=T.exs.filter(function(e){return !e._transition;}).map(function(e){
@@ -7068,7 +7152,8 @@ function saveCurrentSession(){
     createdAt:localDate(),
     dur:T.dur||12,
     sesType:T.sesType||'misto',
-    exs:exs
+    exs:exs,
+    emoji:emoji
   });
   save();
   toast('🎒 "'+name.trim()+'" salvata nelle tue Tartarughe!',3000);
@@ -7080,6 +7165,9 @@ function openNewWorkout(){
   _mywEditExs=[];
   document.getElementById('myw-edit-title').textContent='Nuova scheda';
   document.getElementById('myw-edit-name').value='';
+  var emoInp=document.getElementById('myw-edit-emoji');if(emoInp)emoInp.value='🐢';
+  document.querySelectorAll('.myw-emoji-btn').forEach(function(b){b.style.borderColor='var(--bdr)';b.style.background='var(--bg)';});
+  var firstBtn=document.querySelector('.myw-emoji-btn');if(firstBtn)selectMywEmoji(firstBtn,'🐢');
   _renderEditExList();
   document.getElementById('myw-edit-modal').classList.add('open');
   document.body.style.overflow='hidden';
@@ -7093,6 +7181,11 @@ function editMyWorkout(id){
   _mywEditExs=(w.exs||[]).slice();
   document.getElementById('myw-edit-title').textContent='Modifica scheda';
   document.getElementById('myw-edit-name').value=w.name||'';
+  // Ripristina emoji
+  var emoInp=document.getElementById('myw-edit-emoji');if(emoInp)emoInp.value=w.emoji||'🐢';
+  document.querySelectorAll('.myw-emoji-btn').forEach(function(b){b.style.borderColor='var(--bdr)';b.style.background='var(--bg)';});
+  var targetBtn=document.querySelector('.myw-emoji-btn[data-emoji="'+(w.emoji||'🐢')+'"]');
+  if(targetBtn)selectMywEmoji(targetBtn,w.emoji||'🐢');
   _renderEditExList();
   document.getElementById('myw-edit-modal').classList.add('open');
   document.body.style.overflow='hidden';
@@ -7119,24 +7212,30 @@ function _mywRemoveEx(idx){
   _renderEditExList();
 }
 
+function selectMywEmoji(btn,emoji){
+  document.querySelectorAll('.myw-emoji-btn').forEach(function(b){
+    b.style.borderColor='var(--bdr)';b.style.background='var(--bg)';
+  });
+  btn.style.borderColor='var(--g1)';btn.style.background='var(--g3)';
+  var inp=document.getElementById('myw-edit-emoji');if(inp)inp.value=emoji;
+}
 function saveMywEdit(){
   var name=(document.getElementById('myw-edit-name').value||'').trim();
   if(!name){toast('Inserisci un nome per la scheda');return;}
   if(!_mywEditExs.length){toast('Aggiungi almeno un esercizio');return;}
+  var emoji=(document.getElementById('myw-edit-emoji')||{value:'🐢'}).value||'🐢';
   var cfg=DUR_CFG[12];
   var exs=_mywEditExs.map(function(e){return Object.assign({},e,{a:e.a||cfg.a,r:e.r||cfg.r});});
   if(_mywEditId){
-    // Modifica esistente
     var idx2=(S.savedWorkouts||[]).findIndex(function(x){return x.id===_mywEditId;});
     if(idx2>=0){
-      S.savedWorkouts[idx2]=Object.assign({},S.savedWorkouts[idx2],{name:name,exs:exs});
+      S.savedWorkouts[idx2]=Object.assign({},S.savedWorkouts[idx2],{name:name,exs:exs,emoji:emoji});
     }
   }else{
-    // Nuova
     if(!S.savedWorkouts)S.savedWorkouts=[];
     if(S.savedWorkouts.length>=20){toast('Hai già 20 schede! Elimina qualcuna.');return;}
     var sesType=exs.length?exs[0].cat:'misto';
-    S.savedWorkouts.unshift({id:'sw_'+Date.now(),name:name,origin:'manual',createdAt:localDate(),dur:12,sesType:sesType,exs:exs});
+    S.savedWorkouts.unshift({id:'sw_'+Date.now(),name:name,origin:'manual',createdAt:localDate(),dur:12,sesType:sesType,exs:exs,emoji:emoji});
   }
   save();
   closeMywEdit();
@@ -7378,6 +7477,7 @@ function buildExList(){
     {key:'orientale',label:'🧘 Orientale'},
     {key:'elastici',label:'🎽 Elastici'},
     {key:'bottiglie',label:'🍶 Con le Bottiglie'},
+    {key:'equilibrio',label:'🦢 Equilibrio'},
     {key:'cardio',label:'🥊 Cardio/Box'},
     {key:'presonno',label:'😴 Pre-sonno'},
     {key:'postura',label:'🖥️ Postura'},
@@ -7965,7 +8065,7 @@ var CAT_INFO={
   misto:{label:'Misto',icon:'🌈'},
   bottiglie:{label:'Bottiglie',icon:'🍶'},misto_plus:{label:'Misto+',icon:'🌈'},
   party:{label:'Party',icon:'🎉'},riposo:{label:'Riposo',icon:'😴'},
-  mobilita:{label:'Mobilità',icon:'🦴'},
+  mobilita:{label:'Mobilità',icon:'🦴'},equilibrio:{label:'Equilibrio',icon:'🦢'},
   articolazioni:{label:'Articolazioni',icon:'🦴'},
   ai_coach:{label:'AI Coach',icon:'🐢',cls:'ai_coach'}
 };
@@ -8424,6 +8524,9 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.127',date:'02/06/2026',changes:['FIX ROOT calendario: quando oggi esiste gia nel piano preserva il suo focus — non viene piu ricalcolato da focusIdx dopo ogni sessione completata']},
+  {v:'1.126',date:'02/06/2026',changes:['Equilibrio 🦢 aggiunto in onboarding, categorie attive, tutti gli esercizi e Scuola della Tartaruga']},
+  {v:'1.125',date:'02/06/2026',changes:["Nuova categoria Equilibrio 🦢 (11 esercizi: stazione monopodalica, tandem stance, cammino tallone-punta e altri)", "Provider AI: rimosso Claude, aggiunti Groq (Llama3 gratis) e OpenRouter (DeepSeek)", "Non mi sento... 🌡️: rinominato da Stanco, aggiunto Infortunato 🩹 con giorni personalizzabili", "Riposo completo slitta automaticamente la sessione a domani (max 4 giorni)", "Calendario: sessioni AI/extra mostrano icona fatta + icona piano previsto grigia", "Le mie Tartarughe: emoji picker per personalizzare ogni scheda"]},
   {v:'1.124',date:'24/05/2026',changes:['FIX icona chat AI in alto: _syncChatIcon aggiunta in init e buildHome','Rimosso btn-ai-home dalla home content (non era quello cercato)']},
   {v:'1.123',date:'24/05/2026',changes:['Bottone AI ripristinato accanto a Inizia Sessione con aspetto originale','Su giorno riposo/sessione fatta si allarga a tutta larghezza']},
   {v:'1.122',date:'24/05/2026',changes:['FIX diretto bottone AI: display impostato inline nel codice di init subito dopo caricamento localStorage']},
@@ -10148,7 +10251,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202605241838'; // auto-set on each release
+const APP_BUILD='202606021622'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
