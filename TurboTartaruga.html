@@ -560,6 +560,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <button class="fbtn fbtn-sub" data-f="__myworkouts__" onclick="openMyWorkouts()" style="grid-column:1/-1;background:linear-gradient(135deg,var(--g3),#E8F5E9);border:2px solid var(--g1)"><span class="fi">🎒</span><span style="color:var(--g1);font-weight:bold">Le mie Tartarughe</span></button>
         <button class="fbtn fbtn-sub" data-f="gambe" onclick="setScelgoFeeling(this)"><span class="fi">🦵</span>Gambe</button>
         <button class="fbtn fbtn-sub" data-f="equilibrio" onclick="setScelgoFeeling(this)"><span class="fi">🦢</span>Equilibrio</button>
+        <button class="fbtn fbtn-sub" data-f="alzati" onclick="setScelgoFeeling(this)"><span class="fi">🧍</span>Alzati!</button>
         <button class="fbtn fbtn-sub" data-f="braccia" onclick="setScelgoFeeling(this)"><span class="fi">💪</span>Braccia</button>
         <button class="fbtn fbtn-sub" data-f="core" onclick="setScelgoFeeling(this)"><span class="fi">🎯</span>Core</button>
         <button class="fbtn fbtn-sub" data-f="stretching" onclick="setScelgoFeeling(this)"><span class="fi">🤸</span>Stretch</button>
@@ -1671,7 +1672,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.127</div>
+      <div id="app-version-display">Versione v1.128</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -1973,6 +1974,23 @@ var DB=[
   {id:'eq9',n:'Mini-squat monopodalico',cat:'equilibrio',t:'🦢 Equilibrio',zona:'🦵 Quadricipiti · 🎯 Equilibrio',desc:'Su un piede solo piega leggermente il ginocchio. Sedia vicina per sicurezza.',floor:false,switch:true},
   {id:'eq10',n:'Pendolo avanti-indietro',cat:'equilibrio',t:'🦢 Equilibrio',zona:'🎯 Propriocezione · 🦴 Caviglie',desc:'Piedi larghezza spalle: sposta il peso sulle punte poi sui talloni come un pendolo lento.',floor:false},
   {id:'eq11',n:'Equilibrio su superficie morbida',cat:'equilibrio',t:'🦢 Equilibrio',zona:'🎯 Propriocezione · 🦵 Caviglie',desc:'Piega un asciugamano o usa un cuscino. Stai sopra su un piede solo. La superficie instabile allena la propriocezione.',floor:false,switch:true},
+  // ── ALZATI (az1-az16) ──────────────────────────────────────────────────
+  {id:'az1',n:'Da sdraiato a seduto',cat:'alzati',t:'🧍 Alzati!',zona:'💪 Core · 💪 Braccia',desc:'Porta le ginocchia al petto, rotolati sul fianco e spingiti con le braccia fino a sederti.',floor:true,steps:['Sdraiati con le ginocchia piegate','Porta le ginocchia verso il petto','Ruota sul fianco destro','Spingiti su con il braccio destro','Stabilizzati seduto'],tips:['Movimento lento e controllato','Nessuno scatto — spinta fluida']},
+  {id:'az2',n:'Rotolarsi sul fianco',cat:'alzati',t:'🧍 Alzati!',zona:'💪 Core · 🦴 Schiena',desc:'Da sdraiato rotolati sul fianco usando le braccia. Base della sequenza alzarsi.',floor:true,switch:true,steps:['Sdraiati con le braccia lungo i fianchi','Porta le ginocchia al petto','Lascia cadere le ginocchia verso destra','Porta il braccio sinistro davanti','Rimani sul fianco con le ginocchia piegate'],tips:['Movimento fluido non brusco','Cuscino sotto la testa se necessario']},
+  {id:'az3',n:'Da fianco a quattro appoggi',cat:'alzati',t:'🧍 Alzati!',zona:'💪 Braccia · 💪 Core · 🦵 Gambe',desc:'Dal fianco portati in posizione quadrupedica spingendo con le braccia.',floor:true,steps:['Sei sul fianco con le ginocchia piegate','Appoggia la mano a terra vicino al petto','Spingi con entrambe le braccia','Porta le ginocchia sotto i fianchi','Sei in quadrupedia'],tips:['Mani sotto le spalle','Se hai problemi ai polsi usa i pugni']},
+  {id:'az4',n:'Da quattro appoggi a ginocchio',cat:'alzati',t:'🧍 Alzati!',zona:'🦵 Gambe · 💪 Core',desc:'Dalla quadrupedia porta un piede avanti in posizione di affondo basso.',floor:true,switch:true,steps:['Sei in quadrupedia','Porta il piede destro avanti tra le mani','Il ginocchio sinistro rimane a terra','Schiena dritta in affondo basso','Mantieni la posizione'],tips:['Guarda avanti non a terra','Il ginocchio non va oltre la punta del piede']},
+  {id:'az5',n:'Da ginocchio a in piedi',cat:'alzati',t:'🧍 Alzati!',zona:'🦵 Quadricipiti · 🍑 Glutei · 🎯 Equilibrio',desc:'Dall affondo basso con un ginocchio a terra alzati completamente in piedi.',floor:true,switch:true,steps:['Sei in affondo con il ginocchio sinistro a terra','Porta il peso sul piede destro davanti','Spingi con la gamba destra','Porta il piede sinistro avanti','Raddrizzati in piedi'],tips:['Tieniti a una sedia la prima volta','La spinta viene dal tallone del piede davanti']},
+  {id:'az6',n:'Sequenza completa terra-piedi',cat:'alzati',t:'🧍 Alzati!',zona:'💪 Tutto il corpo · 🎯 Coordinazione',desc:'La sequenza completa: sdraiato, fianco, quadrupedia, ginocchio, in piedi. Il vero esercizio del rialzarsi.',floor:true,steps:['Parti sdraiato sulla schiena','Rotolati sul fianco','Portati in quadrupedia','Porta un piede in affondo basso','Alzati completamente in piedi'],tips:['Non affrettare nessun passaggio','Sedia vicina la prima volta','Questa e la sequenza reale del rialzarsi']},
+  {id:'az7',n:'Alzarsi con appoggio a parete',cat:'alzati',t:'🧍 Alzati!',zona:'🦵 Gambe · 💪 Braccia · 🎯 Equilibrio',desc:'Da seduto a terra vicino a una parete, usa il muro per aiutarti ad alzarti.',floor:true,steps:['Siediti vicino a una parete','Porta le ginocchia al petto con i piedi a terra','Appoggia una mano sulla parete','Spingi con i piedi e la mano','Raddrizzati usando la parete come supporto'],tips:['La parete e solo un aiuto non appoggiarti troppo','Piedi vicini al corpo per piu potenza']},
+  {id:'az8',n:'Alzarsi dalla sedia con mani',cat:'alzati',t:'🧍 Alzati!',zona:'🦵 Quadricipiti · 🍑 Glutei · 💪 Braccia',desc:'Versione assistita: usa le mani sulle cosce per aiutarti ad alzarti dalla sedia.',floor:false,steps:['Siediti sul bordo della sedia con i piedi a terra','Porta i piedi leggermente sotto la sedia','Inclinati in avanti','Appoggia le mani sulle cosce','Spingi verso l alto fino a stare in piedi'],tips:['I piedi sotto la sedia danno piu potenza','Inclinati avanti prima di spingere']},
+  {id:'az9',n:'Alzarsi dalla sedia senza mani',cat:'alzati',t:'🧍 Alzati!',zona:'🦵 Quadricipiti · 🍑 Glutei · 💪 Core',desc:'Versione libera: alzarsi solo con la forza delle gambe senza usare le braccia.',floor:false,steps:['Siediti sul bordo della sedia','Piedi a terra larghezza spalle','Braccia tese davanti o al petto','Inclinati in avanti','Spingi con le gambe per alzarti'],tips:['Prima prova la versione con le mani','Piu sei avanti sul bordo piu e facile','Uno dei migliori test di forza funzionale']},
+  {id:'az10',n:'Alzarsi con split stance',cat:'alzati',t:'🧍 Alzati!',zona:'🦵 Gambe · 🎯 Equilibrio · 🍑 Glutei',desc:'Un piede avanti e uno indietro. Simula la posizione naturale di alzarsi.',floor:false,switch:true,steps:['Siediti sul bordo della sedia','Porta il piede destro piu avanti','Il sinistro rimane indietro','Inclinati avanti e spingi col piede destro','Ripeti con il sinistro davanti'],tips:['Normale che un lato sia piu facile','La gamba davanti fa piu lavoro']},
+  {id:'az11',n:'Sedersi-alzarsi ripetuto',cat:'alzati',t:'🧍 Alzati!',zona:'🦵 Quadricipiti · 🍑 Glutei · 💪 Resistenza',desc:'5 ripetizioni consecutive di alzarsi e risedersi lentamente. Il sedersi controllato e fondamentale.',floor:false,steps:['Siediti sul bordo della sedia','Alzati completamente','Risiediti in 3 secondi controllando','Pausa 1 secondo','Ripeti 5 volte'],tips:['Il sedersi lento e piu importante dell alzarsi','Non rimbalzare quando sei giu']},
+  {id:'az12',n:'Squat sulla sedia touch and go',cat:'alzati',t:'🧍 Alzati!',zona:'🦵 Quadricipiti · 🍑 Glutei · 💪 Core',desc:'Scendi verso la sedia, sfiorala appena senza sederti davvero, poi risali. Forza pura delle gambe.',floor:false,steps:['Stai in piedi davanti alla sedia','Piedi larghezza spalle con i talloni verso la sedia','Scendi piegando le ginocchia','Sfiorata la sedia risali subito','Ripeti per tutta la durata'],tips:['Solo un tocco — non sederti davvero','Guarda avanti non in basso']},
+  {id:'az13',n:'Affondi con supporto laterale',cat:'alzati',t:'🧍 Alzati!',zona:'🦵 Gambe · 🍑 Glutei · 🎯 Equilibrio',desc:'Affondi tenendo una sedia di lato. Rinforza la forza a gamba singola necessaria per alzarsi.',floor:false,switch:true,steps:['Stai con una sedia alla tua destra','Appoggia la mano allo schienale','Porta il piede sinistro avanti','Scendi in affondo','Risali e ripeti poi cambia lato'],tips:['La sedia e solo per equilibrio','Il ginocchio davanti non va oltre la punta del piede']},
+  {id:'az14',n:'Potenziamento polpacci da fermo',cat:'alzati',t:'🧍 Alzati!',zona:'🦵 Polpacci · 🦴 Caviglie · 🎯 Equilibrio',desc:'Sali sulle punte e scendi lentamente. I polpacci danno la spinta finale nell alzarsi.',floor:false,steps:['Stai con le mani leggere su una sedia','Sali sulle punte in 2 secondi','Mantieni in cima 1 secondo','Scendi lentamente in 2 secondi','Ripeti'],tips:['La discesa lenta e piu importante','Piedi paralleli non ruotati']},
+  {id:'az15',n:'Piegamenti su muro',cat:'alzati',t:'🧍 Alzati!',zona:'💪 Pettorali · 💪 Tricipiti · 💪 Spalle',desc:'Push up verticali contro il muro. Rinforza le braccia per spingere e alzarsi da terra.',floor:false,steps:['Stai a un braccio di distanza da un muro','Appoggia le mani al muro larghezza spalle','Piega i gomiti avvicinando il petto','Spingi indietro a braccia quasi tese','Ripeti'],tips:['Piu lontano dal muro piu e difficile','Il corpo deve essere rigido']},
+  {id:'az16',n:'Ponte glutei da terra',cat:'alzati',t:'🧍 Alzati!',zona:'🍑 Glutei · 🦵 Femorali · 🦴 Schiena',desc:'Sdraiato con ginocchia piegate spingi i fianchi verso l alto. Rinforza glutei e femorali essenziali per alzarsi.',floor:true,steps:['Sdraiati con le ginocchia piegate e i piedi a terra','Piedi vicini ai glutei larghezza spalle','Spingi i fianchi verso l alto contraendo i glutei','Tieni in cima 2 secondi','Abbassa senza toccare e risali'],tips:['Spingi con i talloni non le punte','Non iperestendere la schiena','Contrai i glutei al massimo in cima']},
   // ── PARTY ─────────────────────────────────────────────────────────────────
   {id:'p1',n:'Squat sincronizzato',cat:'party',t:'🎉 Party',zona:'🦵 Gambe · 🍑 Glutei',desc:'Tutti insieme! 3-2-1 e squat. Chi si alza prima perde un punto. Sincronizzazione perfetta!',floor:false},
   {id:'p2',n:'Sfida equilibrio',cat:'party',t:'🎉 Party',zona:'🔄 Equilibrio',desc:'Tutti su un piede. Chi tiene la posizione più a lungo vince! Via!',floor:false},
@@ -2752,7 +2770,7 @@ var WIZ_STEPS = [
           ['core','🎯','Core'],['stretching','🤸','Stretching'],
           ['seduto','🪑','Da Seduto'],['orientale','🧘','Orientale'],
           ['elastici','🎽','Elastici'],['cardio','🥊','Cardio/Box'],
-          ['postura','🖥️','Postura'],['bottiglie','🍶','Bottiglie'],['articolazioni','🦴','Articolazioni'],['equilibrio','🦢','Equilibrio'],  // presonno managed in dedicated routine step
+          ['postura','🖥️','Postura'],['bottiglie','🍶','Bottiglie'],['articolazioni','🦴','Articolazioni'],['equilibrio','🦢','Equilibrio'],['alzati','🧍','Alzati!'],  // presonno managed in dedicated routine step
         ].map(([v,ico,lbl])=>{const sel=(_wizData.cats||[]).includes(v);return`<button class="wiz-cat-btn${sel?' sel':''}" data-cat="${v}" onclick="wizToggleCat(this)"
           style="padding:14px 10px;border-radius:14px;border:3px solid ${sel?'#fff':'rgba(255,255,255,.25)'};background:${sel?'rgba(255,255,255,.25)':'rgba(255,255,255,.1)'};color:#fff;cursor:pointer;text-align:center">
           <div style="font-size:28px;margin-bottom:4px">${ico}</div>
@@ -6253,7 +6271,7 @@ function buildSettings(){
   // Categories
   const catWrap=document.getElementById('st-cats');
   // presonno and mattino are managed via dedicated routine settings, not here
-  if(catWrap){const cats=['riscaldamento','gambe','braccia','core','stretching','seduto','orientale','elastici','bottiglie','cardio','postura','mobilita','equilibrio'];
+  if(catWrap){const cats=['riscaldamento','gambe','braccia','core','stretching','seduto','orientale','elastici','bottiglie','cardio','postura','mobilita','equilibrio','alzati'];
     catWrap.innerHTML=cats.map(c=>{const ci=CAT_INFO[c]||{icon:'💪',label:c};const sel=(P.categories||[]).includes(c);return`<div class="mchk${sel?' sel':''}" data-cat="${c}" onclick="toggleStCat(this)" style="margin-bottom:6px"><span class="mchk-icon">${ci.icon}</span><div class="mchk-label">${ci.label}</div><div class="mchk-check">${sel?'✓':''}</div></div>`}).join('');
   }
   // Rest days
@@ -6531,7 +6549,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.127 · 02/06/2026 16:22 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.128 · 03/06/2026 08:17 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -6865,6 +6883,7 @@ var SCUOLA_CATS=[
   {key:'mattino',label:'Risveglio mattutino'},
   {key:'bottiglie',label:'Con le Bottiglie'},
   {key:'equilibrio',label:'Equilibrio 🦢'},
+  {key:'alzati',label:'Alzati! 🧍'},
   {key:'party',label:'Party! 🎉'},
 ];
 function buildScuola(openExId){
@@ -7478,6 +7497,7 @@ function buildExList(){
     {key:'elastici',label:'🎽 Elastici'},
     {key:'bottiglie',label:'🍶 Con le Bottiglie'},
     {key:'equilibrio',label:'🦢 Equilibrio'},
+    {key:'alzati',label:'🧍 Alzati!'},
     {key:'cardio',label:'🥊 Cardio/Box'},
     {key:'presonno',label:'😴 Pre-sonno'},
     {key:'postura',label:'🖥️ Postura'},
@@ -8065,7 +8085,7 @@ var CAT_INFO={
   misto:{label:'Misto',icon:'🌈'},
   bottiglie:{label:'Bottiglie',icon:'🍶'},misto_plus:{label:'Misto+',icon:'🌈'},
   party:{label:'Party',icon:'🎉'},riposo:{label:'Riposo',icon:'😴'},
-  mobilita:{label:'Mobilità',icon:'🦴'},equilibrio:{label:'Equilibrio',icon:'🦢'},
+  mobilita:{label:'Mobilità',icon:'🦴'},equilibrio:{label:'Equilibrio',icon:'🦢'},alzati:{label:'Alzati!',icon:'🧍'},
   articolazioni:{label:'Articolazioni',icon:'🦴'},
   ai_coach:{label:'AI Coach',icon:'🐢',cls:'ai_coach'}
 };
@@ -8524,6 +8544,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.128',date:'03/06/2026',changes:['Nuova categoria Alzati! 🧍 con 16 esercizi (terra-piedi e sedia-piedi)','Alzati! in Scelgo io!, piano, Scuola, Onboarding e Impostazioni']},
   {v:'1.127',date:'02/06/2026',changes:['FIX ROOT calendario: quando oggi esiste gia nel piano preserva il suo focus — non viene piu ricalcolato da focusIdx dopo ogni sessione completata']},
   {v:'1.126',date:'02/06/2026',changes:['Equilibrio 🦢 aggiunto in onboarding, categorie attive, tutti gli esercizi e Scuola della Tartaruga']},
   {v:'1.125',date:'02/06/2026',changes:["Nuova categoria Equilibrio 🦢 (11 esercizi: stazione monopodalica, tandem stance, cammino tallone-punta e altri)", "Provider AI: rimosso Claude, aggiunti Groq (Llama3 gratis) e OpenRouter (DeepSeek)", "Non mi sento... 🌡️: rinominato da Stanco, aggiunto Infortunato 🩹 con giorni personalizzabili", "Riposo completo slitta automaticamente la sessione a domani (max 4 giorni)", "Calendario: sessioni AI/extra mostrano icona fatta + icona piano previsto grigia", "Le mie Tartarughe: emoji picker per personalizzare ogni scheda"]},
@@ -10251,7 +10272,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202606021622'; // auto-set on each release
+const APP_BUILD='202606030817'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
