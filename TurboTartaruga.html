@@ -557,7 +557,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <!-- Sub-menu "Scelgo io!" (hidden by default) -->
       <div id="scelgo-grid" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;animation:fadeIn .2s">
         <!-- Categorie normali -->
-        <button class="fbtn fbtn-sub" data-f="__myworkouts__" onclick="openMyWorkouts()" style="grid-column:1/-1;background:linear-gradient(135deg,var(--g3),#E8F5E9);border:2px solid var(--g1)"><span class="fi">🎒</span><span style="color:var(--g1);font-weight:bold">Le mie Tartarughe</span></button>
+        <button class="fbtn fbtn-sub" data-f="__myworkouts__" onclick="openMyWorkouts()" style="grid-column:1/-1;background:linear-gradient(135deg,#E65100,#FFB300);border:2px solid #F57C00;box-shadow:0 3px 10px rgba(230,81,0,.25)"><span class="fi">🎒</span><span style="color:#fff;font-weight:bold;text-shadow:0 1px 3px rgba(0,0,0,.2)">Le mie Tartarughe</span></button>
         <button class="fbtn fbtn-sub" data-f="gambe" onclick="setScelgoFeeling(this)"><span class="fi">🦵</span>Gambe</button>
         <button class="fbtn fbtn-sub" data-f="equilibrio" onclick="setScelgoFeeling(this)"><span class="fi">🦢</span>Equilibrio</button>
         <button class="fbtn fbtn-sub" data-f="alzati" onclick="setScelgoFeeling(this)"><span class="fi">🧍</span>Alzati!</button>
@@ -1672,7 +1672,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.128</div>
+      <div id="app-version-display">Versione v1.132</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -2202,7 +2202,23 @@ var _wizStep=0,_wizData={};
 var _calTipTimer=null;
 var _prevScreen='home';
 
-function bkData(){return{profile:P,stats:S,settings:SET,version:'0.99',exported:new Date().toISOString()}}
+function bkData(){
+  // Crea copie profonde per evitare riferimenti circolari
+  var bk={
+    appVersion: (typeof APP_BUILD!=='undefined'?APP_BUILD:'?'),
+    exported: new Date().toISOString(),
+    // ── PROFILO COMPLETO ──────────────────────────────────────────────────
+    profile: JSON.parse(JSON.stringify(P||{})),
+    // ── STATISTICHE COMPLETE ───────────────────────────────────────────────
+    // Contiene: history, plan, badges, xp, streak (str), days, last,
+    // savedWorkouts (Le mie Tartarughe), ancUno, aiSession, debugLog, ...
+    stats: JSON.parse(JSON.stringify(S||{})),
+    // ── IMPOSTAZIONI ──────────────────────────────────────────────────────
+    // Contiene: audio, AI provider+keys, categorie attive, durata sessioni...
+    settings: JSON.parse(JSON.stringify(SET||{})),
+  };
+  return bk;
+}
 function save(){
   try{
     localStorage.setItem('tt4_p',JSON.stringify(P));
@@ -2259,24 +2275,31 @@ function load(){
   if(typeof S.xp!=='number')S.xp=0;
 }
 function importJSON(evt){
-  // Supporta sia chiamata da event listener che da element diretto
   const file=(evt&&evt.target&&evt.target.files)?evt.target.files[0]:
              (evt&&evt.files)?evt.files[0]:null;
   if(!file)return;
   const reader=new FileReader();
-  reader.onload=e=>{
+  reader.onload=function(e){
     try{
       const d=JSON.parse(e.target.result);
       const prof=d.profile||d.P;
       const stats=d.stats||d.S;
       const sett=d.settings||d.SET;
-      if(!prof||!prof.name){toast('⚠️ File non riconosciuto!');return;}
-      if(prof)Object.assign(P,prof);
-      if(stats)Object.assign(S,stats);
-      if(sett)Object.assign(SET,sett);
-      save();
-      toast('✅ Dati importati! Ricarico...',1500);
-      setTimeout(()=>location.reload(),1500);
+      if(!prof||!prof.name){toast('⚠️ File non riconosciuto. Assicurati sia un backup TurboTartaruga.');return;}
+      // Sostituisci direttamente nel localStorage — più affidabile del merge
+      try{
+        if(prof)localStorage.setItem('tt4_p',JSON.stringify(prof));
+        if(stats)localStorage.setItem('tt4_s',JSON.stringify(stats));
+        if(sett)localStorage.setItem('tt4_set',JSON.stringify(sett));
+      }catch(se){toast('⚠️ Errore nel salvataggio: '+se.message);return;}
+      // Info su cosa è stato ripristinato
+      var info=[];
+      if(prof.name)info.push('👤 '+prof.name);
+      if(stats&&stats.history)info.push('📅 '+stats.history.length+' sessioni');
+      if(stats&&stats.badges)info.push('🏅 '+(Array.isArray(stats.badges)?stats.badges.length:0)+' badge');
+      if(stats&&stats.savedWorkouts&&stats.savedWorkouts.length)info.push('🎒 '+stats.savedWorkouts.length+' schede');
+      toast('✅ Backup ripristinato! '+info.join(' · ')+' — Ricarico...',2500);
+      setTimeout(function(){location.reload();},2000);
     }catch(err){toast('⚠️ File non valido: '+err.message);}
   };
   reader.readAsText(file);
@@ -5328,7 +5351,7 @@ function completeSession(){
   const tp=getTodayPlan();
   addHistory({
     date:today,type:T.sesType,focus:T.sesType,
-    icon:CAT_INFO[T.sesType]?.icon||'💪',
+    icon:(T.feeling==='myw'&&T.mywEmoji)?T.mywEmoji:(CAT_INFO[T.sesType]?.icon||'💪'),
     dur:min,exCount:exCnt,xp:xpGain,
     feeling:T.feeling,boost:riservaDone&&T.sesType!=='mattino'&&T.sesType!=='presonno',planned:tp.focus,
     hour:new Date().getHours(), // ← store hour for timing analysis
@@ -5739,7 +5762,9 @@ function buildCal(){
         // Mostra icona sessione fatta; se è extra (AI/myw) mostra anche piano non fatto
         const _isExtra=['ai_coach','myw','misto','misto_plus'].includes(first.type);
         const _planEntry=planEntry&&planEntry.type==='workout'&&!planEntry.done;
-        let ico=(first.type==='riposo_vol'?'🛋️':ci.icon)+(first.boost?'💥':'');
+        // Usa first.icon se è un'emoji personalizzata (schede myw), altrimenti ci.icon
+        const _baseIcon=first.type==='riposo_vol'?'🛋️':(first.icon&&first.icon!==ci.icon?first.icon:ci.icon);
+        let ico=_baseIcon+(first.boost?'💥':'');
         let icoExtra='';
         if(_isExtra&&_planEntry){
           // Sessione extra + piano non fatto: mostra entrambi
@@ -6549,7 +6574,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.128 · 03/06/2026 08:17 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.132 · 11/06/2026 17:59 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -7136,6 +7161,7 @@ function launchMyWorkout(id){
   T.paused=false;
   T.t0=Date.now();
   T.aiTitle=w.name;
+  T.mywEmoji=w.emoji||'🎒'; // emoji personalizzata per calendario
   riservaDone=false;
   requestWakeLock&&requestWakeLock();
   // Avvia con rest preview (stesso pattern di startTraining)
@@ -8544,6 +8570,10 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.132',date:'11/06/2026',changes:['FIX calendario: usa first.icon dalla history (emoji personalizzata scheda) invece di ci.icon da CAT_INFO']},
+  {v:'1.131',date:'11/06/2026',changes:['Le mie Tartarughe: bottone Ambra/Oro in Scelgo io!','Calendario: icona personalizzata della scheda invece della tartaruga']},
+  {v:'1.130',date:'11/06/2026',changes:['FIX import backup: salva direttamente nel localStorage invece di Object.assign (evita problemi di merge con dati vecchi)','Import mostra riepilogo dati ripristinati (sessioni, badge, schede)','Export usa JSON.parse+stringify per copia profonda sicura']},
+  {v:'1.129',date:'11/06/2026',changes:['Backup JSON: versione app corretta + documentazione contenuto (Le mie Tartarughe incluse in S.savedWorkouts)']},
   {v:'1.128',date:'03/06/2026',changes:['Nuova categoria Alzati! 🧍 con 16 esercizi (terra-piedi e sedia-piedi)','Alzati! in Scelgo io!, piano, Scuola, Onboarding e Impostazioni']},
   {v:'1.127',date:'02/06/2026',changes:['FIX ROOT calendario: quando oggi esiste gia nel piano preserva il suo focus — non viene piu ricalcolato da focusIdx dopo ogni sessione completata']},
   {v:'1.126',date:'02/06/2026',changes:['Equilibrio 🦢 aggiunto in onboarding, categorie attive, tutti gli esercizi e Scuola della Tartaruga']},
@@ -10272,7 +10302,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202606030817'; // auto-set on each release
+const APP_BUILD='202606111759'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
