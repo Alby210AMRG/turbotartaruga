@@ -1672,7 +1672,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.133</div>
+      <div id="app-version-display">Versione v1.134</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -2303,8 +2303,18 @@ function importJSON(evt){
       if(stats&&stats.savedWorkouts&&stats.savedWorkouts.length)info.push('🎒 '+stats.savedWorkouts.length+' schede');
       if(stats&&stats.xp)info.push('⭐ '+stats.xp+' XP');
       appLog('IMPORT: '+info.join(' · '));
-      toast('✅ Ripristinato: '+info.join(' · ')+'  Ricarico...',3000);
-      setTimeout(function(){location.reload();},2500);
+      // Aggiorna oggetti in memoria — no reload (inaffidabile su file://)
+      if(prof)Object.assign(P,prof);
+      if(stats)Object.assign(S,stats);
+      if(sett)Object.assign(SET,sett);
+      save();
+      toast('✅ Ripristinato: '+info.join(' · '),3000);
+      setTimeout(function(){
+        // Rigenera piano se necessario e vai alla home
+        if(!S.plan||!S.plan.length)generatePlan();
+        updateStreak();
+        go('home');
+      },500);
     }catch(err){toast('⚠️ File non valido: '+err.message);}
   };
   reader.readAsText(file);
@@ -5353,7 +5363,7 @@ function completeSession(){
   });
   // Segna done solo se la sessione corrisponde al piano del giorno
   // AI Coach, Scelgo io! e Le mie Tartarughe sono sessioni extra — non toccano il piano
-  const _extraTypes=['ai_coach','myw','misto','misto_plus'];
+  const _extraTypes=['ai_coach','misto','misto_plus']; // myw conta come sessione reale per streak e piano
   const planEntry=S.plan.find(p=>p.date===today);
   if(planEntry&&!_extraTypes.includes(T.sesType)){
     planEntry.done=true;
@@ -6567,7 +6577,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.133 · 12/06/2026 18:09 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.134 · 12/06/2026 18:23 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -7117,6 +7127,8 @@ function _renderMyWorkouts(workouts){
       +'<div class="myw-actions">'
       +'<button class="myw-btn myw-btn-go" onclick="launchMyWorkout(\''+w.id+'\')">▶️ Avvia</button>'
       +'<button class="myw-btn myw-btn-edit" onclick="editMyWorkout(\''+w.id+'\')">✏️ Modifica</button>'
+      +'<button class="myw-btn" style="flex:0;padding:8px 10px;background:var(--bg2);color:var(--text)" onclick="moveMyw(\''+w.id+'\',-1)">↑</button>'
+      +'<button class="myw-btn" style="flex:0;padding:8px 10px;background:var(--bg2);color:var(--text)" onclick="moveMyw(\''+w.id+'\',1)">↓</button>'
       +'<button class="myw-btn myw-btn-del" onclick="deleteMyWorkout(\''+w.id+'\')">🗑️</button>'
       +'</div>';
     list.appendChild(card);
@@ -7240,11 +7252,14 @@ function _renderEditExList(){
     return '<div class="myw-edit-ex-row">'
       +'<span style="font-size:16px">'+(CAT_INFO[ex.cat]&&CAT_INFO[ex.cat].icon||'💪')+'</span>'
       +'<span class="myw-edit-ex-name">'+ex.n+'</span>'
+      +'<button onclick="_mywMoveEx('+i+',-1)" style="background:none;border:none;color:var(--tlt);font-size:14px;cursor:pointer;padding:0 3px" title="Su">↑</button>'
+      +'<button onclick="_mywMoveEx('+i+',1)" style="background:none;border:none;color:var(--tlt);font-size:14px;cursor:pointer;padding:0 3px" title="Giù">↓</button>'
       +'<button onclick="_mywRemoveEx('+i+')" style="background:none;border:none;color:#C62828;font-size:16px;cursor:pointer;padding:0 4px">✕</button>'
       +'</div>';
   }).join('');
 }
 
+function _mywMoveEx(idx,dir){var ni=idx+dir;if(ni<0||ni>=_mywEditExs.length)return;var t=_mywEditExs[idx];_mywEditExs[idx]=_mywEditExs[ni];_mywEditExs[ni]=t;_renderEditExList();}
 function _mywRemoveEx(idx){
   _mywEditExs.splice(idx,1);
   _renderEditExList();
@@ -7286,6 +7301,16 @@ function closeMywEdit(){
   document.body.style.overflow='';
 }
 
+function moveMyw(id,dir){
+  var idx=(S.savedWorkouts||[]).findIndex(function(x){return x.id===id;});
+  if(idx<0)return;
+  var newIdx=idx+dir;
+  if(newIdx<0||newIdx>=(S.savedWorkouts||[]).length)return;
+  var tmp=S.savedWorkouts[idx];
+  S.savedWorkouts[idx]=S.savedWorkouts[newIdx];
+  S.savedWorkouts[newIdx]=tmp;
+  save();buildMyWorkouts();
+}
 function deleteMyWorkout(id){
   if(!confirm('Eliminare questa scheda?'))return;
   S.savedWorkouts=(S.savedWorkouts||[]).filter(function(x){return x.id!==id;});
@@ -8563,6 +8588,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.134',date:'12/06/2026',changes:['FIX import: no location.reload — aggiorna memoria e naviga a home direttamente','FIX myw streak: sessioni Le mie Tartarughe contano per streak e piano','Riordino ↑↓ schede in Le mie Tartarughe','Riordino ↑↓ esercizi nel modal di modifica']},
   {v:'1.133',date:'12/06/2026',changes:['FIX CRITICO wizard: generatePlan usava _existingToday non definito (ReferenceError) — Iniziamo non funzionava','FIX export backup: usa replacer JSON per includere anche valori undefined come null','FIX import: log dettagliato di cosa viene ripristinato']},
   {v:'1.132',date:'11/06/2026',changes:['FIX calendario: usa first.icon dalla history (emoji personalizzata scheda) invece di ci.icon da CAT_INFO']},
   {v:'1.131',date:'11/06/2026',changes:['Le mie Tartarughe: bottone Ambra/Oro in Scelgo io!','Calendario: icona personalizzata della scheda invece della tartaruga']},
@@ -10296,7 +10322,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202606121809'; // auto-set on each release
+const APP_BUILD='202606121823'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
