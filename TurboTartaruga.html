@@ -1672,7 +1672,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.132</div>
+      <div id="app-version-display">Versione v1.133</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -2203,21 +2203,22 @@ var _calTipTimer=null;
 var _prevScreen='home';
 
 function bkData(){
-  // Crea copie profonde per evitare riferimenti circolari
-  var bk={
+  // Snapshot completo — tutti i campi esplicitamente serializzati
+  // JSON.stringify omette i valori undefined, quindi li sostituiamo con null
+  function _safeJson(obj){
+    return JSON.parse(JSON.stringify(obj||{},function(k,v){return v===undefined?null:v;}));
+  }
+  return {
     appVersion: (typeof APP_BUILD!=='undefined'?APP_BUILD:'?'),
     exported: new Date().toISOString(),
-    // ── PROFILO COMPLETO ──────────────────────────────────────────────────
-    profile: JSON.parse(JSON.stringify(P||{})),
-    // ── STATISTICHE COMPLETE ───────────────────────────────────────────────
-    // Contiene: history, plan, badges, xp, streak (str), days, last,
-    // savedWorkouts (Le mie Tartarughe), ancUno, aiSession, debugLog, ...
-    stats: JSON.parse(JSON.stringify(S||{})),
-    // ── IMPOSTAZIONI ──────────────────────────────────────────────────────
-    // Contiene: audio, AI provider+keys, categorie attive, durata sessioni...
-    settings: JSON.parse(JSON.stringify(SET||{})),
+    // ── PROFILO (nome, età, sesso, livello, categorie, GPS...) ───────────
+    profile: _safeJson(P),
+    // ── STATISTICHE (history, plan, badges, xp, streak, days, last,
+    //    savedWorkouts/Le mie Tartarughe, ancUno, aiSession, debugLog...) ─
+    stats: _safeJson(S),
+    // ── IMPOSTAZIONI (audio, AI provider+keys, durata sessioni...) ───────
+    settings: _safeJson(SET),
   };
-  return bk;
 }
 function save(){
   try{
@@ -2292,14 +2293,18 @@ function importJSON(evt){
         if(stats)localStorage.setItem('tt4_s',JSON.stringify(stats));
         if(sett)localStorage.setItem('tt4_set',JSON.stringify(sett));
       }catch(se){toast('⚠️ Errore nel salvataggio: '+se.message);return;}
-      // Info su cosa è stato ripristinato
+      // Verifica e log di cosa è stato ripristinato
       var info=[];
       if(prof.name)info.push('👤 '+prof.name);
-      if(stats&&stats.history)info.push('📅 '+stats.history.length+' sessioni');
-      if(stats&&stats.badges)info.push('🏅 '+(Array.isArray(stats.badges)?stats.badges.length:0)+' badge');
+      if(prof.sex)info.push('🧬 '+prof.sex);
+      if(prof.age)info.push('🎂 '+prof.age+'a');
+      if(stats&&stats.history&&stats.history.length)info.push('📅 '+stats.history.length+' sessioni');
+      if(stats&&stats.badges&&stats.badges.length)info.push('🏅 '+stats.badges.length+' badge');
       if(stats&&stats.savedWorkouts&&stats.savedWorkouts.length)info.push('🎒 '+stats.savedWorkouts.length+' schede');
-      toast('✅ Backup ripristinato! '+info.join(' · ')+' — Ricarico...',2500);
-      setTimeout(function(){location.reload();},2000);
+      if(stats&&stats.xp)info.push('⭐ '+stats.xp+' XP');
+      appLog('IMPORT: '+info.join(' · '));
+      toast('✅ Ripristinato: '+info.join(' · ')+'  Ricarico...',3000);
+      setTimeout(function(){location.reload();},2500);
     }catch(err){toast('⚠️ File non valido: '+err.message);}
   };
   reader.readAsText(file);
@@ -3248,16 +3253,10 @@ function generatePlan(){
       consec=0;
     }
     else{
-      let focus=cats[focusIdx%cats.length];
-      // Se oggi esiste già nel piano, preserva il suo focus (non ricalcolare)
-      // Questo evita che la categoria cambi dopo ogni sessione completata
-      if(ds===today&&_existingToday&&_existingToday.focus){
-        focus=_existingToday.focus;
-      }
-      const _icon=(CAT_INFO[focus]&&CAT_INFO[focus].icon)||(_existingToday&&ds===today?_existingToday.icon:null)||'🏋️';
-      const _e={date:ds,type:'workout',focus,icon:_icon};
-      if(_existingToday&&ds===today&&_existingToday.done)_e.done=true;
-      plan.push(_e);focusIdx++;consec++;
+      const focus=cats[focusIdx%cats.length];
+      const _icon=(CAT_INFO[focus]&&CAT_INFO[focus].icon)||'🏋️';
+      plan.push({date:ds,type:'workout',focus,icon:_icon});
+      focusIdx++;consec++;
     }
   }
   S.plan=plan;save();
@@ -3322,16 +3321,10 @@ function refreshPlan(silent){
       consec=0;
     }
     else{
-      let focus=cats[focusIdx%cats.length];
-      // Se oggi esiste già nel piano, preserva il suo focus (non ricalcolare)
-      // Questo evita che la categoria cambi dopo ogni sessione completata
-      if(ds===today&&_existingToday&&_existingToday.focus){
-        focus=_existingToday.focus;
-      }
-      const _icon=(CAT_INFO[focus]&&CAT_INFO[focus].icon)||(_existingToday&&ds===today?_existingToday.icon:null)||'🏋️';
-      const _e={date:ds,type:'workout',focus,icon:_icon};
-      if(_existingToday&&ds===today&&_existingToday.done)_e.done=true;
-      plan.push(_e);focusIdx++;consec++;
+      const focus=cats[focusIdx%cats.length];
+      const _icon=(CAT_INFO[focus]&&CAT_INFO[focus].icon)||'🏋️';
+      plan.push({date:ds,type:'workout',focus,icon:_icon});
+      focusIdx++;consec++;
     }
   }
   // Mantieni solo 30 giorni dal oggi a ritroso, senza tagliare lo storico utile
@@ -6574,7 +6567,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.132 · 11/06/2026 17:59 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.133 · 12/06/2026 18:09 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -8570,6 +8563,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.133',date:'12/06/2026',changes:['FIX CRITICO wizard: generatePlan usava _existingToday non definito (ReferenceError) — Iniziamo non funzionava','FIX export backup: usa replacer JSON per includere anche valori undefined come null','FIX import: log dettagliato di cosa viene ripristinato']},
   {v:'1.132',date:'11/06/2026',changes:['FIX calendario: usa first.icon dalla history (emoji personalizzata scheda) invece di ci.icon da CAT_INFO']},
   {v:'1.131',date:'11/06/2026',changes:['Le mie Tartarughe: bottone Ambra/Oro in Scelgo io!','Calendario: icona personalizzata della scheda invece della tartaruga']},
   {v:'1.130',date:'11/06/2026',changes:['FIX import backup: salva direttamente nel localStorage invece di Object.assign (evita problemi di merge con dati vecchi)','Import mostra riepilogo dati ripristinati (sessioni, badge, schede)','Export usa JSON.parse+stringify per copia profonda sicura']},
@@ -10302,7 +10296,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202606111759'; // auto-set on each release
+const APP_BUILD='202606121809'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
