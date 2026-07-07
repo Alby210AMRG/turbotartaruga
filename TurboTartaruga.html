@@ -590,6 +590,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div style="display:flex;gap:8px;margin-top:10px">
       <button class="btn btn-p btn-full btn-lg" id="btn-start" onclick="go('presession')" style="flex:1">▶️ Inizia sessione</button>
     </div>
+    <div id="btn-start-done-row" style="display:none;text-align:center;font-size:12px;color:var(--g1);font-weight:bold;margin-top:4px"></div>
 
     </div>
   </div>
@@ -770,7 +771,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 <div id="screen-training" class="screen">
   <div class="tr-hdr">
     <button class="btn btn-o" style="padding:7px 12px;font-size:var(--fs-xs)" onclick="confirmQuit()">✕ Esci</button>
-    <div style="font-size:var(--fs-xs);color:var(--tmid);font-weight:bold">🐢 TurboTartaruga<span id="tr-party-badge" style="display:none;margin-left:6px;background:var(--lime);color:#1B5E20;border-radius:100px;padding:2px 8px;font-size:10px;font-weight:bold">🎉 Party</span></div>
+    <div id="tr-session-title" style="font-size:13px;font-weight:bold;color:var(--text);flex:1;text-align:center">🐢 TurboTartaruga</div>
+    <div style="display:none"><span id="tr-party-badge" style="display:none;margin-left:6px;background:var(--lime);color:#1B5E20;border-radius:100px;padding:2px 8px;font-size:10px;font-weight:bold">🎉 Party</span></div>
     <div style="display:flex;align-items:center;gap:8px">
       <div id="tr-count" style="font-size:var(--fs-sm);font-weight:bold;color:var(--g1)">1/10</div>
       <button onclick="goSettingsFromTraining()" style="width:32px;height:32px;border-radius:50%;background:var(--bg2);border:none;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center" title="Impostazioni">⚙️</button>
@@ -1672,7 +1674,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.134</div>
+      <div id="app-version-display">Versione v1.137</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -3546,38 +3548,14 @@ const hsEl=document.getElementById('home-streak');if(hsEl)hsEl.textContent=typeo
       });
     }
 
-    if(_todayDone&&!isRest){
-      // Sessione completata: bottone grigio cliccabile con testo simpatico
-      btn.style.display='flex';
-      // Usa className per sovrascrivere btn-p senza conflitti
-      btn.className='btn btn-full btn-lg';
-      btn.style.cssText='flex:1;background:#78909C;color:#fff;opacity:0.9;cursor:pointer;border:none';
-      // Mantiene cliccabile → va comunque a presession (potrebbe fare un'altra sessione)
-      btn.setAttribute('onclick',"go('presession')");
-      var _doneFrasi=[
-        '✅ Tartaruga soddisfatta! Farne un altra? 🐢',
-        '✅ Gia allenato! Un altra sessione? 💪',
-        '✅ Campione! Vuoi fare di piu? 🌟'
-      ];
-      btn.textContent=_doneFrasi[Math.floor(Date.now()/60000)%_doneFrasi.length];
-      // Sottotitolo con dettagli sessione fatta
-      if(_todayH){
-        var _ci2=CAT_INFO[_todayH.type]||{icon:'💪',label:_todayH.type||_todayH.focus||''};
-        var _subTxt=_ci2.icon+' '+_ci2.label;
-        if(_todayH.exCount)_subTxt+=' · '+_todayH.exCount+' esercizi';
-        if(_todayH.xp)_subTxt+=' · +'+_todayH.xp+' XP';
-        if(_todayH.dur)_subTxt+=' · '+_todayH.dur+'min';
-        _subTxt+=' ✅';
-        document.getElementById('today-sub').textContent=_subTxt;
-      }else{
-        document.getElementById('today-sub').textContent='Sessione completata oggi — ottimo lavoro! 🐢';
-      }
-    }else{
-      btn.style.display=showStart?'flex':'none';
-      btn.className='btn btn-p btn-full btn-lg';
-      btn.style.cssText='flex:1';
-      btn.setAttribute('onclick',"go('presession')");
-      btn.textContent='▶️ Inizia sessione';
+    // Stato bottone gestito centralmente da _applyStartBtn (chiamata in testa a buildHome)
+    // Qui aggiorniamo solo il sottotitolo today-sub con i dettagli sessione
+    if(_todayDone&&!isRest&&_todayH){
+      var _ci2=CAT_INFO[_todayH.type]||{icon:'💪',label:_todayH.type||''};
+      var _subTxt=_ci2.icon+' '+_ci2.label;
+      if(_todayH.dur)_subTxt+=' · '+_todayH.dur+'min';
+      if(_todayH.xp)_subTxt+=' · +'+_todayH.xp+' XP';
+      document.getElementById('today-sub').textContent=_subTxt+' ✅';
     }
   }
   // Favorites chip: check if today's session has any favorite exercises
@@ -3679,17 +3657,30 @@ function _applyStartBtn(){
   appLog('BTN today='+today+' done='+done+' plan='+_p+' hist='+_h+' days='+_d+' last='+_l+' Slast='+(S.last||'?'));
   if(done&&!isRest){
     btn.style.display='flex';
-    btn.className='btn btn-full btn-lg';
-    btn.style.cssText='flex:1;background:#78909C;color:#fff;opacity:0.9;cursor:pointer;border:none';
+    btn.className='btn btn-p btn-full btn-lg';
+    btn.style.cssText='flex:1';
     btn.setAttribute('onclick',"go('presession')");
-    var frasi=['✅ Tartaruga soddisfatta! Vuoi farne un altra? 🐢','✅ Gia allenato! Un altra sessione? 💪','✅ Campione! Vuoi fare di piu? 🌟'];
-    btn.textContent=frasi[Math.floor(Date.now()/60000)%frasi.length];
+    btn.textContent='▶️ Inizia sessione';
+    var _doneEl=document.getElementById('btn-start-done-row');
+    if(_doneEl){
+      var _todayH=(S.history||[]).find(function(h){return h.date===today&&h.type!=='riposo_vol'&&h.type!=='rest';});
+      var _doneInfo='✅ Sessione di oggi completata!';
+      if(_todayH){
+        _doneInfo='✅ Sessione completata';
+        if(_todayH.dur)_doneInfo+=' · '+_todayH.dur+'min';
+        if(_todayH.xp)_doneInfo+=' · +'+_todayH.xp+' XP';
+      }
+      _doneEl.textContent=_doneInfo;
+      _doneEl.style.display='block';
+    }
   } else {
     btn.style.display=isRest?'none':'flex';
     btn.className='btn btn-p btn-full btn-lg';
     btn.style.cssText='flex:1';
     btn.setAttribute('onclick',"go('presession')");
     btn.textContent='▶️ Inizia sessione';
+    var _doneElOld=document.getElementById('btn-start-done-row');
+    if(_doneElOld)_doneElOld.style.display='none';
   }
   // Sincronizza sempre anche il bottone AI
   if(typeof _syncAIHomeButton==='function')_syncAIHomeButton();
@@ -4901,6 +4892,12 @@ function doShowEx(idx){
   T.idx=idx;T.phase='act';T.left=ex.a;
   document.getElementById('tr-cat').textContent=ex.t;
   var _ancB=document.getElementById('tr-ancuno-badge');if(_ancB)_ancB.style.display=ex._ancUno?'block':'none';
+  var _trTitle=document.getElementById('tr-session-title');
+  if(_trTitle){
+    var _ci=CAT_INFO[T.sesType]||{icon:'🐢',label:'Allenamento'};
+    var _sesLbl=(T.feeling==='myw'&&T.aiTitle)?('🎒 '+T.aiTitle.slice(0,28)):(T.sesType==='ai_coach'&&T.aiTitle)?('🤖 '+T.aiTitle.slice(0,28)):(_ci.icon+' '+_ci.label);
+    _trTitle.textContent=_sesLbl;
+  }
   document.getElementById('tr-name').textContent=ex._fav?ex.n+' ⭐':ex.n;
   document.getElementById('tr-desc').textContent=ex.desc||(ex.steps?ex.steps.join(' → '):'');
   document.getElementById('tr-zona').textContent=ex.zona;
@@ -5785,7 +5782,14 @@ function buildCal(){
         const icons=histEntries.slice(0,2).map(e=>{const ci2=CAT_INFO[e.type]||{icon:'💪'};return e.type==='riposo_vol'?'🛋️':ci2.icon;}).join('');
         icoHtml=`<div class="cd-ico" style="font-size:11px;line-height:1.1">${icons}</div><div style="position:absolute;top:2px;right:3px;background:#E65100;color:#fff;border-radius:100px;font-size:8px;font-weight:bold;padding:0 3px;line-height:14px">${histEntries.length}</div>`;
         cls+=' multi';
-        tipLines.push('✅ '+histEntries.length+' sessioni oggi');
+        histEntries.forEach(function(e){
+          var ci2=CAT_INFO[e.type]||{icon:'💪',label:e.type||''};
+          var ico2=e.type==='riposo_vol'?'🛋️':(e.icon&&e.icon!==ci2.icon?e.icon:ci2.icon);
+          var line=ico2+' '+(e.type==='riposo_vol'?'Riposo volontario':ci2.label||e.type);
+          if(e.dur)line+=' · '+e.dur+'min';
+          if(e.xp)line+=' · +'+e.xp+' XP';
+          tipLines.push(line);
+        });
         const totDur=histEntries.reduce((a,e)=>a+(e.dur||0),0);
         const totXp=histEntries.reduce((a,e)=>a+(e.xp||0),0);
         if(totDur)tipLines.push('⏱️ '+totDur+' min totali');
@@ -6577,7 +6581,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.134 · 12/06/2026 18:23 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.137 · 06/07/2026 18:20 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -8588,6 +8592,9 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.137',date:'06/07/2026',changes:['FIX DEFINITIVO bottone: rimossa copia duplicata della logica frasi in buildHome — ora solo _applyStartBtn gestisce il bottone']},
+  {v:'1.136',date:'06/07/2026',changes:['FIX grafica: riga info sessione fatta ora fuori dal div flex (non rompe layout bottone)','FIX calendario: Oggi non si ripete piu (rimossa push duplicata nel blocco multi)']},
+  {v:'1.135',date:'06/07/2026',changes:['FIX bottone: verde attivo + riga info sessione completata sotto','Training: titolo sessione visibile in testa (Gambe Braccia AI ecc.)','Calendario: popup elenca tutte le sessioni del giorno con icona durata XP','FIX musica Android: si ferma quando app va in background']},
   {v:'1.134',date:'12/06/2026',changes:['FIX import: no location.reload — aggiorna memoria e naviga a home direttamente','FIX myw streak: sessioni Le mie Tartarughe contano per streak e piano','Riordino ↑↓ schede in Le mie Tartarughe','Riordino ↑↓ esercizi nel modal di modifica']},
   {v:'1.133',date:'12/06/2026',changes:['FIX CRITICO wizard: generatePlan usava _existingToday non definito (ReferenceError) — Iniziamo non funzionava','FIX export backup: usa replacer JSON per includere anche valori undefined come null','FIX import: log dettagliato di cosa viene ripristinato']},
   {v:'1.132',date:'11/06/2026',changes:['FIX calendario: usa first.icon dalla history (emoji personalizzata scheda) invece di ci.icon da CAT_INFO']},
@@ -10322,7 +10329,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202606121823'; // auto-set on each release
+const APP_BUILD='202607061820'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
@@ -10508,7 +10515,10 @@ function releaseWakeLock(){
   if(wakeLock){try{wakeLock.release();}catch(e){}wakeLock=null;}
 }
 document.addEventListener('visibilitychange',async()=>{
-  if(document.visibilityState==='visible'&&wakeLock===null){
+  if(document.visibilityState==='hidden'){
+    // App va in background (es. tasto Home Android) — ferma la musica
+    if(typeof stopSessionMusic==='function')stopSessionMusic();
+  } else if(document.visibilityState==='visible'&&wakeLock===null){
     const cur=document.querySelector('.screen.active');
     const active=cur?cur.id:'';
     if(active.includes('training')||active.includes('rest')||active.includes('transition'))
