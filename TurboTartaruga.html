@@ -79,7 +79,7 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 .goal-fill{height:100%;background:linear-gradient(90deg,var(--g1),var(--b1));border-radius:100px;transition:width .6s}
 .rest-banner{background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:14px;padding:12px 14px;margin:0 13px 13px;border-left:4px solid var(--b1);display:flex;align-items:center;gap:10px}
 [data-theme="dark"] .rest-banner{background:linear-gradient(135deg,#0D2744,#163557)}
-.today-card{background:linear-gradient(135deg,var(--g4),var(--bg2));border-radius:var(--radius);padding:12px 14px;margin:0 13px 10px;box-shadow:var(--shadow)}
+.today-card{background:linear-gradient(135deg,var(--g4),var(--bg2));border-radius:var(--radius);padding:12px 14px;margin:0 13px 10px;box-shadow:var(--shadow);border:1.5px solid var(--bdr);position:relative;overflow:hidden}
 .feeling-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px}
 .fbtn{padding:8px 4px;border-radius:13px;border:3px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;text-align:center;font-size:var(--fs-xs);font-weight:bold;transition:all .2s;font-family:var(--fb)}
 .fbtn-sub{padding:7px 4px;font-size:11px;border-width:2px}
@@ -383,7 +383,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     display:flex;align-items:center;justify-content:center;
     animation:fabPulse 2.5s ease-in-out infinite;
   }
-  #bnav-fab img{width:100%;height:100%;object-fit:contain;border-radius:50%;transition:transform .1s;}
+  #bnav-fab img{width:108%;height:108%;margin:-4%;object-fit:cover;border-radius:50%;transition:transform .1s;}
   #bnav-fab:active{transform:scale(0.91);}
   #bnav-fab.rest-day img{filter:grayscale(100%) brightness(0.7);}
   #bnav-fab.rest-day{animation:fabSleep 2.5s ease-in-out infinite;box-shadow:0 0 0 3px #78909C,0 4px 12px rgba(0,0,0,.3);}
@@ -624,7 +624,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   <div class="home-hero" style="position:relative">
     <div id="chat-icon-wrap" style="display:none;position:absolute;top:10px;left:12px;z-index:10"><button class="chat-icon-btn" onclick="openAIChat()" title="Chat con il Coach AI">🗨️</button></div>
     <div style="position:absolute;top:10px;right:12px;display:flex;flex-direction:column;align-items:center;gap:3px;z-index:10">
-      <button onclick="go('settings')" style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.95);border:2px solid #fff;cursor:pointer;font-size:19px;display:flex;align-items:center;justify-content:center;color:#1B5E20;box-shadow:0 2px 8px rgba(0,0,0,.25)" title="Impostazioni">⚙️</button>
+      
       <button id="backup-alert-btn" onclick="showBackupModal()" style="display:none;width:26px;height:26px;border-radius:50%;background:#E53935;border:2px solid #fff;cursor:pointer;font-size:13px;display:none;align-items:center;justify-content:center;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);animation:pulse 1.5s ease infinite" title="Backup consigliato!">⚠️</button>
     </div>
     <img id="hero-turtle-img" src="logo-turtle.png" alt="" class="hero-turtle" style="width:min(65vw,240px);max-height:130px;object-fit:contain;object-position:center bottom;margin-bottom:4px;filter:drop-shadow(0 3px 10px rgba(0,0,0,.25));display:block;margin-left:auto;margin-right:auto">
@@ -673,10 +673,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   </div>
   <div class="today-card">
     <div style="float:right;font-size:46px;line-height:1" id="today-icon">🦵</div>
-    <div style="font-size:var(--fs-xs);color:var(--tlt);font-weight:bold;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px">📅 IL TUO PIANO OGGI</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
+      <div style="font-size:var(--fs-xs);color:var(--tlt);font-weight:bold;letter-spacing:1px;text-transform:uppercase">📅 IL TUO PIANO OGGI</div>
+      <button id="today-expand-btn" onclick="_togglePlanExpand()" style="background:none;border:none;cursor:pointer;font-size:14px;color:var(--tlt);padding:0 2px;line-height:1">▼</button>
+    </div>
+    <!-- Overlay "già fatto" -->
+    <div id="today-done-overlay" style="display:none;position:absolute;inset:0;background:rgba(100,100,100,.82);border-radius:inherit;z-index:10;align-items:center;justify-content:center;flex-direction:column;gap:6px;text-align:center;padding:16px">
+      <div style="font-size:36px">🐢</div>
+      <div style="font-size:15px;font-weight:bold;color:#fff">Oggi hai già sgobato!</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.8)">Brava tartaruga — muscoli al riposo 💪</div>
+    </div>
     <div style="font-family:var(--ft);font-size:18px;font-weight:bold" id="today-focus">Giorno Gambe</div>
     <div style="font-size:var(--fs-xs);color:var(--tmid);margin-top:2px" id="today-sub">Rafforza le gambe e i glutei!</div>
     <div id="today-done-info" style="display:none;margin-top:5px;padding:5px 10px;background:rgba(76,175,80,.1);border-radius:8px;border-left:3px solid var(--g1);font-size:11px;color:var(--g1);font-weight:600"></div>
+    <div id="today-ex-preview" style="display:none"></div>
     <div style="clear:both;margin-top:11px">
       <!-- feeling-grid hidden — ora nel modal FAB -->
       <div id="feeling-grid" style="display:none">
@@ -736,31 +746,10 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
   </div>
 
-  <!-- ── BOX STATISTICHE RAPIDE ───────────────────────── -->
-  <div style="margin:10px 12px 0;background:var(--card);border-radius:20px;padding:14px 16px;border:1.5px solid var(--bdr)">
-    <div style="font-size:11px;font-weight:bold;color:var(--tlt);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">📊 Il tuo momento</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <div style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2);border-radius:14px;padding:12px;text-align:center">
-        <div style="font-size:22px">🔥</div>
-        <div style="font-size:20px;font-weight:bold;color:#E65100;font-family:var(--ft)" id="qs-streak">0</div>
-        <div style="font-size:11px;color:#BF360C;margin-top:1px">giorni di fila</div>
-      </div>
-      <div style="background:linear-gradient(135deg,#FFFDE7,#FFF9C4);border-radius:14px;padding:12px;text-align:center">
-        <div style="font-size:22px">⭐</div>
-        <div style="font-size:20px;font-weight:bold;color:#F57F17;font-family:var(--ft)" id="qs-xp">0</div>
-        <div style="font-size:11px;color:#E65100;margin-top:1px" id="qs-level">Lv. 1</div>
-      </div>
-      <div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:14px;padding:12px;text-align:center">
-        <div style="font-size:22px">📅</div>
-        <div style="font-size:20px;font-weight:bold;color:#2E7D32;font-family:var(--ft)" id="qs-week">0/5</div>
-        <div style="font-size:11px;color:#1B5E20;margin-top:1px">questa settimana</div>
-      </div>
-      <div style="background:linear-gradient(135deg,#EDE7F6,#D1C4E9);border-radius:14px;padding:12px;text-align:center">
-        <div style="font-size:22px" id="qs-badge-ico">🏅</div>
-        <div style="font-size:11px;font-weight:bold;color:#4527A0;margin-top:2px" id="qs-badge-name">Nessuno ancora</div>
-        <div style="font-size:10px;color:#7B52E6;margin-top:1px">ultimo badge</div>
-      </div>
-    </div>
+  <!-- ── ISTOGRAMMA ATTIVITÀ ──────────────────────────── -->
+  <div style="margin:0 12px 0;background:linear-gradient(135deg,#1B3A2F,#1B5E3B);border-radius:20px;padding:14px 14px 10px">
+    <div style="font-size:10px;font-weight:bold;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">⚡ Ultimi 7 giorni</div>
+    <div id="activity-chart" style="display:flex;gap:4px;align-items:stretch;min-height:90px"></div>
   </div>
   <!-- Morning routine banner (context-aware) -->
   
@@ -1836,7 +1825,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.150</div>
+      <div id="app-version-display">Versione v1.153</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -3570,6 +3559,7 @@ function buildHome(){
   if(typeof _syncAIHomeButton==='function')_syncAIHomeButton();
   if(typeof _syncChatIcon==='function')_syncChatIcon();
   _buildQuickStats();
+  _buildActivityChart();
   // Gestisci azione pending dal modal FAB
   if(window._pendingHomeAction){
     var _pa=window._pendingHomeAction; window._pendingHomeAction=null;
@@ -3763,6 +3753,9 @@ const hsEl=document.getElementById('home-streak');if(hsEl)hsEl.textContent=typeo
 
     // Stato bottone gestito centralmente da _applyStartBtn (chiamata in testa a buildHome)
     // Qui aggiorniamo solo il sottotitolo today-sub con i dettagli sessione
+    // Overlay "già fatto"
+    var _ovEl=document.getElementById('today-done-overlay');
+    if(_ovEl)_ovEl.style.display=(_todayDone&&!isRest)?'flex':'none';
     var _doneInfoEl=document.getElementById('today-done-info');
     if(_todayDone&&!isRest&&_todayH&&_doneInfoEl){
       var _ci2=CAT_INFO[_todayH.type]||{icon:'💪',label:_todayH.type||''};
@@ -6798,7 +6791,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.150 · 08/07/2026 20:39 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.153 · 10/07/2026 15:57 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -7799,6 +7792,74 @@ function closeAltroSheet(){
     var bid=map[id];if(bid){var b=document.getElementById(bid);if(b)b.classList.add('active');}
   }
 }
+
+function _buildActivityChart(){
+  var el=document.getElementById('activity-chart');
+  if(!el)return;
+  var today=localDate();
+  var days=[];
+  for(var i=6;i>=0;i--){
+    var d=new Date();d.setDate(d.getDate()-i);
+    days.push({date:localDate(d),num:d.getDate()});
+  }
+  var html='<div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;background:rgba(255,255,255,.12);border-radius:12px;padding:8px 6px;width:36px;justify-content:center">';
+  html+='<div style="font-size:18px">🔥</div>';
+  html+='<div style="font-size:15px;font-weight:bold;color:#FFD54F;font-family:var(--ft)">'+(S.str||0)+'</div>';
+  html+='<div style="font-size:9px;color:rgba(255,255,255,.55);text-align:center">giorni</div></div>';
+  days.forEach(function(day){
+    var ss=(S.history||[]).filter(function(h){return h.date===day.date&&h.type!=='riposo_vol'&&h.type!=='rest';});
+    var isToday=day.date===today;
+    var bg=isToday?'rgba(255,255,255,.2)':'rgba(255,255,255,.07)';
+    var brd=isToday?'1.5px solid rgba(255,255,255,.4)':'1.5px solid transparent';
+    html+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:'+bg+';border-radius:12px;border:'+brd+';padding:6px 2px;justify-content:space-between;min-width:0">';
+    html+='<div style="font-size:'+(isToday?'11':'10')+'px;color:rgba(255,255,255,'+(isToday?'.95':'.5')+');font-weight:'+(isToday?'bold':'normal')+'">'+day.num+'</div>';
+    html+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">';
+    if(!ss.length){html+='<div style="font-size:14px;color:rgba(255,255,255,.2)">·</div>';}
+    else if(ss.length<=2){ss.forEach(function(s){var ci=(typeof CAT_INFO!=='undefined'&&CAT_INFO[s.type])||{icon:'💪'};html+='<div style="font-size:16px">'+ci.icon+'</div>';});}
+    else{var ci=(typeof CAT_INFO!=='undefined'&&CAT_INFO[ss[0].type])||{icon:'💪'};html+='<div style="font-size:16px">'+ci.icon+'</div>';html+='<div style="font-size:9px;font-weight:bold;color:#FFD54F">+'+(ss.length-1)+'</div>';}
+    html+='</div>';
+    html+=isToday?'<div style="width:5px;height:5px;border-radius:50%;background:#FFD54F"></div>':'<div style="height:5px"></div>';
+    html+='</div>';
+  });
+  el.innerHTML=html;
+}
+
+function _togglePlanExpand(){
+  var pr=document.getElementById('today-ex-preview');
+  var btn=document.getElementById('today-expand-btn');
+  if(!pr||!btn)return;
+  var open=pr.style.display==='block';
+  pr.style.display=open?'none':'block';
+  btn.textContent=open?'▼':'▲';
+  if(!open)_buildExPreview();
+}
+
+function _buildExPreview(){
+  var pr=document.getElementById('today-ex-preview');
+  if(!pr)return;
+  var tp=typeof getTodayPlan==='function'?getTodayPlan():null;
+  if(!tp||tp.type==='rest'){
+    pr.innerHTML='<div style="font-size:12px;color:var(--tlt);text-align:center;padding:8px 0">😴 Giorno di riposo</div>';
+    return;
+  }
+  var focus=tp.focus;
+  var all=(typeof DB!=='undefined'?DB:[]);
+  var exs=all.filter(function(e){return e.cat===focus;}).slice(0,8);
+  if(!exs.length){
+    pr.innerHTML="<div style='font-size:12px;color:var(--tlt);padding:8px 0'>Esercizi disponibili a inizio sessione</div>";
+    return;
+  }
+  var html='<div style="margin-top:10px;border-top:1px solid var(--bdr);padding-top:8px">';
+  exs.forEach(function(e,i){
+    html+='<div style="display:flex;align-items:center;gap:7px;padding:3px 0;font-size:12px;color:var(--tmid)">';
+    html+='<span style="font-size:11px;color:var(--g1);font-weight:bold;min-width:14px">'+(i+1)+'.</span>';
+    html+='<span>'+(e.n||e.name||'Esercizio')+'</span>';
+    html+='</div>';
+  });
+  html+='</div>';
+  pr.innerHTML=html;
+}
+
 
 function _buildQuickStats(){
   var qs=document.getElementById('qs-streak');
@@ -9034,6 +9095,9 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.153',date:'10/07/2026',changes:['F1: rimossa icona impostazioni dalla home']},
+  {v:'1.153',date:'10/07/2026',changes:['F1: rimossa icona impostazioni dalla home (accessibile da Altro)']},
+  {v:'1.152',date:'09/07/2026',changes:['FAB: immagine 108% cover (tocca il bordo)','Istogramma 7 giorni con numero giorno + icone sessioni (rimpiazza Il tuo momento 2x2)','Today-card: bordo + position:relative per overlay','Piano oggi: expand button + anteprima esercizi','Piano oggi: overlay grigio quando gia fatto']},
   {v:'1.150',date:'08/07/2026',changes:['FAB: crop quadrato centrato + object-fit:contain (non piu ovale)','Piano oggi: icona rimossa dal titolo (era duplicata con quella grande a destra)','Piano oggi: sessione fatta in riquadro verde separato sotto il titolo piano']},
   {v:'1.149',date:'08/07/2026',changes:['FAB: nuova immagine faccina tartaruga (con ZZZ bianco/nero per riposo)','Altro: aggiunto Le mie Tartarughe prima di Scuola','Altro: sfondo verde chiaro + card stile modal con press effect']},
   {v:'1.148',date:'08/07/2026',changes:['Mascotte stagionali: aggiornate con sfondo trasparente PNG']},
@@ -10784,7 +10848,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202607082039'; // auto-set on each release
+const APP_BUILD='202607101557'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
