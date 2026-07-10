@@ -430,7 +430,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     width:100%;display:flex;align-items:center;gap:14px;
     padding:14px 16px;border-radius:16px;border:2px solid var(--bdr);
     background:var(--bg);cursor:pointer;font-family:var(--ff);
-    font-size:14px;font-weight:600;color:var(--text);
+    font-size:16px;font-weight:600;color:var(--text);
     margin-bottom:10px;transition:border-color .15s,background .15s;
   }
   .smod-opt:hover,.smod-opt:active{border-color:var(--g1);background:var(--g3);}
@@ -440,7 +440,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     flex-shrink:0;border-radius:12px;background:var(--bg2);
   }
   .smod-opt>div{text-align:left;flex:1;}
-  .smod-opt .smod-sub{font-size:11px;color:var(--tlt);font-weight:400;margin-top:1px;}
+  .smod-opt .smod-sub{font-size:13px;color:var(--tlt);font-weight:400;margin-top:2px;}
   .smod-cancel{
     width:100%;padding:11px;border:none;border-radius:100px;
     background:var(--bg2);color:var(--tlt);font-family:var(--ff);
@@ -622,7 +622,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 
 <div id="screen-home" class="screen">
   <div class="home-hero" style="position:relative">
-    <div id="chat-icon-wrap" style="display:none;position:absolute;top:10px;left:12px;z-index:10"><button class="chat-icon-btn" onclick="openAIChat()" title="Chat con il Coach AI">🗨️</button></div>
+
     <div style="position:absolute;top:10px;right:12px;display:flex;flex-direction:column;align-items:center;gap:3px;z-index:10">
       
       <button id="backup-alert-btn" onclick="showBackupModal()" style="display:none;width:26px;height:26px;border-radius:50%;background:#E53935;border:2px solid #fff;cursor:pointer;font-size:13px;display:none;align-items:center;justify-content:center;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3);animation:pulse 1.5s ease infinite" title="Backup consigliato!">⚠️</button>
@@ -1825,7 +1825,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.155</div>
+      <div id="app-version-display">Versione v1.156</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -6791,7 +6791,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.155 · 10/07/2026 19:01 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.156 · 10/07/2026 19:12 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -7072,10 +7072,12 @@ function _chatSysPrompt(){
   ].join('\n');
 }
 function clearAIChat(){if(!confirm('Svuotare la chat con il Coach?'))return;S.aiChatHistory=[];save();buildChatScreen();toast('Chat svuotata');}
-function _syncChatIcon(){var w=document.getElementById('chat-icon-wrap');if(!w)return;w.style.display=(!!SET.aiEnabled&&SET.aiFeature_chat!==false)?'block':'none';}
-
-
-// ═══ PROGRESS + BADGE TAB ═══════════════════════════════════════
+function _syncChatIcon(){
+  var el=document.getElementById('chat-icon-wrap');
+  if(!el)return; // rimossa dalla home - ora nel FAB modal
+  var hasAI=SET.aiProvider&&SET.aiKey;
+  el.style.display=hasAI?'block':'none';
+}
 function buildProgressWithBadge(){
   document.querySelectorAll('.prog-seg-btn').forEach(function(b){b.classList.remove('active');});
   document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active');});
@@ -9095,6 +9097,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.156',date:'10/07/2026',changes:['FAB modal: aggiunto Coach AI dopo Party','FAB modal: font 14→16px voci, 11→13px sottotitoli','Home: rimossa icona chat (ora nel FAB)']},
   {v:'1.155',date:'10/07/2026',changes:['Istogramma: sfondo chiarissimo verde menta coerente col tema app']},
   {v:'1.154',date:'10/07/2026',changes:['Istogramma: verde meno scuro (#1B5E20-#2E7D32)','today-card: bordo verde + ombra','Chat input: margin-bottom per non essere coperta dal FAB','Bug fix: overlay già fatto solo su tp.done===true (non sessioni extra)']},
   {v:'1.153',date:'10/07/2026',changes:['F1: rimossa icona impostazioni dalla home']},
@@ -10850,7 +10853,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202607101901'; // auto-set on each release
+const APP_BUILD='202607101912'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
@@ -11238,6 +11241,10 @@ setTimeout(()=>{
       <button class="smod-opt" onclick="smodParty()">
         <span class="smod-ico">🎉</span>
         <div><div>Party!</div><div class="smod-sub">Allenati insieme</div></div>
+      </button>
+      <button class="smod-opt" onclick="closeSessionModal();openAIChat()">
+        <span class="smod-ico">🗨️</span>
+        <div><div>Coach AI</div><div class="smod-sub">Chiedi, allena, scopri! 🐢</div></div>
       </button>
     </div>
     <button class="smod-cancel" onclick="closeSessionModal()">Annulla</button>
