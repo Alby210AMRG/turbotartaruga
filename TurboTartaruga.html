@@ -79,7 +79,7 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 .goal-fill{height:100%;background:linear-gradient(90deg,var(--g1),var(--b1));border-radius:100px;transition:width .6s}
 .rest-banner{background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:14px;padding:12px 14px;margin:0 13px 13px;border-left:4px solid var(--b1);display:flex;align-items:center;gap:10px}
 [data-theme="dark"] .rest-banner{background:linear-gradient(135deg,#0D2744,#163557)}
-.today-card{background:linear-gradient(135deg,var(--g4),var(--bg2));border-radius:var(--radius);padding:12px 14px;margin:0 13px 10px;box-shadow:var(--shadow);border:1.5px solid var(--bdr);position:relative;overflow:hidden}
+.today-card{background:var(--card);border-radius:var(--radius);padding:12px 14px;margin:0 13px 10px;box-shadow:0 2px 12px rgba(56,142,60,.12);border:2px solid rgba(56,142,60,.25);position:relative;overflow:hidden}
 .feeling-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px}
 .fbtn{padding:8px 4px;border-radius:13px;border:3px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;text-align:center;font-size:var(--fs-xs);font-weight:bold;transition:all .2s;font-family:var(--fb)}
 .fbtn-sub{padding:7px 4px;font-size:11px;border-width:2px}
@@ -260,7 +260,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   .chat-bubble-coach{align-self:flex-start;background:var(--card);color:var(--text);border-bottom-left-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,.08)}
   .chat-bubble-user{align-self:flex-end;background:linear-gradient(135deg,#6C63FF,#42A5F5);color:#fff;border-bottom-right-radius:4px}
   .chat-bubble-time{font-size:10px;opacity:.55;margin-top:3px}
-  .chat-input-bar{padding:10px 12px;background:var(--card);border-top:1px solid var(--bdr);display:flex;gap:8px;align-items:flex-end;flex-shrink:0;padding-bottom:max(10px,env(safe-area-inset-bottom,10px))}
+  .chat-input-bar{padding:10px 12px 10px;background:var(--card);border-top:1px solid var(--bdr);display:flex;gap:8px;align-items:flex-end;flex-shrink:0;margin-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
   .chat-input{flex:1;border:1.5px solid var(--bdr);border-radius:20px;padding:10px 14px;font-size:14px;background:var(--bg);color:var(--text);resize:none;max-height:100px;outline:none;font-family:var(--ff)}
   .chat-send-btn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#6C63FF,#42A5F5);border:none;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
   .chat-typing{display:flex;gap:4px;align-items:center;padding:10px 14px}
@@ -747,8 +747,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   </div>
 
   <!-- ── ISTOGRAMMA ATTIVITÀ ──────────────────────────── -->
-  <div style="margin:0 12px 0;background:linear-gradient(135deg,#1B3A2F,#1B5E3B);border-radius:20px;padding:14px 14px 10px">
-    <div style="font-size:10px;font-weight:bold;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">⚡ Ultimi 7 giorni</div>
+  <div style="margin:0 12px 0;background:linear-gradient(135deg,#E8F5E9,#F1F8E9);border-radius:20px;padding:14px 14px 10px;border:1.5px solid #A5D6A7">
+    <div style="font-size:10px;font-weight:bold;color:#388E3C;text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px">⚡ Ultimi 7 giorni</div>
     <div id="activity-chart" style="display:flex;gap:4px;align-items:stretch;min-height:90px"></div>
   </div>
   <!-- Morning routine banner (context-aware) -->
@@ -1825,7 +1825,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.153</div>
+      <div id="app-version-display">Versione v1.155</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -3755,7 +3755,7 @@ const hsEl=document.getElementById('home-streak');if(hsEl)hsEl.textContent=typeo
     // Qui aggiorniamo solo il sottotitolo today-sub con i dettagli sessione
     // Overlay "già fatto"
     var _ovEl=document.getElementById('today-done-overlay');
-    if(_ovEl)_ovEl.style.display=(_todayDone&&!isRest)?'flex':'none';
+    if(_ovEl)_ovEl.style.display=(tp&&tp.done===true&&!isRest)?'flex':'none';
     var _doneInfoEl=document.getElementById('today-done-info');
     if(_todayDone&&!isRest&&_todayH&&_doneInfoEl){
       var _ci2=CAT_INFO[_todayH.type]||{icon:'💪',label:_todayH.type||''};
@@ -6791,7 +6791,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.153 · 10/07/2026 15:57 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.155 · 10/07/2026 19:01 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -7802,23 +7802,23 @@ function _buildActivityChart(){
     var d=new Date();d.setDate(d.getDate()-i);
     days.push({date:localDate(d),num:d.getDate()});
   }
-  var html='<div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;background:rgba(255,255,255,.12);border-radius:12px;padding:8px 6px;width:36px;justify-content:center">';
+  var html='<div style="flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;background:rgba(56,142,60,.12);border-radius:12px;padding:8px 6px;width:36px;justify-content:center">';
   html+='<div style="font-size:18px">🔥</div>';
-  html+='<div style="font-size:15px;font-weight:bold;color:#FFD54F;font-family:var(--ft)">'+(S.str||0)+'</div>';
-  html+='<div style="font-size:9px;color:rgba(255,255,255,.55);text-align:center">giorni</div></div>';
+  html+='<div style="font-size:15px;font-weight:bold;color:#2E7D32;font-family:var(--ft)">'+(S.str||0)+'</div>';
+  html+='<div style="font-size:9px;color:#4CAF50;text-align:center">giorni</div></div>';
   days.forEach(function(day){
     var ss=(S.history||[]).filter(function(h){return h.date===day.date&&h.type!=='riposo_vol'&&h.type!=='rest';});
     var isToday=day.date===today;
-    var bg=isToday?'rgba(255,255,255,.2)':'rgba(255,255,255,.07)';
-    var brd=isToday?'1.5px solid rgba(255,255,255,.4)':'1.5px solid transparent';
+    var bg=isToday?'rgba(56,142,60,.15)':'rgba(56,142,60,.05)';
+    var brd=isToday?'1.5px solid #4CAF50':'1.5px solid transparent';
     html+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;background:'+bg+';border-radius:12px;border:'+brd+';padding:6px 2px;justify-content:space-between;min-width:0">';
-    html+='<div style="font-size:'+(isToday?'11':'10')+'px;color:rgba(255,255,255,'+(isToday?'.95':'.5')+');font-weight:'+(isToday?'bold':'normal')+'">'+day.num+'</div>';
+    html+='<div style="font-size:'+(isToday?'11':'10')+'px;color:'+(isToday?'#1B5E20':'#81C784')+';font-weight:'+(isToday?'bold':'normal')+'">'+day.num+'</div>';
     html+='<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px">';
-    if(!ss.length){html+='<div style="font-size:14px;color:rgba(255,255,255,.2)">·</div>';}
+    if(!ss.length){html+='<div style="font-size:14px;color:#C8E6C9">·</div>';}
     else if(ss.length<=2){ss.forEach(function(s){var ci=(typeof CAT_INFO!=='undefined'&&CAT_INFO[s.type])||{icon:'💪'};html+='<div style="font-size:16px">'+ci.icon+'</div>';});}
     else{var ci=(typeof CAT_INFO!=='undefined'&&CAT_INFO[ss[0].type])||{icon:'💪'};html+='<div style="font-size:16px">'+ci.icon+'</div>';html+='<div style="font-size:9px;font-weight:bold;color:#FFD54F">+'+(ss.length-1)+'</div>';}
     html+='</div>';
-    html+=isToday?'<div style="width:5px;height:5px;border-radius:50%;background:#FFD54F"></div>':'<div style="height:5px"></div>';
+    html+=isToday?'<div style="width:5px;height:5px;border-radius:50%;background:#4CAF50"></div>':'<div style="height:5px"></div>';
     html+='</div>';
   });
   el.innerHTML=html;
@@ -9095,6 +9095,8 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.155',date:'10/07/2026',changes:['Istogramma: sfondo chiarissimo verde menta coerente col tema app']},
+  {v:'1.154',date:'10/07/2026',changes:['Istogramma: verde meno scuro (#1B5E20-#2E7D32)','today-card: bordo verde + ombra','Chat input: margin-bottom per non essere coperta dal FAB','Bug fix: overlay già fatto solo su tp.done===true (non sessioni extra)']},
   {v:'1.153',date:'10/07/2026',changes:['F1: rimossa icona impostazioni dalla home']},
   {v:'1.153',date:'10/07/2026',changes:['F1: rimossa icona impostazioni dalla home (accessibile da Altro)']},
   {v:'1.152',date:'09/07/2026',changes:['FAB: immagine 108% cover (tocca il bordo)','Istogramma 7 giorni con numero giorno + icone sessioni (rimpiazza Il tuo momento 2x2)','Today-card: bordo + position:relative per overlay','Piano oggi: expand button + anteprima esercizi','Piano oggi: overlay grigio quando gia fatto']},
@@ -10848,7 +10850,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202607101557'; // auto-set on each release
+const APP_BUILD='202607101901'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
