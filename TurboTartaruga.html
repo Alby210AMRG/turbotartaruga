@@ -1825,7 +1825,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.156</div>
+      <div id="app-version-display">Versione v1.157</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -3471,10 +3471,13 @@ function refreshPlan(silent){
   // Mantieni solo passato stretto (< oggi); il loop genera oggi + futuro
   const _existingToday=(S.plan||[]).find(p=>p.date===today)||null;
   const plan=pastEntries.filter(p=>p.date<today);
+  // FIX: se oggi ha già un'entry pianificata, preservala (non rigenera con focus sbagliata)
+  if(_existingToday){plan.push(_existingToday);}
   for(let i=0;i<31;i++){
     const d=new Date();d.setDate(d.getDate()+i);
     const dow=d.getDay();const ds=localDate(d); // usa data locale non UTC
-    if(ds<today)continue; // skippa solo il passato stretto
+    if(ds<today)continue; // skippa passato stretto
+    if(ds===today&&_existingToday)continue; // FIX: preserva entry di oggi già esistente
     const isRest=restDays.includes(dow)||(consec>=maxConsec);
     if(isRest){
       const isUserRest=_urd2.includes(dow);
@@ -6791,7 +6794,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.156 · 10/07/2026 19:12 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.157 · 11/07/2026 09:54 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -9097,6 +9100,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.157',date:'11/07/2026',changes:['BUG FIX CRITICO refreshPlan: _existingToday ora preservato - non sovrascrive piu la sessione di oggi con focus sbagliata (es. Bottiglie al posto di Orientale)']},
   {v:'1.156',date:'10/07/2026',changes:['FAB modal: aggiunto Coach AI dopo Party','FAB modal: font 14→16px voci, 11→13px sottotitoli','Home: rimossa icona chat (ora nel FAB)']},
   {v:'1.155',date:'10/07/2026',changes:['Istogramma: sfondo chiarissimo verde menta coerente col tema app']},
   {v:'1.154',date:'10/07/2026',changes:['Istogramma: verde meno scuro (#1B5E20-#2E7D32)','today-card: bordo verde + ombra','Chat input: margin-bottom per non essere coperta dal FAB','Bug fix: overlay già fatto solo su tp.done===true (non sessioni extra)']},
@@ -10853,7 +10857,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202607101912'; // auto-set on each release
+const APP_BUILD='202607110954'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
