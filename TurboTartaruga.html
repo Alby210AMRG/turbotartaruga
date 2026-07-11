@@ -1828,7 +1828,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.159</div>
+      <div id="app-version-display">Versione v1.160</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -6727,29 +6727,17 @@ function preloadExerciseImages(){
   if(typeof DB==='undefined'||!DB.length)return;
   if(!navigator.onLine)return;
 
-  var CACHE_KEY='tt4_imgCached';
-  var META_KEY='tt4_imgBuild';
+  var CACHE_KEY='tt4_imgCached_v2'; // v2: senza invalidazione per build
 
-  // Se il build è cambiato (nuova versione deployata) → invalida cache
-  // Questo garantisce che immagini aggiornate o nuove vengano riscaricate
-  var savedBuild='';
-  try{savedBuild=localStorage.getItem(META_KEY)||'';}catch(e){}
-  if(savedBuild!==APP_BUILD){
-    try{
-      localStorage.removeItem(CACHE_KEY);
-      localStorage.setItem(META_KEY,APP_BUILD);
-    }catch(e){}
-  }
-
-  // Leggi set immagini già scaricate per questo build
+  // Leggi set immagini già verificate (persistono tra build - le immagini non cambiano)
   var cached={};
   try{cached=JSON.parse(localStorage.getItem(CACHE_KEY)||'{}');}catch(e){}
 
-  // Tutti gli id nel DB (incluse eventuali nuove immagini aggiunte)
+  // Aggiungi solo le immagini non ancora verificate
   var allIds=DB.map(function(e){return e.id;});
   var ids=allIds.filter(function(id){return !cached[id];});
 
-  if(!ids.length)return; // tutto già scaricato per questo build
+  if(!ids.length)return; // tutte già verificate
 
   var i=0;
   var BATCH=3;
@@ -6761,7 +6749,7 @@ function preloadExerciseImages(){
     batch.forEach(function(id){
       var img=new Image();
       // Cache-bust con build per forzare ri-download se immagine aggiornata
-      img.src='images/exercises/'+id+'.png?v='+APP_BUILD;
+      img.src='images/exercises/'+id+'.png'; // no cache-bust: le immagini non cambiano tra build
       img.onload=function(){
         cached[id]=1;
         done++;
@@ -6798,7 +6786,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.159 · 11/07/2026 11:22 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.160 · 11/07/2026 19:02 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -9131,6 +9119,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.160',date:'11/07/2026',changes:['BUG FIX CRITICO immagini: rimosso ?v=APP_BUILD dalle URL (non invalidare browser cache ad ogni build)','SW: ASSETS_CACHE separata per immagini esercizi (non cancellata tra update app)']},
   {v:'1.159',date:'11/07/2026',changes:['Nuovo box Fatto Oggi sotto Piano Oggi: mostra sessioni completate oggi con icona/tipo/durata/XP (appare solo se almeno 1 sessione fatta)']},
   {v:'1.158',date:'11/07/2026',changes:['BUG FIX: overlay grigio piano oggi solo se T.feeling===piano (Segui Piano) - Scelgo io / mie Tartarughe / AI Coach non marcano piu il piano come fatto']},
   {v:'1.157',date:'11/07/2026',changes:['BUG FIX CRITICO refreshPlan: _existingToday ora preservato - non sovrascrive piu la sessione di oggi con focus sbagliata (es. Bottiglie al posto di Orientale)']},
@@ -10890,7 +10879,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202607111122'; // auto-set on each release
+const APP_BUILD='202607111902'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){

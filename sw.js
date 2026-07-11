@@ -1,5 +1,6 @@
 // TurboTartaruga Service Worker v202604262049
-const CACHE_NAME = 'turbotartaruga-202607111122';
+const CACHE_NAME = 'turbotartaruga-202607111902'; // cache app (HTML, JS, CSS)
+const ASSETS_CACHE = 'turbotartaruga-assets-v1';  // cache immagini esercizi (NON cancellata mai)
 
 // File da precacheare all'installazione (OBBLIGATORI per offline)
 const PRECACHE = [
@@ -42,7 +43,9 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys()
       .then(keys => Promise.all(
-        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+        keys
+          .filter(k => k !== CACHE_NAME && k !== ASSETS_CACHE) // preserva assets cache!
+          .map(k => caches.delete(k))
       ))
       .then(() => self.clients.claim())
   );
@@ -61,6 +64,32 @@ self.addEventListener('fetch', event => {
         .catch(() => new Response('{}', {
           headers: { 'Content-Type': 'application/json' }
         }))
+    );
+    return;
+  }
+
+  // ── 2a. Immagini esercizi → ASSETS_CACHE (non cancellata tra update) ────
+  if (url.pathname.includes('images/exercises/')) {
+    event.respondWith(
+      caches.open(ASSETS_CACHE).then(async cache => {
+        // Rimuovi query string per normalizzare la chiave cache
+        const cleanUrl = event.request.url.split('?')[0];
+        const cleanReq = new Request(cleanUrl);
+        const cached = await cache.match(cleanReq);
+        if (cached) return cached;
+        return fetch(cleanReq)
+          .then(resp => {
+            if (resp && resp.status === 200) cache.put(cleanReq, resp.clone());
+            return resp;
+          })
+          .catch(() => new Response(
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">' +
+            '<rect width="200" height="200" fill="#f1f8e9" rx="16"/>' +
+            '<text x="100" y="110" text-anchor="middle" font-size="64">🐢</text>' +
+            '</svg>',
+            { headers: { 'Content-Type': 'image/svg+xml' } }
+          ));
+      })
     );
     return;
   }
