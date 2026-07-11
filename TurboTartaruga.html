@@ -1825,7 +1825,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.157</div>
+      <div id="app-version-display">Versione v1.158</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -5571,14 +5571,14 @@ function completeSession(){
     cats,tags,
     exercises:doneExs.map(e=>({id:e.id,n:e.n,cat:e.cat}))
   });
-  // Segna done solo se la sessione corrisponde al piano del giorno
-  // AI Coach, Scelgo io! e Le mie Tartarughe sono sessioni extra — non toccano il piano
-  const _extraTypes=['ai_coach','misto','misto_plus']; // myw conta come sessione reale per streak e piano
+  // Segna done SOLO se l'utente ha esplicitamente seguito il piano (T.feeling==='piano')
+  // Scelgo io!, Le mie Tartarughe, AI Coach, Sessione Mattino ecc. sono sessioni extra
+  // e NON devono marcare il piano giornaliero come completato
   const planEntry=S.plan.find(p=>p.date===today);
-  if(planEntry&&!_extraTypes.includes(T.sesType)){
+  if(planEntry&&T.feeling==='piano'){
     planEntry.done=true;
-  } else if(planEntry&&_extraTypes.includes(T.sesType)){
-    // Sessione extra: non marcare done, ma aggiungi un flag extra_done
+  } else if(planEntry){
+    // Sessione extra/libera: incrementa contatore ma non tocca il piano
     planEntry.extra_done=(planEntry.extra_done||0)+1;
   }
   // Se sessione AI: trasla la sessione pianificata al giorno successivo disponibile
@@ -6794,7 +6794,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.157 · 11/07/2026 09:54 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.158 · 11/07/2026 11:13 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -9100,6 +9100,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.158',date:'11/07/2026',changes:['BUG FIX: overlay grigio piano oggi solo se T.feeling===piano (Segui Piano) - Scelgo io / mie Tartarughe / AI Coach non marcano piu il piano come fatto']},
   {v:'1.157',date:'11/07/2026',changes:['BUG FIX CRITICO refreshPlan: _existingToday ora preservato - non sovrascrive piu la sessione di oggi con focus sbagliata (es. Bottiglie al posto di Orientale)']},
   {v:'1.156',date:'10/07/2026',changes:['FAB modal: aggiunto Coach AI dopo Party','FAB modal: font 14→16px voci, 11→13px sottotitoli','Home: rimossa icona chat (ora nel FAB)']},
   {v:'1.155',date:'10/07/2026',changes:['Istogramma: sfondo chiarissimo verde menta coerente col tema app']},
@@ -10857,7 +10858,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202607110954'; // auto-set on each release
+const APP_BUILD='202607111113'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
