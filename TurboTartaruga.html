@@ -77,9 +77,8 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 .abtn.party{background:linear-gradient(135deg,#CCFF00,#FFE500)}
 .goal-bar{height:8px;background:var(--bdr);border-radius:100px;overflow:hidden;margin:4px 0}
 .goal-fill{height:100%;background:linear-gradient(90deg,var(--g1),var(--b1));border-radius:100px;transition:width .6s}
-.rest-banner{background:linear-gradient(135deg,#E3F2FD,#BBDEFB);border-radius:14px;padding:12px 14px;margin:0 13px 13px;border-left:4px solid var(--b1);display:flex;align-items:center;gap:10px}
-[data-theme="dark"] .rest-banner{background:linear-gradient(135deg,#0D2744,#163557)}
 .today-card{background:var(--card);border-radius:var(--radius);padding:12px 14px;margin:0 13px 10px;box-shadow:0 2px 12px rgba(56,142,60,.12);border:2px solid rgba(56,142,60,.25);position:relative;overflow:hidden}
+[data-theme="dark"] .today-card{background:var(--card);border-radius:var(--radius);padding:12px 14px;margin:0 13px 10px;box-shadow:0 2px 12px rgba(56,142,60,.12);border:2px solid rgba(56,142,60,.25);position:relative;overflow:hidden}
 .feeling-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px}
 .fbtn{padding:8px 4px;border-radius:13px;border:3px solid var(--bdr);background:var(--card);color:var(--text);cursor:pointer;text-align:center;font-size:var(--fs-xs);font-weight:bold;transition:all .2s;font-family:var(--fb)}
 .fbtn-sub{padding:7px 4px;font-size:11px;border-width:2px}
@@ -114,7 +113,7 @@ body{font-family:var(--fb);font-size:var(--fs);background:var(--bg);color:var(--
 .tcontrols{display:flex;gap:9px;padding:0 13px 14px}
 .nxt-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--bdr)}.nxt-item:last-child{border-bottom:none}
 /* Riserva Turbo */
-.riserva{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(135deg,#BF360C,#E65100,#FF8F00);padding:16px 18px;color:#fff;animation:pglow 1.5s infinite;z-index:200;box-shadow:0 -4px 20px rgba(230,81,0,.6)}
+.riserva{position:fixed;bottom:calc(66px + env(safe-area-inset-bottom,0px));left:0;right:0;background:linear-gradient(135deg,#BF360C,#E65100,#FF8F00);padding:16px 18px;color:#fff;animation:pglow 1.5s infinite;z-index:9999;box-shadow:0 -4px 20px rgba(230,81,0,.6);border-radius:16px 16px 0 0}
 @keyframes pglow{0%,100%{box-shadow:0 4px 16px rgba(230,81,0,.5)}50%{box-shadow:0 4px 24px rgba(230,81,0,.8)}}
 /* Calendar */
 .cal-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px}
@@ -212,7 +211,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
 .ex-card-mini-desc{font-size:10px;color:var(--tlt);line-height:1.4;margin-top:1px}
 .ex-floor-tag{font-size:9px;background:#FFF3E0;color:#E65100;padding:1px 6px;border-radius:100px;flex-shrink:0}
 /* misc */
-.scrollable{overflow-y:auto;padding-bottom:28px}.tc{text-align:center}.mt10{margin-top:10px}.mt12{margin-top:12px}.mt14{margin-top:14px}
+.scrollable{overflow-y:auto;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}.tc{text-align:center}.mt10{margin-top:10px}.mt12{margin-top:12px}.mt14{margin-top:14px}
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(100px);background:#1C2B1C;color:#fff;padding:11px 20px;border-radius:100px;font-size:13px;z-index:9999;transition:transform .3s;white-space:nowrap;pointer-events:none;max-width:90vw}
 [data-theme="dark"] .toast{background:#E8F5E9;color:#1C2B1C}.toast.show{transform:translateX(-50%) translateY(0)}
 /* FAB removed — settings button is now in home hero */
@@ -285,7 +284,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
   .prog-seg-btn{flex:1;padding:10px 8px;border:2px solid var(--bdr);border-radius:12px;background:var(--bg);font-size:13px;font-weight:bold;color:var(--tlt);cursor:pointer;font-family:var(--ff);transition:all .2s}
   .prog-seg-btn.active{background:var(--g1);border-color:var(--g1);color:#fff}
   .tab-pane{display:none}
-  .tab-pane.active{display:flex;flex-direction:column;flex:1;overflow-y:auto;min-height:0}
+  .tab-pane.active{display:flex;flex-direction:column;flex:1;overflow-y:auto;min-height:0;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}
   .scuola-badge{font-size:9px;padding:2px 6px;border-radius:100px;font-weight:bold}
   .scuola-badge-floor{background:#FFF3E0;color:#E65100}
   .scuola-badge-switch{background:#E3F2FD;color:#1565C0}
@@ -478,27 +477,24 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     width:40px;height:4px;background:var(--bdr);border-radius:2px;
     margin:0 auto 20px;
   }
-  .altro-item{
-    display:flex;align-items:center;gap:14px;
-    padding:13px 14px;border-radius:16px;
-    border:1.5px solid rgba(165,214,167,.5);
-    background:rgba(255,255,255,.7);
-    width:100%;cursor:pointer;
-    font-family:var(--ff);font-size:15px;font-weight:600;
-    color:var(--text);text-align:left;
-    transition:transform .12s,box-shadow .12s,border-color .12s;
-    margin-bottom:8px;
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
-  }
-  .altro-item:active{transform:scale(0.97);box-shadow:0 1px 4px rgba(0,0,0,.08);border-color:#A5D6A7;}
-  .altro-item .altro-ico{
-    width:48px;height:48px;border-radius:14px;
-    display:flex;align-items:center;justify-content:center;
-    font-size:26px;flex-shrink:0;
-  }
-  .altro-item .altro-sub{font-size:11px;color:var(--tlt);font-weight:400;margin-top:2px;}
-  .altro-item>div{text-align:left;flex:1;}
+  /* ── Altro sheet — griglia tile 3×2 ── */
+  .altro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:2px 0 6px}
+  .altro-tile{display:flex;flex-direction:column;align-items:center;gap:7px;
+    padding:14px 4px 12px;background:#F1F8E9;border-radius:18px;
+    border:1.5px solid rgba(165,214,167,.4);cursor:pointer;font-family:var(--ff);
+    transition:transform .12s,background .15s;width:100%;
+    box-shadow:0 2px 8px rgba(46,125,50,.07)}
+  .altro-tile:active{transform:scale(.93);background:#C8E6C9}
+  [data-theme="dark"] .altro-tile{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14)}
+  [data-theme="dark"] .altro-tile:active{background:rgba(255,255,255,.18)}
+  .altro-ico2{width:54px;height:54px;border-radius:16px;
+    display:flex;align-items:center;justify-content:center;font-size:28px}
+  .altro-lbl{font-size:11.5px;font-weight:700;color:var(--text);text-align:center;line-height:1.3}
 
+
+/* S1 — Audio theme buttons */
+.audio-theme-btn{padding:4px 10px;border-radius:12px;border:1.5px solid var(--bdr);background:var(--card);color:var(--text);font-size:12px;cursor:pointer;transition:all .2s}
+.audio-theme-btn.sel{border-color:var(--g1);background:var(--g3);color:var(--g1);font-weight:bold}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
@@ -613,7 +609,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <button class="upd-btn upd-btn-ghost" onclick="dismissUpdateBanner()">✕</button>
     </div>
   </div>
-  <div id="update-changelog">
+  <div id="update-changelog" style="display:none">
     <div style="font-size:11px;font-weight:bold;opacity:.7;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Novità di questa versione</div>
     <ul class="upd-changes" id="upd-changes-list"></ul>
   </div>
@@ -641,36 +637,36 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div class="streak-chip" id="home-gps-chip" style="display:none;background:rgba(255,255,255,.15)"><span id="home-gps-ico">🌤️</span> <span id="home-gps-txt">--°</span></div>
     </div>
   
-  <!-- Routine mattutina banner -->
-  <div id="home-morning-banner" style="display:none;margin:8px 12px 0">
-    <div style="background:linear-gradient(135deg,#F57F17,#F9A825);border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:12px">
-      <span style="font-size:28px">☀️</span>
-      <div style="flex:1">
-        <div style="font-weight:bold;color:#fff;font-size:14px">Routine mattutina</div>
-        <div style="color:rgba(255,255,255,.85);font-size:12px">4 minuti per iniziare bene la giornata</div>
-      </div>
-      <button onclick="startRoutine('mattino')" style="background:#fff;color:#F57F17;border:none;border-radius:100px;padding:8px 14px;font-weight:bold;font-size:13px;cursor:pointer;font-family:var(--ft)">Avvia ☀️</button>
-    </div>
-  </div>
-  <!-- Routine pre-sonno banner -->
-  <div id="home-sleep-banner" style="display:none;margin:8px 12px 0">
-    <div style="background:linear-gradient(135deg,#283593,#3949AB);border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:12px">
-      <span style="font-size:28px">🌙</span>
-      <div style="flex:1">
-        <div style="font-weight:bold;color:#fff;font-size:14px">Routine pre-sonno</div>
-        <div style="color:rgba(255,255,255,.85);font-size:12px">8 minuti per rilassarti prima di dormire</div>
-      </div>
-      <button onclick="startRoutine('presonno')" style="background:#fff;color:#3949AB;border:none;border-radius:100px;padding:8px 14px;font-weight:bold;font-size:13px;cursor:pointer;font-family:var(--ft)">Avvia 🌙</button>
-    </div>
-  </div></div>
-  <div id="rest-banner" class="rest-banner" style="display:none">
-    <span style="font-size:28px">😴</span>
-    <div><div style="font-weight:bold;font-size:var(--fs)">Oggi è il tuo giorno di riposo!</div><div style="font-size:var(--fs-xs);color:var(--tmid)">Hai lavorato bene. Riposa e torna domani 🌿</div></div>
-  </div>
+</div>
+
   <div style="padding:0 13px;margin-bottom:7px">
     <div style="display:flex;justify-content:space-between;font-size:var(--fs-xs);color:var(--tlt)"><span>🎯 <span id="hg-done">0</span>/<span id="hg-tot">90</span></span><span id="hg-pct">0%</span></div>
     <div class="goal-bar"><div id="hg-fill" class="goal-fill" style="width:0%"></div></div>
   </div>
+  <!-- ── ROUTINE BOXES (mattino / pre-sonno) ─────────────────── -->
+  <div id="home-morning-banner" style="display:none;background:var(--card);border-radius:var(--radius);padding:12px 14px;margin:0 13px 10px;box-shadow:0 2px 12px rgba(245,127,23,.15);border:2px solid rgba(245,127,23,.35)">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:36px">☀️</span>
+      <div style="flex:1">
+        <div style="font-size:var(--fs-xs);color:#E65100;font-weight:bold;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Routine mattutina</div>
+        <div style="font-size:15px;font-weight:bold;color:var(--text)">Inizia bene la giornata!</div>
+        <div style="font-size:12px;color:var(--tlt);margin-top:1px">4 minuti per svegliarti al meglio 🌅</div>
+      </div>
+      <button onclick="startRoutine('mattino')" style="background:linear-gradient(135deg,#F57F17,#F9A825);color:#fff;border:none;border-radius:20px;padding:9px 16px;font-weight:bold;font-size:13px;cursor:pointer;font-family:var(--ff);flex-shrink:0;box-shadow:0 3px 10px rgba(245,127,23,.35)">Avvia ☀️</button>
+    </div>
+  </div>
+  <div id="home-sleep-banner" style="display:none;background:var(--card);border-radius:var(--radius);padding:12px 14px;margin:0 13px 10px;box-shadow:0 2px 12px rgba(57,73,171,.15);border:2px solid rgba(57,73,171,.3)">
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="font-size:36px">🌙</span>
+      <div style="flex:1">
+        <div style="font-size:var(--fs-xs);color:#3949AB;font-weight:bold;letter-spacing:1px;text-transform:uppercase;margin-bottom:2px">Routine pre-sonno</div>
+        <div style="font-size:15px;font-weight:bold;color:var(--text)">Rilassati prima di dormire</div>
+        <div style="font-size:12px;color:var(--tlt);margin-top:1px">8 minuti per una notte serena 🌛</div>
+      </div>
+      <button onclick="startRoutine('presonno')" style="background:linear-gradient(135deg,#283593,#3949AB);color:#fff;border:none;border-radius:20px;padding:9px 16px;font-weight:bold;font-size:13px;cursor:pointer;font-family:var(--ff);flex-shrink:0;box-shadow:0 3px 10px rgba(40,53,147,.35)">Avvia 🌙</button>
+    </div>
+  </div>
+
   <div class="today-card">
     <div style="float:right;font-size:46px;line-height:1" id="today-icon">🦵</div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">
@@ -709,6 +705,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       <div id="scelgo-grid" style="display:none;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;animation:fadeIn .2s">
         <!-- Categorie normali -->
         <button class="fbtn fbtn-sub" data-f="__myworkouts__" onclick="openMyWorkouts()" style="grid-column:1/-1;background:linear-gradient(135deg,#E65100,#FFB300);border:2px solid #F57C00;box-shadow:0 3px 10px rgba(230,81,0,.25)"><span class="fi">🎒</span><span style="color:#fff;font-weight:bold;text-shadow:0 1px 3px rgba(0,0,0,.2)">Le mie Tartarughe</span></button>
+        <button class="fbtn fbtn-sub" data-f="mattino" onclick="setScelgoFeeling(this)" style="background:#FFF8E1;border-color:#FFD54F;color:#E65100"><span class="fi">☀️</span>Mattino</button>
+        <button class="fbtn fbtn-sub" data-f="presonno" onclick="setScelgoFeeling(this)" style="background:#E8EAF6;border-color:#9FA8DA;color:#1A237E"><span class="fi">🌙</span>Pre-sonno</button>
         <button class="fbtn fbtn-sub" data-f="gambe" onclick="setScelgoFeeling(this)"><span class="fi">🦵</span>Gambe</button>
         <button class="fbtn fbtn-sub" data-f="equilibrio" onclick="setScelgoFeeling(this)"><span class="fi">🦢</span>Equilibrio</button>
         <button class="fbtn fbtn-sub" data-f="alzati" onclick="setScelgoFeeling(this)"><span class="fi">🧍</span>Alzati!</button>
@@ -725,9 +723,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
         <!-- Misto — colore tenue blu/viola -->
         <button class="fbtn fbtn-sub fbtn-misto" data-f="misto" onclick="setScelgoFeeling(this)" style="background:#EDE7F6;border-color:#B39DDB;color:#4527A0"><span class="fi">🌈</span>Misto</button>
         <button class="fbtn fbtn-sub fbtn-misto" data-f="misto_plus" onclick="setScelgoFeeling(this)" style="background:#EDE7F6;border-color:#B39DDB;color:#4527A0"><span class="fi">🪑💪</span>Misto+</button>
-        <!-- Routine — colore tenue ambra/sera -->
-        <button class="fbtn fbtn-sub fbtn-routine" data-f="mattino" onclick="setScelgoFeeling(this)" style="background:#FFF8E1;border-color:#FFD54F;color:#E65100"><span class="fi">☀️</span>Risveglio</button>
-        <button class="fbtn fbtn-sub fbtn-routine" data-f="presonno" onclick="setScelgoFeeling(this)" style="background:#E8EAF6;border-color:#9FA8DA;color:#1A237E"><span class="fi">🌙</span>Pre-sonno</button>
+
       </div>
       <div id="stanco-opts" style="display:none;margin-top:9px">
         <div style="font-size:var(--fs-xs);color:var(--tmid);margin-bottom:8px">💬 Va benissimo! Come preferisci?</div>
@@ -744,6 +740,20 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     <div id="btn-start-done-row" style="display:none;text-align:center;font-size:12px;color:var(--g1);font-weight:bold;margin-top:4px"></div>
 
     </div>
+  </div>
+
+  <!-- ── REPORT SETTIMANALE ──────────────────────────────────── -->
+  <div id="weekly-report-box" style="display:none;background:var(--card);border-radius:var(--radius);margin:0 13px 10px;box-shadow:0 2px 12px rgba(56,142,60,.10);border:2px solid rgba(56,142,60,.18);overflow:hidden">
+    <div onclick="toggleWeeklyReportBox()" style="display:flex;align-items:center;padding:11px 14px;cursor:pointer;gap:10px;user-select:none">
+      <span style="font-size:22px">📊</span>
+      <div style="flex:1;min-width:0">
+        <div id="wr-title" style="font-size:13px;font-weight:bold;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Report Settimanale</div>
+        <div id="wr-subtitle" style="font-size:11px;color:var(--tlt)">Caricamento...</div>
+      </div>
+      <button onclick="shareWeeklyReport(event)" id="wr-share-btn" title="Condividi" style="display:none;background:var(--g1);color:#fff;border:none;border-radius:16px;padding:4px 10px;font-size:11px;cursor:pointer;flex-shrink:0">📤 Condividi</button>
+      <span id="wr-arrow" style="font-size:11px;color:var(--tlt);flex-shrink:0;margin-left:4px">▼</span>
+    </div>
+    <div id="wr-content" style="display:none;padding:0 14px 14px;border-top:1px solid var(--bdr);white-space:pre-wrap;font-size:13px;color:var(--text);line-height:1.6"></div>
   </div>
 
   <!-- ── SESSIONI FATTE OGGI ──────────────────────────── -->
@@ -788,7 +798,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       style="width:100%;padding:9px 14px;border:1.5px solid var(--bdr);border-radius:100px;font-size:14px;background:var(--bg);color:var(--text);outline:none;box-sizing:border-box;font-family:var(--ff)"
       oninput="filterScuola(this.value)">
   </div>
-  <div id="scuola-list" style="flex:1;overflow-y:auto;padding:12px"></div>
+  <div id="scuola-list" style="flex:1;overflow-y:auto;padding:12px 12px calc(80px + env(safe-area-inset-bottom,0px))"></div>
 </div>
 
 <!-- SCUOLA DETAIL MODAL -->
@@ -833,7 +843,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
       oninput="filterMyWorkouts(this.value)">
     <button onclick="openNewWorkout()" style="padding:8px 14px;background:var(--g1);color:#fff;border:none;border-radius:100px;font-size:13px;font-weight:bold;cursor:pointer;font-family:var(--ff);white-space:nowrap">+ Nuova</button>
   </div>
-  <div id="myw-list" style="flex:1;overflow-y:auto;padding:12px"></div>
+  <div id="myw-list" style="flex:1;overflow-y:auto;padding:12px;padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))"></div>
 </div>
 
 <!-- MODAL MODIFICA SCHEDA -->
@@ -1636,6 +1646,21 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
           </div>
           <div class="srow"><div class="si">🌙</div><div class="sinfo"><div class="stitle">Tema</div></div><div class="theme-opts"><div class="th-opt sel" data-th="light" onclick="selTheme(this)">☀️</div><div class="th-opt" data-th="dark" onclick="selTheme(this)">🌙</div><div class="th-opt" data-th="auto" onclick="selTheme(this)">🔄</div></div></div>
           <div class="srow"><div class="si">🔔</div><div class="sinfo"><div class="stitle">Suoni esercizio</div><div class="sval">Beep cambio esercizio</div></div><button class="toggle" id="st-audio" onclick="toggleAudio()"></button></div>
+          <div class="srow" id="st-audiotheme-row" style="flex-direction:column;align-items:flex-start;gap:6px">
+            <div style="display:flex;width:100%;align-items:center;justify-content:space-between">
+              <div><div class="si" style="display:inline;margin-right:8px">🎵</div><span class="stitle">Tema sonoro</span></div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;padding-left:4px">
+              <button onclick="setAudioTheme('tartaruga')" id="th-tartaruga" class="audio-theme-btn">🐢 Tartaruga</button>
+              <button onclick="setAudioTheme('energico')" id="th-energico" class="audio-theme-btn">⚡ Energico</button>
+              <button onclick="setAudioTheme('zen')" id="th-zen" class="audio-theme-btn">🧘 Zen</button>
+              <button onclick="setAudioTheme('party')" id="th-party" class="audio-theme-btn">🎉 Party</button>
+              <button onclick="setAudioTheme('epico')" id="th-epico" class="audio-theme-btn">🌟 Epico</button>
+              <button onclick="setAudioTheme('retro')" id="th-retro" class="audio-theme-btn">🎮 Retro</button>
+              <button onclick="setAudioTheme('casuale')" id="th-casuale" class="audio-theme-btn">🎲 Casuale</button>
+            </div>
+          </div>
+          <div class="srow"><div class="si">📊</div><div class="sinfo"><div class="stitle">Report Settimanale</div><div class="sval">Resoconto ogni lunedì con AI o dati numerici</div></div><button class="toggle" id="st-weeklyreport" onclick="toggleWeeklyReport()"></button></div>
           <div class="srow"><div class="si">🎵</div><div class="sinfo"><div class="stitle">Musica di sottofondo</div><div class="sval">Musica procedurale durante la sessione (orientale, mattino, pre-sonno)</div></div><button class="toggle" id="st-music" onclick="toggleMusic()"></button></div>
           <div class="srow" style="flex-direction:column;align-items:flex-start;gap:8px">
             <div style="display:flex;width:100%;align-items:center;justify-content:space-between">
@@ -1828,7 +1853,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;heigh
     </div>
 
     <div style="text-align:center;padding:16px;font-size:10px;color:var(--tlt)">
-      <div id="app-version-display">Versione v1.160</div>
+      <div id="app-version-display">Versione v1.164</div>
       <button onclick="toggleSettingsChangelog()" style="background:none;border:none;color:var(--tlt);font-size:10px;cursor:pointer;margin-top:4px;text-decoration:underline">📋 Cosa c'è di nuovo</button>
       <div id="changelog-panel" style="display:none;text-align:left;margin-top:10px;background:var(--bg2);border-radius:10px;padding:10px;font-size:11px;line-height:1.7">
       </div>
@@ -2804,6 +2829,17 @@ async function testAIConnection(){
 function toggleVoiceDesc(){SET.voiceDesc=!SET.voiceDesc;const b=document.getElementById('st-voicedesc');if(b)b.classList.toggle('on',SET.voiceDesc===true);save();toast(SET.voiceDesc?'🗣️ Descrizione audio attivata!':'Descrizione audio disattivata.');}
 function toggleDynamicTheme(){SET.dynamicTheme=!(SET.dynamicTheme!==false);const b=document.getElementById('st-dynamictheme');if(b)b.classList.toggle('on',SET.dynamicTheme!==false);save();if(SET.dynamicTheme)applyDynamicTheme();else{const hero=document.querySelector('.home-hero');if(hero)hero.style.background='';}toast(SET.dynamicTheme?'🌈 Tema dinamico attivato!':'Tema dinamico disattivato.');}
 function toggleVoice(){SET.voice=!SET.voice;save();syncToggles()}
+function setAudioTheme(theme){
+  SET.audioTheme=theme;save();
+  document.querySelectorAll('.audio-theme-btn').forEach(b=>b.classList.toggle('sel',b.id==='th-'+theme));
+  playCompletionSound('normal');
+  toast('Tema: '+{tartaruga:'🐢 Tartaruga',energico:'⚡ Energico',zen:'🧘 Zen',party:'🎉 Party',epico:'🌟 Epico',retro:'🎮 Retro',casuale:'🎲 Casuale (sorpresa!)'}[theme]||theme);
+}
+function _randomAudioTheme(){
+  var t=['tartaruga','energico','zen','party','epico','retro'];
+  return t[Math.floor(Math.random()*t.length)];
+}
+function toggleWeeklyReport(){SET.weeklyReport=!(SET.weeklyReport!==false);save();syncToggles();toast(SET.weeklyReport!==false?'Report settimanale attivo':'Report settimanale disattivato');}
 function syncToggles(){
   const a=document.getElementById('st-audio'),v=document.getElementById('st-voice');
   if(a)a.classList.toggle('on',SET.audio);
@@ -2822,6 +2858,11 @@ function syncToggles(){
   document.querySelectorAll('.vw-opt').forEach(e=>e.classList.toggle('sel',e.dataset.vs===(SET.viewScale||'1x')));
   // Routine time pickers
   syncMorningTimeBtn();syncSleepTimeBtn();
+  // S1 — audio theme buttons
+  const _at=SET.audioTheme||'tartaruga';
+  document.querySelectorAll('.audio-theme-btn').forEach(b=>b.classList.toggle('sel',b.id==='th-'+_at));
+  // R1 — weekly report toggle
+  const wr=document.getElementById('st-weeklyreport');if(wr)wr.classList.toggle('on',SET.weeklyReport!==false);
 }
 
 // ═══ POSE ANIMATION ═══
@@ -3567,6 +3608,7 @@ function buildHome(){
   _buildQuickStats();
   _buildActivityChart();
   _buildTodayDoneSessions();
+  _buildWeeklyReportBox();
   // Gestisci azione pending dal modal FAB
   if(window._pendingHomeAction){
     var _pa=window._pendingHomeAction; window._pendingHomeAction=null;
@@ -3723,7 +3765,6 @@ const hsEl=document.getElementById('home-streak');if(hsEl)hsEl.textContent=typeo
   }
   const tp=getTodayPlan();
   const isRest=tp.type==='rest';
-  document.getElementById('rest-banner').style.display=isRest?'flex':'none';
   document.getElementById('today-icon').textContent=tp.icon||'🌈';
   const ci=CAT_INFO[tp.focus]||{label:'Allenamento',icon:'🌈'};
   document.getElementById('today-focus').textContent=(tp.type==='rest'?'Giorno di riposo 😴':ci.label);
@@ -6786,7 +6827,7 @@ syncToggles();
   const xpTot=document.getElementById('prf-xp-total');if(xpTot)xpTot.textContent=S.xp||0;
   const bgCnt=document.getElementById('prf-badges-count');if(bgCnt)bgCnt.textContent=(S.badges||[]).length;
   const vdisp=document.getElementById('app-version-display');
-  if(vdisp)vdisp.textContent='Versione v1.160 · 11/07/2026 19:02 (IT)';
+  if(vdisp)vdisp.textContent='Versione v1.164 · 13/07/2026 09:38 (IT)';
   // Update exercise count label only — list stays collapsed until user clicks
   const lbl=document.getElementById('ex-count-lbl');
   const _numCats=[...new Set(DB.map(e=>e.cat))].length;
@@ -7697,7 +7738,10 @@ function smodScelgo(){
   document.getElementById('smod-scelgo-panel').style.display='block';
   // Reset selezione
   document.querySelectorAll('.smod-cat-btn').forEach(function(b){
-    b.style.borderColor='var(--bdr)';b.style.background='var(--bg)';b.style.color='var(--text)';
+    // Ripristina il colore originale del bottone (custom o default)
+    b.style.borderColor=b.dataset.border||'var(--bdr)';
+    b.style.background=b.dataset.bg||'var(--bg)';
+    b.style.color=b.dataset.color||'var(--text)';
   });
   var ok=document.getElementById('smod-scelgo-ok');if(ok)ok.style.display='none';
   window._smodScelgoChoice=null;
@@ -7736,6 +7780,12 @@ function smodCatSelect(btn,cat){
   btn.style.borderColor='var(--g1)';btn.style.background='var(--g3)';btn.style.color='var(--g1)';
   var ok=document.getElementById('smod-scelgo-ok');
   if(ok)ok.style.display=cat==='__myworkouts__'?'none':'block';
+  // Routine: avvio diretto senza passare per confirmScelgo
+  if(cat==='mattino'||cat==='presonno'){
+    closeSessionModal();
+    startRoutine(cat);
+    return;
+  }
   if(cat==='__myworkouts__'){
     document.getElementById('smod-scelgo-panel').style.display='none';
     var mp=document.getElementById('smod-myw-panel');
@@ -9119,6 +9169,10 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.164',date:'13/07/2026',changes:['Routine mattino/sera: spostate dall hero a box card sopra Piano Oggi (stesso stile delle altre card)','Scelgo io: routine Mattino e Pre-sonno ora visibili in cima alla lista']},
+  {v:'1.163',date:'12/07/2026',changes:['Rimosso box blu riposo ridondante dalla home','Padding FAB su tutte le schermate','7° tema audio Casuale','Recupero 2 settimane report mancanti','Altro: griglia tile 3x2 con Badge&XP']},
+  {v:'1.162',date:'12/07/2026',changes:['U1: fix changelog banner (toggleChangelog), polling 15min, SW controllerchange','S1: 6 temi audio (tartaruga/energico/zen/party/epico/retro), effetti contestuali badge/streak/riserva, selector in settings','R1: report settimanale AI (lun-gio), box home espandibile, condivisione WhatsApp/Telegram, Report Settimanali in Altro']},
+  {v:'1.161',date:'11/07/2026',changes:['Fix: RISERVA TURBO non piu coperta dal FAB (bottom sopra nav bar + z-index:9999 + border-radius)']},
   {v:'1.160',date:'11/07/2026',changes:['BUG FIX CRITICO immagini: rimosso ?v=APP_BUILD dalle URL (non invalidare browser cache ad ogni build)','SW: ASSETS_CACHE separata per immagini esercizi (non cancellata tra update app)']},
   {v:'1.159',date:'11/07/2026',changes:['Nuovo box Fatto Oggi sotto Piano Oggi: mostra sessioni completate oggi con icona/tipo/durata/XP (appare solo se almeno 1 sessione fatta)']},
   {v:'1.158',date:'11/07/2026',changes:['BUG FIX: overlay grigio piano oggi solo se T.feeling===piano (Segui Piano) - Scelgo io / mie Tartarughe / AI Coach non marcano piu il piano come fatto']},
@@ -9368,18 +9422,13 @@ var CHANGELOG=[
 
 
 function toggleChangelog(){
-  const panel=document.getElementById('changelog-panel');
+  // FIX U1: usa update-changelog (esiste nel banner), non changelog-panel
+  var panel=document.getElementById('update-changelog');
   if(!panel)return;
-  if(panel.style.display==='none'){
-    panel.style.display='block';
-    if(!panel.innerHTML.trim()){
-      const _clSorted=(typeof CHANGELOG!=='undefined'?CHANGELOG:[]).slice().sort((a,b)=>b.v.localeCompare(a.v,undefined,{numeric:true}));
-      panel.innerHTML=_clSorted.map(v=>
-        '<div style="margin-bottom:8px"><b style="color:var(--g1)">v'+v.v+'</b> <span style="color:var(--tlt)">'+v.date+'</span><ul style="margin:2px 0 0 12px;padding:0">'+
-        v.changes.map(ch=>'<li>'+ch+'</li>').join('')+'</ul></div>'
-      ).join('');
-    }
-  }else{panel.style.display='none';}
+  var visible=(panel.style.display==='block');
+  panel.style.display=visible?'none':'block';
+  var btn=document.getElementById('upd-changelog-btn');
+  if(btn)btn.textContent=visible?'📋':'📋✓';
 }
 
 
@@ -10376,28 +10425,82 @@ function requestGPS(context){
 
 
 // ═══ SONETTI DI COMPLETAMENTO ════════════════════════════════════════════════
+// ═══ S1 — TEMI AUDIO (6 temi + effetti contestuali) ═══════════════
+// Temi: tartaruga (default) | energico | zen | party | epico | retro
+// Effetti contestuali fissi: badge | streak | riserva
 function playCompletionSound(type){
   // type: 'normal' | 'routine' | 'record'
   if(!SET.audio)return;
   try{
-    const ctx=getACtx();
-    if(!ctx)return;
+    const ctx=getACtx(); if(!ctx)return;
     const t=ctx.currentTime;
-    if(type==='routine'){
-      // Campanellino dolce — 2 note
-      _playNote(ctx,880,t,0.3,0.15,'sine');
-      _playNote(ctx,1108,t+0.25,0.4,0.15,'sine');
-    } else if(type==='record'){
-      // Fanfara trionfale — 6 note ascendenti
-      const notes=[523,659,784,880,1047,1319];
-      notes.forEach((f,i)=>_playNote(ctx,f,t+i*0.12,0.35-i*0.02,0.18,'sawtooth'));
-      // Finale con chord
-      [1047,1319,1568].forEach((f,i)=>_playNote(ctx,f,t+0.9,0.4,0.5,'sine'));
-    } else {
-      // Normal — fanfara allegra 3 note
-      _playNote(ctx,523,t,0.3,0.12,'sine');
-      _playNote(ctx,659,t+0.15,0.3,0.12,'sine');
-      _playNote(ctx,784,t+0.30,0.4,0.25,'sine');
+    const theme=(function(){var _t=SET.audioTheme||'tartaruga';return _t==='casuale'?_randomAudioTheme():_t;})();
+    if(type==='record'){
+      // Record: sempre epico, indipendente dal tema
+      const epNotes=[392,494,587,740,880,1047,1319];
+      epNotes.forEach((f,i)=>_playNote(ctx,f,t+i*0.13,0.38,0.2,'sawtooth'));
+      [784,988,1175].forEach((f,i)=>_playNote(ctx,f,t+1.3,0.5,0.7,'sine'));
+      return;
+    }
+    // Per 'routine' e 'normal' usa il tema scelto
+    switch(theme){
+      case 'energico':
+        // Note veloci ascendenti — quadra
+        [392,523,659,784,1047].forEach((f,i)=>_playNote(ctx,f,t+i*0.08,0.3,0.12,'square'));
+        if(type==='routine')[1047,1319,1047].forEach((f,i)=>_playNote(ctx,f,t+0.5+i*0.1,0.35,0.12,'square'));
+        break;
+      case 'zen':
+        // Tono lungo e morbido — sine pura
+        _playNote(ctx,440,t,0.25,type==='routine'?1.5:1.0,'sine');
+        _playNote(ctx,type==='routine'?660:528,t+0.6,0.2,0.9,'sine');
+        if(type==='routine')_playNote(ctx,528,t+1.3,0.15,0.8,'sine');
+        break;
+      case 'party':
+        // Fanfara allegra — saw + chiusura
+        [523,659,784,523,659,784,1047].forEach((f,i)=>_playNote(ctx,f,t+i*0.1,0.35,0.1,'sawtooth'));
+        if(type==='routine')[1047,1319,1568,1047].forEach((f,i)=>_playNote(ctx,f,t+0.8+i*0.1,0.4,0.15,'sawtooth'));
+        break;
+      case 'epico':
+        // Orchestrale crescente — sawtooth con finale chord
+        [392,494,587,740,880].forEach((f,i)=>_playNote(ctx,f,t+i*0.15,0.35,0.18,'sawtooth'));
+        if(type==='routine')[784,988,1175].forEach((f,i)=>_playNote(ctx,f,t+0.9,0.45,0.6,'sine'));
+        else _playNote(ctx,784,t+0.85,0.4,0.5,'sine');
+        break;
+      case 'retro':
+        // Chip-tune 8-bit — square wave rapido
+        const r=type==='routine'?[523,659,784,1047,784,659,1047,1319]:[523,659,784,1047];
+        r.forEach((f,i)=>_playNote(ctx,f,t+i*0.07,0.28,0.08,'square'));
+        break;
+      default: // tartaruga — caldo, lento, simpatico
+        _playNote(ctx,392,t,0.35,0.3,'sine');
+        _playNote(ctx,523,t+0.35,0.35,0.3,'sine');
+        _playNote(ctx,659,t+0.7,0.5,type==='routine'?0.6:0.45,'sine');
+        if(type==='routine')_playNote(ctx,784,t+1.1,0.45,0.5,'sine');
+    }
+  }catch(e){}
+}
+
+// Effetti contestuali (indipendenti dal tema)
+function playContextualSound(effect){
+  if(!SET.audio)return;
+  try{
+    const ctx=getACtx(); if(!ctx)return;
+    const t=ctx.currentTime;
+    switch(effect){
+      case 'badge':
+        // Sparkle ascendente — badge sbloccato
+        [659,784,1047,1319,1568].forEach((f,i)=>_playNote(ctx,f,t+i*0.09,0.3,0.12,'sine'));
+        break;
+      case 'streak':
+        // Trionfo — streak record
+        [523,659,784,880,1047,1319].forEach((f,i)=>_playNote(ctx,f,t+i*0.11,0.35,0.15,'sawtooth'));
+        [1047,1319,1568].forEach((f,i)=>_playNote(ctx,f,t+0.8,0.45,0.55,'sine'));
+        break;
+      case 'riserva':
+        // Power-up — riserva turbo attivata
+        [220,330,440,660,880,1100].forEach((f,i)=>_playNote(ctx,f,t+i*0.06,0.3,0.12,'sawtooth'));
+        _playNote(ctx,1100,t+0.45,0.5,0.5,'sine');
+        break;
     }
   }catch(e){}
 }
@@ -10879,7 +10982,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202607111902'; // auto-set on each release
+const APP_BUILD='202607130938'; // auto-set on each release
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
@@ -10967,6 +11070,8 @@ if(P.name){
     // L'aggiornamento viene gestito dal sistema version.json dell'app
   }
   go('home');
+  // R1: controlla se generare report settimanale
+  if(typeof _checkWeeklyReportTrigger==='function')_checkWeeklyReportTrigger();
   // Sincronizza bottone AI subito (dati già caricati qui)
   if(typeof _syncAIHomeButton==='function')_syncAIHomeButton();
   setTimeout(function(){ if(typeof _syncAIHomeButton==='function')_syncAIHomeButton(); }, 300);
@@ -11195,6 +11300,276 @@ async function doUpdate(){
   }
 }
 
+// ═══ R1 — RESOCONTO SETTIMANALE ════════════════════════════════════
+// Utility settimane ISO
+function _getISOWeek(d){
+  var dt=new Date(d||Date.now()); dt.setHours(0,0,0,0);
+  dt.setDate(dt.getDate()+3-(dt.getDay()+6)%7);
+  var w1=new Date(dt.getFullYear(),0,4);
+  return 1+Math.round(((dt-w1)/86400000-3+(w1.getDay()+6)%7)/7);
+}
+function _getWeekId(d){
+  var dt=new Date(d||Date.now());
+  return dt.getFullYear()+'-W'+String(_getISOWeek(dt)).padStart(2,'0');
+}
+function _getPrevWeekId(){
+  var d=new Date(); d.setDate(d.getDate()-7); return _getWeekId(d);
+}
+function _getWeekDateRange(weekId){
+  // weekId = 'YYYY-Www'
+  try{
+    var parts=weekId.split('-W');
+    var year=parseInt(parts[0]), week=parseInt(parts[1]);
+    var jan4=new Date(year,0,4);
+    var dayOfWeek=(jan4.getDay()+6)%7;
+    var mon=new Date(jan4); mon.setDate(jan4.getDate()+(week-1)*7-dayOfWeek);
+    var sun=new Date(mon); sun.setDate(mon.getDate()+6);
+    var months=['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'];
+    return mon.getDate()+'-'+sun.getDate()+' '+months[sun.getMonth()]+' '+sun.getFullYear();
+  }catch(e){return weekId;}
+}
+
+// Raccoglie statistiche settimana da S.history
+function _collectWeekStats(weekId){
+  var parts=weekId.split('-W');
+  var year=parseInt(parts[0]), week=parseInt(parts[1]);
+  var jan4=new Date(year,0,4);
+  var dayOfWeek=(jan4.getDay()+6)%7;
+  var mon=new Date(jan4); mon.setDate(jan4.getDate()+(week-1)*7-dayOfWeek);
+  var sun=new Date(mon); sun.setDate(mon.getDate()+6);
+  var monStr=localDate(mon), sunStr=localDate(sun);
+  var sessions=0, xp=0, cats={};
+  (S.history||[]).forEach(function(h){
+    if(!h.date||h.date<monStr||h.date>sunStr)return;
+    if(h.type==='riposo_vol'||h.type==='rest')return;
+    sessions++;
+    xp+=(h.xp||0);
+    var cat=h.type||h.focus||'misto';
+    cats[cat]=(cats[cat]||0)+1;
+  });
+  return {
+    week:weekId, dateRange:_getWeekDateRange(weekId),
+    sessions:sessions, xp:xp, streak:S.str||0,
+    categories:cats, badges:(S.badges||[]).slice()
+  };
+}
+
+// Report numerico (senza AI)
+function _buildNumericReport(stats){
+  var name=P.name||'Tartaruga';
+  var lines=['📊 Resoconto settimana '+stats.dateRange,''];
+  lines.push('Ciao '+name+'! Ecco il tuo riepilogo:','');
+  lines.push('🏋️ Sessioni: '+stats.sessions);
+  lines.push('⚡ XP guadagnati: '+stats.xp);
+  lines.push('🔥 Streak attuale: '+stats.streak+' giorni','');
+  var catList=Object.entries(stats.categories||{}).map(function(e){
+    var ci=(typeof CAT_INFO!=='undefined'&&CAT_INFO[e[0]])||{icon:'🏋️',label:e[0]};
+    return ci.icon+' '+(ci.label||e[0])+' ('+e[1]+')';
+  });
+  if(catList.length)lines.push('📌 Categorie: '+catList.join(', '),'');
+  if(stats.badges&&stats.badges.length)lines.push('🏆 Badge totali: '+stats.badges.length,'');
+  if(stats.sessions===0)lines.push('😴 Settimana di riposo! Riparti la prossima con energia.');
+  else if(stats.sessions>=5)lines.push('🌟 Settimana fantastica! Sei una vera TurboTartaruga!');
+  else if(stats.sessions>=3)lines.push('💪 Buona settimana! Continua così!');
+  else lines.push('🐢 Inizio! Ogni piccolo passo conta.');
+  lines.push('','💡 Attiva l\'AI per un resoconto personalizzato e consigli su misura!');
+  return lines.join('\n');
+}
+
+// Report AI
+async function _buildAIReport(stats){
+  try{
+    var key=(SET.aiKeys&&SET.aiKeys[SET.aiProvider||'gemini'])||SET.aiKey||'';
+    var prov=typeof AI_PROVIDERS!=='undefined'?AI_PROVIDERS[SET.aiProvider||'gemini']:null;
+    if(!prov||!key)return null;
+    var catList=Object.entries(stats.categories||{}).map(function(e){
+      var ci=(typeof CAT_INFO!=='undefined'&&CAT_INFO[e[0]])||{label:e[0]};
+      return (ci.label||e[0])+' ('+e[1]+' sess.)';
+    }).join(', ')||'nessuna';
+    var badgeCount=stats.badges?stats.badges.length:0;
+    var name=P.name||'Tartaruga';
+    var prompt=[
+      'Sei il coach virtuale di TurboTartaruga, app fitness con la tartaruga.',
+      'Scrivi un resoconto della settimana '+stats.dateRange+' per '+name+'.',
+      '',
+      'Dati settimana:',
+      '- Sessioni completate: '+stats.sessions,
+      '- XP guadagnati: '+stats.xp,
+      '- Streak attuale: '+stats.streak+' giorni',
+      '- Categorie: '+catList,
+      '- Badge totali sbloccati: '+badgeCount,
+      '',
+      'Scrivi un resoconto breve (max 170 parole) come un insegnante simpatico e motivante.',
+      'Usa emoji appropriate. Struttura: saluto + analisi settimana + 2-3 punti positivi + consiglio + chiusura.',
+      'Solo testo normale, no markdown, no asterischi, no trattini.'
+    ].join('\n');
+    var headers=prov.buildHeaders?prov.buildHeaders(key):{Authorization:'Bearer '+key,'Content-Type':'application/json'};
+    var gmModel=(SET.aiGeminiModel)||'gemini-2.5-flash';
+    var r=await fetch(prov.endpoint(key,gmModel),{method:'POST',headers:headers,body:JSON.stringify(prov.buildBody(prompt))});
+    if(!r.ok)return null;
+    var data=await r.json();
+    return prov.parseResponse?prov.parseResponse(data):null;
+  }catch(e){return null;}
+}
+
+// Genera e salva report
+async function generateWeeklyReport(force){
+  console.log('[R1] generateWeeklyReport START - force:'+force+' weeklyReport:'+SET.weeklyReport);
+  if(SET.weeklyReport===false&&!force){console.log('[R1] SKIP: report settimanale disattivato');return;}
+  var prevWeek=_getPrevWeekId();
+  console.log('[R1] settimana da generare: '+prevWeek);
+  var existing=(S.weeklyReports||[]).some(function(r){return r.week===prevWeek;});
+  if(!force&&existing){console.log('[R1] SKIP: report '+prevWeek+' gia presente');return;}
+  var stats=_collectWeekStats(prevWeek);
+  console.log('[R1] stats raccolte: sessioni='+stats.sessions+' xp='+stats.xp+' streak='+stats.streak);
+  var hasAI=!!((SET.aiKeys&&SET.aiKeys[SET.aiProvider||'gemini'])||SET.aiKey);
+  console.log('[R1] hasAI='+hasAI+' provider='+SET.aiProvider);
+  var content=null;
+  if(hasAI){
+    console.log('[R1] chiamo AI...');
+    content=await _buildAIReport(stats);
+    console.log('[R1] AI risposta: '+(content?'OK ('+content.length+' chars)':'FALLITA'));
+  }
+  if(!content){
+    console.log('[R1] uso report numerico');
+    content=_buildNumericReport(stats);
+  }
+  var report={week:prevWeek,generated:localDate(),dateRange:_getWeekDateRange(prevWeek),stats:stats,content:content,hasAI:!!content&&hasAI};
+  if(!S.weeklyReports)S.weeklyReports=[];
+  S.weeklyReports=S.weeklyReports.filter(function(r){return r.week!==prevWeek;});
+  S.weeklyReports.unshift(report);
+  if(S.weeklyReports.length>12)S.weeklyReports=S.weeklyReports.slice(0,12);
+  save();
+  console.log('[R1] report salvato: hasAI='+report.hasAI+' chars='+content.length);
+  _buildWeeklyReportBox();
+}
+
+// Controlla se bisogna generare (lunedì-giovedì)
+function _checkWeeklyReportTrigger(){
+  var dow=new Date().getDay();
+  console.log('[R1] trigger check: dow='+dow+' weeklyReport='+SET.weeklyReport);
+  if(SET.weeklyReport===false){console.log('[R1] SKIP trigger: report disattivato');return;}
+  if(dow<1||dow>4){console.log('[R1] SKIP trigger: oggi non e lun-gio (dow='+dow+')');return;}
+  var prevWeek=_getPrevWeekId();
+  var exists=(S.weeklyReports||[]).some(function(r){return r.week===prevWeek;});
+  console.log('[R1] settimana '+prevWeek+' gia presente: '+exists);
+  if(!exists){
+    console.log('[R1] schedulo generazione tra 3s...');
+    setTimeout(function(){generateWeeklyReport(false);},3000);
+  }
+}
+
+// Costruisce il box home
+function _buildWeeklyReportBox(){
+  var box=document.getElementById('weekly-report-box');
+  if(!box)return;
+  var reports=S.weeklyReports||[];
+  var latest=reports[0];
+  if(!latest||SET.weeklyReport===false){box.style.display='none';return;}
+  box.style.display='block';
+  var titleEl=document.getElementById('wr-title');
+  var subEl=document.getElementById('wr-subtitle');
+  var shareBtn=document.getElementById('wr-share-btn');
+  if(titleEl)titleEl.textContent='📊 Report '+latest.dateRange;
+  if(subEl)subEl.textContent=(latest.hasAI?'🤖 Generato con AI':'📋 Riepilogo numerico')+' · Tocca per aprire';
+  if(shareBtn)shareBtn.style.display='inline-block';
+  var content=document.getElementById('wr-content');
+  if(content)content.textContent=latest.content||'';
+}
+
+function toggleWeeklyReportBox(){
+  var c=document.getElementById('wr-content');
+  var a=document.getElementById('wr-arrow');
+  if(!c)return;
+  var open=c.style.display==='block';
+  c.style.display=open?'none':'block';
+  if(a)a.textContent=open?'▼':'▲';
+}
+
+function shareWeeklyReport(evt){
+  if(evt)evt.stopPropagation();
+  var reports=S.weeklyReports||[];
+  var latest=reports[0]; if(!latest)return;
+  var text='🐢 TurboTartaruga \u2014 '+latest.dateRange+'\n\n'+latest.content;
+  if(navigator.share){
+    navigator.share({title:'Report TurboTartaruga',text:text}).catch(function(){});
+  } else {
+    // Fallback: WhatsApp
+    var url='https://wa.me/?text='+encodeURIComponent(text);
+    window.open(url,'_blank');
+  }
+}
+
+// Costruisce la lista di tutti i report (screen Altro)
+function buildReportSettimanali(){
+  var list=document.getElementById('report-sett-list'); if(!list)return;
+  var reports=S.weeklyReports||[];
+  var headerHtml='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'+
+    '<span style="font-size:12px;color:var(--tlt);font-weight:bold;letter-spacing:.5px;text-transform:uppercase">'+reports.length+' report</span>'+
+    '<button onclick="recuperaReportMancanti()" style="background:var(--g1);color:#fff;border:none;border-radius:14px;padding:5px 12px;font-size:12px;cursor:pointer;font-family:var(--ff)">🔄 Recupera</button>'+
+    '</div>';
+  if(!reports.length){
+    list.innerHTML=headerHtml+'<div style="text-align:center;color:var(--tlt);padding:30px 0">Nessun report ancora.<br>Il primo verrà generato lunedì!</div>';
+    return;
+  }
+  list.innerHTML=headerHtml+reports.map(function(r,i){
+    return '<div style="background:var(--card);border-radius:var(--radius);margin-bottom:12px;border:1.5px solid var(--bdr);overflow:hidden">'+
+      '<div onclick="toggleReportItem('+i+')" style="display:flex;align-items:center;padding:12px 14px;cursor:pointer;gap:10px">'+
+      '<span style="font-size:20px">📊</span>'+
+      '<div style="flex:1"><div style="font-size:13px;font-weight:bold;color:var(--text)">'+r.dateRange+'</div>'+
+      '<div style="font-size:11px;color:var(--tlt)">'+(r.hasAI?'🤖 AI':'📋 Numerico')+' · '+r.stats.sessions+' sess. · '+r.stats.xp+' XP</div></div>'+
+      '<button onclick="shareReportItem(event,'+i+')" style="background:var(--g1);color:#fff;border:none;border-radius:12px;padding:3px 8px;font-size:11px;cursor:pointer">📤</button>'+
+      '<span style="font-size:11px;color:var(--tlt);margin-left:6px">▼</span>'+
+      '</div>'+
+      '<div id="ri-'+i+'" style="display:none;padding:0 14px 14px;border-top:1px solid var(--bdr);white-space:pre-wrap;font-size:13px;color:var(--text);line-height:1.6">'+
+      (r.content||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</div>'+
+      '</div>';
+  }).join('');
+  // Apre automaticamente il più recente
+  var first=document.getElementById('ri-0'); if(first)first.style.display='block';
+}
+
+async function recuperaReportMancanti(){
+  if(SET.weeklyReport===false)return;
+  toast('🔄 Controllo settimane mancanti...',3000);
+  var recovered=0;
+  for(var w=1;w<=2;w++){
+    var d=new Date(); d.setDate(d.getDate()-7*w);
+    var weekId=_getWeekId(d);
+    var exists=(S.weeklyReports||[]).some(function(r){return r.week===weekId;});
+    if(!exists){
+      var stats=_collectWeekStats(weekId);
+      var hasAI=!!((SET.aiKeys&&SET.aiKeys[SET.aiProvider||'gemini'])||SET.aiKey);
+      var content=null;
+      if(hasAI)content=await _buildAIReport(stats);
+      if(!content)content=_buildNumericReport(stats);
+      var report={week:weekId,generated:localDate(),dateRange:_getWeekDateRange(weekId),stats:stats,content:content,hasAI:!!content&&hasAI};
+      if(!S.weeklyReports)S.weeklyReports=[];
+      S.weeklyReports=S.weeklyReports.filter(function(r){return r.week!==weekId;});
+      S.weeklyReports.push(report);
+      S.weeklyReports.sort(function(a,b){return b.week.localeCompare(a.week);});
+      recovered++;
+    }
+  }
+  save();
+  toast(recovered>0?'✅ Recuperate '+recovered+' settimane!':'✅ Nessuna settimana mancante');
+  buildReportSettimanali();
+  _buildWeeklyReportBox();
+}
+function toggleReportItem(i){
+  var el=document.getElementById('ri-'+i); if(!el)return;
+  el.style.display=el.style.display==='block'?'none':'block';
+}
+
+function shareReportItem(evt,i){
+  evt.stopPropagation();
+  var r=(S.weeklyReports||[])[i]; if(!r)return;
+  var text='🐢 TurboTartaruga \u2014 '+r.dateRange+'\n\n'+r.content;
+  if(navigator.share){navigator.share({title:'Report TurboTartaruga',text:text}).catch(function(){});}
+  else window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+}
+
+// ════════════════════════════════════════════════════════════════
 // Auto-check on startup after 5s
 setTimeout(()=>{
   fetch('./version.json?t='+Date.now(),{cache:'no-store'})
@@ -11208,7 +11583,28 @@ setTimeout(()=>{
         if(s)s.textContent='🆕 v'+data.version+' disponibile — premi Verifica!';
       }
     }).catch(()=>{});
-},5000);</script>
+},5000);
+
+// U1c — Polling background ogni 15 min (app aperta in background)
+setInterval(()=>{
+  fetch('./version.json?t='+Date.now(),{cache:'no-store'})
+    .then(r=>r.json())
+    .then(data=>{
+      const remote=String(data.build||'').trim();
+      const local=String(APP_BUILD||'').trim();
+      if(remote&&remote!==local)showUpdateBanner(data);
+    }).catch(()=>{});
+}, 15*60*1000);
+
+// U1c — SW controllerchange: nuova versione SW attivata (background update)
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.addEventListener('controllerchange',function(){
+    fetch('./version.json?t='+Date.now(),{cache:'no-store'})
+      .then(r=>r.json())
+      .then(data=>showUpdateBanner(data))
+      .catch(()=>{});
+  });
+}</script>
 
 <!-- ── BOTTOM NAV ────────────────────────────────────────────────── -->
 <nav id="bottom-nav">
@@ -11279,7 +11675,9 @@ setTimeout(()=>{
     <div id="smod-scelgo-panel" style="display:none">
       <div style="font-size:13px;font-weight:bold;color:var(--tlt);margin-bottom:10px;text-align:center">🎽 Che tipo di sessione vuoi?</div>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:12px">
-        <button class="smod-cat-btn" onclick="smodCatSelect(this,'__myworkouts__')" style="grid-column:1/-1;padding:12px;border-radius:14px;border:2px solid #F57C00;background:linear-gradient(135deg,#E65100,#FFB300);color:#fff;cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:bold">🎒 Le mie Tartarughe</button>
+        <button class="smod-cat-btn" onclick="smodCatSelect(this,'__myworkouts__')" data-bg="linear-gradient(135deg,#E65100,#FF8F00)" data-border="#F57C00" data-color="#fff" style="grid-column:1/-1;padding:12px;border-radius:14px;border:2px solid #F57C00;background:linear-gradient(135deg,#E65100,#FF8F00);color:#fff;cursor:pointer;font-family:var(--ff);font-size:13px;font-weight:bold">🎒 Le mie Tartarughe</button>
+        <button class="smod-cat-btn" onclick="smodCatSelect(this,'mattino')" data-bg="#FFF8E1" data-border="#FFD54F" data-color="#E65100" style="padding:10px 4px;border-radius:12px;border:2px solid #FFD54F;background:#FFF8E1;cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:700;color:#E65100">☀️<br>Mattino</button>
+        <button class="smod-cat-btn" onclick="smodCatSelect(this,'presonno')" data-bg="#E8EAF6" data-border="#9FA8DA" data-color="#283593" style="padding:10px 4px;border-radius:12px;border:2px solid #9FA8DA;background:#E8EAF6;cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:700;color:#283593">🌙<br>Pre-sonno</button>
         <button class="smod-cat-btn" onclick="smodCatSelect(this,'gambe')" style="padding:10px 4px;border-radius:12px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:600;color:var(--text)">🦵<br>Gambe</button>
         <button class="smod-cat-btn" onclick="smodCatSelect(this,'braccia')" style="padding:10px 4px;border-radius:12px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:600;color:var(--text)">💪<br>Braccia</button>
         <button class="smod-cat-btn" onclick="smodCatSelect(this,'core')" style="padding:10px 4px;border-radius:12px;border:2px solid var(--bdr);background:var(--bg);cursor:pointer;font-family:var(--ff);font-size:12px;font-weight:600;color:var(--text)">🎯<br>Core</button>
@@ -11351,22 +11749,44 @@ setTimeout(()=>{
 <div id="altro-overlay" onclick="closeAltroSheet()"></div>
 <div id="altro-sheet">
   <div class="altro-handle"></div>
-  <button class="altro-item" onclick="closeAltroSheet();openAIChat()">
-    <div class="altro-ico" style="background:linear-gradient(135deg,#EDE7F6,#D1C4E9)">🗨️</div>
-    <div><div>AI Coach</div><div class="altro-sub">Chatta con il tuo coach personale</div></div>
-  </button>
-  <button class="altro-item" onclick="closeAltroSheet();go('myworkouts')">
-    <div class="altro-ico" style="background:linear-gradient(135deg,#FFF3E0,#FFE0B2)">🎒</div>
-    <div><div>Le mie Tartarughe</div><div class="altro-sub">Le tue schede personalizzate</div></div>
-  </button>
-  <button class="altro-item" onclick="closeAltroSheet();go('scuola')">
-    <div class="altro-ico" style="background:linear-gradient(135deg,var(--g3),#C8E6C9)">🐢</div>
-    <div><div>Scuola</div><div class="altro-sub">Impara tutti gli esercizi</div></div>
-  </button>
-  <button class="altro-item" onclick="closeAltroSheet();go('settings')">
-    <div class="altro-ico" style="background:linear-gradient(135deg,#F5F5F5,#E0E0E0)">⚙️</div>
-    <div><div>Impostazioni</div><div class="altro-sub">Profilo, AI, backup e altro</div></div>
-  </button>
+  <div class="altro-grid">
+    <button class="altro-tile" onclick="closeAltroSheet();openAIChat()">
+      <div class="altro-ico2" style="background:linear-gradient(135deg,#EDE7F6,#CE93D8)">🗨️</div>
+      <span class="altro-lbl">AI Coach</span>
+    </button>
+    <button class="altro-tile" onclick="closeAltroSheet();go('myworkouts')">
+      <div class="altro-ico2" style="background:linear-gradient(135deg,#FFF3E0,#FFCC80)">🎒</div>
+      <span class="altro-lbl">Le mie<br>Tartarughe</span>
+    </button>
+    <button class="altro-tile" onclick="closeAltroSheet();go('scuola')">
+      <div class="altro-ico2" style="background:linear-gradient(135deg,#E8F5E9,#A5D6A7)">🐢</div>
+      <span class="altro-lbl">Scuola</span>
+    </button>
+    <button class="altro-tile" onclick="closeAltroSheet();buildReportSettimanali();go('report-sett')">
+      <div class="altro-ico2" style="background:linear-gradient(135deg,#E3F2FD,#90CAF9)">📊</div>
+      <span class="altro-lbl">Report<br>Settimanali</span>
+    </button>
+    <button class="altro-tile" onclick="closeAltroSheet();go('profile')">
+      <div class="altro-ico2" style="background:linear-gradient(135deg,#FFF8E1,#FFE082)">🏅</div>
+      <span class="altro-lbl">Badge &amp; XP</span>
+    </button>
+    <button class="altro-tile" onclick="closeAltroSheet();go('settings')">
+      <div class="altro-ico2" style="background:linear-gradient(135deg,#F3E5F5,#CE93D8)">⚙️</div>
+      <span class="altro-lbl">Impostazioni</span>
+    </button>
+  </div>
+</div>
+
+<!-- ── SCREEN REPORT SETTIMANALI ────────────────────────────── -->
+<div id="screen-report-sett" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="go('home')">←</button>
+    <span class="top-title">📊 Report Settimanali</span>
+    <span></span>
+  </div>
+  <div style="padding:16px 13px calc(80px + env(safe-area-inset-bottom,0px)) 13px" id="report-sett-list">
+    <div style="text-align:center;color:var(--tlt);padding:40px 0">Nessun report ancora.<br>Il primo verrà generato lunedì!</div>
+  </div>
 </div>
 
 </body>
