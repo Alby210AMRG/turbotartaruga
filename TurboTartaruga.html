@@ -9278,6 +9278,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.172',date:'14/07/2026',changes:['FIX CRITICO GRAVE: la costante APP_BUILD nel codice non veniva aggiornata da v1.165 in poi, restando ferma alla build di v1.164 — questo faceva credere all\'app che una nuova versione fosse SEMPRE disponibile, causando il loop infinito "aggiorna → ricarica → aggiorna" ad ogni apertura','FIX: version.json non conteneva mai l\'elenco "changes" delle novità — per questo il banner "note di rilascio" era sempre vuoto. Ora è popolato ad ogni release','Aggiunto controllo di verifica pre-rilascio: da ora in poi controllo sempre che APP_BUILD nel codice corrisponda esattamente al build di version.json prima di consegnare i file']},
   {v:'1.171',date:'14/07/2026',changes:['FIX: il bottone "Segui Piano" nel FAB ora si disabilita/ingrigisce anche quando il piano di oggi è già stato completato (prima controllava solo i giorni di riposo)']},
   {v:'1.170',date:'14/07/2026',changes:['Report settimanale AI arricchito: ora include anche minuti totali allenati, categoria più allenata, badge sbloccati SPECIFICAMENTE quella settimana (nuovo log date badge) e confronto sessioni vs settimana precedente','Prompt AI riscritto per un tono più simpatico e coerente col brand TurboTartaruga, con istruzione esplicita a usare i dati reali invece di frasi generiche','Anche il report numerico di fallback (senza AI) ora mostra gli stessi dati arricchiti']},
   {v:'1.169',date:'14/07/2026',changes:['FIX: il popup di conferma rigenerazione piano era collegato solo al tasto indietro delle Impostazioni — la bottom-nav (sempre visibile anche sopra le Impostazioni) bypassava completamente il controllo','Ora il controllo modifiche pendenti è centralizzato in go()/bnavGo() e scatta da qualsiasi punto di uscita: bottom-nav, tasto indietro, back del telefono/browser']},
@@ -11098,7 +11099,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202607130938'; // auto-set on each release
+const APP_BUILD='202607140300'; // DEVE sempre corrispondere a version.json "build" — vedi nota sotto
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
