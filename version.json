@@ -1,15 +1,8 @@
 {
-  "version": "1.172",
-  "build": "202607140300",
-  "date": "14/07/2026 03:00",
+  "version": "1.173",
+  "build": "202607140330",
+  "date": "14/07/2026 03:30",
   "changes": [
-    "FIX CRITICO: risolto il loop infinito di aggiornamento (la versione precedente richiedeva sempre un aggiornamento anche se già installata)",
-    "FIX: il piano/calendario ora si aggiorna SOLO tramite il tasto dedicato \"Rigenera 15 giorni\", mai più da solo",
-    "FIX: il messaggio \"già fatto oggi\" ora è affidabile e non sparisce più al refresh",
-    "FIX: il bottone \"Segui Piano\" si disabilita correttamente se la sessione di oggi è già stata completata",
-    "FIX: il report settimanale con AI ora funziona correttamente (prima falliva anche con la chiave giusta)",
-    "Report settimanale AI arricchito con più dati: minuti allenati, categoria preferita, badge sbloccati nella settimana",
-    "Cambiare categorie/riposo/profilo ora chiede conferma prima di rigenerare il piano",
-    "Aggiornato lo stile grafico di NavBar e menu Altro"
+    "FIX: il suggerimento del coach per passare di livello (principiante→intermedio→avanzato) ora rigenera correttamente il piano dei prossimi 15 giorni, prima cambiava solo il livello senza aggiornare il calendario"
   ]
 }

@@ -9278,6 +9278,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.173',date:'14/07/2026',changes:['FIX: trovato un secondo punto (oltre ai 3 bottoni manuali) dove si può cambiare livello — il suggerimento del coach (bolla in home, ogni 15 giorni in base a streak/sessioni/XP/boost). confirmLevelUpgrade() cambiava il livello ma non rigenerava mai il piano. Ora rigenera subito i 15 giorni (essendo già una conferma esplicita "Sì, proviamo!", senza ulteriore popup)']},
   {v:'1.172',date:'14/07/2026',changes:['FIX CRITICO GRAVE: la costante APP_BUILD nel codice non veniva aggiornata da v1.165 in poi, restando ferma alla build di v1.164 — questo faceva credere all\'app che una nuova versione fosse SEMPRE disponibile, causando il loop infinito "aggiorna → ricarica → aggiorna" ad ogni apertura','FIX: version.json non conteneva mai l\'elenco "changes" delle novità — per questo il banner "note di rilascio" era sempre vuoto. Ora è popolato ad ogni release','Aggiunto controllo di verifica pre-rilascio: da ora in poi controllo sempre che APP_BUILD nel codice corrisponda esattamente al build di version.json prima di consegnare i file']},
   {v:'1.171',date:'14/07/2026',changes:['FIX: il bottone "Segui Piano" nel FAB ora si disabilita/ingrigisce anche quando il piano di oggi è già stato completato (prima controllava solo i giorni di riposo)']},
   {v:'1.170',date:'14/07/2026',changes:['Report settimanale AI arricchito: ora include anche minuti totali allenati, categoria più allenata, badge sbloccati SPECIFICAMENTE quella settimana (nuovo log date badge) e confronto sessioni vs settimana precedente','Prompt AI riscritto per un tono più simpatico e coerente col brand TurboTartaruga, con istruzione esplicita a usare i dati reali invece di frasi generiche','Anche il report numerico di fallback (senza AI) ora mostra gli stessi dati arricchiti']},
@@ -10013,7 +10014,11 @@ function confirmLevelUpgrade(targetLevel){
   const existing = document.getElementById('level-suggest-banner');
   if(existing) existing.remove();
   const lvNames = {intermedio:'🔥 Intermedio', esperto:'🚀 Avanzato'};
-  toast('🎉 Livello aggiornato a '+lvNames[targetLevel]+'! Le sessioni si adatteranno.', 4000);
+  // Il livello influenza direttamente il piano (giorni di recupero automatico, max consecutivi).
+  // "Sì, proviamo!" è già una conferma esplicita dell'utente: rigeneriamo subito,
+  // come il tasto dedicato "Rigenera 15 giorni", senza chiedere una seconda conferma.
+  refreshPlan(true);
+  toast('🎉 Livello aggiornato a '+lvNames[targetLevel]+'! Piano ricalcolato per i prossimi 15 giorni.', 4500);
   buildHome();
 }
 
@@ -11099,7 +11104,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202607140300'; // DEVE sempre corrispondere a version.json "build" — vedi nota sotto
+const APP_BUILD='202607140330'; // DEVE sempre corrispondere a version.json "build" — vedi nota sotto
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
