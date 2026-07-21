@@ -1,11 +1,8 @@
 {
-  "version": "1.185",
-  "build": "202607151400",
-  "date": "15/07/2026 14:00",
+  "version": "1.186",
+  "build": "202607151430",
+  "date": "15/07/2026 14:30",
   "changes": [
-    "Sostituita l'immagine della tartaruga energica (giorni saltati) con la versione in alta qualità che mi hai mandato",
-    "FIX: il bottone Sessione AI Coach in pre-sessione dipendeva anche dal sotto-toggle Sessioni personalizzate (pensato per i suggerimenti automatici, non questa scelta manuale) — ora dipende solo dal toggle master + chiave configurata",
-    "FIX: i minuti scelti ora includono il bonus esercizi per livello anche quando generi con l'AI, non solo nelle sessioni manuali",
-    "FIX: sia Iniziamo! che Sessione AI Coach ora sono davvero disabilitati (non solo grigi) finché non scegli esplicitamente i minuti"
+    "FIX immagine tartaruga energica: la trasparenza usava una soglia di colore che rendeva trasparenti anche occhi e bocca (bianchi). Ora uso un flood-fill solo dai bordi esterni, quindi solo lo sfondo diventa trasparente, occhi e bocca restano bianchi"
   ]
 }
