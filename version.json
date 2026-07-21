@@ -1,8 +1,8 @@
 {
-  "version": "1.186",
-  "build": "202607151430",
-  "date": "15/07/2026 14:30",
+  "version": "1.188",
+  "build": "202607151530",
+  "date": "15/07/2026 15:30",
   "changes": [
-    "FIX immagine tartaruga energica: la trasparenza usava una soglia di colore che rendeva trasparenti anche occhi e bocca (bianchi). Ora uso un flood-fill solo dai bordi esterni, quindi solo lo sfondo diventa trasparente, occhi e bocca restano bianchi"
+    "FIX vero immagine tartaruga energica: usata direttamente la versione con trasparenza già pronta che hai fornito, invece di rielaborare ogni volta con metodi che lasciavano macchie bianche — verificato pixel per pixel prima di consegnare, nessuna macchia residua nella zona gambe"
   ]
 }
