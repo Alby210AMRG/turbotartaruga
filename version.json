@@ -1,8 +1,11 @@
 {
-  "version": "1.173",
-  "build": "202607140330",
-  "date": "14/07/2026 03:30",
+  "version": "1.184",
+  "build": "202607151200",
+  "date": "15/07/2026 12:00",
   "changes": [
-    "FIX: il suggerimento del coach per passare di livello (principiante→intermedio→avanzato) ora rigenera correttamente il piano dei prossimi 15 giorni, prima cambiava solo il livello senza aggiornare il calendario"
+    "TROVATO IL BUG VERO (grazie alla console che mi hai mandato): 8 funzioni erano finite per errore annidate dentro buildSettings() da prima ancora che iniziassimo a lavorare insieme — invisibili al resto dell'app",
+    "Una di queste, chiamata da buildHome() ad ogni apertura della home, causava un ReferenceError che bloccava tutto il codice eseguito dopo, incluso il controllo del report settimanale del lunedì — ecco perché non compariva mai nessuna riga [R1]",
+    "Estratte tutte e 8 le funzioni a livello globale: _shouldGenerateAISession, setAISessionFreq, forceRegenAISession, pregenAISession, _syncAIHomeButton, startAISessionFromHome, preloadExerciseImages, testGenAISession",
+    "Verificato con test automatico (analisi AST + esecuzione simulata): zero errori, tutte le funzioni ora correttamente globali"
   ]
 }
