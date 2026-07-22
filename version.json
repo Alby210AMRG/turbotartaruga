@@ -1,10 +1,9 @@
 {
-  "version": "1.190",
-  "build": "202607220900",
-  "date": "22/07/2026 09:00",
+  "version": "1.191",
+  "build": "202607220945",
+  "date": "22/07/2026 09:45",
   "changes": [
-    "Sostituiti tutti i 12 esercizi duplicati con esercizi diversi (stessa categoria/livello/terra-in piedi dello slot originale): g13, g4, b13, c35, w13, mob7, b8, mob12, po8, po4, bot16, bot25 — verificato che ora non ci sia più nessun nome duplicato su 334 esercizi",
-    "Confermato con test: la tartaruga giorno di riposo era colpita dallo stesso bug già risolto ieri (home congelata se la PWA resta aperta per giorni) — nessuna modifica necessaria, già coperta",
-    "Chiarimento: i 90 esercizi nuovi non hanno foto perché sono immagini separate da caricare manualmente su GitHub, non generabili da codice"
+    "Riprogettato il sistema mascotte: un'unica funzione _updateHeroMascot() con priorità chiare (riposo > giorni saltati > standard), chiamata in un punto affidabile dopo che il piano del giorno è assestato, invece che troppo presto nel flusso — pensata per essere facilmente estendibile a nuove situazioni (es. compleanno)",
+    "Testato: la tartaruga corretta ora appare già al primissimo caricamento della home, prima di qualsiasi navigazione"
   ]
 }

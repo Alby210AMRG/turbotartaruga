@@ -3925,23 +3925,34 @@ function _getSeasonKey(){
   return 'winter';
 }
 
-function _updateMascotSeason(isRest,isSkipped){
-  var img = document.getElementById('hero-turtle-img');
+// ═══ MASCOTTE HOME — punto unico e affidabile ═══════════════════════════
+// Sceglie quale tartaruga mostrare in home, in ordine di priorità.
+// Per aggiungere una nuova situazione (es. compleanno) basta aggiungere un
+// nuovo "if" qui sopra alle priorità già esistenti, senza toccare altrove.
+function _updateHeroMascot(isRestToday,isSkippedState){
+  var img=document.getElementById('hero-turtle-img');
+  var fab=document.getElementById('bnav-fab');
+  if(fab)fab.classList.toggle('rest-day',!!isRestToday);
   if(!img)return;
-  if(isSkipped){
-    img.src = _IMG_SKIPPED;
-    img.style.maxHeight = '150px';
-    img.style.width = 'min(70vw,260px)';
-  } else if(isRest){
-    var key = _getSeasonKey();
-    img.src = _IMG_SEASON[key];
-    img.style.maxHeight = '160px';
-    img.style.width = 'min(72vw,280px)';
+  appLog('MASCOT: isRest='+isRestToday+' isSkipped='+isSkippedState);
+  if(isRestToday){
+    var key=_getSeasonKey();
+    img.src=_IMG_SEASON[key];
+    img.style.maxHeight='160px';
+    img.style.width='min(72vw,280px)';
+  } else if(isSkippedState){
+    img.src=_IMG_SKIPPED;
+    img.style.maxHeight='150px';
+    img.style.width='min(70vw,260px)';
   } else {
-    img.src = _IMG_DEFAULT;
-    img.style.maxHeight = '130px';
-    img.style.width = 'min(65vw,240px)';
+    img.src=_IMG_DEFAULT;
+    img.style.maxHeight='130px';
+    img.style.width='min(65vw,240px)';
   }
+}
+function _updateMascotSeason(isRest,isSkipped){
+  // Alias mantenuto per compatibilità con eventuali altre chiamate esistenti
+  _updateHeroMascot(isRest,isSkipped);
 }
 
 function buildHome(){
@@ -4107,6 +4118,9 @@ const hsEl=document.getElementById('home-streak');if(hsEl)hsEl.textContent=typeo
   _ensurePlanWindow();
   const tp=getTodayPlan();
   const isRest=tp.type==='rest';
+  // Aggiorna la mascotte qui, ora che il piano è assestato: unico punto affidabile
+  const _isSkippedNow=!!(S.skipped&&S.skipped>=3&&!(tp&&tp.done===true));
+  _updateHeroMascot(isRest,_isSkippedNow);
   document.getElementById('today-icon').textContent=tp.icon||'🌈';
   const ci=CAT_INFO[tp.focus]||{label:'Allenamento',icon:'🌈'};
   document.getElementById('today-focus').textContent=(tp.type==='rest'?'Giorno di riposo 😴':ci.label);
@@ -8442,16 +8456,9 @@ function _buildQuickStats(){
       else{qbi.textContent='🏅';qbn.textContent=last;}
     }else{qbi.textContent='🏅';qbn.textContent='Nessuno ancora';}
   }
-  // FAB + mascotte: aggiorna in base al giorno di riposo/stagione/giorni saltati
-  var _fab=document.getElementById('bnav-fab');
-  if(_fab){
-    var _tp=typeof getTodayPlan==='function'?getTodayPlan():null;
-    var _isRestToday=_tp&&_tp.type==='rest';
-    var _isSkippedState=!!(S.skipped&&S.skipped>=3&&!(_tp&&_tp.done===true));
-    appLog('MASCOT-DEBUG: S.skipped='+S.skipped+' tp.done='+(_tp&&_tp.done)+' isSkippedState='+_isSkippedState+' heroImg-exists='+(!!document.getElementById('hero-turtle-img')));
-    _fab.classList.toggle('rest-day',!!_isRestToday);
-    if(typeof _updateMascotSeason==='function')_updateMascotSeason(_isRestToday,_isSkippedState);
-  }
+  // NOTA: l'aggiornamento di mascotte/FAB (riposo/stagione/giorni saltati/compleanno) è stato
+  // spostato più avanti in buildHome(), DOPO _ensurePlanWindow(), l'unico punto in cui
+  // getTodayPlan() restituisce sempre un dato affidabile e assestato. Vedi _updateHeroMascot().
 }
 
 function saveField(f){
@@ -9672,6 +9679,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.191',date:'22/07/2026',changes:['Riprogettato il sistema mascotte in un unico punto affidabile con priorità chiare, pensato per essere esteso facilmente (es. compleanno)','Testato: la tartaruga corretta appare già al primo caricamento della home']},
   {v:'1.190',date:'22/07/2026',changes:['Sostituiti i 12 esercizi duplicati con esercizi diversi, verificato zero nomi duplicati su 334','Confermato: tartaruga giorno di riposo già coperta dal fix del 21/07 (home congelata su PWA aperta a lungo)']},
   {v:'1.189',date:'22/07/2026',changes:['FIX tartaruga arrabbiata: home non si aggiornava se la PWA restava aperta per giorni, ora si ricostruisce al ritorno in primo piano (testato)','FIX note di rilascio mai visibili nel banner: uno stile inline bloccava tutto indipendentemente dal JS','Rimossa la funzione toggleChangelog duplicata','FIX aggiornamento manuale: sostituito location.reload deprecato con cache-busting reale + aggiornamento esplicito service worker','Nuovo: effetto fluo verde sul box report settimanale lunedì-martedì finché non lo apri','Verificati i 334 esercizi: trovate coppie con nome identico, proposta in arrivo']},
   {v:'1.188',date:'15/07/2026',changes:['FIX vero tartaruga energica: usata la versione con trasparenza già pronta fornita dall utente, verificata pixel per pixel — nessuna macchia bianca residua']},
@@ -11504,7 +11512,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202607220900'; // DEVE sempre corrispondere a version.json "build" — vedi nota sotto
+const APP_BUILD='202607220945'; // DEVE sempre corrispondere a version.json "build" — vedi nota sotto
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
