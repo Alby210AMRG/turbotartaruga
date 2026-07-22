@@ -1,9 +1,14 @@
 {
-  "version": "1.191",
-  "build": "202607220945",
-  "date": "22/07/2026 09:45",
+  "version": "1.192",
+  "build": "202607221030",
+  "date": "22/07/2026 10:30",
+  "critical": false,
   "changes": [
-    "Riprogettato il sistema mascotte: un'unica funzione _updateHeroMascot() con priorità chiare (riposo > giorni saltati > standard), chiamata in un punto affidabile dopo che il piano del giorno è assestato, invece che troppo presto nel flusso — pensata per essere facilmente estendibile a nuove situazioni (es. compleanno)",
-    "Testato: la tartaruga corretta ora appare già al primissimo caricamento della home, prima di qualsiasi navigazione"
+    "Confrontato con il progetto Amici FC (stesso autore) e portati diversi miglioramenti reali al sistema aggiornamento",
+    "Aggiunto skip del controllo su file:// (in locale il fetch è bloccato da CORS — scoperto proprio da un bug simile in Amici FC), così testare in locale prima di GitHub non mostra più errori di connessione",
+    "doUpdate ora controlla la connessione prima E dopo aver svuotato cache/service worker — se cade la rete durante l'operazione, non ricarica a vuoto lasciando l'app rotta",
+    "Il service worker ora viene DISINSTALLATO (non solo aggiornato) durante l'aggiornamento manuale, eliminando ogni residuo della versione vecchia",
+    "Nuovo: le versioni marcate 'critical' si installano da sole in background se l'app non è in primo piano, con un messaggio che spiega cosa è cambiato al prossimo utilizzo",
+    "Il banner si nasconde subito quando premi Aggiorna, per evitare che ricompaia per un controllo nel frattempo"
   ]
 }

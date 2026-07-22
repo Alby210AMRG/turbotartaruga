@@ -9679,6 +9679,7 @@ function showSwitchSide(){
 
 // ═══ CHANGELOG ═══════════════════════════════════════════════════════════════
 var CHANGELOG=[
+  {v:'1.192',date:'22/07/2026',changes:['Confrontato con Amici FC: skip controllo su file:// (niente più errori testando in locale), doUpdate controlla la connessione prima/dopo la pulizia, service worker disinstallato invece che solo aggiornato, versioni critical si installano da sole in background']},
   {v:'1.191',date:'22/07/2026',changes:['Riprogettato il sistema mascotte in un unico punto affidabile con priorità chiare, pensato per essere esteso facilmente (es. compleanno)','Testato: la tartaruga corretta appare già al primo caricamento della home']},
   {v:'1.190',date:'22/07/2026',changes:['Sostituiti i 12 esercizi duplicati con esercizi diversi, verificato zero nomi duplicati su 334','Confermato: tartaruga giorno di riposo già coperta dal fix del 21/07 (home congelata su PWA aperta a lungo)']},
   {v:'1.189',date:'22/07/2026',changes:['FIX tartaruga arrabbiata: home non si aggiornava se la PWA restava aperta per giorni, ora si ricostruisce al ritorno in primo piano (testato)','FIX note di rilascio mai visibili nel banner: uno stile inline bloccava tutto indipendentemente dal JS','Rimossa la funzione toggleChangelog duplicata','FIX aggiornamento manuale: sostituito location.reload deprecato con cache-busting reale + aggiornamento esplicito service worker','Nuovo: effetto fluo verde sul box report settimanale lunedì-martedì finché non lo apri','Verificati i 334 esercizi: trovate coppie con nome identico, proposta in arrivo']},
@@ -11512,7 +11513,7 @@ function getMusicType(sesType){
 }
 
 // ═══ INIT ═══
-const APP_BUILD='202607220945'; // DEVE sempre corrispondere a version.json "build" — vedi nota sotto
+const APP_BUILD='202607221030'; // DEVE sempre corrispondere a version.json "build" — vedi nota sotto
 load();applyTheme();applyView();syncToggles();T.dur=SET.preferredDur||12;
 // Handle shared link on startup
 if(location.hash&&location.hash.length>4){
@@ -11613,6 +11614,16 @@ if(P.name){
     // L'aggiornamento viene gestito dal sistema version.json dell'app
   }
   go('home');
+  // Se è appena avvenuto un aggiornamento critico silenzioso (applicato mentre l'app era
+  // in background), informa l'utente con un toast appena si riapre l'app
+  try{
+    var _silentUpd=JSON.parse(localStorage.getItem('tt4_silent_update')||'null');
+    if(_silentUpd&&_silentUpd.version){
+      localStorage.removeItem('tt4_silent_update');
+      var _hl=(_silentUpd.changes||[]).slice(0,2).join(' · ');
+      setTimeout(function(){toast('⚡ App aggiornata a v'+_silentUpd.version+(_hl?' — '+_hl:''),6000);},1000);
+    }
+  }catch(_e){}
   // R1: controlla se generare report settimanale
   appLog('[R1] INIT: sto per chiamare _checkWeeklyReportTrigger, esiste='+(typeof _checkWeeklyReportTrigger==='function'));
   try{
@@ -11820,6 +11831,10 @@ function toggleSettingsChangelog(){
 function checkForUpdate(){
   const btn=document.getElementById('btn-update');
   const status=document.getElementById('update-status');
+  if(location.protocol==='file:'){
+    if(status)status.textContent='ℹ️ Verifica non disponibile in locale (file://) — funziona su GitHub Pages';
+    return;
+  }
   if(btn)btn.textContent='⏳ Controllo...';
   if(status)status.textContent='Controllo in corso...';
   fetch('./version.json?nocache='+Date.now()+'&r='+Math.random(),
@@ -11852,31 +11867,50 @@ function checkForUpdate(){
 async function doUpdate(){
   const btn=document.getElementById('btn-update');
   const status=document.getElementById('update-status');
+  // Nascondi subito il banner per evitare che un eventuale controllo nel frattempo
+  // lo faccia ricomparire in loop mentre l'aggiornamento è già in corso
+  _updateBannerDismissed=true;
+  const banner=document.getElementById('update-banner');
+  if(banner)banner.style.display='none';
+  // GUARDIA OFFLINE: se non c'è connessione, non svuotare cache/SW — l'app resterebbe
+  // senza nulla da servire dopo il reload. Rimanda semplicemente al prossimo controllo utile.
+  if(!navigator.onLine){
+    appLog('UPDATE: aggiornamento rimandato, dispositivo offline');
+    _updateBannerDismissed=false;
+    if(status)status.textContent='⚠️ Nessuna connessione — riprova quando sei online';
+    return;
+  }
   if(btn)btn.textContent='⏳ Aggiornamento...';
   if(status)status.textContent='Pulizia cache e riavvio...';
   try{
-    // 1. Forza l'aggiornamento del service worker stesso (non solo la sua cache)
+    // 1. Disinstalla DAVVERO il service worker (non solo "aggiornalo") — così la prossima
+    // richiesta è gestita da un SW completamente nuovo, senza residui della versione vecchia
     if('serviceWorker' in navigator){
       const regs=await navigator.serviceWorker.getRegistrations();
-      await Promise.all(regs.map(r=>r.update().catch(()=>{})));
+      await Promise.all(regs.map(r=>r.unregister().catch(()=>{})));
     }
     // 2. Delete ALL caches
     if('caches' in window){
       const keys=await caches.keys();
       await Promise.all(keys.map(k=>caches.delete(k)));
     }
-    // 3. FIX: location.reload(true) è deprecato e i browser moderni lo ignorano —
-    // non garantisce un vero fetch dal server, solo la Cache Storage viene pulita
-    // (non la cache HTTP nativa del browser). Usiamo un cache-busting via query string,
-    // che forza sempre una richiesta di rete genuinamente fresca.
-    setTimeout(()=>{
-      const base=location.href.split('?')[0].split('#')[0];
-      location.href=base+'?_cb='+Date.now();
-    },300);
   }catch(e){
+    appLog('UPDATE: errore durante pulizia cache/SW: '+(e&&e.message||e));
+  }
+  // Secondo controllo: la connessione potrebbe essere caduta durante la pulizia
+  // (che può richiedere qualche istante). Se è caduta ora, non ricaricare comunque:
+  // restare sulla versione corrente è meglio di un reload che fallisce nel vuoto.
+  if(!navigator.onLine){
+    appLog('UPDATE: connessione caduta durante la pulizia, reload rimandato');
+    if(status)status.textContent='⚠️ Connessione persa — riprova quando sei online';
+    return;
+  }
+  // FIX: location.reload(true) è deprecato e i browser moderni lo ignorano — non garantisce
+  // un vero fetch dal server. Usiamo un cache-busting via query string per un fetch fresco.
+  setTimeout(()=>{
     const base=location.href.split('?')[0].split('#')[0];
     location.href=base+'?_cb='+Date.now();
-  }
+  },300);
 }
 
 // ═══ R1 — RESOCONTO SETTIMANALE ════════════════════════════════════
@@ -12238,30 +12272,39 @@ function shareReportItem(evt,i){
 }
 
 // ════════════════════════════════════════════════════════════════
-// Auto-check on startup after 5s
-setTimeout(()=>{
+// Confronto versioni numerico (non solo stringa) — evita falsi positivi
+// se il build remoto risultasse per qualche motivo "minore" del locale
+function _parseVerNum(v){
+  var parts=String(v||'0').split('.');
+  return (parseInt(parts[0])||0)*1000+(parseInt(parts[1])||0);
+}
+// Controllo unico per tutti e 3 i punti automatici (INIT, polling 15min, SW controllerchange).
+// Include: skip su file:// (in locale il fetch è bloccato da CORS — scoperto grazie al progetto Amici FC),
+// aggiornamento silenzioso in background per le versioni marcate "critical".
+function _checkForNewVersion(){
+  if(location.protocol==='file:')return; // test locale prima di GitHub Pages: fetch bloccato da CORS
   fetch('./version.json?t='+Date.now(),{cache:'no-store'})
     .then(r=>r.json())
     .then(data=>{
-      const remote=String(data.build||'').trim();
-      const local=String(APP_BUILD||'').trim();
-      if(remote&&remote!==local){
-        showUpdateBanner(data);
-        const s=document.getElementById('update-status');
-        if(s)s.textContent='🆕 v'+data.version+' disponibile — premi Verifica!';
+      const remoteBuild=String(data.build||'').trim();
+      const localBuild=String(APP_BUILD||'').trim();
+      if(!remoteBuild||remoteBuild===localBuild)return;
+      // Se marcata critica e l'app è in background, aggiorna subito senza chiedere nulla
+      if(data.critical&&document.hidden){
+        try{localStorage.setItem('tt4_silent_update',JSON.stringify({version:data.version,changes:data.changes||[]}));}catch(e){}
+        appLog('UPDATE: versione critica '+data.version+' applicata silenziosamente (app in background)');
+        doUpdate();
+        return;
       }
+      showUpdateBanner(data);
     }).catch(()=>{});
-},5000);
+}
+// Auto-check on startup after 5s
+setTimeout(_checkForNewVersion,5000);
 
 // U1c — Polling background ogni 15 min (app aperta in background)
 setInterval(()=>{
-  fetch('./version.json?t='+Date.now(),{cache:'no-store'})
-    .then(r=>r.json())
-    .then(data=>{
-      const remote=String(data.build||'').trim();
-      const local=String(APP_BUILD||'').trim();
-      if(remote&&remote!==local)showUpdateBanner(data);
-    }).catch(()=>{});
+  _checkForNewVersion();
   // FIX: se l'app resta aperta per giorni senza un vero reload, il controllo
   // report settimanale (fatto solo in INIT) non si ripeteva mai — ora viene
   // ricontrollato anche qui, così anche una sessione lunga non perde il lunedì
@@ -12270,12 +12313,7 @@ setInterval(()=>{
 
 // U1c — SW controllerchange: nuova versione SW attivata (background update)
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.addEventListener('controllerchange',function(){
-    fetch('./version.json?t='+Date.now(),{cache:'no-store'})
-      .then(r=>r.json())
-      .then(data=>showUpdateBanner(data))
-      .catch(()=>{});
-  });
+  navigator.serviceWorker.addEventListener('controllerchange',_checkForNewVersion);
 }</script>
 
 <!-- ── BOTTOM NAV ────────────────────────────────────────────────── -->

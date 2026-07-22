@@ -1,5 +1,5 @@
-// TurboTartaruga Service Worker v202607220945
-const CACHE_NAME = 'turbotartaruga-202607220945'; // cache app (HTML, JS, CSS)
+// TurboTartaruga Service Worker v202607221030
+const CACHE_NAME = 'turbotartaruga-202607221030'; // cache app (HTML, JS, CSS)
 const ASSETS_CACHE = 'turbotartaruga-assets-v1';  // cache immagini esercizi (NON cancellata mai)
 
 // File da precacheare all'installazione (OBBLIGATORI per offline)
